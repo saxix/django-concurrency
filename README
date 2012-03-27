@@ -1,0 +1,12 @@
+Django Concurrency
+==================
+
+django-concurrency is a optimistic locking library for Django Models
+
+How it works
+------------
+sample code::
+    from concurrency.fields import IntegerVersionField
+
+    class ConcurrentModel( models.Model ):
+        version = IntegerVersionField( )
