@@ -5,68 +5,18 @@ Created on 09/giu/2009
 @author: sax
 '''
 import logging
-from django.contrib.auth.models import User
 from django.db.utils import DatabaseError
 from django.utils.unittest.case import TestCase
 from concurrency.models import RecordModifiedError
-from concurrency.fields import IntegerVersionField, DateTimeVersionField
-from django.core.management.color import no_style
 from django.db import transaction, models, connection
 import time
+from demoapp.models import *
 
 logger = logging.getLogger('tests.concurrency')
-
-#from django.test import TestCase
 
 class ConcurrencyError( Exception ):
     pass
 
-#class ConcurrentModel( BaseConcurrentModel ):
-#    _version = VersionField( db_column = 'cm_version_id' )
-#
-#    def __getVersion( self ):
-#        return self._version
-#
-#    version = property( __getVersion )
-
-class ConcurrentModel( models.Model ):
-#    version = DateTimeVersionField( db_column = 'cm_version_id' )
-    version = IntegerVersionField( db_column = 'cm_version_id' )
-
-class TestModel0( ConcurrentModel ):
-    username = models.CharField( max_length = 30, blank = True, null = True )
-    last_name = models.CharField( max_length = 30, blank = True, null = True )
-    char_field = models.CharField( max_length = 30, blank = True, null = True )
-    date_field = models.DateField( blank = True, null = True )
-
-class TestModel1( TestModel0 ):
-    name1 = models.CharField( max_length = 30, blank = True, null = True )
-
-class TestModel2( TestModel1 ):
-    name2 = models.CharField( max_length = 30, blank = True, null = True )
-
-class TestModel3( TestModel2 ):
-    """ necessario per testare il comportamento diverso in caso di 'order_with_respect_to' """
-    name3 = models.CharField( max_length = 30, blank = True, null = True )
-    fk = models.ForeignKey( TestModel2, related_name = "parent", blank = True, null = True )
-
-    class Meta:
-        order_with_respect_to = 'fk'
-        ordering = 'date_field'
-
-class TestModel0_Proxy( TestModel0 ):
-
-    class Meta:
-        proxy = True
-
-class TestModel2_Proxy( TestModel2 ):
-    class Meta:
-        proxy = True
-
-class TestModelUser(User):
-    version = IntegerVersionField( db_column = 'cm_version_id' )
-
-TABLES = [TestModel0, TestModel1, TestModel2, TestModel3, TestModelUser]
 
 class ConcurrencyTest0( TestCase ):
 
@@ -77,32 +27,11 @@ class ConcurrencyTest0( TestCase ):
         transaction.managed( True )
         connection.close()
 
-        tables = connection.introspection.table_names()
-        for table in TABLES:
-            if not connection.introspection.table_name_converter( table._meta.db_table ) in tables:
-                cursor = connection.cursor()
-                sql, references = connection.creation.sql_create_model( table, no_style(), set() )
-                for statement in sql:
-                    cursor.execute( statement )
-
-        #transaction.commit()
-
         self.TARGET = TestModel0( username = "New", last_name = "1" )
 
 
     def tearDown( self ):
         super( ConcurrencyTest0, self ).tearDown()
-
-        tables = connection.introspection.table_names()
-        for table in TABLES[::-1]:
-            if connection.introspection.table_name_converter( table._meta.db_table ) in tables:
-                cursor = connection.cursor()
-                sql = connection.creation.sql_destroy_model( table, [] , no_style() )
-                for statement in sql:
-                    cursor.execute( statement )
-
-
-#        transaction.commit()
         transaction.rollback()
         transaction.leave_transaction_management()
 
@@ -150,7 +79,6 @@ class ConcurrencyTest0( TestCase ):
     def test_force_update( self ):
         logger.debug( "Created Object_1")
         t = self.TARGET.__class__()
-#        t.save()
         self.assertRaises(DatabaseError,t.save,force_update=True )
 
     def test_force_insert( self ):
