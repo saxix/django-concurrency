@@ -1,7 +1,8 @@
 Django Concurrency
 ==================
 
-django-concurrency is a optimistic locking library for Django Models
+django-concurrency is a optimistic locking library for Django 1.4.
+It works adding adding
 
 How it works
 ------------
@@ -12,7 +13,7 @@ sample code::
     class ConcurrentModel( models.Model ):
         version = IntegerVersionField( )
 
-Now if if you try (fake code) ::
+Now if if you try::
 
     a = ConcurrentModel.objects.get(pk=1)
     b = ConcurrentModel.objects.get(pk=1)
