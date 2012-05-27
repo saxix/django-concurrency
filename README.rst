@@ -1,6 +1,11 @@
 Django Concurrency
 ==================
 
+
+.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
+   :target: http://travis-ci.org/saxix/django-concurrency/
+
+
 django-concurrency is a optimistic locking library for Django 1.4.
 It works adding adding
 
