@@ -1,4 +1,4 @@
-.. |concurrency| replace:: Concurren cy
+.. |concurrency| replace:: Concurrency
 .. |pkg| replace:: dja
 .. |version| replace:: 0.1
 
@@ -43,9 +43,9 @@ Table Of Contents
 Links
 ~~~~~
 
-   * Project home page: https://github.com/saxix/django-iadmin
-   * Issue tracker: https://github.com/saxix/django-iadmin/issues?sort
-   * Download: http://pypi.python.org/pypi/django-iadmin/
-   * Docs: http://readthedocs.org/docs/django-iadmin/en/latest/
+   * Project home page: https://github.com/saxix/django-concurrency
+   * Issue tracker: https://github.com/saxix/django-concurrency/issues?sort
+   * Download: http://pypi.python.org/pypi/django-concurrency/
+   * Docs: http://readthedocs.org/docs/django-concurrency/en/latest/
 
 
