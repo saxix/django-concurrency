@@ -7,7 +7,9 @@ Django Concurrency
 
 
 django-concurrency is a optimistic locking library for Django 1.4.
-It works adding adding
+It works adding a VersionField to the model, each time a model is successfully saved the VersionNumber is
+incremented.
+
 
 How it works
 ------------
@@ -26,3 +28,13 @@ Now if if you try::
     b.save()
 
 you will get a ``RecordModifedError`` on ``b.save()``
+
+Links
+~~~~~
+
+   * Project home page: https://github.com/saxix/django-concurrency
+   * Issue tracker: https://github.com/saxix/django-concurrency/issues?sort
+   * Download: http://pypi.python.org/pypi/django-concurrency/
+   * Docs: http://readthedocs.org/docs/django-concurrency/en/latest/
+
+
