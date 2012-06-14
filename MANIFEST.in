@@ -1,7 +1,6 @@
-include README
+include README.rst
 include AUTHORS
 include LICENSE
 include MANIFEST.in
 include setup.py
-include requirements.txt
 recursive-include concurrency *.py
