@@ -1,4 +1,4 @@
-VERSION = __version__ = (0, 1, 0, 'final', 0)
+VERSION = __version__ = (0, 1, 1, 'alpha', 0)
 __author__ = 'sax'
 
 
@@ -15,10 +15,11 @@ def get_version(version=None):
     sub = ''
     if version[3] == 'alpha' and version[4] == 0:
         import concurrency
-        path =  concurrency.__path__[0]
+
+        path = concurrency.__path__[0]
         head_path = '%s/../.git/logs/HEAD' % path
         try:
-            for line in open(head_path):pass
+            for line in open(head_path): pass
             revision = line.split()[0]
         except IOError:
             raise Exception('Alpha version is are only allowed as git clone')
