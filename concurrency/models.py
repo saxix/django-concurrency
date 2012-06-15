@@ -9,8 +9,10 @@ from django.db import DatabaseError
 from django.utils.timezone import utc
 
 logger = logging.getLogger('concurrency')
+
 class RecordModifiedError(DatabaseError):
     pass
+
 
 class ConcurrentModelManager(models.Manager):
     def get_or_create(self, **kwargs):
@@ -19,6 +21,7 @@ class ConcurrentModelManager(models.Manager):
         else:
             super(ConcurrentModelManager).get_or_create(**kwargs)
 
+
 def lookup_revision(cls):
     for c, fk in cls._meta.parents.items():
         if hasattr(c, 'RevisionMetaInfo'):
@@ -26,6 +29,7 @@ def lookup_revision(cls):
     if hasattr(cls, 'RevisionMetaInfo'):
         return cls.RevisionMetaInfo.field, cls
     return None, None
+
 
 def save_base(self, raw=False, cls=None, origin=None, force_insert=False,
               force_update=False, using=None):
@@ -44,8 +48,6 @@ def save_base(self, raw=False, cls=None, origin=None, force_insert=False,
             origin = cls
     else:
         meta = cls._meta
-
-
 
     if origin and not meta.auto_created:
         signals.pre_save.send(sender=origin, instance=self, raw=raw, using=using)
@@ -75,7 +77,7 @@ def save_base(self, raw=False, cls=None, origin=None, force_insert=False,
                 setattr(self, field.attname, self._get_pk_val(parent._meta))
         if meta.proxy:
             return
-        # concurrency code
+            # concurrency code
     versionField, versionClass = lookup_revision(cls)
     currentVersion = self._get_revision_number()
     newVersion = cls is versionClass and self._revision_get_next() or currentVersion
@@ -132,7 +134,7 @@ def save_base(self, raw=False, cls=None, origin=None, force_insert=False,
             fields = meta.local_fields
             if not pk_set:
                 if force_update:
-                    raise ValueError("Cannot force an update in save() with no primary key.")
+                    raise DatabaseError("Cannot force an update in save() with no primary key.")
                 fields = [f for f in fields if not isinstance(f, AutoField)]
 
             record_exists = False

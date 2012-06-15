@@ -13,11 +13,12 @@ logger = logging.getLogger('concurrency')
 class RevisionMetaInfo:
     field = None
 
+
 class VersionFieldMixin(object):
     def __init__(self, verbose_name=None, name=None, help_text='',
                  db_column=None, db_tablespace=None):
         super(VersionFieldMixin, self).__init__(verbose_name, name, editable=False,
-            help_text=help_text,null=False, blank=False,
+            help_text=help_text, null=False, blank=False,
             db_tablespace=db_tablespace, db_column=db_column)
 
     def _get_REVISION_NUMBER(self, cls, field):
@@ -29,11 +30,13 @@ class VersionFieldMixin(object):
         setattr(instance, field.attname, value)
 
     def contribute_to_class(self, cls, name):
-        assert not hasattr(cls, 'RevisionMetaInfo'), "A model can't have more than one VersionField."
+    #        assert not hasattr(cls, 'RevisionMetaInfo'), "A model can't have more than one VersionField."
         super(VersionFieldMixin, self).contribute_to_class(cls, name)
+        if hasattr(cls, 'RevisionMetaInfo'):
+            return
 
-#        if not self in opts.local_fields: return
-#        opts = cls._meta
+        #        if not self in opts.local_fields: return
+        #        opts = cls._meta
 
         setattr(cls, '_get_revision_number', curry(self._get_REVISION_NUMBER, field=self))
         setattr(cls, '_set_revision_number', curry(self._set_REVISION_NUMBER))
@@ -44,6 +47,7 @@ class VersionFieldMixin(object):
 
     def get_default(self):
         return 0
+
 
 class DateTimeVersionField(VersionFieldMixin, DateTimeField):
     def _REVISION_GET_NEXT(self, cls, field):
