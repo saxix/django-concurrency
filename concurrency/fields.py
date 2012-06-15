@@ -3,7 +3,6 @@ import logging
 from django.utils.functional import curry
 from django.db.models import IntegerField
 from django.db.models.fields import DateTimeField
-from django.db import DatabaseError
 from django.utils.timezone import utc
 from concurrency import models
 
@@ -30,13 +29,9 @@ class VersionFieldMixin(object):
         setattr(instance, field.attname, value)
 
     def contribute_to_class(self, cls, name):
-    #        assert not hasattr(cls, 'RevisionMetaInfo'), "A model can't have more than one VersionField."
         super(VersionFieldMixin, self).contribute_to_class(cls, name)
         if hasattr(cls, 'RevisionMetaInfo'):
             return
-
-        #        if not self in opts.local_fields: return
-        #        opts = cls._meta
 
         setattr(cls, '_get_revision_number', curry(self._get_REVISION_NUMBER, field=self))
         setattr(cls, '_set_revision_number', curry(self._set_REVISION_NUMBER))
