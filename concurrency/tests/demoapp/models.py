@@ -9,6 +9,7 @@ class AbstractConcurrentModel(models.Model):
 
     class Meta:
         abstract = True
+        app_label = 'concurrency'
 
 
 class TestAbstractModel0(AbstractConcurrentModel):
@@ -17,10 +18,15 @@ class TestAbstractModel0(AbstractConcurrentModel):
     char_field = models.CharField(max_length=30, blank=True, null=True)
     date_field = models.DateField(blank=True, null=True)
 
+    class Meta:
+        app_label = 'concurrency'
+
 
 class ConcurrentModel(models.Model):
-#    version = DateTimeVersionField( db_column = 'cm_version_id' )
     version = IntegerVersionField(db_column='cm_version_id')
+
+    class Meta:
+        app_label = 'concurrency'
 
 
 class TestModel0(ConcurrentModel):
@@ -29,13 +35,22 @@ class TestModel0(ConcurrentModel):
     char_field = models.CharField(max_length=30, blank=True, null=True)
     date_field = models.DateField(blank=True, null=True)
 
+    class Meta:
+        app_label = 'concurrency'
+
 
 class TestModel1(TestModel0):
     name1 = models.CharField(max_length=30, blank=True, null=True)
 
+    class Meta:
+        app_label = 'concurrency'
+
 
 class TestModel2(TestModel1):
     name2 = models.CharField(max_length=30, blank=True, null=True)
+
+    class Meta:
+        app_label = 'concurrency'
 
 
 class TestModel3(TestModel2):
@@ -46,11 +61,13 @@ class TestModel3(TestModel2):
     class Meta:
         order_with_respect_to = 'fk'
         ordering = 'date_field'
+        app_label = 'concurrency'
 
 
 class TestModel0_Proxy(TestModel0):
     class Meta:
         proxy = True
+        app_label = 'concurrency'
 
 
 class TestModel2_Proxy(TestModel2):
@@ -60,3 +77,6 @@ class TestModel2_Proxy(TestModel2):
 
 class TestModelUser(User):
     version = IntegerVersionField(db_column='cm_version_id')
+
+    class Meta:
+        app_label = 'concurrency'

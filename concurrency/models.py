@@ -87,7 +87,6 @@ def save_base(self, raw=False, cls=None, origin=None, force_insert=False,
 
     if not meta.proxy:
         non_pks = [f for f in meta.local_fields if not f.primary_key]
-
         # First, try an UPDATE. If that doesn't update anything, do an INSERT.
         pk_val = self._get_pk_val(meta)
         pk_set = pk_val is not None
@@ -100,9 +99,10 @@ def save_base(self, raw=False, cls=None, origin=None, force_insert=False,
                 # It does already exist, so do an UPDATE.
                 if force_update or non_pks:
                     values = [(f, None, (raw and getattr(self, f.attname) or f.pre_save(self, False))) for f in
-                                                                                                       non_pks]
+                                                                                                       non_pks ]
                     # concurrency code
                     if cls is versionClass:
+                        values = [el for el in values if el[0] != versionField ]
                         versionField = cls.RevisionMetaInfo.field
                         values.append([versionField, None, newVersion])
                         d = {"pk": pk_val, cls.RevisionMetaInfo.field.name: currentVersion}
@@ -119,7 +119,7 @@ def save_base(self, raw=False, cls=None, origin=None, force_insert=False,
                         self._set_revision_number(newVersion)
                     if force_update and not rows:
                         raise DatabaseError("Forced update did not affect any rows.")
-                        # .concurrency code
+                    # .concurrency code
 
             else:
                 record_exists = False

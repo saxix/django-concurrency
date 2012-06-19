@@ -7,4 +7,4 @@ env:
 install:
   - pip install -q Django==$DJANGO_VERSION
   - python setup.py -q install
-script: cd demoproject && ./manage.py test demoapp
+script: cd demoproject && ./manage.py test concurrency

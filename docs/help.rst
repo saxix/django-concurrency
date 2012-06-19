@@ -21,9 +21,12 @@ Setup
 Testing
 -------
 
-|concurrency| come with a set of test that::
+|concurrency| come with a set of test that can tests many scenarions
 
-    python manage.py test concurrency
+* basic versioned model
+* inherited model
+* inherited model from abstract model
+* inherited model from external projcet model
 
 
 
