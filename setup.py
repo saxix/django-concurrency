@@ -23,6 +23,7 @@ setup(
     packages=[
         "concurrency",
         "concurrency.tests",
+        "concurrency.tests.demoapp",
         ],
     description="Django cuncurrent model",
     license="MIT License",
