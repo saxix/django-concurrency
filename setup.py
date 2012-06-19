@@ -12,15 +12,14 @@ VERSIONMAP = {'final': (concurrency.VERSION, 'Development Status :: 5 - Producti
               }
 download_tag, development_status = VERSIONMAP[concurrency.VERSION[3]]
 
-
 setup(
     name=NAME,
     version=RELEASE,
     url='https://github.com/saxix/django-concurrency',
-    download_url='http://pypi.python.org/packages/source/d/django-concurrency/django-concurrency-%s.tar.gz' % concurrency.get_version(),
+    download_url='http://pypi.python.org/packages/source/d/django-concurrency/django-concurrency-%s.tar.gz' % concurrency.get_version()
+    ,
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
-    dependency_links=[],
     packages=[
         "concurrency",
         "concurrency.tests",
