@@ -57,3 +57,23 @@ class IntegerVersionField(VersionFieldMixin, IntegerField):
 
 
 
+try:
+    import south
+    from south.modelsinspector import add_introspection_rules
+    rules = [
+        (
+            (IntegerVersionField, ),
+            [],
+                {
+                "verbose_name": ["verbose_name", {"default": None}],
+                "name": ["name", {"default": None}],
+                "help_text": ["help_text", {"default": ''}],
+                "db_column": ["db_column", {"default": None}],
+                "db_tablespace": ["db_tablespace", {"default": None}],
+                },
+            )
+    ]
+
+    add_introspection_rules(rules, ["^concurrency\.fields\.IntegerVersionField"])
+except ImportError:
+    pass
