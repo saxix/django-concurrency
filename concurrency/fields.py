@@ -17,7 +17,7 @@ class VersionFieldMixin(object):
     def __init__(self, verbose_name=None, name=None, help_text='',
                  db_column=None, db_tablespace=None):
         super(VersionFieldMixin, self).__init__(verbose_name, name, editable=False,
-            help_text=help_text, null=False, blank=False,
+            help_text=help_text, null=False, blank=False, default = 0,
             db_tablespace=db_tablespace, db_column=db_column)
 
     def _get_REVISION_NUMBER(self, cls, field):
