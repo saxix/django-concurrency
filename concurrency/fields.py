@@ -2,7 +2,7 @@ from datetime import datetime
 import logging
 from django.utils.functional import curry
 from django.db.models import IntegerField
-from django.db.models.fields import DateTimeField
+from django.db.models.fields import DateTimeField, NOT_PROVIDED
 from django.utils.timezone import utc
 from concurrency import models
 
@@ -14,8 +14,13 @@ class RevisionMetaInfo:
 
 
 class VersionFieldMixin(object):
-    def __init__(self, verbose_name=None, name=None, help_text='',
-                 db_column=None, db_tablespace=None):
+    def __init__(self, verbose_name=None, name=None, primary_key=False,
+                 max_length=None, unique=False, blank=False, null=False,
+                 db_index=False, rel=None, default=NOT_PROVIDED, editable=True,
+                 serialize=True, unique_for_date=None, unique_for_month=None,
+                 unique_for_year=None, choices=None, help_text='', db_column=None,
+                 db_tablespace=None, auto_created=False, validators=[],
+                 error_messages=None):
         super(VersionFieldMixin, self).__init__(verbose_name, name, editable=False,
             help_text=help_text, null=False, blank=False, default = 0,
             db_tablespace=db_tablespace, db_column=db_column)
@@ -70,6 +75,7 @@ try:
                 "help_text": ["help_text", {"default": ''}],
                 "db_column": ["db_column", {"default": None}],
                 "db_tablespace": ["db_tablespace", {"default": None}],
+                "default": ["default", {"default": 0}],
                 },
             )
     ]
