@@ -1,3 +1,7 @@
+import subprocess
+import datetime
+import os
+
 VERSION = __version__ = (0, 1, 5, 'alpha', 0)
 __author__ = 'sax'
 
@@ -14,19 +18,31 @@ def get_version(version=None):
 
     sub = ''
     if version[3] == 'alpha' and version[4] == 0:
-        import concurrency
-
-        path = concurrency.__path__[0]
-        head_path = '%s/../.git/logs/HEAD' % path
-        try:
-            for line in open(head_path): pass
-            revision = line.split()[0]
-        except IOError:
-            raise Exception('Alpha version is are only allowed as git clone')
-        sub = '.dev%s' % revision
+        git_changeset = get_git_changeset()
+        if git_changeset:
+            sub = '.dev%s' % git_changeset
 
     elif version[3] != 'final':
         mapping = {'alpha': 'a', 'beta': 'b', 'rc': 'c'}
         sub = mapping[version[3]] + str(version[4])
 
     return main + sub
+
+
+def get_git_changeset():
+    """Returns a numeric identifier of the latest git changeset.
+
+The result is the UTC timestamp of the changeset in YYYYMMDDHHMMSS format.
+This value isn't guaranteed to be unique, but collisions are very unlikely,
+so it's sufficient for generating the development version numbers.
+"""
+    repo_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    git_log = subprocess.Popen('git log --pretty=format:%ct --quiet -1 HEAD',
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        shell=True, cwd=repo_dir, universal_newlines=True)
+    timestamp = git_log.communicate()[0]
+    try:
+        timestamp = datetime.datetime.utcfromtimestamp(int(timestamp))
+    except ValueError:
+        return None
+    return timestamp.strftime('%Y%m%d%H%M%S')
