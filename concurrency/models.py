@@ -32,7 +32,7 @@ def lookup_revision(cls):
 
 
 def save_base(self, raw=False, cls=None, origin=None, force_insert=False,
-              force_update=False, using=None):
+              force_update=False, using=None, update_fields=None):
     """
     Does the heavy-lifting involved in saving. Subclasses shouldn't need to
     override this method. It's separate from save() in order to hide the

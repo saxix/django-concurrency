@@ -1,5 +1,4 @@
-VERSION = __version__ = (0, 1, 4, 'beta', 1
-    )
+VERSION = __version__ = (0, 1, 5, 'alpha', 0)
 __author__ = 'sax'
 
 
