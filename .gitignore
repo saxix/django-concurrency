@@ -1,5 +1,6 @@
-# BUILD
-dist
+/OUT
+/dist
 *.pyc
 *.pyo
-MANIFEST
+/MANIFEST
+*.egg-info
