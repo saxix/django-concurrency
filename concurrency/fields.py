@@ -1,13 +1,16 @@
-from datetime import datetime
+import time
 import logging
+from django import forms
+from django.core import exceptions
 from django.utils.functional import curry
-from django.db.models import IntegerField
-from django.db.models.fields import DateTimeField, NOT_PROVIDED
-from django.utils.timezone import utc
+from django.db.models.fields import NOT_PROVIDED, BigIntegerField, IntegerField
 from concurrency import models
 
 
 logger = logging.getLogger('concurrency')
+
+OFFSET = int(time.mktime([2000,1,1,0,0,0,0,0,0]))
+
 
 class RevisionMetaInfo:
     field = None
@@ -21,8 +24,8 @@ class VersionFieldMixin(object):
                  unique_for_year=None, choices=None, help_text='', db_column=None,
                  db_tablespace=None, auto_created=False, validators=[],
                  error_messages=None):
-        super(VersionFieldMixin, self).__init__(verbose_name, name, editable=False,
-            help_text=help_text, null=False, blank=False, default = 0,
+        super(VersionFieldMixin, self).__init__(verbose_name, name, editable=True,
+            help_text=help_text, null=False, blank=False, default=1,
             db_tablespace=db_tablespace, db_column=db_column)
 
     def _get_REVISION_NUMBER(self, cls, field):
@@ -41,7 +44,8 @@ class VersionFieldMixin(object):
         setattr(cls, '_get_revision_number', curry(self._get_REVISION_NUMBER, field=self))
         setattr(cls, '_set_revision_number', curry(self._set_REVISION_NUMBER))
         setattr(cls, '_revision_get_next', curry(self._REVISION_GET_NEXT, field=self))
-        setattr(cls, 'save_base', models.save_base)
+        #        setattr(cls, 'save_base', models.save_base)
+        setattr(cls, 'save', models.save)
         setattr(cls, 'RevisionMetaInfo', RevisionMetaInfo())
         cls.RevisionMetaInfo.field = self
 
@@ -49,35 +53,47 @@ class VersionFieldMixin(object):
         return 0
 
 
-class DateTimeVersionField(VersionFieldMixin, DateTimeField):
-    def _REVISION_GET_NEXT(self, cls, field):
-        return  datetime.utcnow().replace(tzinfo=utc)
+class VersionField(forms.IntegerField):
+    def to_python(self, value):
+        if value is None:
+            return 0
+        try:
+            value = int(str(value))
+        except (ValueError, TypeError):
+            raise exceptions.ValidationError(self.error_messages['invalid'])
+        return value
 
 
-class IntegerVersionField(VersionFieldMixin, IntegerField):
+class IntegerVersionField(VersionFieldMixin, BigIntegerField):
     def _REVISION_GET_NEXT(self, cls, field):
         value = getattr(cls, field.attname)
-        return value + 1
+        return max(value + 1, int(time.time() * 1000000) - OFFSET)
 
+    def validate(self, value, model_instance):
+        pass
 
+    def formfield(self, **kwargs):
+        kwargs['widget'] = forms.HiddenInput
+        kwargs['form_class'] = VersionField
+        return super(BigIntegerField, self).formfield(**kwargs)
 
 
 try:
     import south
     from south.modelsinspector import add_introspection_rules
+
     rules = [
         (
             (IntegerVersionField, ),
             [],
-                {
+            {
                 "verbose_name": ["verbose_name", {"default": None}],
                 "name": ["name", {"default": None}],
                 "help_text": ["help_text", {"default": ''}],
                 "db_column": ["db_column", {"default": None}],
                 "db_tablespace": ["db_tablespace", {"default": None}],
                 "default": ["default", {"default": 0}],
-                },
-            )
+            })
     ]
 
     add_introspection_rules(rules, ["^concurrency\.fields\.IntegerVersionField"])

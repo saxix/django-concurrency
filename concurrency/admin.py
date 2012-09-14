@@ -1,4 +1,4 @@
-    ## -*- coding: utf-8 -*-
+## -*- coding: utf-8 -*-
 #'''
 #Created on 12/giu/2009
 #
@@ -7,37 +7,38 @@
 
 from django.contrib import admin
 from django.core.urlresolvers import reverse
-from django.utils.safestring import mark_safe  
+from django.utils.safestring import mark_safe
 from django.contrib.admin import helpers
 from django.utils.encoding import force_unicode
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.admin.util import unquote
 from django.utils.functional import update_wrapper
 
-class ConcurrentModelAdmin(admin.ModelAdmin):
 
+class ConcurrentModelAdmin(admin.ModelAdmin):
     def action_checkbox(self, obj):
         """
         A list_display column containing a checkbox widget.
         """
         return helpers.checkbox.render(helpers.ACTION_CHECKBOX_NAME, force_unicode("%s,%s" % (obj.pk, obj.version)))
+
     action_checkbox.short_description = mark_safe('<input type="checkbox" id="action-toggle" />')
     action_checkbox.allow_tags = True
-        
+
     def change_view(self, request, object_id, version_id=None, extra_context=None):
         if version_id:
-            self.queryset(request).get(pk=unquote(object_id),_version=version_id)
-        
+            self.queryset(request).get(pk=unquote(object_id), _version=version_id)
+
         return super(ConcurrentModelAdmin, self).change_view(request, object_id, extra_context)
- 
-    def change_redir(self, request, object_id):        
+
+    def change_redir(self, request, object_id):
         obj = self.queryset(request).get(pk=unquote(object_id))
         info = self.admin_site.name, self.model._meta.app_label, self.model._meta.module_name
 
-        return HttpResponseRedirect( reverse('%sadmin_%s_%s_change' % info,
-                                            args=[obj.pk, obj.version])
-                                   )
-        
+        return HttpResponseRedirect(reverse('%sadmin_%s_%s_change' % info,
+            args=[obj.pk, obj.version])
+        )
+
     def response_action(self, request, queryset):
         """
         Handle an admin action. This is called if a request is POSTed to the
@@ -77,10 +78,10 @@ class ConcurrentModelAdmin(admin.ModelAdmin):
             # Get the list of selected PKs. If nothing's selected, we can't
             # perform an action on it, so bail.
             selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
-            
+
             #
-            # Orrible but work 
-            # absolutely need better code 
+            # Orrible but work
+            # absolutely need better code
             #
             if not selected:
                 return None
@@ -88,14 +89,13 @@ class ConcurrentModelAdmin(admin.ModelAdmin):
             for x in selected:
                 pk, version = x.split(",")
                 selection[int(pk)] = int(version)
-            q = queryset.filter(pk__in=selection.keys())    
-            
+            q = queryset.filter(pk__in=selection.keys())
+
             for i in q:
                 if i.version != selection[i.pk]:
                     q = q.exclude(pk=i.pk)
-                    
-                     
-            response = func(self, request, q )
+
+            response = func(self, request, q)
 
             # Actions may return an HttpResponse, which will be used as the
             # response from the POST. If not, we'll be a good little HTTP
@@ -104,13 +104,14 @@ class ConcurrentModelAdmin(admin.ModelAdmin):
                 return response
             else:
                 return HttpResponseRedirect(".")
-    
+
     def get_urls(self):
         from django.conf.urls import patterns, url, include
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
+
             return update_wrapper(wrapper, view)
 
         info = self.admin_site.name, self.model._meta.app_label, self.model._meta.module_name
@@ -133,7 +134,6 @@ class ConcurrentModelAdmin(admin.ModelAdmin):
                 name='%sadmin_%s_%s_change' % info),
             url(r'^(.+)/$',
                 self.change_redir,
-                name='%sadmin_%s_%s_change' % info),      
-            )
-        return urlpatterns   
-                
+                name='%sadmin_%s_%s_change' % info),
+        )
+        return urlpatterns

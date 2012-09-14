@@ -1,7 +1,5 @@
 from django.contrib.auth.models import User
 from django.db import models
-
-# Create your models here.
 from concurrency.fields import IntegerVersionField
 
 class AbstractConcurrentModel(models.Model):
@@ -9,7 +7,7 @@ class AbstractConcurrentModel(models.Model):
 
     class Meta:
         abstract = True
-        app_label = 'concurrency'
+        app_label = 'demoapp'
 
 
 class TestAbstractModel0(AbstractConcurrentModel):
@@ -19,14 +17,14 @@ class TestAbstractModel0(AbstractConcurrentModel):
     date_field = models.DateField(blank=True, null=True)
 
     class Meta:
-        app_label = 'concurrency'
+        app_label = 'demoapp'
 
 
 class ConcurrentModel(models.Model):
     version = IntegerVersionField(db_column='cm_version_id')
 
     class Meta:
-        app_label = 'concurrency'
+        app_label = 'demoapp'
 
 
 class TestModel0(ConcurrentModel):
@@ -36,21 +34,21 @@ class TestModel0(ConcurrentModel):
     date_field = models.DateField(blank=True, null=True)
 
     class Meta:
-        app_label = 'concurrency'
+        app_label = 'demoapp'
 
 
 class TestModel1(TestModel0):
     name1 = models.CharField(max_length=30, blank=True, null=True)
 
     class Meta:
-        app_label = 'concurrency'
+        app_label = 'demoapp'
 
 
 class TestModel2(TestModel1):
     name2 = models.CharField(max_length=30, blank=True, null=True)
 
     class Meta:
-        app_label = 'concurrency'
+        app_label = 'demoapp'
 
 
 class TestModel3(TestModel2):
@@ -61,13 +59,13 @@ class TestModel3(TestModel2):
     class Meta:
         order_with_respect_to = 'fk'
         ordering = 'date_field'
-        app_label = 'concurrency'
+        app_label = 'demoapp'
 
 
 class TestModel0_Proxy(TestModel0):
     class Meta:
         proxy = True
-        app_label = 'concurrency'
+        app_label = 'demoapp'
 
 
 class TestModel2_Proxy(TestModel2):
@@ -79,4 +77,4 @@ class TestModelUser(User):
     version = IntegerVersionField(db_column='cm_version_id')
 
     class Meta:
-        app_label = 'concurrency'
+        app_label = 'demoapp'
