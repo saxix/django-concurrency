@@ -1,0 +1,1 @@
+from .demoapp.models import *

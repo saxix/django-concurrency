@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from demoapp.models import *
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -12,8 +12,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'concurrency',
-    'concurrency.tests.demoapp')
+    'concurrency.tests']
 
 
 class ConcurrencyRequestTest(TestCase):
@@ -24,7 +23,7 @@ class ConcurrencyRequestTest(TestCase):
         super(ConcurrencyRequestTest, cls).setUpClass()
 
     def setUp(self):
-        self.sett = self.settings(INSTALLED_APPS=set(settings.INSTALLED_APPS + INSTALLED_APPS))
+        self.sett = self.settings(INSTALLED_APPS=set(list(settings.INSTALLED_APPS) + INSTALLED_APPS))
         self.sett.enable()
         call_command('syncdb', verbosity=0)
         self.user = User.objects.create(username='sax')
