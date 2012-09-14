@@ -120,7 +120,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admindocs',
-    'concurrency.tests.demoapp',
+    'concurrency.tests',
     )
 
 # A sample logging configuration. The only tangible logging
