@@ -8,23 +8,22 @@ base_url = 'https://github.com/saxix/django-concurrency/'
 VERSIONMAP = {'final': (concurrency.VERSION, 'Development Status :: 5 - Production/Stable'),
               'rc': (concurrency.VERSION, 'Development Status :: 4 - Beta'),
               'beta': (concurrency.VERSION, 'Development Status :: 4 - Beta'),
-              'alpha': ('master', 'Development Status :: 3 - Alpha'),
-              }
+              'alpha': ('master', 'Development Status :: 3 - Alpha')}
+
 download_tag, development_status = VERSIONMAP[concurrency.VERSION[3]]
 
 setup(
     name=NAME,
     version=RELEASE,
     url='https://github.com/saxix/django-concurrency',
-    download_url='http://pypi.python.org/packages/source/d/django-concurrency/django-concurrency-%s.tar.gz' % concurrency.get_version()
-    ,
+    download_url='http://pypi.python.org/packages/source/d/django-concurrency/django-concurrency-%s.tar.gz' % RELEASE,
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     packages=[
         "concurrency",
         "concurrency.tests",
         "concurrency.tests.demoapp",
-        ],
+    ],
     description="Django cuncurrent model",
     license="MIT License",
     keywords="django c",
@@ -41,6 +40,6 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        ],
+    ],
     platforms=['any'],
 )

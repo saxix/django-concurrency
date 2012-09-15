@@ -13,6 +13,8 @@ from django.utils.encoding import force_unicode
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.admin.util import unquote
 from django.utils.functional import update_wrapper
+from concurrency.fields import VersionField
+from concurrency.forms import VersionWidget
 
 
 class ConcurrentModelAdmin(admin.ModelAdmin):
@@ -24,6 +26,15 @@ class ConcurrentModelAdmin(admin.ModelAdmin):
 
     action_checkbox.short_description = mark_safe('<input type="checkbox" id="action-toggle" />')
     action_checkbox.allow_tags = True
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        request = kwargs.pop("request", None)
+        if isinstance(db_field, VersionField):
+            formfield = db_field.formfield(**kwargs)
+            formfield.widget = VersionWidget()
+            return formfield
+
+        return super(admin.ModelAdmin, self).formfield_for_dbfield(db_field, request=request, **kwargs)
 
     def change_view(self, request, object_id, version_id=None, extra_context=None):
         if version_id:

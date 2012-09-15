@@ -1,5 +1,4 @@
-.. |concurrency| replace:: Concurrency
-.. |version| replace:: 0.1
+.. include:: globals.rst
 
 .. _help:
 
@@ -18,28 +17,17 @@ Setup
 |concurrency| does not need to be installed into ``INSTALLED_APPS`` unless you want run tests
 
 
-Testing
--------
+.. _test_suite:
 
-|concurrency| come with a set of test that can tests many scenarions
+Test suite
+----------
+
+|concurrency| come with a set of tests that can simulate different scenarions
 
 * basic versioned model
 * inherited model
 * inherited model from abstract model
 * inherited model from external projcet model
-
-
-
-Howto
------
-
-Just add a field of `IntegerVersionField` to your model::
-
-
-    from concurrency.fields import IntegerVersionField
-
-    class ConcurrentModel( models.Model ):
-        version = IntegerVersionField( )
-
-
+* django User model
+* models with custom save
 

@@ -1,81 +1,57 @@
 import time
 import logging
-from django import forms
-from django.core import exceptions
-from django.utils.functional import curry
-from django.db.models.fields import NOT_PROVIDED, BigIntegerField, IntegerField
-from concurrency import models
-
+import random
+from django.db.models.fields import BigIntegerField
+from . import core
+from . import forms
 
 logger = logging.getLogger('concurrency')
 
-OFFSET = int(time.mktime([2000,1,1,0,0,0,0,0,0]))
+OFFSET = int(time.mktime([2000, 1, 1, 0, 0, 0, 0, 0, 0]))
 
 
-class RevisionMetaInfo:
-    field = None
+class VersionField(core.VersionFieldMixin):
+    """ Base class """
 
 
-class VersionFieldMixin(object):
-    def __init__(self, verbose_name=None, name=None, primary_key=False,
-                 max_length=None, unique=False, blank=False, null=False,
-                 db_index=False, rel=None, default=NOT_PROVIDED, editable=True,
-                 serialize=True, unique_for_date=None, unique_for_month=None,
-                 unique_for_year=None, choices=None, help_text='', db_column=None,
-                 db_tablespace=None, auto_created=False, validators=[],
-                 error_messages=None):
-        super(VersionFieldMixin, self).__init__(verbose_name, name, editable=True,
-            help_text=help_text, null=False, blank=False, default=1,
-            db_tablespace=db_tablespace, db_column=db_column)
+class IntegerVersionField(VersionField, BigIntegerField):
+    """
+        Version Field that returns a "unique" version number for the record.
 
-    def _get_REVISION_NUMBER(self, cls, field):
-        value = getattr(cls, field.attname)
-        return value
+        The version number is produced using time.time() * 1000000, to get the benefits
+        of microsecond if the system clock provides them. @see `time.time()`.
 
-    def _set_REVISION_NUMBER(self, instance, value):
-        field = instance.RevisionMetaInfo.field
-        setattr(instance, field.attname, value)
-
-    def contribute_to_class(self, cls, name):
-        super(VersionFieldMixin, self).contribute_to_class(cls, name)
-        if hasattr(cls, 'RevisionMetaInfo'):
-            return
-
-        setattr(cls, '_get_revision_number', curry(self._get_REVISION_NUMBER, field=self))
-        setattr(cls, '_set_revision_number', curry(self._set_REVISION_NUMBER))
-        setattr(cls, '_revision_get_next', curry(self._REVISION_GET_NEXT, field=self))
-        #        setattr(cls, 'save_base', models.save_base)
-        setattr(cls, 'save', models.save)
-        setattr(cls, 'RevisionMetaInfo', RevisionMetaInfo())
-        cls.RevisionMetaInfo.field = self
-
-    def get_default(self):
-        return 0
-
-
-class VersionField(forms.IntegerField):
-    def to_python(self, value):
-        if value is None:
-            return 0
-        try:
-            value = int(str(value))
-        except (ValueError, TypeError):
-            raise exceptions.ValidationError(self.error_messages['invalid'])
-        return value
-
-
-class IntegerVersionField(VersionFieldMixin, BigIntegerField):
+    """
     def _REVISION_GET_NEXT(self, cls, field):
         value = getattr(cls, field.attname)
-        return max(value + 1, int(time.time() * 1000000) - OFFSET)
+        return max(value + 1, (int(time.time() * 1000000) - OFFSET))
 
     def validate(self, value, model_instance):
         pass
 
     def formfield(self, **kwargs):
-        kwargs['widget'] = forms.HiddenInput
-        kwargs['form_class'] = VersionField
+        kwargs['form_class'] = forms.VersionField
+        kwargs['widget'] = forms.VersionField.widget
         return super(BigIntegerField, self).formfield(**kwargs)
+
+
+class AutoIncVersionField(IntegerVersionField):
+    """
+        Version Field that returns a autoincrementatal integer as revision number.
+
+    """
+    def _REVISION_GET_NEXT(self, cls, field):
+        value = getattr(cls, field.attname)
+        return value + 1
+
+
+class RandomVersionField(IntegerVersionField):
+    """
+        Version Field that returns a random revision number.
+    """
+    def _REVISION_GET_NEXT(self, cls, field):
+        value = getattr(cls, field.attname)
+        return random.randint(1, IntegerVersionField.MAX_BIGINT)
 
 
 try:

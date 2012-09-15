@@ -2,7 +2,7 @@ import subprocess
 import datetime
 import os
 
-VERSION = __version__ = (0, 2, 2, 'alpha', 0)
+VERSION = __version__ = (0, 3, 0, 'beta', 1)
 __author__ = 'sax'
 
 
@@ -46,3 +46,5 @@ so it's sufficient for generating the development version numbers.
     except ValueError:
         return None
     return timestamp.strftime('%Y%m%d%H%M%S')
+
+

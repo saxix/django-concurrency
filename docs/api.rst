@@ -1,22 +1,44 @@
-.. |concurrency| replace:: Concurrency
-.. |version| replace:: 0.1
+.. include:: globals.rst
 
 .. _api:
 
 API
 ===
 
+.. contents::
+    :local:
 
+IntegerVersionField
+-------------------
 .. autoclass:: concurrency.fields.IntegerVersionField
 
-.. autoclass:: concurrency.fields.DateTimeVersionField
 
-.. autoclass:: concurrency.models.RecordModifiedError
+AutoIncVersionField
+-------------------
+.. autoclass:: concurrency.fields.AutoIncVersionField
 
-.. autoclass:: concurrency.models.ConcurrentModelManager
+RandomVersionField
+------------------
+.. autoclass:: concurrency.fields.RandomVersionField
 
 
+VersionField
+------------
+.. autoclass:: concurrency.forms.VersionField
 
 
+ConcurrentForm
+--------------
+.. autoclass:: concurrency.forms.ConcurrentForm
+
+
+VersionWidget
+-------------
+.. autoclass:: concurrency.forms.VersionWidget
+
+
+RecordModifiedError
+-------------------
+.. autoclass:: concurrency.core.RecordModifiedError
 
 
