@@ -52,8 +52,7 @@ class TestDjangoAdmin(TestCase):
         url = reverse('admin:concurrency_testmodel0_change', args=[self.target.pk])
         response = self.client.get(url)
 
-        self.assertTrue('original' in response.context, response)
-#        self.assertIn('original', response.context, response)
+        self.assertIn('original', response.context, response)
         target = response.context['original']
         old_version = target.version
         data = model_to_dict(target, exclude=['id'])
