@@ -37,6 +37,8 @@ VersionWidget
 .. autoclass:: concurrency.forms.VersionWidget
 
 
+.. _RecordModifiedError:
+
 RecordModifiedError
 -------------------
 .. autoclass:: concurrency.core.RecordModifiedError

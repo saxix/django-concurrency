@@ -1,9 +1,18 @@
 .. include:: globals.rst
 .. _index:
 
-Documentation
-=============
- django-concurrency is a optimistic locking library for Django Models
+==================
+Django Concurrency
+==================
+
+Overview
+========
+
+.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
+   :target: http://travis-ci.org/saxix/django-concurrency/
+
+
+django-concurrency is a optimistic locking library for Django Models
 
 .. note:: |concurrency| requires Django >= 1.4
 
@@ -67,6 +76,10 @@ Table Of Contents
     help
     api
 
+.. toctree::
+    :hidden:
+
+    globals
 
 Links
 =====
