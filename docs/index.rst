@@ -30,7 +30,7 @@ How it works
 ============
 
 |concurrency| works using a version field added to each model, each time a record is saved
-the version number change (the algorythm used depeneds on the VersionField used, see :ref:`api`).
+the version number change (the algorithm used depeneds on the VersionField used, see :ref:`api`).
 
 When a record is saved, |concurrency| try to get a lock to to the record based on the old revision
 number, if the record is not found raise a :ref:`RecordModifiedError`
