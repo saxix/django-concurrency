@@ -22,11 +22,10 @@ setup(
     packages=[
         "concurrency",
         "concurrency.tests",
-        "concurrency.tests.demoapp",
     ],
-    description="Django cuncurrent model",
+    description="Optimistic locking library for Django",
     license="MIT License",
-    keywords="django c",
+    keywords="django",
     classifiers=[
         development_status,
         'Environment :: Web Environment',

@@ -7,6 +7,7 @@ Django Concurrency
 
 
 django-concurrency is a optimistic locking library for Django 1.4.
+
 It works adding a VersionField to the model, each time a model is successfully saved the VersionNumber is
 incremented.
 
