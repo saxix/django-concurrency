@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from distutils.core import setup
+from distutils.command.install import INSTALL_SCHEMES
 import concurrency
 
 NAME = 'django-concurrency'
