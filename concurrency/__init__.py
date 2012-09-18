@@ -2,7 +2,7 @@ import subprocess
 import datetime
 import os
 
-VERSION = __version__ = (0, 3, 0, 'beta', 1)
+VERSION = __version__ = (0, 3, 0, 'beta', 2)
 __author__ = 'sax'
 
 
@@ -20,7 +20,7 @@ def get_version(version=None):
     if version[3] == 'alpha' and version[4] == 0:
         git_changeset = get_git_changeset()
         if git_changeset:
-            sub = '.dev%s' % git_changeset
+            sub = '.a%s' % git_changeset
 
     elif version[3] != 'final':
         mapping = {'alpha': 'a', 'beta': 'b', 'rc': 'c'}

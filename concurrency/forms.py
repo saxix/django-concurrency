@@ -38,13 +38,16 @@ class VersionField(forms.IntegerField):
         kwargs['initial'] = None
         super(VersionField, self).__init__(None, None, *args, **kwargs)
 
+    def clean(self, value):
+        return super(VersionField, self).clean(value)
+
     def to_python(self, value):
         if value is None:
             return 0
         try:
             value = int(str(value))
         except (ValueError, TypeError):
-            raise exceptions.ValidationError(self.error_messages['invalid'])
+            value=0
         return value
 
     def widget_attrs(self, widget):
