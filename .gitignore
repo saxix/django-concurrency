@@ -4,3 +4,4 @@
 *.pyo
 /MANIFEST
 *.egg-info
+/build
