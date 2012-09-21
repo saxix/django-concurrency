@@ -1,7 +1,8 @@
+/build
+*.sqlite
 /docs/OUT
 /dist
 *.pyc
 *.pyo
 /MANIFEST
 *.egg-info
-/build
