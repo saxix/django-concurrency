@@ -2,7 +2,7 @@ import subprocess
 import datetime
 import os
 
-VERSION = __version__ = (0, 3, 0, 'beta', 2)
+VERSION = __version__ = (0, 3, 1, 'final', 0)
 __author__ = 'sax'
 
 
