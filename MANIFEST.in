@@ -6,3 +6,4 @@ include setup.py
 recursive-include concurrency *.py
 recursive-include docs *
 recursive-include demoproject *
+recursive-exclude docs/OUT *
