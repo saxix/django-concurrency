@@ -1,25 +1,36 @@
 from django import forms
-from django.core import exceptions
+from django.core.exceptions import NON_FIELD_ERRORS
 from django.forms import ModelForm, HiddenInput
 from django.utils.safestring import mark_safe
+from concurrency.core import _select_lock, RecordModifiedError
 
 
 class ConcurrentForm(ModelForm):
-    version = forms.IntegerField(widget=HiddenInput())
+    """ Simple wrapper to ModelForm that try to mitigate some concurrency error.
+        Note that is always possible have a RecordModifiedError in model.save().
+        Statistically form.clean() should catch most of the concurrent editing, but
+        is good to catch RecordModifiedError in the view too.
+    """
 
-    def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
-        original = super(ConcurrentForm, self)._html_output(normal_row, error_row, row_ender, help_text_html,
-            errors_on_separate_row)
-        return original
+    def clean(self):
+        try:
+            _select_lock(self.instance, self.initial[self.instance.RevisionMetaInfo.field.name])
+        except RecordModifiedError:
+            self._update_errors({NON_FIELD_ERRORS: self.error_class(['Record Modified'])})
+
+        return super(ConcurrentForm, self).clean()
+
+    def save(self, commit=True):
+        return super(ConcurrentForm, self).save(commit)
 
 
 class VersionWidget(HiddenInput):
     """
     Widget that show the revision number using <div>
 
-    Usually VersionField is use `HiddenInput` as Widget to minimize the impact on the
+    Usually VersionField use `HiddenInput` as Widget to minimize the impact on the
     forms, in the Admin this produce a side effect to have the label *Version* without
-    any value, to display the current revision number is possible to use this filed
+    any value, you should use this widget to display the current revision number
     """
 
     def render(self, name, value, attrs=None):
@@ -47,7 +58,7 @@ class VersionField(forms.IntegerField):
         try:
             value = int(str(value))
         except (ValueError, TypeError):
-            value=0
+            value = 0
         return value
 
     def widget_attrs(self, widget):

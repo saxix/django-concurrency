@@ -13,6 +13,12 @@ OFFSET = int(time.mktime([2000, 1, 1, 0, 0, 0, 0, 0, 0]))
 class VersionField(core.VersionFieldMixin):
     """ Base class """
 
+    def get_new_value(self, obj):
+        return self._REVISION_GET_NEXT(obj, self)
+
+#    def clean(self, value, model_instance):
+#        stored = getattr(model_instance, model_instance.RevisionMetaInfo.field.attname)
+#        return value == stored
 
 class IntegerVersionField(VersionField, BigIntegerField):
     """
@@ -22,8 +28,9 @@ class IntegerVersionField(VersionField, BigIntegerField):
         of microsecond if the system clock provides them. @see `time.time()`.
 
     """
-    def _REVISION_GET_NEXT(self, cls, field):
-        value = getattr(cls, field.attname)
+
+    def _REVISION_GET_NEXT(self, instance, field):
+        value = getattr(instance, field.attname)
         return max(value + 1, (int(time.time() * 1000000) - OFFSET))
 
     def validate(self, value, model_instance):
@@ -40,8 +47,8 @@ class AutoIncVersionField(IntegerVersionField):
         Version Field that returns a autoincrementatal integer as revision number.
 
     """
-    def _REVISION_GET_NEXT(self, cls, field):
-        value = getattr(cls, field.attname)
+    def _REVISION_GET_NEXT(self, instance, field):
+        value = getattr(instance, field.attname)
         return value + 1
 
 
@@ -49,8 +56,8 @@ class RandomVersionField(IntegerVersionField):
     """
         Version Field that returns a random revision number.
     """
-    def _REVISION_GET_NEXT(self, cls, field):
-        value = getattr(cls, field.attname)
+    def _REVISION_GET_NEXT(self, instance, field):
+        value = getattr(instance, field.attname)
         return random.randint(1, IntegerVersionField.MAX_BIGINT)
 
 

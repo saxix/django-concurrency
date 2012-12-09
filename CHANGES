@@ -1,0 +1,13 @@
+Release 0.4.0 (under development)
+=================================
+
+* added ConcurrentForm to mitigate some concurrency conflict
+* select_for_update now executed with ``nowait=True``
+* removed some internal methods, to avoid unlikely but possible name clashes
+
+
+Release 0.3.2
+=============
+
+* fixed #3 (thanks  pombredanne)
+* fixed #1 (thanks  mbrochh)

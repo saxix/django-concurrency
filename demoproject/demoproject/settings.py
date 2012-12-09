@@ -8,7 +8,7 @@ DATABASES = {
 }
 SITE_ID = 1
 ROOT_URLCONF = 'demoproject.urls'
-
+SECRET_KEY=';klkj;okj;lkn;lklj;lkj;kjmlliuewhy2ioqwjdkh'
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',

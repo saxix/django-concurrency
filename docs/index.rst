@@ -75,6 +75,8 @@ Table Of Contents
 
     help
     api
+    changes
+
 
 .. toctree::
     :hidden:

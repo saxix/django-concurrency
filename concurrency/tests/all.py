@@ -22,10 +22,21 @@ class ConcurrencyError(Exception):
 
 
 class ConcurrencyTest0(TestCase):
-    def setUp(self):
+    def setUp(self, curry=None):
         super(ConcurrencyTest0, self).setUp()
         self._unique_field_name = 'username'
+        self._get_target()
+        setattr(self.TARGET.__class__, '_get_test_revision_number',
+                ConcurrencyTest0._get_REVISION_NUMBER)
+
+    def _get_target(self):
         self.TARGET = TestModel0(username="New", last_name="1")
+
+    @staticmethod
+    def _get_REVISION_NUMBER(obj):
+        revision_field = obj.RevisionMetaInfo.field
+        value = getattr(obj, revision_field.attname)
+        return value
 
     def _check_save(self, obj):
         return obj.save()
@@ -36,45 +47,45 @@ class ConcurrencyTest0(TestCase):
         return data
 
     def test_standard_insert(self):
-        self_version_field_name = self.TARGET._get_revision_field().name
+        self_version_field_name = self.TARGET.RevisionMetaInfo.field.name
 
         logger.debug("Created Object_1")
         a = self.TARGET.__class__(username='standard_insert')
-        v = a._get_revision_number()
+        v = a._get_test_revision_number()
         logger.debug("Now Object_1.version is %s " % v)
         assert bool(v) is False, "version is not null %s" % v
         a.save()
-        logger.debug("Object_1 saved...now version is %s " % a.version)
+        logger.debug("Object_1 saved...now version is %s " % a._get_test_revision_number())
         self.assertTrue(a.pk > 0)
-        v2 = a._get_revision_number()
-        assert v2 != v, "same or lower version after insert (%s,%s)" % (a.version, v)
+        v2 = a._get_test_revision_number()
+        assert v2 != v, "same or lower version after insert (%s,%s)" % (a._get_test_revision_number(), v)
         b = self.TARGET.__class__.objects.get(pk=a.pk)
-        self.assertEqual(a.version, b.version)
+        self.assertEqual(a._get_test_revision_number(), b._get_test_revision_number())
 
     def test_concurrency(self):
         logger.debug("Created Object_1")
         a = self.TARGET
         self._check_save(a)
-        logger.debug("Object_1 saved...now version is %s " % a.version)
+        logger.debug("Object_1 saved...now version is %s " % a._get_test_revision_number())
         id = a.pk
 
         a = self.TARGET.__class__.objects.get(pk=id)
-        v = a._get_revision_number()
-        logger.debug("reloaded...now version is %s " % a.version)
+        v = a._get_test_revision_number()
+        logger.debug("reloaded...now version is %s " % v)
 
         b = self.TARGET.__class__.objects.get(pk=id)
-        assert a._get_revision_number() == b._get_revision_number(), "got same row with different version"
+        assert a._get_test_revision_number() == b._get_test_revision_number(), "got same row with different version"
         time.sleep(2)
         a.last_name = "pippo"
         self._check_save(a)
-        logger.debug("updated...now version is %s " % a.version)
-        assert a._get_revision_number() != v, "same or lower version after update (%s,%s)" % (a.version, v)
+        logger.debug("updated...now version is %s " % a._get_test_revision_number())
+        assert a._get_test_revision_number() != v, "same or lower version after update (%s,%s)" % (a.version, v)
         self.assertRaises(RecordModifiedError, b.save)
 
     def test_concurrency_no_values(self):
         logger.debug("Created Object_1")
         t = self.TARGET.__class__()
-        assert bool(t._get_revision_number()) is False, "version is not null %s" % t._get_revision_number()
+        assert bool(t._get_test_revision_number()) is False, "version is not null %s" % t._get_test_revision_number()
         t.save()
         self.assertTrue(t.pk > 0)
         self.assertGreater(t.version, 0)
@@ -87,10 +98,10 @@ class ConcurrencyTest0(TestCase):
     def test_force_insert(self):
         logger.debug("Created Object_1")
         t = self.TARGET.__class__(username='empty')
-        assert bool(t._get_revision_number()) is False, "version is not null %s" % t._get_revision_number()
+        assert bool(t._get_test_revision_number()) is False, "version is not null %s" % t._get_test_revision_number()
         t.save(force_insert=True)
         self.assertTrue(t.pk > 0)
-        self.assertTrue(t._get_revision_number())
+        self.assertTrue(t._get_test_revision_number())
 
     def test_concurrency_manager_list(self):
         logger.debug("Start Test")
@@ -128,8 +139,8 @@ class ConcurrencyTest0(TestCase):
 
     def test_form_save(self):
         formClass = modelform_factory(self.TARGET.__class__)
-        original_version = self.TARGET._get_revision_number()
-        version_field_name = self.TARGET._get_revision_field().name
+        original_version = self.TARGET._get_test_revision_number()
+        version_field_name = self.TARGET.RevisionMetaInfo.field.name
 
         form = formClass(self._get_form_data(**{version_field_name: original_version}),
                          instance=self.TARGET)
@@ -137,55 +148,49 @@ class ConcurrencyTest0(TestCase):
         self.assertTrue(form.is_valid(), form.errors)
         obj = form.save()
         self.assertTrue(obj.pk)
-        self.assertGreater(obj._get_revision_number(), original_version)
+        self.assertGreater(obj._get_test_revision_number(), original_version)
 
-        form = formClass(self._get_form_data(**{version_field_name: obj._get_revision_number()}),
+        form = formClass(self._get_form_data(**{version_field_name: obj._get_test_revision_number()}),
                          instance=obj)
         self.assertTrue(form.is_valid(), form.errors)
-        pre_save_version = obj._get_revision_number()
+        pre_save_version = obj._get_test_revision_number()
         obj_after = form.save()
 
         self.assertTrue(obj_after.pk)
-        self.assertGreater(obj_after._get_revision_number(), pre_save_version)
+        self.assertGreater(obj_after._get_test_revision_number(), pre_save_version)
 
 
 class ConcurrencyTest1(ConcurrencyTest0):
-    def setUp(self):
-        super(ConcurrencyTest1, self).setUp()
+    def _get_target(self):
         self.TARGET = TestModel1(char_field="New", last_name="1")
 
     def test_force_update(self):
-        from django.db import connection, transaction, DatabaseError, IntegrityError
-
-
+        from django.db import DatabaseError
         t = self.TARGET.__class__()
         self.assertRaises(DatabaseError, t.save, force_update=True)
 
 
 class ConcurrencyTest2(ConcurrencyTest0):
-    def setUp(self):
-        super(ConcurrencyTest2, self).setUp()
+    def _get_target(self):
         self.TARGET = TestModel2(char_field="New", last_name="1")
 
     def test_force_update(self):
         from django.db import connection, transaction, DatabaseError, IntegrityError
-
-
         t = self.TARGET.__class__()
-        logger.debug("Object pk: %s version:%s", t.pk, t.version)
+        logger.debug("Object pk: %s version:%s", t.pk, t._get_test_revision_number())
         self.assertRaises(DatabaseError, t.save, force_update=True)
 
 
 class ConcurrencyTest3(ConcurrencyTest0):
     def setUp(self):
         super(ConcurrencyTest3, self).setUp()
+
+    def _get_target(self):
         p, isnew = TestModel2.objects.get_or_create(char_field="New", last_name=str(time.time()))
         self.TARGET = TestModel3(char_field="New", last_name="1", fk=p)
 
     def test_force_update(self):
         from django.db import connection, transaction, DatabaseError, IntegrityError
-
-
         t = self.TARGET.__class__()
         self.assertRaises(DatabaseError, t.save, force_update=True)
 
@@ -195,22 +200,22 @@ class ConcurrencyTest3(ConcurrencyTest0):
         id = a.pk
 
         a = self.TARGET.__class__.objects.get(pk=id)
-        v = a.version
-        logger.debug("reloaded...now version is %s " % a.version)
+        v = a._get_test_revision_number()
+        logger.debug("reloaded...now version is %s " % v)
 
         b = self.TARGET.__class__.objects.get(pk=id)
         assert a.version == b.version, "got same row with different version"
         time.sleep(1)
         a.last_name = "pippo"
         self._check_save(a)
-        logger.debug("updated...now version is %s " % a.version)
-        assert a.version > v, "same or lower version after update (%s,%s)" % (a.version, v)
+        logger.debug("updated...now version is %s " % a._get_test_revision_number())
+        assert a.version > v, "same or lower version after update (%s,%s)" % (a._get_test_revision_number(), v)
         self.assertRaises(RecordModifiedError, b.save)
 
 
 class ConcurrencyTest4(ConcurrencyTest0):
-    def setUp(self):
-        super(ConcurrencyTest4, self).setUp()
+
+    def _get_target(self):
         self.TARGET = TestModel2(char_field="New", last_name="1")
 
     def test_manager(self):
@@ -225,14 +230,11 @@ class ConcurrencyTest4(ConcurrencyTest0):
 
 
 class ConcurrencyTest0_Proxy(ConcurrencyTest0):
-    def setUp(self):
-        super(ConcurrencyTest0_Proxy, self).setUp()
+
+    def _get_target(self):
         self.TARGET = TestModel0_Proxy(char_field="New", last_name="1")
 
     def test_force_update(self):
-        from django.db import connection, transaction, DatabaseError, IntegrityError
-
-
         t = self.TARGET.__class__()
         t.save(force_update=True)
         t1 = TestModel0.objects.get(pk=t.pk)
@@ -240,20 +242,17 @@ class ConcurrencyTest0_Proxy(ConcurrencyTest0):
 
 
 class ConcurrencyTest2_Proxy(ConcurrencyTest2):
-    def setUp(self):
-        super(ConcurrencyTest2_Proxy, self).setUp()
+    def _get_target(self):
         self.TARGET = TestModel2(char_field="New", last_name="1")
 
 
 class ConcurrencyTest5(ConcurrencyTest0):
-    def setUp(self):
-        super(ConcurrencyTest5, self).setUp()
+    def _get_target(self):
         self.TARGET = TestAbstractModel0(char_field="New", last_name="1")
 
 
 class ConcurrencyTestModelUser(ConcurrencyTest0):
-    def setUp(self):
-        super(ConcurrencyTestModelUser, self).setUp()
+    def _get_target(self):
         self.TARGET = TestModelUser(username="ConcurrencyTestModelUser")
 
     def _check_save(self, obj):
@@ -280,6 +279,8 @@ class ConcurrencyTestExistingModel(ConcurrencyTest0):
     def setUp(self):
         super(ConcurrencyTestExistingModel, self).setUp()
         self._unique_field_name = 'name'
+
+    def _get_target(self):
         self.TARGET = TestModelGroup(name="aaa")
 
     def _get_form_data(self, **kwargs):
@@ -294,8 +295,8 @@ class ConcurrencyTestExistingModel(ConcurrencyTest0):
 
 
 class ConcurrencyTestModelWithCustomSave(ConcurrencyTest0):
-    def setUp(self):
-        super(ConcurrencyTestModelWithCustomSave, self).setUp()
+
+    def _get_target(self):
         self.TARGET = TestModelWithCustomSave(username="xxx", last_name="1")
 
     def _check_save(self, obj):
@@ -309,6 +310,8 @@ class ConcurrencyTestExistingModelWithCustomSave(ConcurrencyTest0):
     def setUp(self):
         super(ConcurrencyTestExistingModelWithCustomSave, self).setUp()
         self._unique_field_name = 'name'
+
+    def _get_target(self):
         self.TARGET = TestModelGroupWithCustomSave(name="aaa")
 
     def _check_save(self, obj):
@@ -328,7 +331,6 @@ class ConcurrencyTestExistingModelWithCustomSave(ConcurrencyTest0):
 
 
 class TestIssue3(ConcurrencyTest0):
-    def setUp(self):
-        super(TestIssue3, self).setUp()
+    def _get_target(self):
         self.TARGET = TestIssue3Model()
 

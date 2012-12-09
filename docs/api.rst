@@ -8,6 +8,13 @@ API
 .. contents::
     :local:
 
+RevisionMetaInfo
+----------------
+
+.. attribute:: field
+
+
+
 IntegerVersionField
 -------------------
 .. autoclass:: concurrency.fields.IntegerVersionField
