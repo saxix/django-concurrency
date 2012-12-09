@@ -19,7 +19,9 @@ def versioned_save(self, force_insert=False, force_update=False, using=None):
                 raise RecordModifiedError(_('Version field is 0 but record has `pk`.'))
             raise RecordModifiedError(_('Record has been modified'))
 
-    self.version = self._revision_get_next()
+    field = self.RevisionMetaInfo.field
+    self._set_revision_number( self._revision_get_next() )
+#    self.version = self._revision_get_next()
     self.save_base(using=using, force_insert=force_insert, force_update=force_update)
 
 
@@ -58,6 +60,8 @@ class VersionFieldMixin(object):
         setattr(cls, 'save', versioned_save)
         setattr(cls, 'RevisionMetaInfo', RevisionMetaInfo())
         cls.RevisionMetaInfo.field = self
+        setattr(cls, '_get_revision_field', lambda self: cls.RevisionMetaInfo.field)
+
 
     def get_default(self):
         return 0

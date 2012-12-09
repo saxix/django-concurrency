@@ -111,4 +111,18 @@ class TestModelGroupWithCustomSave(TestModelGroup):
 
     def save(self, force_insert=False, force_update=False, using=None):
         super(TestModelGroupWithCustomSave, self).save(force_insert, force_update, using)
-        return 2222
+        return 2222 # dummy return only for tests
+
+
+class TestIssue3Model(models.Model):
+    username = models.CharField(max_length=30, blank=True, null=True)
+    last_name = models.CharField(max_length=30, blank=True, null=True)
+    char_field = models.CharField(max_length=30, blank=True, null=True)
+    date_field = models.DateField(blank=True, null=True)
+
+    version = models.CharField(default='abc', max_length=10, blank=True, null=True)
+    revision = IntegerVersionField(db_column='cm_version_id')
+
+    class Meta:
+        app_label = 'concurrency'
+
