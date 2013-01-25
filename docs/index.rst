@@ -26,6 +26,22 @@ django-concurrency is a optimistic locking library for Django Models
 * works with `South`_ and `diango-reversion`_
 * Admin integration
 
+Table Of Contents
+=================
+
+.. toctree::
+    :maxdepth: 1
+
+    help
+    api
+    changes
+
+
+.. toctree::
+    :hidden:
+
+    globals
+
 How it works
 ============
 
@@ -65,23 +81,25 @@ Django and/or plugged in applications models
     version.contribute_to_class(User, 'version')
 
 
+Test Utilities
+--------------
+
+`ConcurrencyTestMixin` offer a very simple test function for your existing models::
+
+    from concurrency.utils import ConcurrencyTestMixin
+    from myproject.models import MyModel
+
+    class MyModelTest(ConcurrencyTestMixin, TestCase):
+        concurrency_model = TestModel0
+        concurrency_kwargs = {'username': 'test'}
 
 
-Table Of Contents
-=================
-
-.. toctree::
-    :maxdepth: 1
-
-    help
-    api
-    changes
 
 
-.. toctree::
-    :hidden:
 
-    globals
+
+
+
 
 Links
 =====

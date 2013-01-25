@@ -10,6 +10,7 @@ import datetime
 from django.forms.models import modelform_factory
 from django.test import TestCase
 from concurrency.core import RecordModifiedError
+from concurrency.utils import ConcurrencyTestMixin
 from .models import *
 
 
@@ -21,7 +22,10 @@ class ConcurrencyError(Exception):
     pass
 
 
-class ConcurrencyTest0(TestCase):
+class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
+    concurrency_model = TestModel0
+    concurrency_kwargs = {'username': 'test'}
+
     def setUp(self, curry=None):
         super(ConcurrencyTest0, self).setUp()
         self._unique_field_name = 'username'
@@ -161,27 +165,35 @@ class ConcurrencyTest0(TestCase):
 
 
 class ConcurrencyTest1(ConcurrencyTest0):
+    concurrency_model = TestModel1
+
     def _get_target(self):
         self.TARGET = TestModel1(char_field="New", last_name="1")
 
     def test_force_update(self):
         from django.db import DatabaseError
+
         t = self.TARGET.__class__()
         self.assertRaises(DatabaseError, t.save, force_update=True)
 
 
 class ConcurrencyTest2(ConcurrencyTest0):
+    concurrency_model = TestModel2
+
     def _get_target(self):
         self.TARGET = TestModel2(char_field="New", last_name="1")
 
     def test_force_update(self):
         from django.db import connection, transaction, DatabaseError, IntegrityError
+
         t = self.TARGET.__class__()
         logger.debug("Object pk: %s version:%s", t.pk, t._get_test_revision_number())
         self.assertRaises(DatabaseError, t.save, force_update=True)
 
 
 class ConcurrencyTest3(ConcurrencyTest0):
+    concurrency_model = TestModel3
+
     def setUp(self):
         super(ConcurrencyTest3, self).setUp()
 
@@ -191,6 +203,7 @@ class ConcurrencyTest3(ConcurrencyTest0):
 
     def test_force_update(self):
         from django.db import connection, transaction, DatabaseError, IntegrityError
+
         t = self.TARGET.__class__()
         self.assertRaises(DatabaseError, t.save, force_update=True)
 
@@ -214,6 +227,7 @@ class ConcurrencyTest3(ConcurrencyTest0):
 
 
 class ConcurrencyTest4(ConcurrencyTest0):
+    concurrency_model = TestModel2
 
     def _get_target(self):
         self.TARGET = TestModel2(char_field="New", last_name="1")
@@ -230,7 +244,6 @@ class ConcurrencyTest4(ConcurrencyTest0):
 
 
 class ConcurrencyTest0_Proxy(ConcurrencyTest0):
-
     def _get_target(self):
         self.TARGET = TestModel0_Proxy(char_field="New", last_name="1")
 
@@ -252,6 +265,8 @@ class ConcurrencyTest5(ConcurrencyTest0):
 
 
 class ConcurrencyTestModelUser(ConcurrencyTest0):
+    concurrency_model = TestModelUser
+
     def _get_target(self):
         self.TARGET = TestModelUser(username="ConcurrencyTestModelUser")
 
@@ -295,7 +310,6 @@ class ConcurrencyTestExistingModel(ConcurrencyTest0):
 
 
 class ConcurrencyTestModelWithCustomSave(ConcurrencyTest0):
-
     def _get_target(self):
         self.TARGET = TestModelWithCustomSave(username="xxx", last_name="1")
 

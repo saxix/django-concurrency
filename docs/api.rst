@@ -13,6 +13,9 @@ RevisionMetaInfo
 
 .. attribute:: field
 
+ConcurrencyTestMixin
+--------------------
+.. autoclass:: concurrency.utils.ConcurrencyTestMixin
 
 
 IntegerVersionField
