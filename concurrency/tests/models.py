@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User, Group
 from django.db import models
-from concurrency.fields import IntegerVersionField
+from django.db.models.base import ModelBase
+from concurrency.core import concurrency_check
+from concurrency.fields import IntegerVersionField, RawIntegerVersionField
 
 
 class AbstractConcurrentModel(models.Model):
@@ -26,6 +28,33 @@ class ConcurrentModel(models.Model):
 
     class Meta:
         app_label = 'concurrency'
+
+class MyMeta(ModelBase):
+    pass
+
+class AbstractModelWithCustomSave(models.Model):
+    __metaclass__ = MyMeta
+    version = RawIntegerVersionField(db_column='cm_version_id')
+
+    class Meta:
+        abstract = True
+        app_label = 'concurrency'
+
+    def save(self, force_insert=False, force_update=False, using=None):
+        concurrency_check(self)
+        super(AbstractModelWithCustomSave, self).save(force_insert, force_update, using)
+        return 'AbstractModelWithCustomSave'
+
+class ModelWithAbstractCustomSave(AbstractModelWithCustomSave):
+    username = models.CharField(max_length=30, blank=True, null=True)
+    last_name = models.CharField(max_length=30, blank=True, null=True)
+
+    class Meta:
+        app_label = 'concurrency'
+
+#    def save(self, force_insert=False, force_update=False, using=None):
+#        super(ModelWithAbstractCustomSave, self).save(force_insert, force_update, using)
+#        return 'ModelWithAbstractCustomSave'
 
 
 class TestModel0(ConcurrentModel):

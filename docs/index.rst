@@ -71,6 +71,8 @@ Application related models
 
 Django and/or plugged in applications models
 --------------------------------------------
+Concurrency can work even with existing models, anyway if you are adding concurrency management to
+and existing database remember to edit the database's table:
 
 `your_app.models.py`::
 
@@ -80,6 +82,21 @@ Django and/or plugged in applications models
     version = IntegerVersionField()
     version.contribute_to_class(User, 'version')
 
+
+Low level api
+--------------------------------------------
+::
+    from concurrency.core import concurrency_check
+
+
+    class AbstractModelWithCustomSave(models.Model):
+        __metaclass__ = MyMeta
+        version = RawIntegerVersionField(db_column='cm_version_id')
+
+    def save(self, *args, **kwargs):
+        concurrency_check(self, *args, **kwargs)
+        logger.debug(u'Saving %s "%s".' % (self._meta.verbose_name, self))
+        super(SecurityConcurrencyBaseModel, self).save(*args, **kwargs)
 
 Test Utilities
 --------------

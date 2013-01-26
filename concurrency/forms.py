@@ -43,7 +43,7 @@ class VersionField(forms.IntegerField):
     hidden_widget = HiddenInput # Default widget to use when rendering this as "hidden".
 
     def __init__(self, *args, **kwargs):
-        kwargs.pop('max_value', None)
+        kwargs.pop('min_value', None)
         kwargs.pop('max_value', None)
         kwargs['required'] = True
         kwargs['initial'] = None

@@ -4,6 +4,7 @@ import random
 from django.db.models.fields import BigIntegerField
 from . import core
 from . import forms
+from concurrency.core import _versioned_save, RevisionMetaInfo
 
 logger = logging.getLogger('concurrency')
 
@@ -16,50 +17,58 @@ class VersionField(core.VersionFieldMixin):
     def get_new_value(self, obj):
         return self._REVISION_GET_NEXT(obj, self)
 
-#    def clean(self, value, model_instance):
-#        stored = getattr(model_instance, model_instance.RevisionMetaInfo.field.attname)
-#        return value == stored
-
-class IntegerVersionField(VersionField, BigIntegerField):
-    """
-        Version Field that returns a "unique" version number for the record.
-
-        The version number is produced using time.time() * 1000000, to get the benefits
-        of microsecond if the system clock provides them. @see `time.time()`.
-
-    """
-
-    def _REVISION_GET_NEXT(self, instance, field):
-        value = getattr(instance, field.attname)
-        return max(value + 1, (int(time.time() * 1000000) - OFFSET))
-
     def validate(self, value, model_instance):
         pass
 
     def formfield(self, **kwargs):
         kwargs['form_class'] = forms.VersionField
         kwargs['widget'] = forms.VersionField.widget
-        return super(BigIntegerField, self).formfield(**kwargs)
+        return super(VersionField, self).formfield(**kwargs)
+
+    def contribute_to_class(self, cls, name):
+        super(VersionField, self).contribute_to_class(cls, name)
+        if hasattr(cls, 'RevisionMetaInfo'):
+            return
+        setattr(cls, 'RevisionMetaInfo', RevisionMetaInfo())
+        cls.RevisionMetaInfo.field = self
+
+class VersionSaveMixin(object):
+    def contribute_to_class(self, cls, name):
+        super(VersionSaveMixin, self).contribute_to_class(cls, name)
+        if cls.RevisionMetaInfo.versioned_save:
+            return
+        setattr(cls, 'save', _versioned_save)
+        cls.RevisionMetaInfo.versioned_save = True
 
 
-class AutoIncVersionField(IntegerVersionField):
+class RawIntegerVersionField(VersionField, BigIntegerField):
     """
-        Version Field that returns a autoincrementatal integer as revision number.
+        Version Field that returns a "unique" version number for the record.
+
+        The version number is produced using time.time() * 1000000, to get the benefits
+        of microsecond if the system clock provides them. :ref:`py:time.time`.
+
+    """
+    def _REVISION_GET_NEXT(self, instance, field):
+        value = getattr(instance, field.attname)
+        return max(value + 1, (int(time.time() * 1000000) - OFFSET))
+
+
+class RawAutoIncVersionField(VersionField, BigIntegerField):
+    """
+        Version Field increment the revision number each commit
 
     """
     def _REVISION_GET_NEXT(self, instance, field):
         value = getattr(instance, field.attname)
         return value + 1
 
+class IntegerVersionField(VersionSaveMixin, RawIntegerVersionField):
+    pass
 
-class RandomVersionField(IntegerVersionField):
-    """
-        Version Field that returns a random revision number.
-    """
-    def _REVISION_GET_NEXT(self, instance, field):
-        value = getattr(instance, field.attname)
-        return random.randint(1, IntegerVersionField.MAX_BIGINT)
 
+class AutoIncVersionField(VersionSaveMixin, RawAutoIncVersionField):
+    pass
 
 try:
     import south

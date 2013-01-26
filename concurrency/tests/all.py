@@ -54,7 +54,7 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
         self_version_field_name = self.TARGET.RevisionMetaInfo.field.name
 
         logger.debug("Created Object_1")
-        a = self.TARGET.__class__(username='standard_insert')
+        a = self.TARGET.__class__(**self.concurrency_kwargs)
         v = a._get_test_revision_number()
         logger.debug("Now Object_1.version is %s " % v)
         assert bool(v) is False, "version is not null %s" % v
@@ -101,7 +101,7 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
 
     def test_force_insert(self):
         logger.debug("Created Object_1")
-        t = self.TARGET.__class__(username='empty')
+        t = self.TARGET.__class__(**self.concurrency_kwargs)
         assert bool(t._get_test_revision_number()) is False, "version is not null %s" % t._get_test_revision_number()
         t.save(force_insert=True)
         self.assertTrue(t.pk > 0)
@@ -284,6 +284,25 @@ class ConcurrencyTestModelUser(ConcurrencyTest0):
         return data
 
 
+class ConcurrencyTestExistingModelGroup(ConcurrencyTest0):
+    concurrency_model = Group
+    concurrency_kwargs = {'name': 'test'}
+    version = IntegerVersionField()
+    version.contribute_to_class(Group, 'version')
+
+    def setUp(self):
+        super(ConcurrencyTestExistingModelGroup, self).setUp()
+        self._unique_field_name = 'name'
+
+    def _get_target(self):
+        self.TARGET = Group(name="aaa")
+
+    def _get_form_data(self, **kwargs):
+        data = {'name': 'aaaa'}
+        data.update(**kwargs)
+        return data
+
+
 class ConcurrencyTestExistingModel(ConcurrencyTest0):
     """
 
@@ -348,3 +367,14 @@ class TestIssue3(ConcurrencyTest0):
     def _get_target(self):
         self.TARGET = TestIssue3Model()
 
+
+class TestAbstractModelWithCustomSave(ConcurrencyTest0):
+    concurrency_model = ModelWithAbstractCustomSave
+
+    def _get_target(self):
+        self.TARGET = ModelWithAbstractCustomSave(username="New", last_name="1")
+
+    def _check_save(self, obj):
+        ret = obj.save()
+        self.assertEqual(ret, 'AbstractModelWithCustomSave')
+        self.assertTrue(obj.version)

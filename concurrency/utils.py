@@ -5,7 +5,7 @@ from django.forms import model_to_dict
 
 from django.utils.translation import gettext as _
 import time
-from concurrency.core import RecordModifiedError
+from concurrency.core import RecordModifiedError, _versioned_save
 
 logger = logging.getLogger('tests.concurrency')
 logger.setLevel(logging.DEBUG)
@@ -20,7 +20,6 @@ def get_revision_of_object(obj):
     revision_field = obj.RevisionMetaInfo.field
     value = getattr(obj, revision_field.attname)
     return value
-
 
 
 class ConcurrencyTestMixin(object):
@@ -58,4 +57,14 @@ class ConcurrencyTestMixin(object):
     def test_concurrency_safety(self):
         target = self.concurrency_model()
         version = get_revision_of_object(target)
-        assert bool(version) is False, "version is not null %s" % v
+        self.assertFalse(bool(version), "version is not null %s" % version)
+
+    def test_concurrency_management(self):
+        target = self.concurrency_model
+        self.assertTrue(hasattr(target, 'RevisionMetaInfo'),
+                        "%s is not under concurrency management" % self.concurrency_model)
+        info = getattr(target, 'RevisionMetaInfo', None)
+        revision_field = info.field
+
+        self.assertTrue(revision_field in target._meta.fields,
+                        "%s: version field not in meta.fields" % self.concurrency_model)

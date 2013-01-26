@@ -1,6 +1,8 @@
 Release 0.4.0 (under development)
 =================================
-
+* new classes :ref:`rawintegerversionfield` and :ref:`rawautoincversionfield`
+* removed RandomVersionField
+* new :ref:`concurrency_check`
 * added ConcurrentForm to mitigate some concurrency conflict
 * select_for_update now executed with ``nowait=True``
 * removed some internal methods, to avoid unlikely but possible name clashes
