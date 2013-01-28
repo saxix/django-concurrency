@@ -2,8 +2,8 @@ import time
 import logging
 import random
 from django.db.models.fields import BigIntegerField
-from . import core
-from . import forms
+from concurrency import core
+from concurrency import forms
 from concurrency.core import _versioned_save, RevisionMetaInfo
 
 logger = logging.getLogger('concurrency')

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
+import time
 from django.db.models.fields.related import ForeignKey
 from django.forms import model_to_dict
-
 from django.utils.translation import gettext as _
-import time
+
 from concurrency.core import RecordModifiedError, _versioned_save
 
 logger = logging.getLogger('tests.concurrency')
