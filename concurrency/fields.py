@@ -76,7 +76,7 @@ try:
 
     rules = [
         (
-            (IntegerVersionField, ),
+            (IntegerVersionField, AutoIncVersionField),
             [],
             {
                 "verbose_name": ["verbose_name", {"default": None}],
@@ -88,6 +88,9 @@ try:
             })
     ]
 
-    add_introspection_rules(rules, ["^concurrency\.fields\.IntegerVersionField"])
-except ImportError:
-    pass
+    add_introspection_rules(rules, ["^concurrency\.fields\.IntegerVersionField",
+                                    "^concurrency\.fields\.AutoIncVersionField"])
+except ImportError, e:
+	from django.conf import settings
+	if 'south' in settings.INSTALLED_APPS:
+		raise e
