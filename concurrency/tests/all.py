@@ -11,7 +11,7 @@ from django.forms.models import modelform_factory
 from django.test import TestCase
 from concurrency.core import RecordModifiedError
 from concurrency.utils import ConcurrencyTestMixin
-from .models import *
+from concurrency.models import *
 
 
 logger = logging.getLogger('tests.concurrency')

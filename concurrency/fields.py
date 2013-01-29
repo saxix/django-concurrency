@@ -2,8 +2,8 @@ import time
 import logging
 import random
 from django.db.models.fields import BigIntegerField
-from . import core
-from . import forms
+from concurrency import core
+from concurrency import forms
 from concurrency.core import _versioned_save, RevisionMetaInfo
 
 logger = logging.getLogger('concurrency')
@@ -76,7 +76,7 @@ try:
 
     rules = [
         (
-            (IntegerVersionField, ),
+            (IntegerVersionField, AutoIncVersionField),
             [],
             {
                 "verbose_name": ["verbose_name", {"default": None}],
@@ -88,6 +88,9 @@ try:
             })
     ]
 
-    add_introspection_rules(rules, ["^concurrency\.fields\.IntegerVersionField"])
-except ImportError:
-    pass
+    add_introspection_rules(rules, ["^concurrency\.fields\.IntegerVersionField",
+                                    "^concurrency\.fields\.AutoIncVersionField"])
+except ImportError, e:
+	from django.conf import settings
+	if 'south' in settings.INSTALLED_APPS:
+		raise e
