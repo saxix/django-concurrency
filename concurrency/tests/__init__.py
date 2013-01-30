@@ -1,10 +1,10 @@
-from .all import *
-from .contrib_admin import TestDjangoAdmin
-from .forms import *
+from concurrency.tests.all import *
+from concurrency.tests.contrib_admin import TestDjangoAdmin
+from concurrency.tests.forms import *
 
 
 try:
     import south
-    from .south_test import *
+    from concurrency.tests.south_test import *
 except ImportError:
     pass

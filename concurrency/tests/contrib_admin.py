@@ -6,7 +6,7 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.forms import model_to_dict
 from django.test import TestCase
-from .models import *
+from concurrency.tests.models import *
 
 INSTALLED_APPS = (
     'django.contrib.auth',

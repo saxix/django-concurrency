@@ -12,7 +12,7 @@ from django.test import TestCase
 from concurrency.core import RecordModifiedError
 from concurrency.core import apply_concurrency_check
 from concurrency.utils import ConcurrencyTestMixin
-from .models import *
+from concurrency.tests.models import *
 
 
 logger = logging.getLogger('tests.concurrency')
