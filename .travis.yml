@@ -17,8 +17,13 @@ install:
   - sh -c "if [ '$DBENGINE' = 'mysql' ]; then pip install -q MySQL-python; fi"
   - pip install -q $DJANGO
   - python setup.py -q install
-script: cd demoproject && ./manage.py test concurrency
-before_script:
-  - sh -c "if [ '$DBENGINE' = 'pg' ]; then psql -c 'CREATE DATABASE IF NOT EXISTS concurrency;' -U postgres; fi"
-  - sh -c "if [ '$DBENGINE' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS concurrency;'; fi"
+script:
+  cd demoproject && ./manage.py test concurrency
 
+before_install:
+  - sh -c "if [ '$DBENGINE' = 'pg' ]; then psql -c 'DROP DATABASE IF EXISTS concurrency;' -U postgres; fi"
+  - sh -c "if [ '$DBENGINE' = 'mysql' ]; then mysql -e 'DROP DATABASE IF EXISTS concurrency;'; fi"
+
+before_script:
+  - sh -c "if [ '$DBENGINE' = 'pg' ]; then psql -c 'CREATE DATABASE concurrency;' -U postgres; fi"
+  - sh -c "if [ '$DBENGINE' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS concurrency;'; fi"
