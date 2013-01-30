@@ -8,7 +8,10 @@ python:
 env:
 #  - DJANGO="Django==1.4.3" DBENGINE=sqlite
   - DJANGO="Django==1.4.3" DBENGINE=mysql
-#  - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/
+#  - DJANGO="Django==1.4.3" DBENGINE=pg
+#  - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/ DBENGINE=mysql
+#  - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/ DBENGINE=pg
+#  - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/ DBENGINE=sqlite
 install:
   - sh -c "if [ '$DBENGINE' = 'pg' ]; then pip install -q psycopg2; fi"
   - sh -c "if [ '$DBENGINE' = 'mysql' ]; then pip install -q MySQL-python; fi"
@@ -23,5 +26,5 @@ before_script:
   - sh -c "if [ '$DBENGINE' = 'pg' ]; then psql -c 'CREATE DATABASE IF NOT EXISTS concurrency;' -U postgres; fi"
 #  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'create database doctrine_tests;' -U postgres; fi"
 #  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'create database doctrine_tests_tmp;' -U postgres; fi"
-  - sh -c "if [ '$DBENGINE' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS concurrency; fi"
+  - sh -c "if [ '$DBENGINE' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS concurrency'; fi"
 
