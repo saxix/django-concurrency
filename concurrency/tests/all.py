@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Created on 09/giu/2009
 
 @author: sax
-'''
+"""
 import logging
 import time
 import datetime
 from django.forms.models import modelform_factory
 from django.test import TestCase
 from concurrency.core import RecordModifiedError
+from concurrency.core import apply_concurrency_check
 from concurrency.utils import ConcurrencyTestMixin
 from .models import *
 
@@ -26,7 +27,7 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
     concurrency_model = TestModel0
     concurrency_kwargs = {'username': 'test'}
 
-    def setUp(self, curry=None):
+    def setUp(self):
         super(ConcurrencyTest0, self).setUp()
         self._unique_field_name = 'username'
         self._get_target()
@@ -71,13 +72,13 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
         a = self.TARGET
         self._check_save(a)
         logger.debug("Object_1 saved...now version is %s " % a._get_test_revision_number())
-        id = a.pk
+        a_pk = a.pk
 
-        a = self.TARGET.__class__.objects.get(pk=id)
+        a = self.TARGET.__class__.objects.get(pk=a_pk)
         v = a._get_test_revision_number()
         logger.debug("reloaded...now version is %s " % v)
 
-        b = self.TARGET.__class__.objects.get(pk=id)
+        b = self.TARGET.__class__.objects.get(pk=a_pk)
         assert a._get_test_revision_number() == b._get_test_revision_number(), "got same row with different version"
         time.sleep(2)
         a.last_name = "pippo"
@@ -184,7 +185,7 @@ class ConcurrencyTest2(ConcurrencyTest0):
         self.TARGET = TestModel2(char_field="New", last_name="1")
 
     def test_force_update(self):
-        from django.db import connection, transaction, DatabaseError, IntegrityError
+        from django.db import DatabaseError
 
         t = self.TARGET.__class__()
         logger.debug("Object pk: %s version:%s", t.pk, t._get_test_revision_number())
@@ -202,7 +203,7 @@ class ConcurrencyTest3(ConcurrencyTest0):
         self.TARGET = TestModel3(char_field="New", last_name="1", fk=p)
 
     def test_force_update(self):
-        from django.db import connection, transaction, DatabaseError, IntegrityError
+        from django.db import DatabaseError
 
         t = self.TARGET.__class__()
         self.assertRaises(DatabaseError, t.save, force_update=True)
@@ -210,13 +211,13 @@ class ConcurrencyTest3(ConcurrencyTest0):
     def test_concurrency(self):
         a = self.TARGET
         self._check_save(a)
-        id = a.pk
+        a_pk= a.pk
 
-        a = self.TARGET.__class__.objects.get(pk=id)
+        a = self.TARGET.__class__.objects.get(pk=a_pk)
         v = a._get_test_revision_number()
         logger.debug("reloaded...now version is %s " % v)
 
-        b = self.TARGET.__class__.objects.get(pk=id)
+        b = self.TARGET.__class__.objects.get(pk=a_pk)
         assert a.version == b.version, "got same row with different version"
         time.sleep(1)
         a.last_name = "pippo"
@@ -285,20 +286,19 @@ class ConcurrencyTestModelUser(ConcurrencyTest0):
 
 
 class ConcurrencyTestExistingModelGroup(ConcurrencyTest0):
-    concurrency_model = Group
-    concurrency_kwargs = {'name': 'test'}
-    version = IntegerVersionField()
-    version.contribute_to_class(Group, 'version')
+    concurrency_model = User
+    concurrency_kwargs = {'username': 'test'}
+    apply_concurrency_check(User, 'version', IntegerVersionField)
 
     def setUp(self):
         super(ConcurrencyTestExistingModelGroup, self).setUp()
-        self._unique_field_name = 'name'
+        self._unique_field_name = 'username'
 
     def _get_target(self):
-        self.TARGET = Group(name="aaa")
+        self.TARGET = User(username="aaa")
 
     def _get_form_data(self, **kwargs):
-        data = {'name': 'aaaa'}
+        data = {'username': 'aaaa', 'password': "123", 'last_login': '2000-01-01', 'date_joined': '2000-01-01'}
         data.update(**kwargs)
         return data
 
@@ -307,8 +307,7 @@ class ConcurrencyTestExistingModel(ConcurrencyTest0):
     """
 
     """
-    version = IntegerVersionField()
-    version.contribute_to_class(TestModelGroup, 'version')
+    apply_concurrency_check(TestModelGroup, 'version', IntegerVersionField)
 
     def setUp(self):
         super(ConcurrencyTestExistingModel, self).setUp()
@@ -369,12 +368,12 @@ class TestIssue3(ConcurrencyTest0):
 
 
 class TestAbstractModelWithCustomSave(ConcurrencyTest0):
-    concurrency_model = ModelWithAbstractCustomSave
+    concurrency_model = ModelWithCustomSave
 
     def _get_target(self):
-        self.TARGET = ModelWithAbstractCustomSave(username="New", last_name="1")
+        self.TARGET = ModelWithCustomSave(username="New", last_name="1")
 
     def _check_save(self, obj):
         ret = obj.save()
-        self.assertEqual(ret, 'AbstractModelWithCustomSave')
+        self.assertSequenceEqual(ret, ('ModelWithCustomSave', 'AbstractModelWithCustomSave'))
         self.assertTrue(obj.version)

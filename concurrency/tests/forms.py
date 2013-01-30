@@ -1,4 +1,3 @@
-from concurrency.core import RecordModifiedError
 from django.forms.models import modelform_factory, model_to_dict
 from django.forms.widgets import HiddenInput, TextInput
 from django.utils.unittest.case import TestCase

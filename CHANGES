@@ -1,9 +1,12 @@
 Release 0.4.0 (under development)
 =================================
-* new classes :ref:`rawintegerversionfield` and :ref:`rawautoincversionfield`
+
+* added :ref:`ConcurrencyTestMixin` to help test on concurrency managed models
+* changed way to add concurrency to exisiting models (:ref:`apply_concurrency_check`)
+* fixed #4 (thanks FrankBie)
 * removed RandomVersionField
 * new :ref:`concurrency_check`
-* added ConcurrentForm to mitigate some concurrency conflict
+* added :ref:`concurrentform` to mitigate some concurrency conflict
 * select_for_update now executed with ``nowait=True``
 * removed some internal methods, to avoid unlikely but possible name clashes
 

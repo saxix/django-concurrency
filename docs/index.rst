@@ -51,7 +51,7 @@ the version number change (the algorithm used depeneds on the VersionField used,
 When a record is saved, |concurrency| try to get a lock to to the record based on the old revision
 number, if the record is not found raise a :ref:`RecordModifiedError`
 
-Application related models
+Add version to new models
 --------------------------
 
 `models.py`::
@@ -71,37 +71,45 @@ Application related models
 
 Django and/or plugged in applications models
 --------------------------------------------
+
+.. versionchanged:: 0.4
+
 Concurrency can work even with existing models, anyway if you are adding concurrency management to
 and existing database remember to edit the database's table:
 
 `your_app.models.py`::
 
     from django.contrib.auth import User
+    from concurrency.core import apply_concurrency_check
 
-    # add a version field to auth.User model
-    version = IntegerVersionField()
-    version.contribute_to_class(User, 'version')
+    apply_concurrency_check(User, 'version', IntegerVersionField)
 
 
-Low level api
---------------------------------------------
+
+Manually handle concurrency
+---------------------------
+
+.. versionchanged:: 0.4
+
 ::
+
     from concurrency.core import concurrency_check
 
 
     class AbstractModelWithCustomSave(models.Model):
-        __metaclass__ = MyMeta
-        version = RawIntegerVersionField(db_column='cm_version_id')
+        version = IntegerVersionField(db_column='cm_version_id', manually=True)
+
 
     def save(self, *args, **kwargs):
         concurrency_check(self, *args, **kwargs)
         logger.debug(u'Saving %s "%s".' % (self._meta.verbose_name, self))
         super(SecurityConcurrencyBaseModel, self).save(*args, **kwargs)
 
+
 Test Utilities
 --------------
 
-`ConcurrencyTestMixin` offer a very simple test function for your existing models::
+:ref:`ConcurrencyTestMixin` offer a very simple test function for your existing models::
 
     from concurrency.utils import ConcurrencyTestMixin
     from myproject.models import MyModel
@@ -109,10 +117,6 @@ Test Utilities
     class MyModelTest(ConcurrencyTestMixin, TestCase):
         concurrency_model = TestModel0
         concurrency_kwargs = {'username': 'test'}
-
-
-
-
 
 
 

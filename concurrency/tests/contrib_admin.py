@@ -1,7 +1,7 @@
 from django.contrib import admin
 import os
 
-from django.conf import settings, global_settings
+from django.conf import global_settings
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.forms import model_to_dict
@@ -23,6 +23,7 @@ class TestDjangoAdmin(TestCase):
     urls = 'concurrency.tests.urls'
 
     def setUp(self):
+        super(TestDjangoAdmin, self).setUp()
         self.sett = self.settings(INSTALLED_APPS=INSTALLED_APPS,
             MIDDLEWARE_CLASSES=global_settings.MIDDLEWARE_CLASSES,
             AUTHENTICATION_BACKENDS=global_settings.AUTHENTICATION_BACKENDS,
@@ -41,7 +42,6 @@ class TestDjangoAdmin(TestCase):
         self.user.save()
         self.client.login(username=self.user.username, password='123')
         self.target, __ = TestModel0.objects.get_or_create(username='aaa')
-        super(TestDjangoAdmin, self).setUp()
 
     def tearDown(self):
         super(TestDjangoAdmin, self).tearDown()

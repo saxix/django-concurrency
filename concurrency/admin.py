@@ -117,7 +117,7 @@ class ConcurrentModelAdmin(admin.ModelAdmin):
                 return HttpResponseRedirect(".")
 
     def get_urls(self):
-        from django.conf.urls import patterns, url, include
+        from django.conf.urls import patterns, url
 
         def wrap(view):
             def wrapper(*args, **kwargs):

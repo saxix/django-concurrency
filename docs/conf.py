@@ -31,7 +31,20 @@ settings.configure()
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo']
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "_ext")))
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.todo',
+              'sphinx.ext.graphviz',
+              'sphinx.ext.intersphinx',
+              'sphinx.ext.doctest',
+              'sphinx.ext.extlinks',
+              'sphinx.ext.autosummary',
+              'sphinx.ext.coverage',
+              'sphinx.ext.viewcode',
+              'version',
+              'github']
+
+next_version = '0.4'
 todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.

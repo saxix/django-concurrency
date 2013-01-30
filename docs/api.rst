@@ -8,15 +8,6 @@ API
 .. contents::
     :local:
 
-RevisionMetaInfo
-----------------
-
-.. attribute:: field
-
-ConcurrencyTestMixin
---------------------
-.. autoclass:: concurrency.utils.ConcurrencyTestMixin
-
 
 IntegerVersionField
 -------------------
@@ -27,19 +18,7 @@ AutoIncVersionField
 -------------------
 .. autoclass:: concurrency.fields.AutoIncVersionField
 
-RawIntegerVersionField
--------------------
-.. autoclass:: concurrency.fields.RawIntegerVersionField
-
-
-RawAutoIncVersionField
--------------------
-.. autoclass:: concurrency.fields.RawAutoIncVersionField
-
-VersionField
-------------
-.. autoclass:: concurrency.forms.VersionField
-
+.. _concurrentform:
 
 ConcurrentForm
 --------------
@@ -57,18 +36,41 @@ RecordModifiedError
 -------------------
 .. autoclass:: concurrency.core.RecordModifiedError
 
+.. _concurrency_check:
 
-``concurrency_check``
----------------------
+``concurrency_check()``
+------------------------
 
-Sometimes, VersionField(s) are not ables to 'patch' the save() method,
-(could happen if you mix metaclasses and abstract models,
-or simply the order the fields are added to the your model) is where `concurrency_check` can be useful.
-Simply call it in your `save()` method::
+Sometimes, VersionField(s) are not ables to wraps the save() method,
+is these cirumstances you can check it manually ::
 
     from concurrency.core import concurrency_check
+
+    class AbstractModelWithCustomSave(models.Model):
+        version = IntegerVersionField(db_column='cm_version_id', manually=True)
 
     def save(self, *args, **kwargs):
         concurrency_check(self, *args, **kwargs)
         logger.debug(u'Saving %s "%s".' % (self._meta.verbose_name, self))
         super(SecurityConcurrencyBaseModel, self).save(*args, **kwargs)
+
+.. note:: Please note ``manually=True`` argument in `IntegerVersionField()` definition
+
+
+.. _apply_concurrency_check:
+
+``apply_concurrency_check()``
+------------------------------
+.. versionadded:: 0.4
+
+Add concurrency check to existing classes.
+
+.. autofunction:: concurrency.core.apply_concurrency_check
+
+
+.. _ConcurrencyTestMixin:
+
+ConcurrencyTestMixin
+--------------------
+.. autoclass:: concurrency.utils.ConcurrencyTestMixin
+

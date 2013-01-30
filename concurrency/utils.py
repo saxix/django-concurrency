@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from django.db.models.fields.related import ForeignKey
-from django.forms import model_to_dict
-
-from django.utils.translation import gettext as _
-import time
-from concurrency.core import RecordModifiedError, _versioned_save
+from concurrency.core import RecordModifiedError
 
 logger = logging.getLogger('tests.concurrency')
 logger.setLevel(logging.DEBUG)
