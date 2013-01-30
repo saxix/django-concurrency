@@ -7,12 +7,15 @@ Created on 09/giu/2009
 import logging
 import time
 import datetime
+from django.contrib.auth.models import User
 from django.forms.models import modelform_factory
 from django.test import TestCase
 from concurrency.core import RecordModifiedError
 from concurrency.core import apply_concurrency_check
+from concurrency.fields import IntegerVersionField
+from concurrency.tests.models import TestModel0, TestModel1, TestModel2, TestModel3, TestModel0_Proxy, TestModelUser, TestAbstractModel0, TestModelGroup, TestModelWithCustomSave, TestIssue3Model, ModelWithCustomSave, TestModelGroupWithCustomSave
 from concurrency.utils import ConcurrencyTestMixin
-from concurrency.tests.models import *
+# from concurrency.tests.models import *
 
 
 logger = logging.getLogger('tests.concurrency')
@@ -52,8 +55,6 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
         return data
 
     def test_standard_insert(self):
-        self_version_field_name = self.TARGET.RevisionMetaInfo.field.name
-
         logger.debug("Created Object_1")
         a = self.TARGET.__class__(**self.concurrency_kwargs)
         v = a._get_test_revision_number()

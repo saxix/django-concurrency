@@ -1,9 +1,7 @@
-import datetime
 from django import forms
 from django.core import validators
 from django.core.exceptions import NON_FIELD_ERRORS
 from django.forms import ModelForm, HiddenInput
-from django.forms.util import from_current_timezone
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from concurrency.core import _select_lock, RecordModifiedError

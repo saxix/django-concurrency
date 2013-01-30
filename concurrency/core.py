@@ -6,7 +6,6 @@ from django.utils.translation import ugettext as _
 __all__ = []
 
 
-
 class RecordModifiedError(DatabaseError):
     pass
 

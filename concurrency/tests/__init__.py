@@ -4,7 +4,6 @@ from concurrency.tests.forms import *
 
 
 try:
-    import south
     from concurrency.tests.south_test import *
 except ImportError:
     pass

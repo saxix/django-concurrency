@@ -1,9 +1,8 @@
 import time
 import logging
-import datetime
 from django.utils.translation import ugettext as _
 from django.db.models.fields import Field
-from django.utils import timezone
+
 from concurrency import forms
 from concurrency.core import RevisionMetaInfo
 
@@ -130,7 +129,6 @@ class AutoIncVersionField(VersionField):
 
 
 try:
-    import south
     from south.modelsinspector import add_introspection_rules
 
     rules = [
@@ -145,8 +143,8 @@ try:
                  "manually": ["manually", {"default": False}]})
     ]
 
-    add_introspection_rules(rules, ["^concurrency\.fields\.IntegerVersionField",
-                                    "^concurrency\.fields\.AutoIncVersionField"])
+    add_introspection_rules(rules, [r"^concurrency\.fields\.IntegerVersionField",
+                                    r"^concurrency\.fields\.AutoIncVersionField"])
 except ImportError as e:
     from django.conf import settings
 

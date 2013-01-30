@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.db.models import Model
 from django.test import TestCase
 from concurrency.fields import IntegerVersionField, AutoIncVersionField
 from south.modelsinspector import can_introspect
+
+__all__ = ['SouthTestCase']
 
 
 class SouthTestCase(TestCase):

@@ -2,11 +2,13 @@ from django.contrib import admin
 import os
 
 from django.conf import global_settings
+from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.forms import model_to_dict
 from django.test import TestCase
-from concurrency.tests.models import *
+# from concurrency.tests.models import *
+from concurrency.tests import TestModel0
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -35,7 +37,6 @@ class TestDjangoAdmin(TestCase):
         )
         self.sett.enable()
         call_command('syncdb', verbosity=0)
-        from django.contrib import admin
         admin.site.register(TestModel0)
         self.user, __ = User.objects.get_or_create(username='sax', is_staff=True, is_superuser=True)
         self.user.set_password('123')

@@ -46,7 +46,7 @@ class ConcurrencyTestMixin(object):
         target_copy = self._get_concurrency_target()
         v1 = get_revision_of_object(target)
         v2 = get_revision_of_object(target_copy)
-        assert  v1 == v2 , "got same row with different version (%s/%s)" % (v1, v2)
+        assert v1 == v2, "got same row with different version (%s/%s)" % (v1, v2)
         target.save()
         self.assertRaises(RecordModifiedError, target_copy.save)
 
