@@ -18,6 +18,6 @@ INSTALLED_APPS = (
 from demoproject.settings_sqlite import *
 db = os.environ.get('DBENGINE', None)
 if db:
-    mod = __import__('demoproject.settings_%s' % db)
+    mod = __import__('demoproject.settings_%s' % db, fromlist=['demoproject'])
     DATABASES = mod.DATABASES
 

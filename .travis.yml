@@ -9,9 +9,9 @@ env:
 #  - DJANGO="Django==1.4.3" DBENGINE=sqlite
   - DJANGO="Django==1.4.3" DBENGINE=mysql
 #  - DJANGO="Django==1.4.3" DBENGINE=pg
-#  - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/ DBENGINE=mysql
-#  - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/ DBENGINE=pg
-#  - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/ DBENGINE=sqlite
+#  - DJANGO=https://www.djangoproject.com/download/1.5b2/tarball/ DBENGINE=mysql
+#  - DJANGO=https://www.djangoproject.com/download/1.5b2/tarball/ DBENGINE=pg
+#  - DJANGO=https://www.djangoproject.com/download/1.5b2/tarball/ DBENGINE=sqlite
 install:
   - sh -c "if [ '$DBENGINE' = 'pg' ]; then pip install -q psycopg2; fi"
   - sh -c "if [ '$DBENGINE' = 'mysql' ]; then pip install -q MySQL-python; fi"
