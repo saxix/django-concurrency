@@ -84,7 +84,7 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
         a.last_name = "pippo"
         self._check_save(a)
         logger.debug("updated...now version is %s " % a._get_test_revision_number())
-        assert a._get_test_revision_number() != v, "same or lower version after update (%s,%s)" % (a.version, v)
+        assert a._get_test_revision_number() != v, "same version after update (%s,%s)" % (a.version, v)
         self.assertRaises(RecordModifiedError, b.save)
 
     def test_concurrency_no_values(self):
@@ -93,7 +93,8 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
         assert bool(t._get_test_revision_number()) is False, "version is not null %s" % t._get_test_revision_number()
         t.save()
         self.assertTrue(t.pk > 0)
-        self.assertGreater(t.version, 0)
+        self.assertNotEqual(t.version, self.TARGET.RevisionMetaInfo.field.get_default())
+        self.assertTrue(bool(t.version))
 
     def test_force_update(self):
         logger.debug("Created Object_1")
@@ -153,7 +154,8 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
         self.assertTrue(form.is_valid(), form.errors)
         obj = form.save()
         self.assertTrue(obj.pk)
-        self.assertGreater(obj._get_test_revision_number(), original_version)
+        # self.assertGreater(obj._get_test_revision_number(), original_version)
+        self.assertNotEqual(obj._get_test_revision_number(), original_version)
 
         form = formClass(self._get_form_data(**{version_field_name: obj._get_test_revision_number()}),
                          instance=obj)
@@ -162,7 +164,15 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
         obj_after = form.save()
 
         self.assertTrue(obj_after.pk)
-        self.assertGreater(obj_after._get_test_revision_number(), pre_save_version)
+        self.assertNotEqual(obj_after._get_test_revision_number(), pre_save_version)
+        self.assertTrue(bool(obj_after._get_test_revision_number()), "'%s'" % obj_after._get_test_revision_number())
+
+
+# class DateConcurrencyTest1(ConcurrencyTest0):
+#     concurrency_model = DateConcurrentModel
+#
+#     def _get_target(self):
+#         self.TARGET = DateConcurrentModel(char_field="New", last_name="1")
 
 
 class ConcurrencyTest1(ConcurrencyTest0):
@@ -211,7 +221,7 @@ class ConcurrencyTest3(ConcurrencyTest0):
     def test_concurrency(self):
         a = self.TARGET
         self._check_save(a)
-        a_pk= a.pk
+        a_pk = a.pk
 
         a = self.TARGET.__class__.objects.get(pk=a_pk)
         v = a._get_test_revision_number()

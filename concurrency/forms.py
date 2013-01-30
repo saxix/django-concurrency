@@ -1,6 +1,10 @@
+import datetime
 from django import forms
+from django.core import validators
 from django.core.exceptions import NON_FIELD_ERRORS
 from django.forms import ModelForm, HiddenInput
+from django.forms.util import from_current_timezone
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from concurrency.core import _select_lock, RecordModifiedError
 
@@ -47,10 +51,8 @@ class VersionField(forms.IntegerField):
         kwargs.pop('max_value', None)
         kwargs['required'] = True
         kwargs['initial'] = None
-        super(VersionField, self).__init__(None, None, *args, **kwargs)
-
-    def clean(self, value):
-        return super(VersionField, self).clean(value)
+        kwargs['widget'] = None
+        super(VersionField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
         if value is None:
@@ -62,9 +64,26 @@ class VersionField(forms.IntegerField):
         return value
 
     def widget_attrs(self, widget):
-        """
-        Given a Widget instance (*not* a Widget class), returns a dictionary of
-        any HTML attributes that should be added to the Widget, based on this
-        Field.
-        """
         return {}
+
+
+class DateVersionField(forms.DateTimeField):
+    widget = HiddenInput # Default widget to use when rendering this type of Field.
+    hidden_widget = HiddenInput # Default widget to use when rendering this as "hidden".
+
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('input_formats', None)
+        kwargs['required'] = True
+        kwargs['initial'] = None
+        kwargs['widget'] = None
+        super(DateVersionField, self).__init__(None, *args, **kwargs)
+
+    def to_python(self, value):
+        value = super(DateVersionField, self).to_python(value)
+        if value in validators.EMPTY_VALUES:
+            return timezone.now()
+        return value
+
+    def widget_attrs(self, widget):
+        return {}
+

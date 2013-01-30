@@ -5,8 +5,14 @@ python:
 env:
   - DJANGO="Django==1.4.3"
   - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/
-
+  - DBENGINE=sqlite
+  - DBENGINE=mysql
+  - DBENGINE=postgresql
 install:
   - pip install -q $DJANGO
   - python setup.py -q install
 script: cd demoproject && ./manage.py test concurrency
+before_script:
+  - mysql -e 'create database concurrency'
+  - psql -c 'create database concurrency' -U postgres
+

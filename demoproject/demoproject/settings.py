@@ -1,11 +1,5 @@
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'DEMODB.sqlite',
-        'HOST': '',
-        'PORT': '',
-    }
-}
+import os
+
 SITE_ID = 1
 ROOT_URLCONF = 'demoproject.urls'
 SECRET_KEY = ';klkj;okj;lkn;lklj;lkj;kjmlliuewhy2ioqwjdkh'
@@ -19,4 +13,12 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'concurrency')
 
+
+
+from demoproject.settings_sqlite import *
+db = os.environ.get('DBENGINE', None)
+if db:
+    import importlib
+    mod = importlib.import_module('demoproject.settings_%s' % db)
+    DATABASES = mod.DATABASES
 

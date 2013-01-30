@@ -1,9 +1,10 @@
 from functools import update_wrapper
 from django.core.exceptions import ImproperlyConfigured
-from django.db import DatabaseError
+from django.db import DatabaseError, connections, router
 from django.utils.translation import ugettext as _
 
 __all__ = []
+
 
 
 class RecordModifiedError(DatabaseError):
@@ -36,19 +37,29 @@ def apply_concurrency_check(model, fieldname, versionclass):
         model.RevisionMetaInfo.versioned_save = True
 
 
-def concurrency_check(self, force_insert=False, force_update=False, using=None, **kwargs):
-    if self.pk and not force_insert:
-        _select_lock(self)
-    field = self.RevisionMetaInfo.field
-    setattr(self, field.attname, field.get_new_value(self))
+def concurrency_check(model_instance, force_insert=False, force_update=False, using=None, **kwargs):
+    if model_instance.pk and not force_insert:
+        _select_lock(model_instance)
+    # field = self.RevisionMetaInfo.field
+    # setattr(self, field.attname, field.get_new_value(self))
 
 
-def _select_lock(obj, version=None):
-    kwargs = {'pk': obj.pk, obj.RevisionMetaInfo.field.name: version or getattr(obj, obj.RevisionMetaInfo.field.name)}
-    entry = obj.__class__.objects.select_for_update(nowait=True).filter(**kwargs)
+def _select_lock(model_instance, version_value=None):
+    version_field = model_instance.RevisionMetaInfo.field
+    kwargs = {'pk': model_instance.pk,
+              version_field.name: version_value or getattr(model_instance, version_field.name)}
+    alias = router.db_for_write(model_instance)
+    NOWAIT = connections[alias].features.has_select_for_update_nowait
+    # print 1111111, alias, NOWAIT
+    # from django.db import connection
+    # connections['mydb'].
+    # self.connection.features.has_select_for_update_nowait
+    # print 111, obj.__class__.objects.connection
+    entry = model_instance.__class__.objects.select_for_update(nowait=NOWAIT).filter(**kwargs)
     if not entry:
-        if getattr(obj, obj.RevisionMetaInfo.field.name) == 0:
-            raise RecordModifiedError(_('Version field is 0 but record has `pk`.'))
+        value = getattr(model_instance, version_field.name)
+        if value != version_field.get_default():
+            raise RecordModifiedError(_('Version field is set (%s) but record has `pk`.' % value))
         raise RecordModifiedError(_('Record has been modified'))
 
 
