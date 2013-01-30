@@ -1,4 +1,7 @@
 language: python
+services:
+  - MySQL
+  - PostgreSQL
 python:
   - "2.6"
   - "2.7"
@@ -7,10 +10,18 @@ env:
   - DJANGO="Django==1.4.3" DBENGINE=mysql
 #  - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/
 install:
+  - sh -c "if [ '$DBENGINE' = 'pg' ]; then pip install -q psycopg2; fi"
+  - sh -c "if [ '$DBENGINE' = 'mysql' ]; then pip install -q MySQL-python; fi"
   - pip install -q $DJANGO
   - python setup.py -q install
 script: cd demoproject && ./manage.py test concurrency
 #before_script:
 #  - mysql -e 'create database concurrency'
 #  - psql -c 'create database concurrency' -U postgres
+before_script:
+#  - sh -c "if [ '$DBENGINE' = 'pgsql' ]; then psql -c 'DROP DATABASE IF EXISTS doctrine_tests;' -U postgres; fi"
+  - sh -c "if [ '$DBENGINE' = 'pg' ]; then psql -c 'DROP DATABASE IF EXISTS concurrency;' -U postgres; fi"
+#  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'create database doctrine_tests;' -U postgres; fi"
+#  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'create database doctrine_tests_tmp;' -U postgres; fi"
+#  - sh -c "if [ 'DBENGINE' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS concurrency; fi"
 
