@@ -3,11 +3,9 @@ python:
   - "2.6"
   - "2.7"
 env:
-  - DJANGO="Django==1.4.3"
-  - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/
-  - DBENGINE=sqlite
-  - DBENGINE=mysql
-  - DBENGINE=pg
+  - DJANGO="Django==1.4.3" DBENGINE=sqlite
+  - DJANGO="Django==1.4.3" DBENGINE=mysql
+#  - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/
 install:
   - pip install -q $DJANGO
   - python setup.py -q install
