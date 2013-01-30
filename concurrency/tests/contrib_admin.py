@@ -3,7 +3,7 @@ import os
 
 from django.conf import global_settings
 from django.contrib.auth.models import User
-from django.core.management import call_command
+import django.core.management
 from django.core.urlresolvers import reverse
 from django.forms import model_to_dict
 from django.test import TestCase
@@ -17,6 +17,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admindocs',
     'django.contrib.admin',
     'concurrency')
 
@@ -31,12 +32,14 @@ class TestDjangoAdmin(TestCase):
             AUTHENTICATION_BACKENDS=global_settings.AUTHENTICATION_BACKENDS,
             PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',), # fastest hasher
             STATIC_URL='/static/',
+            SOUTH_TESTS_MIGRATE = False,
             TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),),
 #            TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',)
 
         )
         self.sett.enable()
-        call_command('syncdb', verbosity=0)
+        django.core.management._commands = None #reset commands cache
+        django.core.management.call_command('syncdb', verbosity=0)
         admin.site.register(TestModel0)
         self.user, __ = User.objects.get_or_create(username='sax', is_staff=True, is_superuser=True)
         self.user.set_password('123')

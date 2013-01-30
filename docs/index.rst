@@ -14,6 +14,10 @@ Overview
 
 django-concurrency is a optimistic locking library for Django Models
 
+It prevents users from doing concurrent editing in Django both from UI as from a
+django command.
+
+
 .. note:: |concurrency| requires Django >= 1.4
 
 
