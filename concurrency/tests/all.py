@@ -13,7 +13,7 @@ from django.test import TestCase
 from concurrency.core import RecordModifiedError
 from concurrency.core import apply_concurrency_check
 from concurrency.fields import IntegerVersionField
-from concurrency.tests.models import TestModel0, TestModel1, TestModel2, TestModel3, TestModel0_Proxy, TestModelUser, TestAbstractModel0, TestModelGroup, TestModelWithCustomSave, TestIssue3Model, ModelWithCustomSave, TestModelGroupWithCustomSave
+from concurrency.tests.models import TestModel0, TestModel1, TestModel2, TestModel3, TestModel0_Proxy, TestModelUser, TestAbstractModel0, TestModelGroup, TestModelWithCustomSave, TestIssue3Model, ModelWithCustomSave, TestModelGroupWithCustomSave, AutoIncConcurrentModel
 from concurrency.utils import ConcurrencyTestMixin
 # from concurrency.tests.models import *
 
@@ -174,6 +174,21 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
 #
 #     def _get_target(self):
 #         self.TARGET = DateConcurrentModel(char_field="New", last_name="1")
+
+class AutoIncConcurrencyTest(ConcurrencyTest0):
+    concurrency_model = AutoIncConcurrentModel
+
+    def _get_target(self):
+        self.TARGET = AutoIncConcurrentModel(char_field="New", last_name="1")
+
+    def test_increment(self):
+        logger.debug("Created Object_1")
+        a = self.TARGET
+        self.assertEqual(a.version, 0)
+        self._check_save(a)
+        self.assertEqual(a.version, 1)
+        a.save()
+        self.assertEqual(a.version, 2)
 
 
 class ConcurrencyTest1(ConcurrencyTest0):

@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from django.db import models
 from django.db.models.base import ModelBase
 from concurrency.core import concurrency_check
-from concurrency.fields import IntegerVersionField
+from concurrency.fields import IntegerVersionField, AutoIncVersionField
 
 
 class AbstractConcurrentModel(models.Model):
@@ -25,6 +25,16 @@ class TestAbstractModel0(AbstractConcurrentModel):
 
 class ConcurrentModel(models.Model):
     version = IntegerVersionField(db_column='cm_version_id')
+
+    class Meta:
+        app_label = 'concurrency'
+
+class AutoIncConcurrentModel(models.Model):
+    version = AutoIncVersionField(db_column='cm_version_id')
+    username = models.CharField(max_length=30, blank=True, null=True)
+    last_name = models.CharField(max_length=30, blank=True, null=True)
+    char_field = models.CharField(max_length=30, blank=True, null=True)
+    date_field = models.DateField(blank=True, null=True)
 
     class Meta:
         app_label = 'concurrency'
