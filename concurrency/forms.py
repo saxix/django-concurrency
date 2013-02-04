@@ -1,9 +1,11 @@
 from django import forms
 from django.core import validators
-from django.core.exceptions import NON_FIELD_ERRORS
+from django.core.exceptions import NON_FIELD_ERRORS, SuspiciousOperation
+from django.core.signing import Signer, BadSignature
 from django.forms import ModelForm, HiddenInput
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
 from concurrency.core import _select_lock, RecordModifiedError
 
 
@@ -42,7 +44,7 @@ class VersionWidget(HiddenInput):
 
 class VersionField(forms.IntegerField):
     widget = HiddenInput # Default widget to use when rendering this type of Field.
-    hidden_widget = HiddenInput # Default widget to use when rendering this as "hidden".
+    hidden_widget = HiddenInput# Default widget to use when rendering this as "hidden".
 
     def __init__(self, *args, **kwargs):
         kwargs.pop('min_value', None)
@@ -51,6 +53,15 @@ class VersionField(forms.IntegerField):
         kwargs['initial'] = None
         kwargs['widget'] = None
         super(VersionField, self).__init__(*args, **kwargs)
+
+    def clean(self, value):
+        try:
+            return int(Signer().unsign(value))
+        except BadSignature:
+            raise SuspiciousOperation(_('Version number seems altered'))
+
+    def prepare_value(self, value):
+        return Signer().sign(value)
 
     def to_python(self, value):
         if value is None:

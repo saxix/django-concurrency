@@ -4,12 +4,15 @@ import os
 from django.conf import global_settings
 from django.contrib.auth.models import User
 import django.core.management
+from django.core.signing import Signer
 from django.core.urlresolvers import reverse
 from django.forms import model_to_dict
 from django.forms.models import modelform_factory
 from django.test import TestCase
 # from concurrency.tests.models import *
-from concurrency.forms import ConcurrentForm
+from concurrency import forms
+from concurrency.fields import VersionField, AutoIncVersionField, IntegerVersionField
+from concurrency.forms import ConcurrentForm, VersionWidget
 from concurrency.tests import TestModel0, TestModel1
 
 INSTALLED_APPS = (
@@ -25,7 +28,14 @@ INSTALLED_APPS = (
 
 
 class TestModel1Admin(admin.ModelAdmin):
-    form = modelform_factory(TestModel1, ConcurrentForm)
+    formfield_overrides = {
+        # VersionField: {'widget': VersionWidget},
+        forms.VersionField: {'widget': VersionWidget()},
+        # IntegerVersionField: {'widget': VersionWidget},
+        # AutoIncVersionField: {'widget': VersionWidget},
+    }
+    form = modelform_factory(TestModel1, ConcurrentForm,
+                             widgets={'version': VersionWidget()})
 
 
 class TestDjangoAdmin(TestCase):
@@ -34,13 +44,13 @@ class TestDjangoAdmin(TestCase):
     def setUp(self):
         super(TestDjangoAdmin, self).setUp()
         self.sett = self.settings(INSTALLED_APPS=INSTALLED_APPS,
-            MIDDLEWARE_CLASSES=global_settings.MIDDLEWARE_CLASSES,
-            AUTHENTICATION_BACKENDS=global_settings.AUTHENTICATION_BACKENDS,
-            PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',), # fastest hasher
-            STATIC_URL='/static/',
-            SOUTH_TESTS_MIGRATE = False,
-            TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),),
-#            TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',)
+                                  MIDDLEWARE_CLASSES=global_settings.MIDDLEWARE_CLASSES,
+                                  AUTHENTICATION_BACKENDS=global_settings.AUTHENTICATION_BACKENDS,
+                                  PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',), # fastest hasher
+                                  STATIC_URL='/static/',
+                                  SOUTH_TESTS_MIGRATE=False,
+                                  TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
+                                  #            TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',)
 
         )
         self.sett.enable()
@@ -64,15 +74,16 @@ class TestDjangoAdmin(TestCase):
     def test_standard_update(self):
         url = reverse('admin:concurrency_testmodel0_change', args=[self.target.pk])
         response = self.client.get(url)
-
         self.assertIn('original', response.context, response)
         target = response.context['original']
         old_version = target.version
-        data = model_to_dict(target, exclude=['id'])
-
-        data['username'] = 'new_username'
-        data['_continue'] = 1
-        data['date_field'] = '2010-09-01'
+        # data = model_to_dict(target, exclude=['id'])
+        data = {'username': u'new_username',
+                'last_name': None,
+                'version': Signer().sign(target.version),
+                'char_field': None,
+                '_continue': 1,
+                'date_field': '2010-09-01'}
 
         response = self.client.post(url, data, follow=True)
         self.assertIn('original', response.context, response)
@@ -84,18 +95,21 @@ class TestDjangoAdmin(TestCase):
     def test_conflict(self):
         url = reverse('admin:concurrency_testmodel1_change', args=[self.target1.pk])
         response = self.client.get(url)
-
         self.assertIn('original', response.context, response)
         target = response.context['original']
-        data = model_to_dict(target, exclude=['id'])
 
-        data['username'] = 'new_username'
-        data['_continue'] = 1
-        data['date_field'] = '2010-09-01'
+        data = {'username': u'new_username',
+                'last_name': None,
+                'version': response.context['adminform'].form['version'].value(),
+                'char_field': None,
+                '_continue': 1,
+                'date_field': '2010-09-01'}
+
         self.target1.save() # conflict here
 
         response = self.client.post(url, data, follow=True)
-
         self.assertIn('original', response.context, response)
         self.assertTrue(response.context['adminform'].form.errors, response.context['adminform'].form.errors)
+        self.assertIn('Record Modified', str(response.context['adminform'].form.errors),
+                      response.context['adminform'].form.errors)
         target = response.context['original']
