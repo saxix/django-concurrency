@@ -6,12 +6,10 @@ from django.contrib.auth.models import User
 import django.core.management
 from django.core.signing import Signer
 from django.core.urlresolvers import reverse
-from django.forms import model_to_dict
 from django.forms.models import modelform_factory
 from django.test import TestCase
 # from concurrency.tests.models import *
 from concurrency import forms
-from concurrency.fields import VersionField, AutoIncVersionField, IntegerVersionField
 from concurrency.forms import ConcurrentForm, VersionWidget
 from concurrency.tests import TestModel0, TestModel1
 
@@ -52,7 +50,7 @@ class TestDjangoAdmin(TestCase):
                                   TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
                                   #            TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',)
 
-        )
+                                  )
         self.sett.enable()
         django.core.management._commands = None # reset commands cache
         django.core.management.call_command('syncdb', verbosity=0)
@@ -96,7 +94,6 @@ class TestDjangoAdmin(TestCase):
         url = reverse('admin:concurrency_testmodel1_change', args=[self.target1.pk])
         response = self.client.get(url)
         self.assertIn('original', response.context, response)
-        target = response.context['original']
 
         data = {'username': u'new_username',
                 'last_name': None,
@@ -109,7 +106,8 @@ class TestDjangoAdmin(TestCase):
 
         response = self.client.post(url, data, follow=True)
         self.assertIn('original', response.context, response)
-        self.assertTrue(response.context['adminform'].form.errors, response.context['adminform'].form.errors)
-        self.assertIn('Record Modified', str(response.context['adminform'].form.errors),
+        self.assertTrue(response.context['adminform'].form.errors,
+                        response.context['adminform'].form.errors)
+        self.assertIn('Record Modified',
+                      str(response.context['adminform'].form.errors),
                       response.context['adminform'].form.errors)
-        target = response.context['original']

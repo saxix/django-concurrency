@@ -1,5 +1,5 @@
 from django.core.signing import Signer
-from django.forms.models import modelform_factory, model_to_dict
+from django.forms.models import modelform_factory
 from django.forms.widgets import HiddenInput, TextInput
 from django.utils.unittest.case import TestCase
 from concurrency.forms import ConcurrentForm
