@@ -1,4 +1,3 @@
-
 import os
 import re
 
@@ -52,10 +51,11 @@ def setup(app):
     app.add_directive('versionadded', VersionDirective)
     app.add_directive('versionchanged', VersionDirective)
     app.add_crossref_type(
-        directivename = "release",
-        rolename      = "release",
-        indextemplate = "pair: %s; release",
-        )
+        directivename="release",
+        rolename="release",
+        indextemplate="pair: %s; release",
+    )
+
 
 class VersionDirective(Directive):
     has_content = True
@@ -75,9 +75,9 @@ class VersionDirective(Directive):
             node['version'] = "Development version"
         else:
             if len(self.arguments) == 1:
-#                linktext = 'Please, see the Changelog <0_0_4>'
-#                xrefs = roles.XRefRole()('release', linktext, linktext, self.lineno, self.state)
-#                node.extend(xrefs[0])
+            #                linktext = 'Please, see the Changelog <0_0_4>'
+            #                xrefs = roles.XRefRole()('release', linktext, linktext, self.lineno, self.state)
+            #                node.extend(xrefs[0])
 
                 linktext = 'Please, see the Changelog <changes>'
                 xrefs = roles.XRefRole()('doc', linktext, linktext, self.lineno, self.state)

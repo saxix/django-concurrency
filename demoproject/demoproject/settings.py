@@ -13,8 +13,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'concurrency')
 
-
-
 from demoproject.settings_sqlite import *
 db = os.environ.get('DBENGINE', None)
 if db:

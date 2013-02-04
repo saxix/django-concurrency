@@ -20,9 +20,10 @@ class ConcurrentFormTest(TestCase):
 
     def test_save(self):
         obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
+        obj_copy = TestIssue3Model.objects.get(pk=obj.pk)
         Form = modelform_factory(TestIssue3Model, ConcurrentForm)
         form = Form(model_to_dict(obj), instance=obj)
-        obj.save() # save again simulate concurrent editing
+        obj_copy.save() # save
         self.assertFalse(form.is_valid())
         self.assertIn('Record Modified', form.non_field_errors())
 
@@ -32,3 +33,4 @@ class ConcurrentFormTest(TestCase):
         form = Form(model_to_dict(obj), instance=obj)
         obj.save() # save again simulate concurrent editing
         self.assertRaises(ValueError, form.save)
+

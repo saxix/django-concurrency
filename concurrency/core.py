@@ -58,7 +58,8 @@ def _select_lock(model_instance, version_value=None):
     if not entry:
         value = getattr(model_instance, version_field.name)
         if value != version_field.get_default():
-            raise RecordModifiedError(_('Version field is set (%s) but record has `pk`.' % value))
+            # raise RecordModifiedError(_('Version field is set (%s) but record has `pk`.' % value))
+            raise RecordModifiedError(_('Record has been modified'))
         raise RecordModifiedError(_('Record has been modified'))
 
 

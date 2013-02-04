@@ -16,7 +16,7 @@ class ConcurrentForm(ModelForm):
 
     def clean(self):
         try:
-            _select_lock(self.instance, self.initial[self.instance.RevisionMetaInfo.field.name])
+            _select_lock(self.instance, self.cleaned_data[self.instance.RevisionMetaInfo.field.name])
         except RecordModifiedError:
             self._update_errors({NON_FIELD_ERRORS: self.error_class(['Record Modified'])})
 

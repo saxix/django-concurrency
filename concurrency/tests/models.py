@@ -29,6 +29,7 @@ class ConcurrentModel(models.Model):
     class Meta:
         app_label = 'concurrency'
 
+
 class AutoIncConcurrentModel(models.Model):
     version = AutoIncVersionField(db_column='cm_version_id')
     username = models.CharField(max_length=30, blank=True, null=True)
