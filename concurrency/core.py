@@ -39,29 +39,22 @@ def apply_concurrency_check(model, fieldname, versionclass):
 def concurrency_check(model_instance, force_insert=False, force_update=False, using=None, **kwargs):
     if model_instance.pk and not force_insert:
         _select_lock(model_instance)
-    # field = self.RevisionMetaInfo.field
-    # setattr(self, field.attname, field.get_new_value(self))
-
 
 def _select_lock(model_instance, version_value=None):
-    version_field = model_instance.RevisionMetaInfo.field
-    kwargs = {'pk': model_instance.pk,
-              version_field.name: version_value or getattr(model_instance, version_field.name)}
-    alias = router.db_for_write(model_instance)
-    NOWAIT = connections[alias].features.has_select_for_update_nowait
-    # print 1111111, alias, NOWAIT
-    # from django.db import connection
-    # connections['mydb'].
-    # self.connection.features.has_select_for_update_nowait
-    # print 111, obj.__class__.objects.connection
-    entry = model_instance.__class__.objects.select_for_update(nowait=NOWAIT).filter(**kwargs)
-    if not entry:
-        value = getattr(model_instance, version_field.name)
-        if value != version_field.get_default():
-            # raise RecordModifiedError(_('Version field is set (%s) but record has `pk`.' % value))
+    if model_instance.pk is not None:
+        version_field = model_instance.RevisionMetaInfo.field
+        kwargs = {'pk': model_instance.pk,
+                  version_field.name: version_value or getattr(model_instance, version_field.name)}
+        alias = router.db_for_write(model_instance)
+        NOWAIT = connections[alias].features.has_select_for_update_nowait
+        entry = model_instance.__class__.objects.select_for_update(nowait=NOWAIT).filter(**kwargs)
+        if not entry:
+            value = getattr(model_instance, version_field.name)
+            if value != version_field.get_default():
+                raise RecordModifiedError(_('Version field is set (%s) but record has `pk`.' % value))
+            elif value==version_field.get_default():
+                return
             raise RecordModifiedError(_('Record has been modified'))
-        raise RecordModifiedError(_('Record has been modified'))
-
 
 def _wrap_save(func):
     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):

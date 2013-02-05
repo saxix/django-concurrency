@@ -83,7 +83,7 @@ class ModelWithCustomSave(AbstractModelWithCustomSave):
 
 
 class TestModel0(ConcurrentModel):
-    username = models.CharField(max_length=30, blank=True, null=True)
+    username = models.CharField(max_length=30, blank=True, null=True, unique=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
     char_field = models.CharField(max_length=30, blank=True, null=True)
     date_field = models.DateField(blank=True, null=True)

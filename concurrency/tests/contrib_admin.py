@@ -69,6 +69,38 @@ class TestDjangoAdmin(TestCase):
         admin.site.unregister(TestModel0)
         admin.site.unregister(TestModel1)
 
+    def test_creation(self):
+        url = reverse('admin:concurrency_testmodel0_add')
+        data = {'username': u'new_username',
+                'last_name': None,
+                'version': Signer().sign(0),
+                'char_field': None,
+                '_continue': 1,
+                'date_field': '2010-09-01'}
+
+        response = self.client.post(url, data, follow=True)
+        self.assertTrue(TestModel0.objects.filter(username='new_username').exists())
+        self.assertGreater(TestModel0.objects.get(username='new_username').version, 0)
+
+    def test_creation_with_customform(self):
+        url = reverse('admin:concurrency_testmodel1_add')
+        data = {'username': u'new_username',
+                'last_name': None,
+                'version': Signer().sign(0),
+                'char_field': None,
+                '_continue': 1,
+                'date_field': '2010-09-01'}
+
+        response = self.client.post(url, data, follow=False)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(TestModel1.objects.filter(username='new_username').exists())
+        self.assertGreater(TestModel1.objects.get(username='new_username').version, 0)
+
+        # test no other errors are raised
+        response = self.client.post(url, data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Test model0 with this Username already exists.")
+
     def test_standard_update(self):
         url = reverse('admin:concurrency_testmodel0_change', args=[self.target.pk])
         response = self.client.get(url)
