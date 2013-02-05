@@ -1,12 +1,12 @@
 from django import forms
 from django.core import validators
 from django.core.exceptions import NON_FIELD_ERRORS, SuspiciousOperation
-from django.core.signing import Signer, BadSignature
 from django.forms import ModelForm, HiddenInput
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from concurrency.core import _select_lock, RecordModifiedError
+from concurrency.signing import get_signer, BadSignature
 
 
 class ConcurrentForm(ModelForm):
@@ -56,12 +56,12 @@ class VersionField(forms.IntegerField):
 
     def clean(self, value):
         try:
-            return int(Signer().unsign(value))
+            return int(get_signer().unsign(value))
         except BadSignature:
             raise SuspiciousOperation(_('Version number seems altered'))
 
     def prepare_value(self, value):
-        return Signer().sign(value)
+        return get_signer().sign(value)
 
     def to_python(self, value):
         if value is None:
