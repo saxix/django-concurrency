@@ -4,6 +4,7 @@ from django.utils.functional import memoize
 
 _cache = {}
 
+
 def get_signer(version=0):
     # version is here for future implementations
     return Signer()

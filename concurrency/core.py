@@ -37,8 +37,9 @@ def apply_concurrency_check(model, fieldname, versionclass):
 
 
 def concurrency_check(model_instance, force_insert=False, force_update=False, using=None, **kwargs):
-    if model_instance.pk and not force_insert:
+    if not force_insert:
         _select_lock(model_instance)
+
 
 def _select_lock(model_instance, version_value=None):
     if model_instance.pk is not None:
@@ -52,9 +53,10 @@ def _select_lock(model_instance, version_value=None):
             value = getattr(model_instance, version_field.name)
             if value != version_field.get_default():
                 raise RecordModifiedError(_('Version field is set (%s) but record has `pk`.' % value))
-            elif value==version_field.get_default():
+            elif value == version_field.get_default():
                 return
             raise RecordModifiedError(_('Record has been modified'))
+
 
 def _wrap_save(func):
     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):

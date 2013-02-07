@@ -29,6 +29,9 @@ class ConcurrentModel(models.Model):
     class Meta:
         app_label = 'concurrency'
 
+    def __unicode__(self):
+        return "{0.__class__.__name__} #{0.pk}".format(self)
+
 
 class AutoIncConcurrentModel(models.Model):
     version = AutoIncVersionField(db_column='cm_version_id')
@@ -140,11 +143,14 @@ class TestModelWithCustomSave(ConcurrentModel):
         return 2222
 
 
-class TestModelUser(User):
+class TestCustomUser(User):
     version = IntegerVersionField(db_column='cm_version_id')
 
     class Meta:
         app_label = 'concurrency'
+
+    def __unicode__(self):
+        return "{0.__class__.__name__} #{0.pk}".format(self)
 
 
 class TestModelGroup(Group):
