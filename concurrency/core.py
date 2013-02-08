@@ -59,7 +59,7 @@ def _select_lock(model_instance, version_value=None):
         if not entry:
             raise RecordModifiedError(_('Record has been modified'))
     elif is_versioned:
-        raise InconsistencyError(_('Version field is set (%s) but record has `pk`.' % value))
+        raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.' % value))
 
 
 def _wrap_save(func):
