@@ -46,7 +46,7 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
 
     def _check_save(self, obj):
         obj.save()
-        assert obj.pk # sanity check
+        assert obj.pk is not None # sanity check
 
     def _get_form_data(self, **kwargs):
         data = {}
@@ -299,7 +299,7 @@ class ConcurrencyTestTestCustomUser(ConcurrencyTest0):
 
     def _check_save(self, obj):
         obj.save()
-        assert obj.pk # sanity check
+        assert obj.pk is not None # sanity check
         self.assertTrue(obj.version)
 
     def _get_form_data(self, **kwargs):

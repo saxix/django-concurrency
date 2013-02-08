@@ -10,6 +10,10 @@ class RecordModifiedError(DatabaseError):
     pass
 
 
+class InconsistencyError(DatabaseError):
+    pass
+
+
 def apply_concurrency_check(model, fieldname, versionclass):
     """
     Apply concurrency management to existing Models.
@@ -42,20 +46,20 @@ def concurrency_check(model_instance, force_insert=False, force_update=False, us
 
 
 def _select_lock(model_instance, version_value=None):
+    version_field = model_instance.RevisionMetaInfo.field
+    value = getattr(model_instance, version_field.name)
+    is_versioned = value != version_field.get_default()
+
     if model_instance.pk is not None:
-        version_field = model_instance.RevisionMetaInfo.field
         kwargs = {'pk': model_instance.pk,
                   version_field.name: version_value or getattr(model_instance, version_field.name)}
         alias = router.db_for_write(model_instance)
         NOWAIT = connections[alias].features.has_select_for_update_nowait
         entry = model_instance.__class__.objects.select_for_update(nowait=NOWAIT).filter(**kwargs)
         if not entry:
-            value = getattr(model_instance, version_field.name)
-            if value != version_field.get_default():
-                raise RecordModifiedError(_('Version field is set (%s) but record has `pk`.' % value))
-            elif value == version_field.get_default():
-                return
             raise RecordModifiedError(_('Record has been modified'))
+    elif is_versioned:
+        raise InconsistencyError(_('Version field is set (%s) but record has `pk`.' % value))
 
 
 def _wrap_save(func):

@@ -24,7 +24,8 @@ class VersionField(Field):
         help_text = kwargs.get('help_text', _('record revision number'))
 
         super(VersionField, self).__init__(verbose_name, name, editable=True,
-                                           help_text=help_text, null=False, blank=False, default=1,
+                                           help_text=help_text, null=False, blank=False,
+                                           default=0,
                                            db_tablespace=db_tablespace, db_column=db_column)
 
     def get_default(self):
@@ -61,7 +62,7 @@ class IntegerVersionField(VersionField):
         return "BigIntegerField"
 
     def pre_save(self, model_instance, add):
-        old_value = getattr(model_instance, self.attname)
+        old_value = getattr(model_instance, self.attname) or 0
         value = max(old_value + 1, (int(time.time() * 1000000) - OFFSET))
         setattr(model_instance, self.attname, value)
         return value
@@ -78,7 +79,7 @@ class AutoIncVersionField(VersionField):
         return "BigIntegerField"
 
     def pre_save(self, model_instance, add):
-        value = getattr(model_instance, self.attname) + 1
+        value = (getattr(model_instance, self.attname) or 0) + 1
         setattr(model_instance, self.attname, value)
         return value
 
@@ -127,6 +128,17 @@ class AutoIncVersionField(VersionField):
 #             return None
 #         return time.strftime('%Y%m%d%H%M%S', value.timetuple())
 
+try:
+    from django_any import any_field
+    import random
+    from django.db.models.fields import Field, BigIntegerField
+    any_field.register(IntegerVersionField,
+                       lambda x, **kwargs: random.randint(1, BigIntegerField.MAX_BIGINT))
+    any_field.register(AutoIncVersionField,
+                       lambda x, **kwargs: random.randint(1, BigIntegerField.MAX_BIGINT))
+
+except ImportError as e:
+    pass
 
 try:
     from south.modelsinspector import add_introspection_rules
