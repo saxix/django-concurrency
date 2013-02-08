@@ -128,17 +128,6 @@ class AutoIncVersionField(VersionField):
 #             return None
 #         return time.strftime('%Y%m%d%H%M%S', value.timetuple())
 
-try:
-    from django_any import any_field
-    import random
-    from django.db.models.fields import Field, BigIntegerField
-    any_field.register(IntegerVersionField,
-                       lambda x, **kwargs: random.randint(1, BigIntegerField.MAX_BIGINT))
-    any_field.register(AutoIncVersionField,
-                       lambda x, **kwargs: random.randint(1, BigIntegerField.MAX_BIGINT))
-
-except ImportError as e:
-    pass
 
 try:
     from south.modelsinspector import add_introspection_rules
