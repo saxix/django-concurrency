@@ -8,12 +8,12 @@ import logging
 import time
 import datetime
 from django.contrib.auth.models import User
-from django.core.signing import Signer
 from django.forms.models import modelform_factory
 from django.test import TestCase
 from concurrency.core import RecordModifiedError
 from concurrency.core import apply_concurrency_check
 from concurrency.fields import IntegerVersionField
+from concurrency.forms import VersionFieldSigner
 from concurrency.tests.models import TestModel0, TestModel1, TestModel2, TestModel3, TestModel0_Proxy, \
     TestAbstractModel0, TestModelGroup, TestModelWithCustomSave, TestIssue3Model, ModelWithCustomSave, \
     TestModelGroupWithCustomSave, AutoIncConcurrentModel, TestCustomUser
@@ -148,7 +148,7 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
         original_version = self.TARGET._get_test_revision_number()
         version_field_name = self.TARGET.RevisionMetaInfo.field.name
 
-        form = formClass(self._get_form_data(**{version_field_name: Signer().sign(original_version)}),
+        form = formClass(self._get_form_data(**{version_field_name: VersionFieldSigner().sign(original_version)}),
                          instance=self.TARGET)
 
         self.assertTrue(form.is_valid(), form.errors)
@@ -157,7 +157,7 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
         # self.assertGreater(obj._get_test_revision_number(), original_version)
         self.assertNotEqual(obj._get_test_revision_number(), original_version)
 
-        form = formClass(self._get_form_data(**{version_field_name: Signer().sign(obj._get_test_revision_number())}),
+        form = formClass(self._get_form_data(**{version_field_name: VersionFieldSigner().sign(obj._get_test_revision_number())}),
                          instance=obj)
         self.assertTrue(form.is_valid(), form.errors)
         pre_save_version = obj._get_test_revision_number()

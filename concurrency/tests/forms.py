@@ -1,16 +1,50 @@
-from django.core.signing import Signer
+from django.core.exceptions import SuspiciousOperation
 from django.forms.models import modelform_factory
 from django.forms.widgets import HiddenInput, TextInput
+from django.utils.encoding import smart_str
 from django.utils.unittest.case import TestCase
-from concurrency.forms import ConcurrentForm
+from concurrency.forms import ConcurrentForm, VersionField, VersionFieldSigner
 from concurrency.tests import TestModel0, TestIssue3Model
 
+
+class DummySigner():
+    def sign(self, value):
+        return smart_str(value)
+
+    def unsign(self, signed_value):
+        return smart_str(signed_value)
 
 class ConcurrentFormTest(TestCase):
     def test_version(self):
         Form = modelform_factory(TestModel0, ConcurrentForm)
         form = Form()
         self.assertIsInstance(form.fields['version'].widget, HiddenInput)
+
+    def test_signer(self):
+        obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
+        Form = modelform_factory(TestIssue3Model, type('xxx',(ConcurrentForm,), {'revision': VersionField(signer=DummySigner())}))
+        data = {'id': 1,
+                'revision': obj.revision}
+        form = Form(data, instance=obj)
+        self.assertTrue(form.is_valid(), form.non_field_errors())
+
+    def test_signer(self):
+        Form = modelform_factory(TestIssue3Model, ConcurrentForm)
+        form = Form({})
+        self.assertTrue(form.is_valid(), form.non_field_errors())
+
+    def test_tamperig(self):
+        obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
+        Form = modelform_factory(TestIssue3Model, ConcurrentForm)
+        data = {'username': 'aaa',
+                'last_name': None,
+                'date_field': None,
+                'char_field': None,
+                'version': u'abc',
+                'id': 1,
+                'revision': obj.revision}
+        form = Form(data, instance=obj)
+        self.assertRaises(SuspiciousOperation, form.is_valid)
 
     def test_custom_name(self):
         Form = modelform_factory(TestIssue3Model, ConcurrentForm)
@@ -28,7 +62,7 @@ class ConcurrentFormTest(TestCase):
                 'char_field': None,
                 'version': u'abc',
                 'id': 1,
-                'revision': Signer().sign(obj.revision)}
+                'revision': VersionFieldSigner().sign(obj.revision)}
         form = Form(data, instance=obj)
         obj_copy.save() # save
         self.assertFalse(form.is_valid())
@@ -43,7 +77,7 @@ class ConcurrentFormTest(TestCase):
                 'char_field': None,
                 'version': u'abc',
                 'id': 1,
-                'revision': Signer().sign(obj.revision)}
+                'revision': VersionFieldSigner().sign(obj.revision)}
         form = Form(data, instance=obj)
         obj.save() # save again simulate concurrent editing
         self.assertRaises(ValueError, form.save)

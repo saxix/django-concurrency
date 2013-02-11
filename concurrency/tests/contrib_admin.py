@@ -4,13 +4,12 @@ import os
 from django.conf import global_settings
 from django.contrib.auth.models import User
 import django.core.management
-from django.core.signing import Signer
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
 from django.test import TestCase
 # from concurrency.tests.models import *
 from concurrency import forms
-from concurrency.forms import ConcurrentForm, VersionWidget
+from concurrency.forms import ConcurrentForm, VersionWidget, VersionFieldSigner
 from concurrency.tests import TestModel0, TestModel1
 
 INSTALLED_APPS = (
@@ -73,7 +72,7 @@ class TestDjangoAdmin(TestCase):
         url = reverse('admin:concurrency_testmodel0_add')
         data = {'username': u'new_username',
                 'last_name': None,
-                'version': Signer().sign(0),
+                'version': VersionFieldSigner().sign(0),
                 'char_field': None,
                 '_continue': 1,
                 'date_field': '2010-09-01'}
@@ -86,7 +85,7 @@ class TestDjangoAdmin(TestCase):
         url = reverse('admin:concurrency_testmodel1_add')
         data = {'username': u'new_username',
                 'last_name': None,
-                'version': Signer().sign(0),
+                'version': VersionFieldSigner().sign(0),
                 'char_field': None,
                 '_continue': 1,
                 'date_field': '2010-09-01'}
@@ -110,7 +109,7 @@ class TestDjangoAdmin(TestCase):
         # data = model_to_dict(target, exclude=['id'])
         data = {'username': u'new_username',
                 'last_name': None,
-                'version': Signer().sign(target.version),
+                'version': VersionFieldSigner().sign(target.version),
                 'char_field': None,
                 '_continue': 1,
                 'date_field': '2010-09-01'}

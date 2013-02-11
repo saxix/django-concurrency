@@ -9,6 +9,8 @@ __all__ = []
 class RecordModifiedError(DatabaseError):
     pass
 
+class Http409(Exception):
+    pass
 
 class InconsistencyError(DatabaseError):
     pass

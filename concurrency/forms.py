@@ -1,12 +1,13 @@
 from django import forms
 from django.core import validators
 from django.core.exceptions import NON_FIELD_ERRORS, SuspiciousOperation
+from django.core.signing import Signer, BadSignature
 from django.forms import ModelForm, HiddenInput
 from django.utils import timezone
+from django.utils.encoding import smart_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from concurrency.core import _select_lock, RecordModifiedError
-from concurrency.signing import get_signer, BadSignature
 
 
 class ConcurrentForm(ModelForm):
@@ -42,11 +43,16 @@ class VersionWidget(HiddenInput):
         return mark_safe("%s<div>%s</div>" % (ret, value))
 
 
+class VersionFieldSigner(Signer):
+    pass
+
+
 class VersionField(forms.IntegerField):
     widget = HiddenInput # Default widget to use when rendering this type of Field.
     hidden_widget = HiddenInput# Default widget to use when rendering this as "hidden".
 
     def __init__(self, *args, **kwargs):
+        self._signer = kwargs.pop('signer', VersionFieldSigner())
         kwargs.pop('min_value', None)
         kwargs.pop('max_value', None)
         kwargs['required'] = True
@@ -56,12 +62,16 @@ class VersionField(forms.IntegerField):
 
     def clean(self, value):
         try:
-            return int(get_signer().unsign(value))
-        except BadSignature:
-            raise SuspiciousOperation(_('Version number seems altered'))
+            if value is not None:
+                return int(self._signer.unsign(value))
+            return 0
+        except (BadSignature, ValueError):
+            raise SuspiciousOperation(_('Version number seems tampered'))
 
     def prepare_value(self, value):
-        return get_signer().sign(value)
+        if value:
+            return self._signer.sign(value)
+        return None
 
     def to_python(self, value):
         if value is None:
