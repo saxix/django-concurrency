@@ -4,7 +4,6 @@ from django.core.exceptions import NON_FIELD_ERRORS, SuspiciousOperation
 from django.core.signing import Signer, BadSignature
 from django.forms import ModelForm, HiddenInput
 from django.utils import timezone
-from django.utils.encoding import smart_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from concurrency.core import _select_lock, RecordModifiedError
@@ -62,7 +61,8 @@ class VersionField(forms.IntegerField):
 
     def clean(self, value):
         try:
-            if value is not None:
+            # this check is here because some badly written test
+            if value not in (None, '', 'None'):
                 return int(self._signer.unsign(value))
             return 0
         except (BadSignature, ValueError):

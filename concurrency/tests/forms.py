@@ -28,9 +28,43 @@ class ConcurrentFormTest(TestCase):
         form = Form(data, instance=obj)
         self.assertTrue(form.is_valid(), form.non_field_errors())
 
-    def test_signer(self):
+    def test_signer2(self):
         Form = modelform_factory(TestIssue3Model, ConcurrentForm)
-        form = Form({})
+        form = Form({'username': 'aaa'})
+        self.assertTrue(form.is_valid(), form.non_field_errors())
+
+    def test_creation_None_version(self):
+        Form = modelform_factory(TestIssue3Model, type('xxx',(ConcurrentForm,), {}))
+        data = {'username': 'aaaq',
+                'last_name': None,
+                'revision': VersionField().prepare_value(None)}
+        form = Form(data)
+        self.assertTrue(form.is_valid())
+        obj = form.save()
+
+    def test_creation_empty_version(self):
+        Form = modelform_factory(TestIssue3Model, type('xxx',(ConcurrentForm,), {}))
+        data = {'username': 'aaaq',
+                'last_name': None,
+                'revision': VersionField().prepare_value('')}
+        form = Form(data)
+        self.assertTrue(form.is_valid())
+        obj = form.save()
+
+    def test_creation_0_version(self):
+        Form = modelform_factory(TestIssue3Model, type('xxx',(ConcurrentForm,), {}))
+        data = {'username': 'aaa',
+                'revision': VersionField().prepare_value(0)}
+        form = Form(data)
+        self.assertTrue(form.is_valid())
+        obj = form.save()
+
+    def test_creation_empty_version2(self):
+        obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
+        Form = modelform_factory(TestIssue3Model, type('xxx',(ConcurrentForm,), {'revision': VersionField(signer=DummySigner())}))
+        data = {'id': 1,
+                'revision': ''}
+        form = Form(data, instance=obj)
         self.assertTrue(form.is_valid(), form.non_field_errors())
 
     def test_tamperig(self):
