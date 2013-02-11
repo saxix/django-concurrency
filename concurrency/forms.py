@@ -61,12 +61,13 @@ class VersionField(forms.IntegerField):
         super(VersionField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
-        try:
-            if value is not None:
-                return int(self._signer.unsign(value))
+        if not value:
             return 0
-        except (BadSignature, ValueError):
-            raise SuspiciousOperation(_('Version number seems tampered'))
+        else:
+            try:
+                return int(self._signer.unsign(value))
+            except (BadSignature, ValueError):
+                raise SuspiciousOperation(_('Version number seems tampered'))
 
     def prepare_value(self, value):
         if value:
