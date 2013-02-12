@@ -77,7 +77,7 @@ class TestDjangoAdmin(TestCase):
                 '_continue': 1,
                 'date_field': '2010-09-01'}
 
-        response = self.client.post(url, data, follow=True)
+        self.client.post(url, data, follow=True)
         self.assertTrue(TestModel0.objects.filter(username='new_username').exists())
         self.assertGreater(TestModel0.objects.get(username='new_username').version, 0)
 

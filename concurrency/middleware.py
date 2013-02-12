@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-from concurrency.core import Http409
-from concurrency.http import HttpResponseConflict
+from django.core.urlresolvers import get_callable
+from concurrency.core import RecordModifiedError
+from concurrency.views import handler409
 
 
-class Http409Middleware(object):
+class ConcurrencyMiddleware(object):
     def process_exception(self, request, exception):
-        if isinstance(exception, Http409):
-            return HttpResponseConflict()
+        if isinstance(exception, RecordModifiedError):
+            callback = get_callable(handler409)
+
+            return callback(request, target=exception.target)

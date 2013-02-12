@@ -39,6 +39,8 @@ class VersionWidget(HiddenInput):
 
     def render(self, name, value, attrs=None):
         ret = super(VersionWidget, self).render(name, value, attrs)
+        if value is None:
+            value = ''
         return mark_safe("%s<div>%s</div>" % (ret, value))
 
 
@@ -56,17 +58,8 @@ class VersionField(forms.IntegerField):
         kwargs.pop('max_value', None)
         kwargs['required'] = True
         kwargs['initial'] = None
-        kwargs['widget'] = None
+        kwargs.setdefault('widget', HiddenInput)
         super(VersionField, self).__init__(*args, **kwargs)
-
-    def clean(self, value):
-        try:
-            # this check is here because some badly written test
-            if value not in (None, '', 'None'):
-                return int(self._signer.unsign(value))
-            return 0
-        except (BadSignature, ValueError):
-            raise SuspiciousOperation(_('Version number seems tampered'))
 
     def prepare_value(self, value):
         if value:
@@ -74,13 +67,12 @@ class VersionField(forms.IntegerField):
         return None
 
     def to_python(self, value):
-        if value is None:
-            return 0
         try:
-            value = int(str(value))
-        except (ValueError, TypeError):
-            value = 0
-        return value
+            if value not in (None, '', 'None'):
+                return int(self._signer.unsign(value))
+            return 0
+        except (BadSignature, ValueError):
+            raise SuspiciousOperation(_('Version number seems tampered'))
 
     def widget_attrs(self, widget):
         return {}

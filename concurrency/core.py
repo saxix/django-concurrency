@@ -1,16 +1,20 @@
 from functools import update_wrapper
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db import DatabaseError, connections, router
 from django.utils.translation import ugettext as _
 
 __all__ = []
 
 
-class RecordModifiedError(DatabaseError):
+class VersionChangedError(ValidationError):
     pass
 
-class Http409(Exception):
-    pass
+
+class RecordModifiedError(DatabaseError):
+    def __init__(self, *args, **kwargs):
+        self.target = kwargs.pop('target')
+        super(RecordModifiedError, self).__init__(*args, **kwargs)
+
 
 class InconsistencyError(DatabaseError):
     pass
@@ -59,7 +63,7 @@ def _select_lock(model_instance, version_value=None):
         NOWAIT = connections[alias].features.has_select_for_update_nowait
         entry = model_instance.__class__.objects.select_for_update(nowait=NOWAIT).filter(**kwargs)
         if not entry:
-            raise RecordModifiedError(_('Record has been modified'))
+            raise RecordModifiedError(_('Record has been modified'), target=model_instance)
     elif is_versioned:
         raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.' % value))
 
