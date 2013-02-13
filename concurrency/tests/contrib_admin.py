@@ -49,7 +49,7 @@ class DjangoAdminTestCase(TestCase):
                                   SOUTH_TESTS_MIGRATE=False,
                                   TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
                                   #            TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',)
-        )
+                                  )
         self.sett.enable()
         django.core.management._commands = None # reset commands cache
         django.core.management.call_command('syncdb', verbosity=0)
@@ -67,6 +67,7 @@ class DjangoAdminTestCase(TestCase):
         self.sett.disable()
         admin.site.unregister(TestModel0)
         admin.site.unregister(TestModel1)
+
 
 class TestDjangoAdmin(DjangoAdminTestCase):
 
@@ -128,7 +129,7 @@ class TestDjangoAdmin(DjangoAdminTestCase):
         response = self.client.get(url)
         self.assertIn('original', response.context, response)
         # form = response.context['adminform'].form
-        rex = re.compile('name="version" value="(\d*):(.[^"]*)"')
+        rex = re.compile(r'name="version" value="(\d*):(.[^"]*)"')
         m = rex.search(str(response), re.M + re.I)
         assert m.group(1) == str(response.context['original'].version)
         data = {'username': u'new_username',
@@ -153,7 +154,7 @@ class TestDjangoAdmin(DjangoAdminTestCase):
         url = reverse('admin:concurrency_testmodel1_change', args=[self.target1.pk])
         response = self.client.get(url)
         self.assertIn('original', response.context, response)
-        rex = re.compile('name="version" value="(\d*):(.[^"]*)"')
+        rex = re.compile(r'name="version" value="(\d*):(.[^"]*)"')
 
         m1 = rex.search(str(response), re.M + re.I)
         assert m1.group(1) == str(response.context['original'].version)

@@ -1,5 +1,5 @@
 import warnings
-from django.core.exceptions import SuspiciousOperation, ValidationError
+from django.core.exceptions import SuspiciousOperation
 from django.forms.models import modelform_factory
 from django.forms.widgets import HiddenInput, TextInput
 from django.utils.encoding import smart_str

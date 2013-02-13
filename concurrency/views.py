@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.template.base import TemplateDoesNotExist, Template
 from django.template.context import RequestContext
-from django.views.generic.base import TemplateView
+
 
 # This module is still alpha and should not be used.
 
