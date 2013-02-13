@@ -1,9 +1,10 @@
 import warnings
-from django.core.exceptions import SuspiciousOperation
+from django.core.exceptions import SuspiciousOperation, ValidationError
 from django.forms.models import modelform_factory
 from django.forms.widgets import HiddenInput, TextInput
 from django.utils.encoding import smart_str
 from django.test import TestCase
+from concurrency.core import InconsistencyError
 from concurrency.forms import ConcurrentForm, VersionField, VersionFieldSigner, VersionWidget
 from concurrency.tests import TestModel0, TestIssue3Model
 from django.test.testcases import SimpleTestCase
@@ -132,3 +133,19 @@ class ConcurrentFormTest(TestCase):
         obj.save() # save again simulate concurrent editing
         self.assertRaises(ValueError, form.save)
 
+    def test_form_is_valid(self):
+        obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
+        Form = modelform_factory(TestIssue3Model, ConcurrentForm)
+        data = {'username': "a",
+                'revision': VersionFieldSigner().sign(1)}
+        form = Form(data)
+        self.assertRaises(InconsistencyError, form.is_valid)
+
+    def test_signing(self):
+        """ Do not accept version value if adding"""
+        obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
+        Form = modelform_factory(TestIssue3Model, ConcurrentForm)
+        data = {'username': "a",
+                'revision': VersionFieldSigner().sign(1)}
+        form = Form(data)
+        self.assertRaises(InconsistencyError, form.is_valid)

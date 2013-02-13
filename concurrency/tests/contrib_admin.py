@@ -1,3 +1,4 @@
+import re
 from django.contrib import admin
 import os
 
@@ -35,11 +36,11 @@ class TestModel1Admin(admin.ModelAdmin):
                              widgets={'version': VersionWidget()})
 
 
-class TestDjangoAdmin(TestCase):
+class DjangoAdminTestCase(TestCase):
     urls = 'concurrency.tests.urls'
 
     def setUp(self):
-        super(TestDjangoAdmin, self).setUp()
+        super(DjangoAdminTestCase, self).setUp()
         self.sett = self.settings(INSTALLED_APPS=INSTALLED_APPS,
                                   MIDDLEWARE_CLASSES=global_settings.MIDDLEWARE_CLASSES,
                                   AUTHENTICATION_BACKENDS=global_settings.AUTHENTICATION_BACKENDS,
@@ -48,8 +49,7 @@ class TestDjangoAdmin(TestCase):
                                   SOUTH_TESTS_MIGRATE=False,
                                   TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
                                   #            TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',)
-
-                                  )
+        )
         self.sett.enable()
         django.core.management._commands = None # reset commands cache
         django.core.management.call_command('syncdb', verbosity=0)
@@ -63,10 +63,12 @@ class TestDjangoAdmin(TestCase):
         self.target1, __ = TestModel1.objects.get_or_create(username='bbb')
 
     def tearDown(self):
-        super(TestDjangoAdmin, self).tearDown()
+        super(DjangoAdminTestCase, self).tearDown()
         self.sett.disable()
         admin.site.unregister(TestModel0)
         admin.site.unregister(TestModel1)
+
+class TestDjangoAdmin(DjangoAdminTestCase):
 
     def test_creation(self):
         url = reverse('admin:concurrency_testmodel0_add')
@@ -125,15 +127,19 @@ class TestDjangoAdmin(TestCase):
         url = reverse('admin:concurrency_testmodel1_change', args=[self.target1.pk])
         response = self.client.get(url)
         self.assertIn('original', response.context, response)
-
+        # form = response.context['adminform'].form
+        rex = re.compile('name="version" value="(\d*):(.[^"]*)"')
+        m = rex.search(str(response), re.M + re.I)
+        assert m.group(1) == str(response.context['original'].version)
         data = {'username': u'new_username',
                 'last_name': None,
-                'version': response.context['adminform'].form['version'].value(),
+                'version': VersionFieldSigner().sign(m.group(1)),
+                # 'version': response.context['adminform'].form['version'].value(),
                 'char_field': None,
                 '_continue': 1,
                 'date_field': '2010-09-01'}
 
-        self.target1.save() # conflict here
+        self.target1.save() # create conflict here
 
         response = self.client.post(url, data, follow=True)
         self.assertIn('original', response.context, response)
@@ -142,3 +148,25 @@ class TestDjangoAdmin(TestCase):
         self.assertIn('Record Modified',
                       str(response.context['adminform'].form.errors),
                       response.context['adminform'].form.errors)
+
+    def test_sanity_signer(self):
+        url = reverse('admin:concurrency_testmodel1_change', args=[self.target1.pk])
+        response = self.client.get(url)
+        self.assertIn('original', response.context, response)
+        rex = re.compile('name="version" value="(\d*):(.[^"]*)"')
+
+        m1 = rex.search(str(response), re.M + re.I)
+        assert m1.group(1) == str(response.context['original'].version)
+        data = {'username': u'new_username',
+                'last_name': None,
+                'version': VersionFieldSigner().sign(m1.group(1)),
+                'char_field': None,
+                '_continue': 1,
+                'date_field': 'esss2010-09-01'}
+
+        response = self.client.post(url, data, follow=True)
+        self.assertIn('original', response.context, response)
+        self.assertTrue(response.context['adminform'].form.errors,
+                        response.context['adminform'].form.errors)
+        m2 = rex.search(str(response), re.M + re.I)
+        self.assertEqual(m1.groups(), m2.groups())

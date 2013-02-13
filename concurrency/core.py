@@ -53,12 +53,10 @@ def concurrency_check(model_instance, force_insert=False, force_update=False, us
 
 def _select_lock(model_instance, version_value=None):
     version_field = model_instance.RevisionMetaInfo.field
-    value = getattr(model_instance, version_field.name)
+    value = version_value or getattr(model_instance, version_field.name)
     is_versioned = value != version_field.get_default()
-
     if model_instance.pk is not None:
-        kwargs = {'pk': model_instance.pk,
-                  version_field.name: version_value or getattr(model_instance, version_field.name)}
+        kwargs = {'pk': model_instance.pk, version_field.name: value}
         alias = router.db_for_write(model_instance)
         NOWAIT = connections[alias].features.has_select_for_update_nowait
         entry = model_instance.__class__.objects.select_for_update(nowait=NOWAIT).filter(**kwargs)

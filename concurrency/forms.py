@@ -48,6 +48,14 @@ class VersionFieldSigner(Signer):
     pass
 
 
+class SignedValue(object):
+    def __init__(self, value):
+        self.value = value
+
+    def __repr__(self):
+        return self.value
+
+
 class VersionField(forms.IntegerField):
     widget = HiddenInput # Default widget to use when rendering this type of Field.
     hidden_widget = HiddenInput# Default widget to use when rendering this as "hidden".
@@ -61,17 +69,20 @@ class VersionField(forms.IntegerField):
         kwargs.setdefault('widget', HiddenInput)
         super(VersionField, self).__init__(*args, **kwargs)
 
+    def bound_data(self, data, initial):
+        return SignedValue(data)
+
     def prepare_value(self, value):
-        if value:
-            return self._signer.sign(value)
-        return None
+        if isinstance(value, SignedValue):
+            return value
+        return SignedValue(self._signer.sign(value))
 
     def to_python(self, value):
         try:
             if value not in (None, '', 'None'):
                 return int(self._signer.unsign(value))
             return 0
-        except (BadSignature, ValueError):
+        except (BadSignature, ValueError) as e:
             raise SuspiciousOperation(_('Version number seems tampered'))
 
     def widget_attrs(self, widget):

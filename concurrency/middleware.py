@@ -4,6 +4,8 @@ from concurrency.core import RecordModifiedError
 from concurrency.views import handler409
 
 
+
+# This middleware is still alpha and should not be used.
 class ConcurrencyMiddleware(object):
     def process_exception(self, request, exception):
         if isinstance(exception, RecordModifiedError):

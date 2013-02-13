@@ -5,10 +5,10 @@ from django.template.base import TemplateDoesNotExist, Template
 from django.template.context import RequestContext
 from django.views.generic.base import TemplateView
 
+# This module is still alpha and should not be used.
 
 class ConflictResponse(HttpResponse):
     status_code = 409
-
 
 handler409 = 'concurrency.views.conflict'
 
@@ -41,10 +41,5 @@ def conflict(request, target=None, template_name='409.html'):
     ctx = RequestContext(request, {'target': target,
                                    'saved': saved,
                                    'request_path': request.path})
-    # return http.HttpResponseNotFound(template.render(RequestContext(request, {'request_path': request.path})))
     return ConflictResponse(template.render(ctx))
 
-
-class Http409View(TemplateView):
-    response_class = ConflictResponse
-    template_name = None
