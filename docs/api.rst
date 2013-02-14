@@ -74,3 +74,16 @@ ConcurrencyTestMixin
 --------------------
 .. autoclass:: concurrency.utils.ConcurrencyTestMixin
 
+
+
+.. _CONCURRECY_SANITY_CHECK:
+
+CONCURRECY_SANITY_CHECK
+-----------------------
+
+If you wand to disable the check raised when you try to save an object with a revision number set
+but without pk (this should not happen) you can set ``CONCURRECY_SANITY_CHECK=False`` in your settings.
+
+This is useful if you have some existing test code that use factories that create a random number that
+prevent the sanity check to pass
+

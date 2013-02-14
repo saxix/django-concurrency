@@ -1,4 +1,5 @@
 from functools import update_wrapper
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db import DatabaseError, connections, router
 from django.utils.translation import ugettext as _
@@ -62,7 +63,7 @@ def _select_lock(model_instance, version_value=None):
         entry = model_instance.__class__.objects.select_for_update(nowait=NOWAIT).filter(**kwargs)
         if not entry:
             raise RecordModifiedError(_('Record has been modified'), target=model_instance)
-    elif is_versioned:
+    elif is_versioned and getattr(settings, 'CONCURRECY_SANITY_CHECK', True):
         raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.' % value))
 
 
