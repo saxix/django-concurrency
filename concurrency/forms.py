@@ -37,6 +37,11 @@ class VersionWidget(HiddenInput):
     any value, you should use this widget to display the current revision number
     """
 
+    def _format_value(self, value):
+        if value:
+            value = str(value)
+        return value
+
     def render(self, name, value, attrs=None):
         ret = super(VersionWidget, self).render(name, value, attrs)
         if value is None:
@@ -53,7 +58,7 @@ class SignedValue(object):
         self.value = value
 
     def __repr__(self):
-        return self.value
+        return str(self.value)
 
 
 class VersionField(forms.IntegerField):
