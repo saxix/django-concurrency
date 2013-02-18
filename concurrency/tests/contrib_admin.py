@@ -1,10 +1,9 @@
 import re
-from django.contrib import admin
 import os
-
+import django.core.management
+from django.contrib import admin
 from django.conf import global_settings
 from django.contrib.auth.models import User
-import django.core.management
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
 from django.test import TestCase
@@ -125,14 +124,13 @@ class TestDjangoAdmin(DjangoAdminTestCase):
         url = reverse('admin:concurrency_testmodel1_change', args=[self.target1.pk])
         response = self.client.get(url)
         self.assertIn('original', response.context, response)
-        # form = response.context['adminform'].form
-        rex = re.compile(r'name="version" value="(\d*):(.[^"]*)"')
+        rex = re.compile(r'name="version" .*value="(\d*):(.[^"]*)"')
         m = rex.search(str(response), re.M + re.I)
         assert m.group(1) == str(response.context['original'].version)
+
         data = {'username': u'new_username',
                 'last_name': None,
                 'version': VersionFieldSigner().sign(m.group(1)),
-                # 'version': response.context['adminform'].form['version'].value(),
                 'char_field': None,
                 '_continue': 1,
                 'date_field': '2010-09-01'}
@@ -151,7 +149,7 @@ class TestDjangoAdmin(DjangoAdminTestCase):
         url = reverse('admin:concurrency_testmodel1_change', args=[self.target1.pk])
         response = self.client.get(url)
         self.assertIn('original', response.context, response)
-        rex = re.compile(r'name="version" value="(\d*):(.[^"]*)"')
+        rex = re.compile(r'name="version" .*value="(\d*):(.[^"]*)"')
 
         m1 = rex.search(str(response), re.M + re.I)
         assert m1.group(1) == str(response.context['original'].version)
