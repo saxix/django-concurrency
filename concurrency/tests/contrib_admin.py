@@ -8,7 +8,6 @@ import django.core.management
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
 from django.test import TestCase
-# from concurrency.tests.models import *
 from concurrency import forms
 from concurrency.forms import ConcurrentForm, VersionWidget, VersionFieldSigner
 from concurrency.tests import TestModel0, TestModel1
@@ -27,10 +26,7 @@ INSTALLED_APPS = (
 
 class TestModel1Admin(admin.ModelAdmin):
     formfield_overrides = {
-        # VersionField: {'widget': VersionWidget},
         forms.VersionField: {'widget': VersionWidget()},
-        # IntegerVersionField: {'widget': VersionWidget},
-        # AutoIncVersionField: {'widget': VersionWidget},
     }
     form = modelform_factory(TestModel1, ConcurrentForm,
                              widgets={'version': VersionWidget()})
@@ -38,17 +34,18 @@ class TestModel1Admin(admin.ModelAdmin):
 
 class DjangoAdminTestCase(TestCase):
     urls = 'concurrency.tests.urls'
+    MIDDLEWARE_CLASSES = global_settings.MIDDLEWARE_CLASSES
+    AUTHENTICATION_BACKENDS = global_settings.AUTHENTICATION_BACKENDS
 
     def setUp(self):
         super(DjangoAdminTestCase, self).setUp()
         self.sett = self.settings(INSTALLED_APPS=INSTALLED_APPS,
-                                  MIDDLEWARE_CLASSES=global_settings.MIDDLEWARE_CLASSES,
-                                  AUTHENTICATION_BACKENDS=global_settings.AUTHENTICATION_BACKENDS,
+                                  MIDDLEWARE_CLASSES=self.MIDDLEWARE_CLASSES,
+                                  AUTHENTICATION_BACKENDS=self.AUTHENTICATION_BACKENDS,
                                   PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',), # fastest hasher
                                   STATIC_URL='/static/',
                                   SOUTH_TESTS_MIGRATE=False,
                                   TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
-                                  #            TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',)
                                   )
         self.sett.enable()
         django.core.management._commands = None # reset commands cache

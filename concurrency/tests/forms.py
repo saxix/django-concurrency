@@ -27,7 +27,7 @@ class WidgetTest(TestCase):
                              u'<input name="ver" type="hidden" value="100"/><div>100</div>')
 
 
-class FieldTest(SimpleTestCase):
+class FormFieldTest(SimpleTestCase):
 
     def setUp(self):
         self.save_warnings_state()
@@ -82,6 +82,18 @@ class ConcurrentFormTest(TestCase):
     def test_signer(self):
         Form = modelform_factory(TestIssue3Model, ConcurrentForm)
         form = Form({'username': 'aaa'})
+        self.assertTrue(form.is_valid(), form.non_field_errors())
+
+    def test_initial_value(self):
+        Form = modelform_factory(TestModel0, type('xxx', (ConcurrentForm,), {}))
+        form = Form({'username': 'aaa'})
+        self.assertHTMLEqual(str(form['version']), '<input type="hidden" value="" name="version" id="id_version" />')
+        self.assertTrue(form.is_valid(), form.non_field_errors())
+
+    def test_initial_value_with_custom_signer(self):
+        Form = modelform_factory(TestIssue3Model, type('xxx', (ConcurrentForm,), {'version': VersionField(signer=DummySigner())}))
+        form = Form({'username': 'aaa'})
+        self.assertHTMLEqual(str(form['version']), '<input type="hidden" value="" name="version" id="id_version" />')
         self.assertTrue(form.is_valid(), form.non_field_errors())
 
     def test_tamperig(self):

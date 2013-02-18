@@ -58,7 +58,10 @@ class SignedValue(object):
         self.value = value
 
     def __repr__(self):
-        return str(self.value)
+        if self.value:
+            return str(self.value)
+        else:
+            return ''
 
 
 class VersionField(forms.IntegerField):
@@ -87,7 +90,7 @@ class VersionField(forms.IntegerField):
             if value not in (None, '', 'None'):
                 return int(self._signer.unsign(value))
             return 0
-        except (BadSignature, ValueError) as e:
+        except (BadSignature, ValueError):
             raise SuspiciousOperation(_('Version number seems tampered'))
 
     def widget_attrs(self, widget):

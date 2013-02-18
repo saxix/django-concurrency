@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.conf import global_settings
+import mock
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 from django.test import TestCase
@@ -40,13 +40,12 @@ class ConcurrencyMiddlewareTest(TestCase):
 
 
 class CT(DjangoAdminTestCase):
+    MIDDLEWARE_CLASSES = ('django.middleware.common.CommonMiddleware',
+                          'django.contrib.sessions.middleware.SessionMiddleware',
+                          'django.contrib.auth.middleware.AuthenticationMiddleware',
+                          'concurrency.middleware.ConcurrencyMiddleware',)
 
-    def setUp(self):
-        DjangoAdminTestCase.setUp(self)
-        m = ['concurrency.middleware.ConcurrencyMiddleware'] + list(global_settings.MIDDLEWARE_CLASSES)
-        self.sett = self.settings(MIDDLEWARE_CLASSES= m)
-        self.sett.enable()
-
+    @mock.patch('django.core.signals.got_request_exception.send', mock.Mock())
     def test_stack(self):
         m, __ = TestModel0.objects.get_or_create(username="New", last_name="1")
         copy = TestModel0.objects.get(pk=m.pk)
