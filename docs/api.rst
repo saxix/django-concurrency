@@ -41,7 +41,7 @@ RecordModifiedError
 ``concurrency_check()``
 ------------------------
 
-Sometimes, VersionField(s) are not ables to wraps the save() method,
+Sometimes, VersionField(s) cannot wraps the save() method,
 is these cirumstances you can check it manually ::
 
     from concurrency.core import concurrency_check
@@ -51,7 +51,6 @@ is these cirumstances you can check it manually ::
 
     def save(self, *args, **kwargs):
         concurrency_check(self, *args, **kwargs)
-        logger.debug(u'Saving %s "%s".' % (self._meta.verbose_name, self))
         super(SecurityConcurrencyBaseModel, self).save(*args, **kwargs)
 
 .. note:: Please note ``manually=True`` argument in `IntegerVersionField()` definition
