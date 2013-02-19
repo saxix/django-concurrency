@@ -20,7 +20,7 @@ class ConcurrentForm(ModelForm):
         try:
             _select_lock(self.instance, self.cleaned_data[self.instance.RevisionMetaInfo.field.name])
         except RecordModifiedError:
-            self._update_errors({NON_FIELD_ERRORS: self.error_class([_('Record modified')])})
+            self._update_errors({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])})
 
         return super(ConcurrentForm, self).clean()
 

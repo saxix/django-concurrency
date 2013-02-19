@@ -5,11 +5,12 @@ services:
 python:
   - "2.6"
   - "2.7"
+  - "3.2"
 env:
-  - DJANGO="Django==1.4.3" DBENGINE=sqlite
+#  - DJANGO="Django==1.4.3" DBENGINE=sqlite
   - DJANGO="Django==1.4.3" DBENGINE=mysql
   - DJANGO="Django==1.4.3" DBENGINE=pg
-  - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/ DBENGINE=mysql
+#  - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/ DBENGINE=mysql
   - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/ DBENGINE=pg
   - DJANGO=https://www.djangoproject.com/download/1.5c1/tarball/ DBENGINE=sqlite
 install:

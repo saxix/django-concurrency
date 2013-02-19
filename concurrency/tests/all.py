@@ -21,7 +21,6 @@ from concurrency.utils import ConcurrencyTestMixin
 
 
 logger = logging.getLogger('concurrency.tests')
-logger.setLevel(logging.DEBUG)
 
 
 class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):

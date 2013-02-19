@@ -1,21 +1,25 @@
-import warnings
-from functools import update_wrapper
+import logging
+from functools import update_wrapper, wraps
 from django.conf import settings
-from django.db import DatabaseError, connections, router
+from django.db import connections, router
 from django.utils.translation import ugettext as _
+
+logger = logging.getLogger('concurrency')
+
 from concurrency.exceptions import VersionChangedError, RecordModifiedError, InconsistencyError
+from concurrency.utils import deprecated
+
 
 __all__ = []
 
-def deprecate(target, subst, version):
-    warnings.warn("`{0}` will be removed in version `{2}`. Please use `{1}`".format(target, subst, version),
-                  category=DeprecationWarning)
 
+@deprecated('concurrency.api.apply_concurrency_check', '0.5')
 def apply_concurrency_check(model, fieldname, versionclass):
     from concurrency.api import apply_concurrency_check as acc
     return acc(model, fieldname, versionclass)
 
 
+@deprecated('concurrency.api.apply_concurrency_check', '0.5')
 def concurrency_check(model_instance, force_insert=False, force_update=False, using=None, **kwargs):
     from concurrency.api import concurrency_check as cc
     return cc(model_instance, force_insert, force_update, using, **kwargs)
@@ -36,6 +40,14 @@ def _select_lock(model_instance, version_value=None):
         raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.' % value))
 
 
+def _wrap_model_save(model, force=False):
+    if force or not model.RevisionMetaInfo.versioned_save:
+        logger.debug('Wrapping save method of %s' % model)
+        old_save = getattr(model, 'save')
+        setattr(model, 'save', _wrap_save(old_save))
+        model.RevisionMetaInfo.versioned_save = True
+
+
 def _wrap_save(func):
     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
         concurrency_check(self, force_insert, force_update, using, **kwargs)
@@ -47,16 +59,9 @@ def _wrap_save(func):
 def _versioned_save(self, force_insert=False, force_update=False, using=None):
     if force_insert and force_update:
         raise ValueError("Cannot force both insert and updating in model saving.")
-    concurrency_check(self, force_insert, force_update, using)
+    if not force_insert:
+        _select_lock(self)
     self.save_base(using=using, force_insert=force_insert, force_update=force_update)
-
-
-def class_prepared_concurrency_handler(sender, **kwargs):
-    if hasattr(sender, 'RevisionMetaInfo') and not (sender.RevisionMetaInfo.manually or
-                                                    sender.RevisionMetaInfo.versioned_save):
-        old_save = getattr(sender, 'save')
-        setattr(sender, 'save', _wrap_save(old_save))
-        sender.RevisionMetaInfo.versioned_save = True
 
 
 class RevisionMetaInfo:

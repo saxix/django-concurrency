@@ -2,6 +2,7 @@ SITE_ID = 1
 ROOT_URLCONF = 'demoproject.urls'
 SECRET_KEY = ';klkj;okj;lkn;lklj;lkj;kjmlliuewhy2ioqwjdkh'
 INSTALLED_APPS = (
+    'concurrency',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -9,7 +10,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'concurrency')
+
+)
 
 DATABASES = {
     'default': {
@@ -23,7 +25,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'simple': {
-            'format': '%(levelname)-8s: %(asctime)s %(name)20s: %(funcName)s %(message)s'
+            'format': '%(levelname)-8s: %(asctime)s %(name)10s: %(funcName)40s %(message)s'
         }
     },
     'handlers': {

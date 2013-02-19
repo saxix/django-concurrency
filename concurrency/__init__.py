@@ -47,4 +47,3 @@ so it's sufficient for generating the development version numbers.
         return None
     return timestamp.strftime('%Y%m%d%H%M%S')
 
-

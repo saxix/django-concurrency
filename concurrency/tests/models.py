@@ -1,8 +1,11 @@
 from django.contrib.auth.models import User, Group
 from django.db import models
 from django.db.models.base import ModelBase
-from concurrency.core import concurrency_check
+from concurrency.core import concurrency_check, _wrap_model_save
 from concurrency.fields import IntegerVersionField, AutoIncVersionField
+import logging
+
+logger = logging.getLogger('concurrency.test')
 
 
 class AbstractConcurrentModel(models.Model):
@@ -184,4 +187,10 @@ class TestIssue3Model(models.Model):
 
     class Meta:
         app_label = 'concurrency'
+
+
+# TODO: investigate why tox requires this. (Maybe depends on the order of the calls of the ``class_prepared`` ?
+for model in [TestAbstractModel0, TestModel0, ModelWithCustomSave, TestIssue3Model, AutoIncConcurrentModel,
+              TestModelWithCustomSave]:
+    _wrap_model_save(model, True)
 
