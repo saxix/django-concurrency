@@ -26,6 +26,7 @@ class ConcurrencyMiddlewareTest(TestCase):
         request.path = request.path_info = "/middleware/%s" % path
         return request
 
+    @mock.patch('django.core.signals.got_request_exception.send', mock.Mock())
     def test_process_exception(self):
         """
         Tests that RecordModifiedError is handled correctly.
