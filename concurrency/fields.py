@@ -84,51 +84,6 @@ class AutoIncVersionField(VersionField):
         return value
 
 
-# class DateTimeVersionField(VersionField):
-#     """
-#         Version Field that use datetime
-#
-#     """
-#     form_class = forms.DateVersionField
-#
-#     def get_default(self):
-#         return None
-#
-#     def get_internal_type(self):
-#         return "DateTimeField"
-#
-#     def pre_save(self, model_instance, add):
-#         value = timezone.now()
-#         setattr(model_instance, self.attname, value)
-#         return value
-
-
-# class TimestampVersionField(DateTimeVersionField):
-#     def __init__(self, null=False, blank=False, **kwargs):
-#         super(TimestampVersionField, self).__init__(**kwargs)
-#         # default for TIMESTAMP is NOT NULL unlike most fields, so we have to
-#         # cheat a little:
-#         self.blank, self.isnull = blank, null
-#         self.null = True # To prevent the framework from shoving in "not null".
-#
-#     def db_type(self, connection):
-#         typ = ['TIMESTAMP']
-#         # See above!
-#         if self.isnull:
-#             typ += ['NULL']
-#         if self.auto_created:
-#             typ += ['default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP']
-#         return ' '.join(typ)
-#
-#     def to_python(self, value):
-#         return datetime.datetime.from_timestamp(value)
-#
-#     def get_db_prep_value(self, value, connection, prepared=False):
-#         if value == None:
-#             return None
-#         return time.strftime('%Y%m%d%H%M%S', value.timetuple())
-
-
 try:
     from south.modelsinspector import add_introspection_rules
 
