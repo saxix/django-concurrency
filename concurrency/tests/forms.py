@@ -146,18 +146,20 @@ class ConcurrentFormTest(TestCase):
         self.assertRaises(ValueError, form.save)
 
     def test_form_is_valid(self):
-        obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
-        Form = modelform_factory(TestIssue3Model, ConcurrentForm)
-        data = {'username': "a",
-                'revision': VersionFieldSigner().sign(1)}
-        form = Form(data)
-        self.assertRaises(InconsistencyError, form.is_valid)
+        with self.settings(CONCURRECY_SANITY_CHECK=True):
+            obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
+            Form = modelform_factory(TestIssue3Model, ConcurrentForm)
+            data = {'username': "a",
+                    'revision': VersionFieldSigner().sign(1)}
+            form = Form(data)
+            self.assertRaises(InconsistencyError, form.is_valid)
 
     def test_signing(self):
         """ Do not accept version value if adding"""
-        obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
-        Form = modelform_factory(TestIssue3Model, ConcurrentForm)
-        data = {'username': "a",
-                'revision': VersionFieldSigner().sign(1)}
-        form = Form(data)
-        self.assertRaises(InconsistencyError, form.is_valid)
+        with self.settings(CONCURRECY_SANITY_CHECK=True):
+            obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
+            Form = modelform_factory(TestIssue3Model, ConcurrentForm)
+            data = {'username': "a",
+                    'revision': VersionFieldSigner().sign(1)}
+            form = Form(data)
+            self.assertRaises(InconsistencyError, form.is_valid)
