@@ -1,6 +1,10 @@
 Release 0.4.0 (under development)
 =================================
 
+* start deprecation of ``concurrency.core.VersionChangedError``, ``concurrency.core.RecordModifiedError``,
+``concurrency.core.InconsistencyError``,moved in ``concurrency.exceptions``
+* start deprecation of ``concurrency.core.apply_concurrency_check``, ``concurrency.core.concurrency_check
+    moved in ``concurrency.api``
 * added :ref:`CONCURRECY_SANITY_CHECK` settings entry
 * signing of version number to avoid tampering (:ref:`concurrentform`)
 * added :ref:`ConcurrencyTestMixin` to help test on concurrency managed models

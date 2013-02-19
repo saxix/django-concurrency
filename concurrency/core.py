@@ -1,55 +1,24 @@
+import warnings
 from functools import update_wrapper
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db import DatabaseError, connections, router
 from django.utils.translation import ugettext as _
+from concurrency.exceptions import VersionChangedError, RecordModifiedError, InconsistencyError
 
 __all__ = []
 
-
-class VersionChangedError(ValidationError):
-    pass
-
-
-class RecordModifiedError(DatabaseError):
-    def __init__(self, *args, **kwargs):
-        self.target = kwargs.pop('target')
-        super(RecordModifiedError, self).__init__(*args, **kwargs)
-
-
-class InconsistencyError(DatabaseError):
-    pass
-
+def deprecate(target, subst, version):
+    warnings.warn("`{0}` will be removed in version `{2}`. Please use `{1}`".format(target, subst, version),
+                  category=DeprecationWarning)
 
 def apply_concurrency_check(model, fieldname, versionclass):
-    """
-    Apply concurrency management to existing Models.
-
-    :param model: Model class to update
-    :type model: django.db.Model
-
-    :param fieldname: name of the field
-    :type fieldname: basestring
-
-    :param versionclass:
-    :type versionclass: concurrency.fields.VersionField subclass
-    """
-    if hasattr(model, 'RevisionMetaInfo'):
-        raise ImproperlyConfigured("%s is already under concurrency management" % model)
-
-    ver = versionclass()
-    ver.contribute_to_class(model, fieldname)
-    model.RevisionMetaInfo.field = ver
-
-    if not model.RevisionMetaInfo.versioned_save:
-        old_save = getattr(model, 'save')
-        setattr(model, 'save', _wrap_save(old_save))
-        model.RevisionMetaInfo.versioned_save = True
+    from concurrency.api import apply_concurrency_check as acc
+    return acc(model, fieldname, versionclass)
 
 
 def concurrency_check(model_instance, force_insert=False, force_update=False, using=None, **kwargs):
-    if not force_insert:
-        _select_lock(model_instance)
+    from concurrency.api import concurrency_check as cc
+    return cc(model_instance, force_insert, force_update, using, **kwargs)
 
 
 def _select_lock(model_instance, version_value=None):
