@@ -189,7 +189,7 @@ class TestIssue3Model(models.Model):
         app_label = 'concurrency'
 
 
-# TODO: investigate why tox requires this. (Maybe depends on the order of the calls of the ``class_prepared`` ?
+# tox requires this.
 for model in [TestAbstractModel0, TestModel0, ModelWithCustomSave, TestIssue3Model, AutoIncConcurrentModel,
               TestModelWithCustomSave]:
     _wrap_model_save(model, True)
