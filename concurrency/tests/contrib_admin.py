@@ -10,6 +10,7 @@ from django.test import TestCase
 from concurrency import forms
 from concurrency.forms import ConcurrentForm, VersionWidget, VersionFieldSigner
 from concurrency.tests import TestModel0, TestModel1
+from django.utils.translation import ugettext as _
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -141,7 +142,7 @@ class TestDjangoAdmin(DjangoAdminTestCase):
         self.assertIn('original', response.context, response)
         self.assertTrue(response.context['adminform'].form.errors,
                         response.context['adminform'].form.errors)
-        self.assertIn('Record Modified',
+        self.assertIn(_('Record Modified'),
                       str(response.context['adminform'].form.errors),
                       response.context['adminform'].form.errors)
 

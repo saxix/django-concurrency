@@ -8,6 +8,7 @@ from concurrency.core import InconsistencyError
 from concurrency.forms import ConcurrentForm, VersionField, VersionFieldSigner, VersionWidget
 from concurrency.tests import TestModel0, TestIssue3Model
 from django.test.testcases import SimpleTestCase
+from django.utils.translation import ugettext as _
 
 
 class DummySigner():
@@ -129,7 +130,7 @@ class ConcurrentFormTest(TestCase):
         form = Form(data, instance=obj)
         obj_copy.save() # save
         self.assertFalse(form.is_valid())
-        self.assertIn('Record Modified', form.non_field_errors())
+        self.assertIn(_('Record Modified'), form.non_field_errors())
 
     def test_is_valid(self):
         obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
