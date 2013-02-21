@@ -8,7 +8,7 @@ from concurrency.core import InconsistencyError
 from concurrency.forms import ConcurrentForm, VersionField, VersionFieldSigner, VersionWidget
 from concurrency.tests import TestModel0, TestIssue3Model
 from django.test.testcases import SimpleTestCase
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
 
 class DummySigner():
