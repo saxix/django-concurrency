@@ -69,7 +69,7 @@ class TestDjangoAdmin(DjangoAdminTestCase):
 
     def test_creation(self):
         url = reverse('admin:concurrency_testmodel0_add')
-        data = {'username': u'new_username',
+        data = {'username': 'new_username',
                 'last_name': None,
                 'version': VersionFieldSigner().sign(0),
                 'char_field': None,

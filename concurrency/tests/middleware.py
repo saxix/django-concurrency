@@ -52,7 +52,7 @@ class CT(DjangoAdminTestCase):
         copy = TestModel0.objects.get(pk=m.pk)
         url = reverse('admin:concurrency_testmodel0_change', args=[m.pk])
 
-        data = {'username': u'new_username',
+        data = {'username': 'new_username',
                 'last_name': None,
                 'version': VersionFieldSigner().sign(m.version),
                 'char_field': None,
