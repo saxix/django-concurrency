@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from concurrency.core import _select_lock, RecordModifiedError
+from concurrency.exceptions import VersionError
 
 
 class ConcurrentForm(ModelForm):
@@ -91,7 +92,7 @@ class VersionField(forms.IntegerField):
                 return int(self._signer.unsign(value))
             return 0
         except (BadSignature, ValueError):
-            raise SuspiciousOperation(_('Version number seems tampered'))
+            raise VersionError()
 
     def widget_attrs(self, widget):
         return {}

@@ -5,6 +5,7 @@ from django.forms.widgets import HiddenInput, TextInput
 from django.utils.encoding import smart_str
 from django.test import TestCase
 from concurrency.core import InconsistencyError
+from concurrency.exceptions import VersionError
 from concurrency.forms import ConcurrentForm, VersionField, VersionFieldSigner, VersionWidget
 from concurrency.tests import TestModel0, TestIssue3Model
 from django.test.testcases import SimpleTestCase
@@ -44,10 +45,8 @@ class FormFieldTest(SimpleTestCase):
         self.assertEqual(1, f.clean('1'))
         self.assertEqual(0, f.clean(None))
         self.assertEqual(0, f.clean(''))
-        self.assertRaisesMessage(SuspiciousOperation,
-                                "Version number seems tampered", f.clean, 'aa:bb')
-        self.assertRaisesMessage(SuspiciousOperation,
-                                 "Version number seems tampered", f.clean, 1.5)
+        self.assertRaises(VersionError, f.clean, 'aa:bb')
+        self.assertRaises(VersionError, f.clean, 1.5)
 
     def test(self):
         f = VersionField()
@@ -55,12 +54,8 @@ class FormFieldTest(SimpleTestCase):
         self.assertEqual(1, f.clean(VersionFieldSigner().sign('1')))
         self.assertEqual(0, f.clean(None))
         self.assertEqual(0, f.clean(''))
-        self.assertRaisesMessage(SuspiciousOperation,
-                                "Version number seems tampered", f.clean, '100')
-        self.assertRaisesMessage(SuspiciousOperation,
-                                 "Version number seems tampered",
-                                 f.clean,
-                                 VersionFieldSigner().sign(1.5))
+        self.assertRaises(VersionError, f.clean, '100')
+        self.assertRaises(VersionError, f.clean, VersionFieldSigner().sign(1.5))
 
 
 class ConcurrentFormTest(TestCase):
