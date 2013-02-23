@@ -1,9 +1,11 @@
 from django import forms
+from django.conf import settings
 from django.core import validators
-from django.core.exceptions import NON_FIELD_ERRORS, SuspiciousOperation
+from django.core.exceptions import NON_FIELD_ERRORS, SuspiciousOperation, ImproperlyConfigured
 from django.core.signing import Signer, BadSignature
 from django.forms import ModelForm, HiddenInput
 from django.utils import timezone
+from django.utils.importlib import import_module
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from concurrency.core import _select_lock, RecordModifiedError
@@ -45,13 +47,35 @@ class VersionWidget(HiddenInput):
 
     def render(self, name, value, attrs=None):
         ret = super(VersionWidget, self).render(name, value, attrs)
-        if value is None:
-            value = ''
-        return mark_safe("%s<div>%s</div>" % (ret, value))
+        label = ''
+        if isinstance(value, SignedValue):
+            label = str(value).split(':')[0]
+        elif value is not None:
+            label = str(value)
+
+        return mark_safe("%s<div>%s</div>" % (ret, label))
 
 
 class VersionFieldSigner(Signer):
-    pass
+    def sign(self, value):
+        if not value:
+            return None
+        return super(VersionFieldSigner, self).sign(value)
+
+
+def get_signer():
+    path = getattr(settings, 'CONCURRENCY_FIELD_SIGNER', 'concurrency.forms.VersionFieldSigner')
+    i = path.rfind('.')
+    module, attr = path[:i], path[i+1:]
+    try:
+        mod = import_module(module)
+    except ImportError, e:
+        raise ImproperlyConfigured('Error loading concurrency signer %s: "%s"' % (module, e))
+    try:
+        signer_class = getattr(mod, attr)
+    except AttributeError:
+        raise ImproperlyConfigured('Module "%s" does not define a valid signer named "%s"' % (module, attr))
+    return signer_class()
 
 
 class SignedValue(object):
@@ -70,7 +94,7 @@ class VersionField(forms.IntegerField):
     hidden_widget = HiddenInput# Default widget to use when rendering this as "hidden".
 
     def __init__(self, *args, **kwargs):
-        self._signer = kwargs.pop('signer', VersionFieldSigner())
+        self._signer = kwargs.pop('signer', get_signer())
         kwargs.pop('min_value', None)
         kwargs.pop('max_value', None)
         kwargs['required'] = True
@@ -84,6 +108,8 @@ class VersionField(forms.IntegerField):
     def prepare_value(self, value):
         if isinstance(value, SignedValue):
             return value
+        elif value is None:
+            return ''
         return SignedValue(self._signer.sign(value))
 
     def to_python(self, value):
@@ -92,7 +118,7 @@ class VersionField(forms.IntegerField):
                 return int(self._signer.unsign(value))
             return 0
         except (BadSignature, ValueError):
-            raise VersionError()
+            raise VersionError(value)
 
     def widget_attrs(self, widget):
         return {}
