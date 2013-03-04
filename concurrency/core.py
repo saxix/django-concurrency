@@ -4,6 +4,16 @@ from django.conf import settings
 from django.db import connections, router
 from django.utils.translation import ugettext as _
 
+# Set default logging handler to avoid "No handler found" warnings.
+try:  # Python 2.7+
+    from logging import NullHandler
+except ImportError:
+    class NullHandler(logging.Handler):
+        def emit(self, record):
+            pass
+
+logging.getLogger('concurrency').addHandler(NullHandler())
+
 logger = logging.getLogger('concurrency')
 
 from concurrency.exceptions import VersionChangedError, RecordModifiedError, InconsistencyError
