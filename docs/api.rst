@@ -6,19 +6,10 @@ API
 ===
 
 .. contents::
-    :local:
+:local:
 
-
-IntegerVersionField
--------------------
-.. autoclass:: concurrency.fields.IntegerVersionField
-
-
-AutoIncVersionField
--------------------
-.. autoclass:: concurrency.fields.AutoIncVersionField
-
-.. _concurrentform:
+Forms
+=====
 
 ConcurrentForm
 --------------
@@ -30,13 +21,37 @@ VersionWidget
 .. autoclass:: concurrency.forms.VersionWidget
 
 
+Exceptions
+==========
+
+.. _VersionChangedError:
+
+VersionChangedError
+-------------------
+.. autoclass:: concurrency.exceptions.VersionChangedError
+
 .. _RecordModifiedError:
 
 RecordModifiedError
 -------------------
-.. autoclass:: concurrency.core.RecordModifiedError
+.. autoclass:: concurrency.exceptions.RecordModifiedError
 
-.. _concurrency_check:
+.. _InconsistencyError:
+
+InconsistencyError
+-------------------
+.. autoclass:: concurrency.exceptions.InconsistencyError
+
+
+.. _VersionError:
+
+VersionError
+-------------------
+.. autoclass:: concurrency.exceptions.VersionError
+
+
+Helpers
+=========
 
 ``concurrency_check()``
 ------------------------
@@ -67,22 +82,13 @@ Add concurrency check to existing classes.
 .. autofunction:: concurrency.core.apply_concurrency_check
 
 
+Test Utilties
+=============
+
 .. _ConcurrencyTestMixin:
 
 ConcurrencyTestMixin
 --------------------
 .. autoclass:: concurrency.utils.ConcurrencyTestMixin
 
-
-
-.. _CONCURRECY_SANITY_CHECK:
-
-CONCURRECY_SANITY_CHECK
------------------------
-
-If you wand to disable the check raised when you try to save an object with a revision number set
-but without pk (this should not happen) you can set ``CONCURRECY_SANITY_CHECK=False`` in your settings.
-
-This is useful if you have some existing test code that use factories that create a random number that
-prevent the sanity check to pass
 

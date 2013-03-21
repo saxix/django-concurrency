@@ -2,8 +2,8 @@
 
 .. _help:
 
-Installation
-------------
+Install
+==========
 
 Using ``pip``::
 
@@ -12,8 +12,6 @@ Using ``pip``::
 Go to https://github.com/saxix/django-concurrency if you need to download a package or clone the repo.
 
 
-Setup
------
 |concurrency| does not need to be installed into ``INSTALLED_APPS`` unless you want run tests
 
 
