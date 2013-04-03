@@ -2,7 +2,7 @@
 import logging
 import warnings
 
-from concurrency.core import RecordModifiedError
+from concurrency.exceptions import RecordModifiedError
 
 logger = logging.getLogger('tests.concurrency')
 logger.setLevel(logging.DEBUG)
@@ -78,6 +78,7 @@ class ConcurrencyTestMixin(object):
     concurrency_kwargs = {}
 
     def _get_concurrency_target(self, **kwargs):
+        # WARNING this method must be idempotent. ie must returns always a fresh copy of the record
         args = dict(self.concurrency_kwargs)
         args.update(kwargs)
         return self.concurrency_model.objects.get_or_create(**args)[0]
