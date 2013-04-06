@@ -83,7 +83,7 @@ class TestDjangoAdmin(DjangoAdminTestCase):
 
     def test_creation_with_customform(self):
         url = reverse('admin:concurrency_testmodel1_add')
-        data = {'username': u'new_username',
+        data = {'username': 'new_username',
                 'last_name': None,
                 'version': VersionFieldSigner().sign(0),
                 'char_field': None,
@@ -107,7 +107,7 @@ class TestDjangoAdmin(DjangoAdminTestCase):
         target = response.context['original']
         old_version = target.version
         # data = model_to_dict(target, exclude=['id'])
-        data = {'username': u'new_username',
+        data = {'username': 'new_username',
                 'last_name': None,
                 'version': VersionFieldSigner().sign(target.version),
                 'char_field': None,
@@ -125,13 +125,12 @@ class TestDjangoAdmin(DjangoAdminTestCase):
         url = reverse('admin:concurrency_testmodel1_change', args=[self.target1.pk])
         response = self.client.get(url)
         self.assertIn('original', response.context, response)
-        rex = re.compile(r'name="version" .*value="(\d*):(.[^"]*)"')
-        m = rex.search(str(response), re.M + re.I)
-        assert m.group(1) == str(response.context['original'].version)
+        form = response.context['adminform'].form
+        version = int(str(form['version'].value()).split(":")[0])
 
-        data = {'username': u'new_username',
+        data = {'username': 'new_username',
                 'last_name': None,
-                'version': VersionFieldSigner().sign(m.group(1)),
+                'version': VersionFieldSigner().sign(version),
                 'char_field': None,
                 '_continue': 1,
                 'date_field': '2010-09-01'}
@@ -150,13 +149,13 @@ class TestDjangoAdmin(DjangoAdminTestCase):
         url = reverse('admin:concurrency_testmodel1_change', args=[self.target1.pk])
         response = self.client.get(url)
         self.assertIn('original', response.context, response)
-        rex = re.compile(r'name="version" .*value="(\d*):(.[^"]*)"')
+        form = response.context['adminform'].form
+        version1 = int(str(form['version'].value()).split(":")[0])
 
-        m1 = rex.search(str(response), re.M + re.I)
-        assert m1.group(1) == str(response.context['original'].version)
-        data = {'username': u'new_username',
+
+        data = {'username': 'new_username',
                 'last_name': None,
-                'version': VersionFieldSigner().sign(m1.group(1)),
+                'version': VersionFieldSigner().sign(version1),
                 'char_field': None,
                 '_continue': 1,
                 'date_field': 'esss2010-09-01'}
@@ -165,5 +164,6 @@ class TestDjangoAdmin(DjangoAdminTestCase):
         self.assertIn('original', response.context, response)
         self.assertTrue(response.context['adminform'].form.errors,
                         response.context['adminform'].form.errors)
-        m2 = rex.search(str(response), re.M + re.I)
-        self.assertEqual(m1.groups(), m2.groups())
+        form = response.context['adminform'].form
+        version2 = int(str(form['version'].value()).split(":")[0])
+        self.assertEqual(version1, version2)

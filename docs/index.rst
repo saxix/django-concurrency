@@ -20,6 +20,8 @@ django command.
 
 .. note:: |concurrency| requires Django >= 1.4
 
+.. note:: tested on Django1.5 with python 3.2
+
 
 * easy to add to existing Models ( just add VersionField )
 * works with Django internal models

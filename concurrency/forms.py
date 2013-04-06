@@ -69,7 +69,7 @@ def get_signer():
     module, attr = path[:i], path[i+1:]
     try:
         mod = import_module(module)
-    except ImportError, e:
+    except ImportError as e:
         raise ImproperlyConfigured('Error loading concurrency signer %s: "%s"' % (module, e))
     try:
         signer_class = getattr(mod, attr)

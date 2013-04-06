@@ -24,9 +24,9 @@ class WidgetTest(TestCase):
     def test(self):
         w = VersionWidget()
         self.assertHTMLEqual(w.render('ver', None),
-                             u'<input name="ver" type="hidden"/><div></div>')
+                             '<input name="ver" type="hidden"/><div></div>')
         self.assertHTMLEqual(w.render('ver', 100),
-                             u'<input name="ver" type="hidden" value="100"/><div>100</div>')
+                             '<input name="ver" type="hidden" value="100"/><div>100</div>')
 
 
 class FormFieldTest(SimpleTestCase):
@@ -99,7 +99,7 @@ class ConcurrentFormTest(TestCase):
                 'last_name': None,
                 'date_field': None,
                 'char_field': None,
-                'version': u'abc',
+                'version': 'abc',
                 'id': 1,
                 'revision': obj.revision}
         form = Form(data, instance=obj)
@@ -119,7 +119,7 @@ class ConcurrentFormTest(TestCase):
                 'last_name': None,
                 'date_field': None,
                 'char_field': None,
-                'version': u'abc',
+                'version': 'abc',
                 'id': 1,
                 'revision': VersionFieldSigner().sign(obj.revision)}
         form = Form(data, instance=obj)
@@ -134,7 +134,7 @@ class ConcurrentFormTest(TestCase):
                 'last_name': None,
                 'date_field': None,
                 'char_field': None,
-                'version': u'abc',
+                'version': 'abc',
                 'id': 1,
                 'revision': VersionFieldSigner().sign(obj.revision)}
         form = Form(data, instance=obj)

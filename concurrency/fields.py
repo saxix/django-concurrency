@@ -8,7 +8,7 @@ from concurrency.core import RevisionMetaInfo
 
 logger = logging.getLogger('concurrency')
 
-OFFSET = int(time.mktime([2000, 1, 1, 0, 0, 0, 0, 0, 0]))
+OFFSET = int(time.mktime((2000, 1, 1, 0, 0, 0, 0, 0, 0)))
 
 
 class VersionField(Field):
