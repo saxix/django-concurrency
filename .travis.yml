@@ -19,7 +19,7 @@ install:
 
 script:
   - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then cd demoproject && ./manage.py test concurrency; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3* && $DJANGO==1.5* ]]; then cd demoproject && ./manage.py test concurrency; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3* && $DJANGO == '1.5.1' ]]; then cd demoproject && ./manage.py test concurrency; fi
 
 before_install:
   - sh -c "if [ '$DBENGINE' = 'pg' ]; then psql -c 'DROP DATABASE IF EXISTS concurrency;' -U postgres; fi"
