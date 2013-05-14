@@ -84,18 +84,20 @@ class ConcurrencyTestMixin(object):
         return self.concurrency_model.objects.get_or_create(**args)[0]
 
     def test_concurrency_conflict(self):
+        import concurrency.api as api
         target = self._get_concurrency_target()
         target_copy = self._get_concurrency_target()
-        v1 = get_revision_of_object(target)
-        v2 = get_revision_of_object(target_copy)
+        v1 = api.get_revision_of_object(target)
+        v2 = api.get_revision_of_object(target_copy)
         assert v1 == v2, "got same row with different version (%s/%s)" % (v1, v2)
         target.save()
         assert target.pk is not None # sanity check
         self.assertRaises(RecordModifiedError, target_copy.save)
 
     def test_concurrency_safety(self):
+        import concurrency.api as api
         target = self.concurrency_model()
-        version = get_revision_of_object(target)
+        version = api.get_revision_of_object(target)
         self.assertFalse(bool(version), "version is not null %s" % version)
 
     def test_concurrency_management(self):
