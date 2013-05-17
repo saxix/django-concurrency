@@ -3,8 +3,8 @@ services:
   - MySQL
   - PostgreSQL
 python:
-  - "2.7"
-  - "3.2"
+  - 2.7
+  - 3.2
 env:
   - DJANGO="Django==1.4.5" DBENGINE=mysql
   - DJANGO="Django==1.4.5" DBENGINE=pg
@@ -19,7 +19,8 @@ install:
   - python setup.py -q install
 
 script:
-  - cd demoproject && ./manage.py test concurrency;
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then cd demoproject && ./manage.py test concurrency; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3* && $DJANGO==1.5* ]]; then cd demoproject && ./manage.py test concurrency; fi
 
 before_install:
   - sh -c "if [ '$DBENGINE' = 'pg' ]; then psql -c 'DROP DATABASE IF EXISTS concurrency;' -U postgres; fi"
@@ -35,3 +36,5 @@ matrix:
       env: DJANGO="Django==1.4.5" DBENGINE=mysql
     - python: 3.2
       env: DJANGO="Django==1.4.5" DBENGINE=pg
+    - python: 3.2
+      env: DJANGO="Django==1.5.1" DBENGINE=mysql
