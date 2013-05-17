@@ -32,6 +32,6 @@ before_script:
 matrix:
   exclude:
     - python: 3.2
-      env: DJANGO=Django==1.4.5 DBENGINE=mysql
+      env: DJANGO="Django==1.4.5" DBENGINE=mysql
     - python: 3.2
-      env: DJANGO=Django==1.4.5 DBENGINE=pg
+      env: DJANGO="Django==1.4.5" DBENGINE=pg
