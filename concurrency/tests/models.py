@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, Group
 from django.db import models
 from django.db.models.base import ModelBase
-from concurrency.core import concurrency_check, _wrap_model_save
+from concurrency.api import concurrency_check, _wrap_model_save
 from concurrency.fields import IntegerVersionField, AutoIncVersionField
 import logging
 

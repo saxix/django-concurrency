@@ -38,7 +38,7 @@ and existing database remember to edit the database's table:
 `your_app.models.py`::
 
     from django.contrib.auth import User
-    from concurrency.core import apply_concurrency_check
+    from concurrency.api import apply_concurrency_check
 
     apply_concurrency_check(User, 'version', IntegerVersionField)
 
@@ -51,7 +51,7 @@ Manually handle concurrency
 
 ::
 
-    from concurrency.core import concurrency_check
+    from concurrency.api import concurrency_check
 
 
     class AbstractModelWithCustomSave(models.Model):
