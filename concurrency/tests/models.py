@@ -188,9 +188,3 @@ class TestIssue3Model(models.Model):
     class Meta:
         app_label = 'concurrency'
 
-
-# tox requires this.
-for model in [TestAbstractModel0, TestModel0, ModelWithCustomSave, TestIssue3Model, AutoIncConcurrentModel,
-              TestModelWithCustomSave]:
-    _wrap_model_save(model, True)
-
