@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os, sys
-
+sys.path.append(os.pardir)
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "demoproject.settings")
 

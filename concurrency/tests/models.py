@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, Group
 from django.db import models
 from django.db.models.base import ModelBase
-from concurrency.core import concurrency_check, _wrap_model_save
+from concurrency.api import concurrency_check, _wrap_model_save
 from concurrency.fields import IntegerVersionField, AutoIncVersionField
 import logging
 
@@ -187,10 +187,4 @@ class TestIssue3Model(models.Model):
 
     class Meta:
         app_label = 'concurrency'
-
-
-# tox requires this.
-for model in [TestAbstractModel0, TestModel0, ModelWithCustomSave, TestIssue3Model, AutoIncConcurrentModel,
-              TestModelWithCustomSave]:
-    _wrap_model_save(model, True)
 

@@ -13,10 +13,12 @@
 
 import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
-import concurrency
+print sys.path
+
 from django.conf import settings
 settings.configure()
 
+import concurrency
 #os.environ['DJANGO_SETTINGS_MODULE']= 'django.conf.global_settings'
 
 # If extensions (or modules to document with autodoc) are in another directory,

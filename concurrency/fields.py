@@ -4,11 +4,11 @@ from django.utils.translation import ugettext as _
 from django.db.models.fields import Field
 
 from concurrency import forms
-from concurrency.core import RevisionMetaInfo
+from concurrency.core import RevisionMetaInfo, _wrap_model_save
 
 logger = logging.getLogger('concurrency')
 
-OFFSET = int(time.mktime([2000, 1, 1, 0, 0, 0, 0, 0, 0]))
+OFFSET = int(time.mktime((2000, 1, 1, 0, 0, 0, 0, 0, 0)))
 
 
 class VersionField(Field):
@@ -44,6 +44,7 @@ class VersionField(Field):
         if hasattr(cls, 'RevisionMetaInfo'):
             return
         setattr(cls, 'RevisionMetaInfo', RevisionMetaInfo())
+        _wrap_model_save(cls)
         cls.RevisionMetaInfo.field = self
         cls.RevisionMetaInfo.manually = self.manually
 

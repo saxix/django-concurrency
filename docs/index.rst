@@ -20,6 +20,8 @@ django command.
 
 .. note:: |concurrency| requires Django >= 1.4
 
+.. note:: tested on Django1.5 with python 3.2
+
 
 * easy to add to existing Models ( just add VersionField )
 * works with Django internal models
@@ -30,21 +32,6 @@ django command.
 * works with `South`_ and `diango-reversion`_
 * Admin integration
 
-Table Of Contents
-=================
-
-.. toctree::
-    :maxdepth: 1
-
-    help
-    api
-    changes
-
-
-.. toctree::
-    :hidden:
-
-    globals
 
 How it works
 ============
@@ -55,75 +42,25 @@ the version number change (the algorithm used depeneds on the VersionField used,
 When a record is saved, |concurrency| try to get a lock to to the record based on the old revision
 number, if the record is not found raise a :ref:`RecordModifiedError`
 
-Add version to new models
---------------------------
 
-`models.py`::
+Table Of Contents
+=================
 
-    from concurrency.fields import IntegerVersionField
+.. toctree::
+    :maxdepth: 1
 
-    class ConcurrentModel( models.Model ):
-        version = IntegerVersionField( )
-
-`tests.py`::
-
-    a = ConcurrentModel.objects.get(pk=1)
-    b = ConcurrentModel.objects.get(pk=1)
-    a.save()
-    b.save() # this will raise ``RecordModifedError``
+    install
+    cookbook
+    fields
+    api
+    settings
+    changes
 
 
-Django and/or plugged in applications models
---------------------------------------------
+.. toctree::
+    :hidden:
 
-.. versionchanged:: 0.4
-
-Concurrency can work even with existing models, anyway if you are adding concurrency management to
-and existing database remember to edit the database's table:
-
-`your_app.models.py`::
-
-    from django.contrib.auth import User
-    from concurrency.core import apply_concurrency_check
-
-    apply_concurrency_check(User, 'version', IntegerVersionField)
-
-
-
-Manually handle concurrency
----------------------------
-
-.. versionchanged:: 0.4
-
-::
-
-    from concurrency.core import concurrency_check
-
-
-    class AbstractModelWithCustomSave(models.Model):
-        version = IntegerVersionField(db_column='cm_version_id', manually=True)
-
-
-    def save(self, *args, **kwargs):
-        concurrency_check(self, *args, **kwargs)
-        logger.debug(u'Saving %s "%s".' % (self._meta.verbose_name, self))
-        super(SecurityConcurrencyBaseModel, self).save(*args, **kwargs)
-
-
-Test Utilities
---------------
-
-:ref:`ConcurrencyTestMixin` offer a very simple test function for your existing models::
-
-    from concurrency.utils import ConcurrencyTestMixin
-    from myproject.models import MyModel
-
-    class MyModelTest(ConcurrencyTestMixin, TestCase):
-        concurrency_model = TestModel0
-        concurrency_kwargs = {'username': 'test'}
-
-
-
+    globals
 
 
 Links

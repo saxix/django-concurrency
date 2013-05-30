@@ -10,8 +10,8 @@ import datetime
 from django.contrib.auth.models import User
 from django.forms.models import modelform_factory
 from django.test import TestCase
-from concurrency.core import RecordModifiedError
-from concurrency.core import apply_concurrency_check
+from concurrency.api import RecordModifiedError
+from concurrency.api import apply_concurrency_check
 from concurrency.fields import IntegerVersionField
 from concurrency.forms import VersionFieldSigner
 from concurrency.tests.models import TestModel0, TestModel1, TestModel2, TestModel3, TestModel0_Proxy, \
@@ -111,7 +111,7 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
     def test_concurrency_manager_list(self):
         logger.debug("Start Test")
         # test di concorrenza con list(queryset)
-        for i in xrange(10, 13):
+        for i in range(10, 13):
             self.TARGET.__class__.objects.get_or_create(**{self._unique_field_name: "model %s" % i})
 
         prima_serie = list(self.TARGET.__class__.objects.all())
@@ -128,7 +128,7 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
     def test_concurrency_manager_get_item(self):
         """ test di concorrenza con list(queryset) """
         logger.debug("Start Test")
-        for i in xrange(3):
+        for i in range(3):
             self.TARGET.__class__.objects.get_or_create(**{self._unique_field_name: "model %s" % i})
 
         prima_serie = self.TARGET.__class__.objects.all()

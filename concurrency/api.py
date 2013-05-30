@@ -2,8 +2,9 @@
 import logging
 from django.core.exceptions import ImproperlyConfigured
 from concurrency.core import _wrap_save, _select_lock, _wrap_model_save
+from concurrency.exceptions import RecordModifiedError
 
-__all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_object']
+__all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_object', 'RecordModifiedError']
 
 logger = logging.getLogger('concurrency')
 
