@@ -1,4 +1,4 @@
-Release 0.5.0 (under development)
+Release 0.5.0
 ---------------------------------
 * python 3.x compatibility
 * new :ref:`CONCURRENCY_FIELD_SIGNER`
