@@ -40,4 +40,3 @@ def conflict(request, target=None, template_name='409.html'):
                                    'saved': saved,
                                    'request_path': request.path})
     return ConflictResponse(template.render(ctx))
-

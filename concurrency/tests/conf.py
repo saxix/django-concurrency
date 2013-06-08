@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from concurrency.core import InconsistencyError
-from concurrency.tests import DjangoAdminTestCase, TestModel0, TestModelWithCustomSave
+from concurrency.tests import DjangoAdminTestCase, TestModelWithCustomSave
 
 
 class SettingsTest(DjangoAdminTestCase):

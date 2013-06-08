@@ -1,4 +1,3 @@
-import re
 import os
 import django.core.management
 from django.contrib import admin
@@ -42,13 +41,12 @@ class DjangoAdminTestCase(TestCase):
         self.sett = self.settings(INSTALLED_APPS=INSTALLED_APPS,
                                   MIDDLEWARE_CLASSES=self.MIDDLEWARE_CLASSES,
                                   AUTHENTICATION_BACKENDS=self.AUTHENTICATION_BACKENDS,
-                                  PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',), # fastest hasher
+                                  PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),  # fastest hasher
                                   STATIC_URL='/static/',
                                   SOUTH_TESTS_MIGRATE=False,
-                                  TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
-                                  )
+                                  TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),))
         self.sett.enable()
-        django.core.management._commands = None # reset commands cache
+        django.core.management._commands = None  # reset commands cache
         django.core.management.call_command('syncdb', verbosity=0)
         admin.site.register(TestModel0)
         admin.site.register(TestModel1, TestModel1Admin)
@@ -67,7 +65,6 @@ class DjangoAdminTestCase(TestCase):
 
 
 class TestDjangoAdmin(DjangoAdminTestCase):
-
     def test_creation(self):
         url = reverse('admin:concurrency_testmodel0_add')
         data = {'username': 'new_username',
@@ -135,7 +132,7 @@ class TestDjangoAdmin(DjangoAdminTestCase):
                 '_continue': 1,
                 'date_field': '2010-09-01'}
 
-        self.target1.save() # create conflict here
+        self.target1.save()  # create conflict here
 
         response = self.client.post(url, data, follow=True)
         self.assertIn('original', response.context, response)
@@ -151,7 +148,6 @@ class TestDjangoAdmin(DjangoAdminTestCase):
         self.assertIn('original', response.context, response)
         form = response.context['adminform'].form
         version1 = int(str(form['version'].value()).split(":")[0])
-
 
         data = {'username': 'new_username',
                 'last_name': None,

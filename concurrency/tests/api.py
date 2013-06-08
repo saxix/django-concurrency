@@ -15,4 +15,3 @@ class ConcurrencyTestApi(TestCase):
     def test_get_revision_of_object(self):
         o1 = TestModel0.objects.create()
         self.assertEqual(get_revision_of_object(o1), o1.version)
-
