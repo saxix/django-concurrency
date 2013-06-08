@@ -27,10 +27,9 @@ class TestAdmin(WebTest):
                                                is_active=True,
                                                email='sax@example.com',
                                                username='sax')
-        for i in range(10):
-            ConcurrentModel.objects.get_or_create(dummy_char=str(i))
-            # G(ConcurrentModel, pk=1)
-        # G(ConcurrentModel, n=10, version=0)
+        for i in range(1, 10):
+            ConcurrentModel.objects.get_or_create(id=i, version=0, dummy_char=str(i))
+
         try:
             admin.site.unregister(ConcurrentModel)
         except NotRegistered:
