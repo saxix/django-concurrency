@@ -13,7 +13,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'concurrency')
-TEMPLATE_DIRS = ['demoproject/templates']
+# TEMPLATE_DIRS = ['demoproject/templates']
 from demoproject.settings_sqlite import *
 db = os.environ.get('DBENGINE', None)
 if db:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from distutils.core import setup
+from setuptools import setup
 import concurrency
 
 NAME = 'django-concurrency'
@@ -16,14 +16,15 @@ setup(
     name=NAME,
     version=RELEASE,
     url='https://github.com/saxix/django-concurrency',
-    download_url='http://pypi.python.org/packages/source/d/django-concurrency/django-concurrency-%s.tar.gz' % RELEASE,
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
-    packages=[
-        "concurrency",
-        "concurrency.tests",
+    packages=["concurrency",
+              "concurrency.tests",
+              "concurrency.templatetags"
     ],
+    include_package_data=True,
     description="Optimistic locking library for Django",
+    long_description=open('README').read(),
     license="MIT License",
     keywords="django",
     classifiers=[

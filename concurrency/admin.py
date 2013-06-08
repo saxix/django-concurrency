@@ -10,15 +10,14 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.contrib.admin import helpers
-from django.utils.encoding import force_unicode
 from django.http import HttpResponse, HttpResponseRedirect
 from concurrency.api import get_revision_of_object
 from concurrency.forms import ConcurrentForm
+from django.utils.encoding import force_text
 
 
 class ConcurrencyActionMixin(object):
     check_concurrent_action = True
-    # delete_selected_confirmation_template = "concurrency/delete_selected_confirmation.html"
 
     def get_confirmation_template(self):
         return "concurrency/delete_selected_confirmation.html"
@@ -28,8 +27,9 @@ class ConcurrencyActionMixin(object):
         A list_display column containing a checkbox widget.
         """
         if self.check_concurrent_action:
+
             return helpers.checkbox.render(helpers.ACTION_CHECKBOX_NAME,
-                                           force_unicode("%s,%s" % (obj.pk,
+                                           force_text("%s,%s" % (obj.pk,
                                                                     get_revision_of_object(obj))))
         else:
             return super(ConcurrentModelAdmin, self).action_checkbox(obj)

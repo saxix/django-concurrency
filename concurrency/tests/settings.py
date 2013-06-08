@@ -1,4 +1,5 @@
 SITE_ID = 1
+STATIC_URL='/static/'
 ROOT_URLCONF = 'concurrency.tests.urls'
 SECRET_KEY = ';klkj;okj;lkn;lklj;lkj;kjmlliuewhy2ioqwjdkh'
 INSTALLED_APPS = (

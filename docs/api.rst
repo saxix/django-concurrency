@@ -49,6 +49,21 @@ VersionError
 -------------------
 .. autoclass:: concurrency.exceptions.VersionError
 
+Admin
+-----
+
+
+ConcurrentModelAdmin
+---------------------
+
+.. autoclass:: concurrency.admin.ConcurrentModelAdmin
+
+
+ConcurrencyActionMixin
+---------------------
+
+.. autoclass:: concurrency.admin.ConcurrencyActionMixin
+
 
 Helpers
 =========

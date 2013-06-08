@@ -51,6 +51,7 @@ Table Of Contents
 
     install
     cookbook
+    admin
     fields
     api
     settings

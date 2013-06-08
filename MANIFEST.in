@@ -1,9 +1,9 @@
-include README.rst
+include README
 include AUTHORS
+include CHANGES
 include LICENSE
 include MANIFEST.in
 include setup.py
 recursive-include concurrency *.py
-recursive-include docs *
-recursive-include demoproject *
-recursive-exclude docs/OUT *
+recursive-include concurrency/templates *.html
+recursive-include docs *.py

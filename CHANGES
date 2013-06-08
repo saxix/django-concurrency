@@ -1,5 +1,12 @@
+Release 0.6.0 (dev)
+---------------------------------
+
+* check admin actions for concurrent deletion
+
+
 Release 0.5.0
 ---------------------------------
+
 * python 3.x compatibility
 * new :ref:`CONCURRENCY_FIELD_SIGNER`
 
