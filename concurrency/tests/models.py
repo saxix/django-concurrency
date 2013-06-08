@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, Group
 from django.db import models
 from django.db.models.base import ModelBase
-from concurrency.api import concurrency_check, _wrap_model_save
+from concurrency.api import concurrency_check
 from concurrency.fields import IntegerVersionField, AutoIncVersionField
 import logging
 
@@ -28,9 +28,12 @@ class TestAbstractModel0(AbstractConcurrentModel):
 
 class ConcurrentModel(models.Model):
     version = IntegerVersionField(db_column='cm_version_id')
+    dummy_char = models.CharField(max_length=30, blank=True, null=True)
 
     class Meta:
         app_label = 'concurrency'
+        verbose_name = "ConcurrentModel"
+        verbose_name_plural = "ConcurrentModels"
 
     def __unicode__(self):
         return "{0.__class__.__name__} #{0.pk}".format(self)
@@ -173,7 +176,7 @@ class TestModelGroupWithCustomSave(TestModelGroup):
 
     def save(self, force_insert=False, force_update=False, using=None):
         super(TestModelGroupWithCustomSave, self).save(force_insert, force_update, using)
-        return 2222 # dummy return only for tests
+        return 2222  # dummy return only for tests
 
 
 class TestIssue3Model(models.Model):
@@ -187,4 +190,3 @@ class TestIssue3Model(models.Model):
 
     class Meta:
         app_label = 'concurrency'
-

@@ -1,7 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.core import validators
-from django.core.exceptions import NON_FIELD_ERRORS, SuspiciousOperation, ImproperlyConfigured
+from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from django.core.signing import Signer, BadSignature
 from django.forms import ModelForm, HiddenInput
 from django.utils import timezone
@@ -66,7 +66,7 @@ class VersionFieldSigner(Signer):
 def get_signer():
     path = getattr(settings, 'CONCURRENCY_FIELD_SIGNER', 'concurrency.forms.VersionFieldSigner')
     i = path.rfind('.')
-    module, attr = path[:i], path[i+1:]
+    module, attr = path[:i], path[i + 1:]
     try:
         mod = import_module(module)
     except ImportError as e:
@@ -90,8 +90,8 @@ class SignedValue(object):
 
 
 class VersionField(forms.IntegerField):
-    widget = HiddenInput # Default widget to use when rendering this type of Field.
-    hidden_widget = HiddenInput# Default widget to use when rendering this as "hidden".
+    widget = HiddenInput  # Default widget to use when rendering this type of Field.
+    hidden_widget = HiddenInput  # Default widget to use when rendering this as "hidden".
 
     def __init__(self, *args, **kwargs):
         self._signer = kwargs.pop('signer', get_signer())
@@ -125,8 +125,8 @@ class VersionField(forms.IntegerField):
 
 
 class DateVersionField(forms.DateTimeField):
-    widget = HiddenInput # Default widget to use when rendering this type of Field.
-    hidden_widget = HiddenInput # Default widget to use when rendering this as "hidden".
+    widget = HiddenInput  # Default widget to use when rendering this type of Field.
+    hidden_widget = HiddenInput  # Default widget to use when rendering this as "hidden".
 
     def __init__(self, *args, **kwargs):
         kwargs.pop('input_formats', None)
@@ -143,4 +143,3 @@ class DateVersionField(forms.DateTimeField):
 
     def widget_attrs(self, widget):
         return {}
-

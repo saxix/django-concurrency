@@ -1,5 +1,5 @@
 import logging
-from functools import update_wrapper, wraps
+from functools import update_wrapper
 from django.conf import settings
 from django.db import connections, router
 from django.utils.translation import ugettext as _
@@ -16,7 +16,7 @@ logging.getLogger('concurrency').addHandler(NullHandler())
 
 logger = logging.getLogger('concurrency')
 
-from concurrency.exceptions import VersionChangedError, RecordModifiedError, InconsistencyError
+from concurrency.exceptions import RecordModifiedError, InconsistencyError
 from concurrency.utils import deprecated
 
 
@@ -26,12 +26,14 @@ __all__ = []
 @deprecated('concurrency.api.apply_concurrency_check', '0.5')
 def apply_concurrency_check(model, fieldname, versionclass):
     from concurrency.api import apply_concurrency_check as acc
+
     return acc(model, fieldname, versionclass)
 
 
 @deprecated('concurrency.api.concurrency_check', '0.5')
 def concurrency_check(model_instance, force_insert=False, force_update=False, using=None, **kwargs):
     from concurrency.api import concurrency_check as cc
+
     return cc(model_instance, force_insert, force_update, using, **kwargs)
 
 
@@ -59,7 +61,8 @@ def _wrap_model_save(model, force=False):
 
 
 def _wrap_save(func):
-    from concurrency.api import  concurrency_check
+    # from concurrency.api import concurrency_check
+
     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
         concurrency_check(self, force_insert, force_update, using, **kwargs)
         return func(self, force_insert, force_update, using, **kwargs)
@@ -79,4 +82,3 @@ class RevisionMetaInfo:
     field = None
     versioned_save = False
     manually = False
-

@@ -30,7 +30,6 @@ class WidgetTest(TestCase):
 
 
 class FormFieldTest(SimpleTestCase):
-
     def setUp(self):
         self.save_warnings_state()
         warnings.filterwarnings('ignore', category=DeprecationWarning,
@@ -69,7 +68,8 @@ class ConcurrentFormTest(TestCase):
 
     def test_dummy_signer(self):
         obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
-        Form = modelform_factory(TestIssue3Model, type('xxx', (ConcurrentForm,), {'revision': VersionField(signer=DummySigner())}))
+        Form = modelform_factory(TestIssue3Model,
+                                 type('xxx', (ConcurrentForm,), {'revision': VersionField(signer=DummySigner())}))
         data = {'id': 1,
                 'revision': obj.revision}
         form = Form(data, instance=obj)
@@ -87,7 +87,8 @@ class ConcurrentFormTest(TestCase):
         self.assertTrue(form.is_valid(), form.non_field_errors())
 
     def test_initial_value_with_custom_signer(self):
-        Form = modelform_factory(TestIssue3Model, type('xxx', (ConcurrentForm,), {'version': VersionField(signer=DummySigner())}))
+        Form = modelform_factory(TestIssue3Model, type('xxx', (ConcurrentForm,),
+                                                       {'version': VersionField(signer=DummySigner())}))
         form = Form({'username': 'aaa'})
         self.assertHTMLEqual(str(form['version']), '<input type="hidden" value="" name="version" id="id_version" />')
         self.assertTrue(form.is_valid(), form.non_field_errors())
@@ -123,7 +124,7 @@ class ConcurrentFormTest(TestCase):
                 'id': 1,
                 'revision': VersionFieldSigner().sign(obj.revision)}
         form = Form(data, instance=obj)
-        obj_copy.save() # save
+        obj_copy.save()  # save
         self.assertFalse(form.is_valid())
         self.assertIn(_('Record Modified'), form.non_field_errors())
 
@@ -138,7 +139,7 @@ class ConcurrentFormTest(TestCase):
                 'id': 1,
                 'revision': VersionFieldSigner().sign(obj.revision)}
         form = Form(data, instance=obj)
-        obj.save() # save again simulate concurrent editing
+        obj.save()  # save again simulate concurrent editing
         self.assertRaises(ValueError, form.save)
 
     def test_form_is_valid(self):

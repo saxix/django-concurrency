@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from django.core.exceptions import ImproperlyConfigured
-from concurrency.core import _wrap_save, _select_lock, _wrap_model_save
+from concurrency.core import _select_lock, _wrap_model_save
 from concurrency.exceptions import RecordModifiedError
 
 __all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_object', 'RecordModifiedError']
@@ -23,8 +23,8 @@ def get_revision_of_object(obj):
 def is_changed(obj):
     revision_field = obj.RevisionMetaInfo.field
     version = getattr(obj, revision_field.attname)
-    return not obj.__class__.objects.filter(**{obj._meta.pk.name:obj.pk,
-                                           revision_field.attname: version}).exists()
+    return not obj.__class__.objects.filter(**{obj._meta.pk.name: obj.pk,
+                                               revision_field.attname: version}).exists()
 
 
 def apply_concurrency_check(model, fieldname, versionclass):

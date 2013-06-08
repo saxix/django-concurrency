@@ -52,10 +52,10 @@ def deprecated(replacement=None, version=None):
     return outer
 
 
-@deprecated('concurrency.api.get_revision_of_object')
-def get_revision_of_object(obj):
-    import concurrency.api
-    return concurrency.api.get_revision_of_object(obj)
+# @deprecated('concurrency.api.get_revision_of_object')
+# def get_revision_of_object(obj):
+#     import concurrency.api
+#     return concurrency.api.get_revision_of_object(obj)
 
 
 class ConcurrencyTestMixin(object):
@@ -91,7 +91,7 @@ class ConcurrencyTestMixin(object):
         v2 = api.get_revision_of_object(target_copy)
         assert v1 == v2, "got same row with different version (%s/%s)" % (v1, v2)
         target.save()
-        assert target.pk is not None # sanity check
+        assert target.pk is not None  # sanity check
         self.assertRaises(RecordModifiedError, target_copy.save)
 
     def test_concurrency_safety(self):
@@ -109,3 +109,7 @@ class ConcurrencyTestMixin(object):
 
         self.assertTrue(revision_field in target._meta.fields,
                         "%s: version field not in meta.fields" % self.concurrency_model)
+
+
+class ConcurrencyAdminTestMixin(object):
+    pass
