@@ -2,7 +2,6 @@
 from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
 from django.contrib.auth.models import User
-# from django_dynamic_fixture import G
 from django_webtest import WebTest
 from concurrency.admin import ConcurrentModelAdmin
 from concurrency.tests.models import ConcurrentModel
