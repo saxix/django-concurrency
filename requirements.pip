@@ -1,6 +1,4 @@
 mock
 webtest
 django-webtest
-django_dynamic_fixture>=1.6.5
-
 

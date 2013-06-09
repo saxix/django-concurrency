@@ -6,16 +6,11 @@ from django.test import TestCase
 from concurrency.core import RecordModifiedError
 from concurrency.forms import VersionFieldSigner
 from concurrency.middleware import ConcurrencyMiddleware
-from concurrency.tests import TestModel0
-from concurrency.tests.contrib_admin import DjangoAdminTestCase
+from concurrency.tests.models import TestModel0
+from concurrency.tests.base import DjangoAdminTestCase
 
 
 class ConcurrencyMiddlewareTest(TestCase):
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
 
     def _get_request(self, path):
         request = HttpRequest()

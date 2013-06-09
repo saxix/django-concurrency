@@ -30,7 +30,8 @@ def _select_lock(model_instance, version_value=None):
         NOWAIT = connections[alias].features.has_select_for_update_nowait
         entry = model_instance.__class__.objects.select_for_update(nowait=NOWAIT).filter(**kwargs)
         if not entry:
-            raise RecordModifiedError(_('Record has been modified'), target=model_instance)
+            raise RecordModifiedError(_('Record has been modified or no version value passed'), target=model_instance)
+
     elif is_versioned and getattr(settings, 'CONCURRECY_SANITY_CHECK', True):
         raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.' % value))
 

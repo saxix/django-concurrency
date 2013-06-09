@@ -7,9 +7,11 @@ from django.test import TestCase
 from concurrency.core import InconsistencyError
 from concurrency.exceptions import VersionError
 from concurrency.forms import ConcurrentForm, VersionField, VersionFieldSigner, VersionWidget
-from concurrency.tests import TestModel0, TestIssue3Model
+from concurrency.tests.models import TestModel0, TestIssue3Model
 from django.test.testcases import SimpleTestCase
 from django.utils.translation import ugettext as _
+
+__all__ = ['WidgetTest', 'FormFieldTest', 'ConcurrentFormTest']
 
 
 class DummySigner():

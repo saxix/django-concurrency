@@ -1,6 +1,6 @@
 from django.test import TestCase
 from concurrency.api import is_changed, get_revision_of_object
-from concurrency.tests import TestModel0
+from concurrency.tests.models import TestModel0
 
 
 class ConcurrencyTestApi(TestCase):

@@ -52,12 +52,6 @@ def deprecated(replacement=None, version=None):
     return outer
 
 
-# @deprecated('concurrency.api.get_revision_of_object')
-# def get_revision_of_object(obj):
-#     import concurrency.api
-#     return concurrency.api.get_revision_of_object(obj)
-
-
 class ConcurrencyTestMixin(object):
     """
     Mixin class to test Models that use `VersionField`
