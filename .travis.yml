@@ -20,7 +20,7 @@ install:
   - python setup.py -q install
 
 script:
-  cd demoproject && ./manage.py test concurrency
+  cd demo && ./manage.py test concurrency
 
 before_install:
   - sh -c "if [ '$DBENGINE' = 'pg' ]; then psql -c 'DROP DATABASE IF EXISTS concurrency;' -U postgres; fi"
