@@ -22,6 +22,13 @@ from concurrency.utils import ConcurrencyTestMixin
 
 logger = logging.getLogger('concurrency.tests')
 
+__all__ = ['ConcurrencyTest0', 'AutoIncConcurrencyTest', 'ConcurrencyTest1',
+           'ConcurrencyTest2', 'ConcurrencyTest3', 'ConcurrencyTest4',
+           'ConcurrencyTest0_Proxy', 'ConcurrencyTest5', 'ConcurrencyTestTestCustomUser',
+           'ConcurrencyTestExistingModelUser', 'ConcurrencyTestExistingModel',
+           'ConcurrencyTestModelWithCustomSave', 'ConcurrencyTestExistingModelWithCustomSave',
+           'TestIssue3', 'TestAbstractModelWithCustomSave']
+
 
 class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
     concurrency_model = TestModel0

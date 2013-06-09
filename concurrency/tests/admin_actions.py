@@ -1,39 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.contrib import admin
-from django.contrib.admin.sites import NotRegistered
-from django.contrib.auth.models import User
-from django_webtest import WebTest
-from concurrency.admin import ConcurrentModelAdmin
+from concurrency.tests.base import AdminTestCase
 from concurrency.tests.models import ConcurrentModel
 
 
-class ConcurrentModelAdminTest(ConcurrentModelAdmin):
-    list_display = ('__unicode__', 'version', 'dummy_char')
-    actions = ['dummy_action']
-    ordering = ('id', )
-
-    def dummy_action(self, request, queryset):
-        for el in queryset:
-            el.dummy_char = '**action_update**'
-            el.save()
-
-
-class TestAdmin(WebTest):
-    def setUp(self):
-        super(TestAdmin, self).setUp()
-        self.user = User.objects.get_or_create(is_superuser=True,
-                                               is_staff=True,
-                                               is_active=True,
-                                               email='sax@example.com',
-                                               username='sax')
-        for i in range(1, 10):
-            ConcurrentModel.objects.get_or_create(id=i, version=0, dummy_char=str(i))
-
-        try:
-            admin.site.unregister(ConcurrentModel)
-        except NotRegistered:
-            pass
-        admin.site.register(ConcurrentModel, ConcurrentModelAdminTest)
+class TestAdminActions(AdminTestCase):
 
     def test_dummy_action(self):
         res = self.app.get('/admin/', user='sax')

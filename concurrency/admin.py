@@ -1,10 +1,4 @@
 ## -*- coding: utf-8 -*-
-'''
-Created on 12/giu/2009
-
-@author: sax
-'''
-
 from django.contrib import admin, messages
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Q
@@ -12,7 +6,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.admin import helpers
 from django.http import HttpResponse, HttpResponseRedirect
 from concurrency.api import get_revision_of_object
-from concurrency.forms import ConcurrentForm
+from concurrency.exceptions import RecordModifiedError
 from django.utils.encoding import force_text
 
 
@@ -21,21 +15,6 @@ class ConcurrencyActionMixin(object):
 
     def get_confirmation_template(self):
         return "concurrency/delete_selected_confirmation.html"
-
-    def action_checkbox(self, obj):
-        """
-        A list_display column containing a checkbox widget.
-        """
-        if self.check_concurrent_action:
-
-            return helpers.checkbox.render(helpers.ACTION_CHECKBOX_NAME,
-                                           force_text("%s,%s" % (obj.pk,
-                                                                    get_revision_of_object(obj))))
-        else:
-            return super(ConcurrentModelAdmin, self).action_checkbox(obj)
-
-    action_checkbox.short_description = mark_safe('<input type="checkbox" id="action-toggle" />')
-    action_checkbox.allow_tags = True
 
     def response_action(self, request, queryset):
         """
@@ -112,37 +91,29 @@ class ConcurrencyActionMixin(object):
 
 
 class ConcurrentModelAdmin(ConcurrencyActionMixin, admin.ModelAdmin):
-    form = ConcurrentForm
+    def action_checkbox(self, obj):
+        """
+        A list_display column containing a checkbox widget.
+        """
+        if self.list_editable:
+            version = get_revision_of_object(obj)
+            r = helpers.checkbox.render(helpers.ACTION_CHECKBOX_NAME,
+                                        force_text("%s,%s" % (obj.pk, version)))
+            return '{0}<input type="hidden" name="_concurrency_version_{2.pk}" value="{1}"'.format(r, version, obj)
+        if self.check_concurrent_action:
+            return helpers.checkbox.render(helpers.ACTION_CHECKBOX_NAME,
+                                           force_text("%s,%s" % (obj.pk,
+                                                                 get_revision_of_object(obj))))
+        else:
+            return super(ConcurrentModelAdmin, self).action_checkbox(obj)
 
+    action_checkbox.short_description = mark_safe('<input type="checkbox" id="action-toggle" />')
+    action_checkbox.allow_tags = True
 
-
-    # def get_action_choices(self, request, default_choices=BLANK_CHOICE_DASH):
-    #     return super(ConcurrentModelAdmin, self).get_action_choices(request, default_choices)
-    #
-    #
-    # def formfield_for_dbfield(self, db_field, **kwargs):
-    #     request = kwargs.pop("request", None)
-    #     if isinstance(db_field, VersionField):
-    #         formfield = db_field.formfield(**kwargs)
-    #         formfield.widget = VersionWidget()
-    #         return formfield
-    #
-    #     return super(admin.ModelAdmin, self).formfield_for_dbfield(db_field, request=request, **kwargs)
-
-    # def get_changelist_form(self, request, **kwargs):
-    #     return super(ConcurrentModelAdmin, self).get_changelist_form(request, **kwargs)
-
-    # def change_view(self, request, object_id, version_id=None, extra_context=None):
-    #     if version_id:
-    #         self.queryset(request).get(pk=unquote(object_id), _version=version_id)
-    #
-    #     return super(ConcurrentModelAdmin, self).change_view(request, object_id, extra_context)
-    #
-    # def change_redir(self, request, object_id):
-    #     obj = self.queryset(request).get(pk=unquote(object_id))
-    #     info = self.admin_site.name, self.model._meta.app_label, self.model._meta.module_name
-    #
-    #     return HttpResponseRedirect(reverse('%sadmin_%s_%s_change' % info,
-    #         args=[obj.pk, obj.version])
-    #     )
-    #
+    def save_model(self, request, obj, form, change):
+        try:
+            # if obj.pk is not None and not obj.version:
+            obj.version = int(request.POST['_concurrency_version_{0.pk}'.format(obj)])
+            super(ConcurrentModelAdmin, self).save_model(request, obj, form, change)
+        except RecordModifiedError:
+            messages.error(request, "Record with pk `{0.pk}` has been modified and was not updated".format(obj))

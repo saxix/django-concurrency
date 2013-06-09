@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from django.test import TestCase
 from concurrency.core import InconsistencyError
-from concurrency.tests import DjangoAdminTestCase, TestModelWithCustomSave
+from concurrency.tests.models import TestModelWithCustomSave
 
 
-class SettingsTest(DjangoAdminTestCase):
+# class SettingsTest(DjangoAdminTestCase):
+class SettingsTest(TestCase):
 
     def test_concurrecy_sanity_check(self):
         """
