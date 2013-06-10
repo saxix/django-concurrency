@@ -1,11 +1,16 @@
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from concurrency.forms import VersionFieldSigner
-from concurrency.tests.base import AdminTestCase
+from concurrency.tests.base import AdminTestCase, SENTINEL
 from concurrency.tests.models import TestModel1, TestModel0
 
 
 class TestAdminEdit(AdminTestCase):
+
+    def _create_conflict(self, pk):
+        u = TestModel1.objects.get(pk=pk)
+        u.dummy_char = SENTINEL
+        u.save()
 
     def test_creation(self):
         url = reverse('admin:concurrency_testmodel1_add')

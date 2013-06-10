@@ -1,12 +1,4 @@
-from django.contrib.admin import ModelAdmin
-from concurrency import forms, fields
-from concurrency.admin import ConcurrencyActionMixin, ConcurrentModelAdmin
-from concurrency.forms import ConcurrentForm
-from .models import DemoModel
-from functools import partial
-from django.forms.models import modelform_factory, modelformset_factory
-from concurrency import forms, fields
-from concurrency.fields import VersionField
+from concurrency.admin import ConcurrentModelAdmin
 
 
 class DemoModelAdmin(ConcurrentModelAdmin):
@@ -14,4 +6,4 @@ class DemoModelAdmin(ConcurrentModelAdmin):
     list_display = ('id', 'char', 'integer')
     list_display_links = ('id', )
     list_editable = ('char', 'integer')
-
+    actions = None

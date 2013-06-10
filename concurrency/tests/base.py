@@ -11,7 +11,8 @@ from django_webtest import WebTest
 from concurrency import forms
 from concurrency.admin import ConcurrentModelAdmin
 from concurrency.forms import ConcurrentForm, VersionWidget
-from concurrency.tests.models import TestModel0, TestModel1, ConcurrentModel
+from concurrency.tests.models import (TestModel0, TestModel1, ConcurrentModel, ListEditableConcurrentModel,
+                                      NoActionsConcurrentModel)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -22,6 +23,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'concurrency')
+
+SENTINEL = '**concurrent_update**'
 
 
 def admin_register(model, modeladmin=ConcurrentModelAdmin):
@@ -48,11 +51,23 @@ class TestModel1Admin(admin.ModelAdmin):
                              widgets={'version': VersionWidget()})
 
 
-class ConcurrentModelAdminTest(ConcurrentModelAdmin):
+class ListEditableModelAdmin(ConcurrentModelAdmin):
+    list_display = ('__unicode__', 'version', 'dummy_char')
+    list_editable = ('dummy_char', )
+    ordering = ('id', )
+
+
+class NoActionsModelAdmin(ConcurrentModelAdmin):
+    list_display = ('__unicode__', 'version', 'dummy_char')
+    list_editable = ('dummy_char', )
+    ordering = ('id', )
+    actions = None
+
+
+class ActionsModelAdmin(ConcurrentModelAdmin):
     list_display = ('__unicode__', 'version', 'dummy_char')
     actions = ['dummy_action']
     ordering = ('id', )
-    list_editable = ('dummy_char', )
 
     def dummy_action(self, request, queryset):
         for el in queryset:
@@ -72,7 +87,10 @@ class AdminTestCase(WebTest):
                                                username='sax')
         for i in range(1, 10):
             ConcurrentModel.objects.get_or_create(id=i, version=0, dummy_char=str(i))
-        admin_register(ConcurrentModel, ConcurrentModelAdminTest)
+
+        admin_register(ConcurrentModel, ActionsModelAdmin)
+        admin_register(ListEditableConcurrentModel, ListEditableModelAdmin)
+        admin_register(NoActionsConcurrentModel, NoActionsModelAdmin)
         admin_register(TestModel1, TestModel1Admin)
         admin_register(TestModel0, ModelAdmin)
 

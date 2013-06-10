@@ -19,10 +19,9 @@ INSTALLED_APPS = (
     'demoproject.demoapp')
 
 TEMPLATE_DIRS = ['demoproject/templates']
-from demoproject.settings_sqlite import *
+from demoproject.settings_sqlite import *  # NOQA
 
 db = os.environ.get('DBENGINE', None)
 if db:
     mod = __import__('demoproject.settings_%s' % db, fromlist=['demoproject'])
     DATABASES = mod.DATABASES
-

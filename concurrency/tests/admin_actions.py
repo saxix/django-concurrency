@@ -1,18 +1,21 @@
 # -*- coding: utf-8 -*-
-from concurrency.tests.base import AdminTestCase
+from concurrency.tests.base import AdminTestCase, SENTINEL
 from concurrency.tests.models import ConcurrentModel
 
 
 class TestAdminActions(AdminTestCase):
 
+    def _create_conflict(self, pk):
+        u = ConcurrentModel.objects.get(pk=pk)
+        u.dummy_char = SENTINEL
+        u.save()
+
     def test_dummy_action(self):
         res = self.app.get('/admin/', user='sax')
-        res = res.click('ConcurrentModels')
+        res = res.click('^ConcurrentModels')
         assert 'ConcurrentModel #1' in res  # sanity check
-        # update record to create conflict
-        u = ConcurrentModel.objects.get(pk=1)
-        u.dummy_char = '**concurrent_update**'
-        u.save()
+
+        self._create_conflict(1)
 
         form = res.forms['changelist-form']
         form['action'].value = 'dummy_action'
@@ -25,7 +28,7 @@ class TestAdminActions(AdminTestCase):
 
     def test_delete_allowed_if_no_updates(self):
         res = self.app.get('/admin/', user='sax')
-        res = res.click('ConcurrentModels')
+        res = res.click('^ConcurrentModels')
         assert 'ConcurrentModel #1' in res  # sanity check
 
         form = res.forms['changelist-form']
@@ -40,12 +43,10 @@ class TestAdminActions(AdminTestCase):
 
     def test_delete_not_allowed_if_updates(self):
         res = self.app.get('/admin/', user='sax')
-        res = res.click('ConcurrentModels')
+        res = res.click('^ConcurrentModels')
         assert 'ConcurrentModel #1' in res  # sanity check
-        # update record to create conflict
-        u = ConcurrentModel.objects.get(pk=1)
-        u.dummy_char = 'charfield'
-        u.save()
+
+        self._create_conflict(1)
 
         form = res.forms['changelist-form']
         form['action'].value = 'delete_selected'

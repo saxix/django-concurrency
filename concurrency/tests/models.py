@@ -190,3 +190,25 @@ class TestIssue3Model(models.Model):
 
     class Meta:
         app_label = 'concurrency'
+
+
+class ListEditableConcurrentModel(ConcurrentModel):
+    """ Proxy model used by admin related test.
+    This allow to use multiple ModelAdmin configuration with the same 'real' model
+    """
+    class Meta:
+        app_label = 'concurrency'
+        proxy = True
+        verbose_name = "ListEditable-ConcurrentModel"
+        verbose_name_plural = "ListEditableConcurrentModels"
+
+
+class NoActionsConcurrentModel(ConcurrentModel):
+    """ Proxy model used by admin related test.
+    This allow to use multiple ModelAdmin configuration with the same 'real' model
+    """
+    class Meta:
+        app_label = 'concurrency'
+        proxy = True
+        verbose_name = "NoActions-ConcurrentModel"
+        verbose_name_plural = "NoActions-ConcurrentModels"

@@ -1,7 +1,10 @@
 ## -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
 from django.contrib import admin, messages
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db.models import Q
+from django.forms.formsets import ManagementForm, TOTAL_FORM_COUNT, INITIAL_FORM_COUNT, MAX_NUM_FORM_COUNT
+from django.forms.models import BaseModelFormSet
 from django.utils.safestring import mark_safe
 from django.contrib.admin import helpers
 from django.http import HttpResponse, HttpResponseRedirect
@@ -12,6 +15,20 @@ from django.utils.encoding import force_text
 
 class ConcurrencyActionMixin(object):
     check_concurrent_action = True
+
+    def action_checkbox(self, obj):
+        """
+        A list_display column containing a checkbox widget.
+        """
+        if self.check_concurrent_action:
+            return helpers.checkbox.render(helpers.ACTION_CHECKBOX_NAME,
+                                           force_text("%s,%s" % (obj.pk,
+                                                                 get_revision_of_object(obj))))
+        else:
+            return super(ConcurrencyActionMixin, self).action_checkbox(obj)
+
+    action_checkbox.short_description = mark_safe('<input type="checkbox" id="action-toggle" />')
+    action_checkbox.allow_tags = True
 
     def get_confirmation_template(self):
         return "concurrency/delete_selected_confirmation.html"
@@ -90,25 +107,63 @@ class ConcurrencyActionMixin(object):
                 return HttpResponseRedirect(".")
 
 
-class ConcurrentModelAdmin(ConcurrencyActionMixin, admin.ModelAdmin):
-    def action_checkbox(self, obj):
-        """
-        A list_display column containing a checkbox widget.
-        """
-        if self.list_editable:
-            version = get_revision_of_object(obj)
-            r = helpers.checkbox.render(helpers.ACTION_CHECKBOX_NAME,
-                                        force_text("%s,%s" % (obj.pk, version)))
-            return '{0}<input type="hidden" name="_concurrency_version_{2.pk}" value="{1}"'.format(r, version, obj)
-        if self.check_concurrent_action:
-            return helpers.checkbox.render(helpers.ACTION_CHECKBOX_NAME,
-                                           force_text("%s,%s" % (obj.pk,
-                                                                 get_revision_of_object(obj))))
-        else:
-            return super(ConcurrentModelAdmin, self).action_checkbox(obj)
+class ConcurrentManagementForm(ManagementForm):
+    def __init__(self, *args, **kwargs):
+        self._versions = kwargs.pop('versions', [])
+        super(ConcurrentManagementForm, self).__init__(*args, **kwargs)
 
-    action_checkbox.short_description = mark_safe('<input type="checkbox" id="action-toggle" />')
-    action_checkbox.allow_tags = True
+    def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
+        ret = super(ConcurrentManagementForm, self)._html_output(normal_row, error_row, row_ender, help_text_html,
+                                                                 errors_on_separate_row)
+        v = []
+        for pk, version in self._versions:
+            v.append('<input type="hidden" name="_concurrency_version_{0}" value="{1}">'.format(pk, version))
+        return mark_safe("{0}{1}".format(ret, "".join(v)))
+        #
+        #
+        # def __unicode__(self):
+        #     ret = super(ConcurrentManagementForm, self).__unicode__()
+        #     v = []
+        #     for pk, version in self._versions:
+        #         v.append('<input type="hidden" name="_concurrency_version_{0}" value="{1}">'.format(pk, version))
+        #     return mark_safe("{0}{1}".format(ret, "".join(v)))
+
+        # def __str__(self):
+        #     ret = super(ConcurrentManagementForm, self).__str__()
+        #     v = []
+        #     for pk, version in self._versions:
+        #         v.append('<input type="hidden" name="_concurrency_version_{0}" value="{1}">'.format(pk, version))
+        #     return mark_safe("{0}{1}".format(ret, "".join(v)))
+
+
+class ConcurrentBaseModelFormSet(BaseModelFormSet):
+    def _management_form(self):
+        """Returns the ManagementForm instance for this FormSet."""
+        if self.is_bound:
+            form = ConcurrentManagementForm(self.data, auto_id=self.auto_id,
+                                            prefix=self.prefix)
+            if not form.is_valid():
+                raise ValidationError('ManagementForm data is missing or has been tampered with')
+        else:
+            form = ConcurrentManagementForm(auto_id=self.auto_id,
+                                            prefix=self.prefix,
+                                            initial={TOTAL_FORM_COUNT: self.total_form_count(),
+                                                     INITIAL_FORM_COUNT: self.initial_form_count(),
+                                                     MAX_NUM_FORM_COUNT: self.max_num},
+                                            versions=[(form.instance.pk, get_revision_of_object(form.instance)) for form
+                                                      in self.initial_forms])
+        return form
+
+    management_form = property(_management_form)
+
+
+class ConcurrentModelAdmin(ConcurrencyActionMixin, admin.ModelAdmin):
+    def get_changelist_formset(self, request, **kwargs):
+        kwargs['formset'] = ConcurrentBaseModelFormSet
+        return super(ConcurrentModelAdmin, self).get_changelist_formset(request, **kwargs)
+
+    def get_changelist_form(self, request, **kwargs):
+        return super(ConcurrentModelAdmin, self).get_changelist_form(request, **kwargs)
 
     def save_model(self, request, obj, form, change):
         try:

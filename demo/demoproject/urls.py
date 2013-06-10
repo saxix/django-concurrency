@@ -1,9 +1,8 @@
-from django.conf.urls import patterns, include, url
-from django.contrib.admin import ModelAdmin
+from django.conf.urls import patterns, include
+# from django.contrib.admin import ModelAdmin
 import django.contrib.admin.sites
 from django.contrib import admin
-from django.contrib.admin.sites import site
-from django.contrib.auth.models import User, Permission, Group
+from django.contrib.auth.models import User, Group
 from demoproject.demoapp.admin import DemoModelAdmin
 from demoproject.demoapp.models import DemoModel
 
