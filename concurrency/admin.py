@@ -167,8 +167,8 @@ class ConcurrentModelAdmin(ConcurrencyActionMixin, admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         try:
-            # if obj.pk is not None and not obj.version:
-            obj.version = int(request.POST['_concurrency_version_{0.pk}'.format(obj)])
+            if obj.pk:
+                obj.version = int(request.POST['_concurrency_version_{0.pk}'.format(obj)])
             super(ConcurrentModelAdmin, self).save_model(request, obj, form, change)
         except RecordModifiedError:
             messages.error(request, "Record with pk `{0.pk}` has been modified and was not updated".format(obj))
