@@ -2,6 +2,7 @@ Release 0.6.0 (dev)
 ---------------------------------
 
 * check admin actions for concurrent deletion
+* added concurrency check for admin's list_editable
 
 
 Release 0.5.0
@@ -14,7 +15,8 @@ Release 0.5.0
 Release 0.4.0
 ---------------------------------
 
-* start deprecation of ``concurrency.core.VersionChangedError``, ``concurrency.core.RecordModifiedError``, ``concurrency.core.InconsistencyError``,moved in ``concurrency.exceptions``
+* start deprecation of ``concurrency.core.VersionChangedError``, ``concurrency.core.RecordModifiedError``,
+    ``concurrency.core.InconsistencyError``,moved in ``concurrency.exceptions``
 * start deprecation of ``concurrency.core.apply_concurrency_check``, ``concurrency.core.concurrency_check`` moved in ``concurrency.api``
 * added :ref:`CONCURRECY_SANITY_CHECK` settings entry
 * signing of version number to avoid tampering (:ref:`concurrentform`)

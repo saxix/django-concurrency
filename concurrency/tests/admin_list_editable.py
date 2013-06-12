@@ -15,10 +15,9 @@ class TestListEditable(AdminTestCase):
         res = self.app.get('/admin/', user='sax')
         res = res.click(self.TARGET._meta.verbose_name_plural)
         res = res.click('Add')
-        form = res.forms['listeditableconcurrentmodel_form']
+        form = res.form
         form['dummy_char'] = 'CHAR'
         res = form.submit().follow()
-
 
     def test_normal_update(self):
         res = self.app.get('/admin/', user='sax')

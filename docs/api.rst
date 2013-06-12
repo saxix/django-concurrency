@@ -11,6 +11,8 @@ API
 Forms
 =====
 
+.. _concurrentform:
+
 ConcurrentForm
 --------------
 .. autoclass:: concurrency.forms.ConcurrentForm
@@ -60,13 +62,15 @@ ConcurrentModelAdmin
 
 
 ConcurrencyActionMixin
----------------------
+----------------------
 
 .. autoclass:: concurrency.admin.ConcurrencyActionMixin
 
 
 Helpers
 =========
+
+.. _concurrency_check:
 
 ``concurrency_check()``
 ------------------------
@@ -94,7 +98,14 @@ is these cirumstances you can check it manually ::
 
 Add concurrency check to existing classes.
 
-.. autofunction:: concurrency.core.apply_concurrency_check
+.. autofunction:: concurrency.api.apply_concurrency_check
+
+
+.. _concurrency_field_signer:
+
+``concurrency_field_signer``
+
+.. autofunction:: concurrency.api.apply_concurrency_check
 
 
 Test Utilties

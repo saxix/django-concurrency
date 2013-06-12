@@ -16,7 +16,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'concurrency',
-    'demoproject.demoapp')
+    # 'demoproject.demoapp'
+)
 
 TEMPLATE_DIRS = ['demoproject/templates']
 from demoproject.settings_sqlite import *  # NOQA
