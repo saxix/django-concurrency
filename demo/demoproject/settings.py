@@ -16,6 +16,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'concurrency',
+    'import_export',
     # 'demoproject.demoapp'
 )
 

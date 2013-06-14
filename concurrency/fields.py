@@ -31,6 +31,9 @@ class VersionField(Field):
     def get_default(self):
         return 0
 
+    def to_python(self, value):
+        return int(value)
+
     def validate(self, value, model_instance):
         pass
 
@@ -63,8 +66,8 @@ class IntegerVersionField(VersionField):
         return "BigIntegerField"
 
     def pre_save(self, model_instance, add):
-        old_value = getattr(model_instance, self.attname) or 0
-        value = max(old_value + 1, (int(time.time() * 1000000) - OFFSET))
+        old_value = getattr(model_instance, self.attname, 0)
+        value = max(int(old_value )+ 1, (int(time.time() * 1000000) - OFFSET))
         setattr(model_instance, self.attname, value)
         return value
 
@@ -80,7 +83,7 @@ class AutoIncVersionField(VersionField):
         return "BigIntegerField"
 
     def pre_save(self, model_instance, add):
-        value = (getattr(model_instance, self.attname) or 0) + 1
+        value = int(getattr(model_instance, self.attname, 0)) + 1
         setattr(model_instance, self.attname, value)
         return value
 

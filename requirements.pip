@@ -3,3 +3,4 @@ mock
 webtest
 django-webtest
 selenium
+django-import-export
