@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
 import mock
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
-from django.test import TestCase
 from concurrency.core import RecordModifiedError
 from concurrency.forms import VersionFieldSigner
 from concurrency.middleware import ConcurrencyMiddleware
@@ -27,7 +26,7 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
         """
         Tests that RecordModifiedError is handled correctly.
         """
-        m, __ = TestModel0.objects.get_or_create(username="New", last_name="1")
+        m = TestModel0.objects.create()
         copy = TestModel0.objects.get(pk=m.pk)
         copy.save()
         request = self._get_request('/')
@@ -37,7 +36,7 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
     def test_in_admin(self):
         middlewares = list(settings.MIDDLEWARE_CLASSES) + ['concurrency.middleware.ConcurrencyMiddleware']
         with self.settings(MIDDLEWARE_CLASSES=middlewares):
-            saved, __ = TestModel0.objects.get_or_create(username='aaa')
+            saved = TestModel0.objects.create()
 
             url = reverse('admin:concurrency_testmodel0_change', args=[saved.pk])
             res = self.app.get(url, user='sax')
@@ -47,6 +46,8 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
 
             res = form.submit(expect_errors=True)
             target = res.context['target']
+
+            self.assertEqual(res.status_code, 409)
             self.assertIn('target', res.context)
             self.assertIn('saved', res.context)
 
