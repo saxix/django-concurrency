@@ -26,7 +26,7 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
         """
         Tests that RecordModifiedError is handled correctly.
         """
-        m = TestModel0.objects.create()
+        m, __ = TestModel0.objects.get_or_create(id=1)
         copy = TestModel0.objects.get(pk=m.pk)
         copy.save()
         request = self._get_request('/')
@@ -36,7 +36,7 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
     def test_in_admin(self):
         middlewares = list(settings.MIDDLEWARE_CLASSES) + ['concurrency.middleware.ConcurrencyMiddleware']
         with self.settings(MIDDLEWARE_CLASSES=middlewares):
-            saved = TestModel0.objects.create()
+            saved, __ = TestModel0.objects.get_or_create(id=1)
 
             url = reverse('admin:concurrency_testmodel0_change', args=[saved.pk])
             res = self.app.get(url, user='sax')
