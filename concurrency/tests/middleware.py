@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 import mock
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
@@ -7,10 +8,10 @@ from concurrency.core import RecordModifiedError
 from concurrency.forms import VersionFieldSigner
 from concurrency.middleware import ConcurrencyMiddleware
 from concurrency.tests.models import TestModel0
-from concurrency.tests.base import DjangoAdminTestCase
+from concurrency.tests.base import DjangoAdminTestCase, AdminTestCase
 
 
-class ConcurrencyMiddlewareTest(TestCase):
+class ConcurrencyMiddlewareTest(AdminTestCase):
 
     def _get_request(self, path):
         request = HttpRequest()
@@ -32,7 +33,27 @@ class ConcurrencyMiddlewareTest(TestCase):
         request = self._get_request('/')
         r = ConcurrencyMiddleware().process_exception(request, RecordModifiedError(target=m))
         self.assertEqual(r.status_code, 409)
-        # self.assertIn('target', r.context)
+
+    def test_in_admin(self):
+        middlewares = list(settings.MIDDLEWARE_CLASSES) + ['concurrency.middleware.ConcurrencyMiddleware']
+        with self.settings(MIDDLEWARE_CLASSES=middlewares):
+            saved, __ = TestModel0.objects.get_or_create(username='aaa')
+
+            url = reverse('admin:concurrency_testmodel0_change', args=[saved.pk])
+            res = self.app.get(url, user='sax')
+            form = res.form
+
+            saved.save()  # create conflict here
+
+            res = form.submit(expect_errors=True)
+            target = res.context['target']
+            self.assertIn('target', res.context)
+            self.assertIn('saved', res.context)
+
+            self.assertEqual(res.context['target'].version, target.version)
+            self.assertEqual(res.context['saved'].version, saved.version)
+            self.assertEqual(res.context['request_path'], url)
+
 
 
 class CT(DjangoAdminTestCase):

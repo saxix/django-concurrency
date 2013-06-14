@@ -1,3 +1,4 @@
+six
 mock
 webtest
 django-webtest

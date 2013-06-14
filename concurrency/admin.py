@@ -9,6 +9,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.admin import helpers
 from django.http import HttpResponse, HttpResponseRedirect
 from concurrency.api import get_revision_of_object
+from concurrency.config import conf, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
 from concurrency.exceptions import RecordModifiedError
 from django.utils.encoding import force_text
 
@@ -119,21 +120,6 @@ class ConcurrentManagementForm(ManagementForm):
         for pk, version in self._versions:
             v.append('<input type="hidden" name="_concurrency_version_{0}" value="{1}">'.format(pk, version))
         return mark_safe("{0}{1}".format(ret, "".join(v)))
-        #
-        #
-        # def __unicode__(self):
-        #     ret = super(ConcurrentManagementForm, self).__unicode__()
-        #     v = []
-        #     for pk, version in self._versions:
-        #         v.append('<input type="hidden" name="_concurrency_version_{0}" value="{1}">'.format(pk, version))
-        #     return mark_safe("{0}{1}".format(ret, "".join(v)))
-
-        # def __str__(self):
-        #     ret = super(ConcurrentManagementForm, self).__str__()
-        #     v = []
-        #     for pk, version in self._versions:
-        #         v.append('<input type="hidden" name="_concurrency_version_{0}" value="{1}">'.format(pk, version))
-        #     return mark_safe("{0}{1}".format(ret, "".join(v)))
 
 
 class ConcurrentBaseModelFormSet(BaseModelFormSet):
@@ -157,18 +143,23 @@ class ConcurrentBaseModelFormSet(BaseModelFormSet):
     management_form = property(_management_form)
 
 
-class ConcurrentModelAdmin(ConcurrencyActionMixin, admin.ModelAdmin):
+class ConcurrencyListEditableMixin(object):
+    list_editable_policy = conf.LIST_EDITABLE_POLICY
+
     def get_changelist_formset(self, request, **kwargs):
         kwargs['formset'] = ConcurrentBaseModelFormSet
-        return super(ConcurrentModelAdmin, self).get_changelist_formset(request, **kwargs)
-
-    def get_changelist_form(self, request, **kwargs):
-        return super(ConcurrentModelAdmin, self).get_changelist_form(request, **kwargs)
+        return super(ConcurrencyListEditableMixin, self).get_changelist_formset(request, **kwargs)
 
     def save_model(self, request, obj, form, change):
         try:
             if obj.pk:
                 obj.version = int(request.POST['_concurrency_version_{0.pk}'.format(obj)])
-            super(ConcurrentModelAdmin, self).save_model(request, obj, form, change)
+            super(ConcurrencyListEditableMixin, self).save_model(request, obj, form, change)
         except RecordModifiedError:
-            messages.error(request, "Record with pk `{0.pk}` has been modified and was not updated".format(obj))
+            if self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_SILENT:
+                messages.error(request, "Record with pk `{0.pk}` has been modified and was not updated".format(obj))
+            else:
+                raise
+
+class ConcurrentModelAdmin(ConcurrencyActionMixin, ConcurrencyListEditableMixin, admin.ModelAdmin):
+    pass

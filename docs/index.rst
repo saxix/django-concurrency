@@ -30,7 +30,7 @@ django command.
 * handle http post and standard python code (ie. django management commands)
 * complete test suite (:ref:`test_suite`)
 * works with `South`_ and `diango-reversion`_
-* Admin integration
+* Admin integration (handle actions and list_editable)
 
 
 How it works
@@ -50,18 +50,13 @@ Table Of Contents
     :maxdepth: 1
 
     install
-    cookbook
-    admin
     fields
+    middleware
+    admin
     api
     settings
+    cookbook
     changes
-
-
-.. toctree::
-    :hidden:
-
-    globals
 
 
 Links

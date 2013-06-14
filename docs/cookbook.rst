@@ -8,9 +8,38 @@ Cookbook
 .. contents::
    :local:
 
+.. _import_data:
 
-Add version to new models
---------------------------
+Unable to import data ?
+-----------------------
+
+|app| check that any model, when saved, has no version, anyway this is not True
+when you are importing data from a file or loading a fixture.
+This is internally known as ``SANITY_CHECK``. To solve this you can:
+
+**Globally disable:**
+
+`settings.py`::
+
+        CONCURRENCY_SANITY_CHECK = False
+
+**Temporary disable** ::
+
+    from concurrency.config import conf
+
+    conf.SANITY_CHECK = False
+
+**Temporary disable per Model** ::
+
+    from concurrency.api import disable_sanity_check
+
+    with disable_sanity_check(Model):
+        Model.object
+
+
+
+Add version management to new models
+-------------------------------------
 
 `models.py`::
 
@@ -27,8 +56,8 @@ Add version to new models
     b.save() # this will raise ``RecordModifedError``
 
 
-Django and/or plugged in applications models
---------------------------------------------
+Add version management to Django and/or plugged in applications models
+-----------------------------------------------------------------------
 
 .. versionchanged:: 0.4
 

@@ -46,7 +46,7 @@ extensions = ['sphinx.ext.autodoc',
               'version',
               'github']
 
-next_version = '0.4'
+next_version = '0.6'
 todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.

@@ -3,6 +3,7 @@ from functools import update_wrapper
 from django.conf import settings
 from django.db import connections, router
 from django.utils.translation import ugettext as _
+from concurrency.config import conf
 from concurrency.exceptions import RecordModifiedError, InconsistencyError
 
 # Set default logging handler to avoid "No handler found" warnings.
@@ -32,7 +33,7 @@ def _select_lock(model_instance, version_value=None):
         if not entry:
             raise RecordModifiedError(_('Record has been modified or no version value passed'), target=model_instance)
 
-    elif is_versioned and getattr(settings, 'CONCURRECY_SANITY_CHECK', True):
+    elif is_versioned and conf.SANITY_CHECK and model_instance._revisionmetainfo.sanity_check:
         raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.' % value))
 
 
@@ -42,6 +43,7 @@ def _wrap_model_save(model, force=False):
         old_save = getattr(model, 'save')
         setattr(model, 'save', _wrap_save(old_save))
         model.RevisionMetaInfo.versioned_save = True
+        model._revisionmetainfo = RevisionMetaInfo()
 
 
 def _wrap_save(func):
@@ -66,3 +68,4 @@ class RevisionMetaInfo:
     field = None
     versioned_save = False
     manually = False
+    sanity_check = conf.SANITY_CHECK

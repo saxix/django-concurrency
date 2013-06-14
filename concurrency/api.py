@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from contextlib import contextmanager
 import logging
 from django.core.exceptions import ImproperlyConfigured
 from concurrency.core import _select_lock, _wrap_model_save
@@ -25,6 +26,18 @@ def is_changed(obj):
     version = getattr(obj, revision_field.attname)
     return not obj.__class__.objects.filter(**{obj._meta.pk.name: obj.pk,
                                                revision_field.attname: version}).exists()
+
+
+def get_version(model_instance, version):
+    version_field = model_instance.RevisionMetaInfo.field
+    kwargs = {'pk': model_instance.pk, version_field.name: version}
+    return model_instance.__class__.objects.get(**kwargs)
+
+
+def get_object_with_version(manager, pk, version):
+    version_field = manager.model.RevisionMetaInfo.field
+    kwargs = {'pk': pk, version_field.name: version}
+    return manager.get(**kwargs)
 
 
 def apply_concurrency_check(model, fieldname, versionclass):
@@ -56,3 +69,9 @@ def apply_concurrency_check(model, fieldname, versionclass):
 def concurrency_check(model_instance, force_insert=False, force_update=False, using=None, **kwargs):
     if not force_insert:
         _select_lock(model_instance)
+
+@contextmanager
+def disable_sanity_check(model):
+    old_value, model._revisionmetainfo.sanity_check = model._revisionmetainfo.sanity_check, False
+    yield
+    model._revisionmetainfo.sanity_check = old_value

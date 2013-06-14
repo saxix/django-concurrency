@@ -8,6 +8,12 @@ Admin Integration
 .. contents::
    :local:
 
+
+.. _list_editable:
+
+Handle ``list_editable``
+------------------------
+
 Check admin's action execution for concurrency
 ----------------------------------------------
 

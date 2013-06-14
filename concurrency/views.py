@@ -33,7 +33,7 @@ def conflict(request, target=None, template_name='409.html'):
             '<p>The request was unsuccessful due to a conflict. '
             'The object changed during the transaction.</p>')
     try:
-        saved = target.__class__.objects.get(pk=target.pk)
+        saved = target.__class__._default_manager.get(pk=target.pk)
     except target.__class__.DoesNotExists:
         saved = None
     ctx = RequestContext(request, {'target': target,
