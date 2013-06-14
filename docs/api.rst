@@ -6,7 +6,7 @@ API
 ===
 
 .. contents::
-:local:
+    :local:
 
 -----
 Forms
@@ -64,16 +64,24 @@ VersionError
 Admin
 -----
 
+.. _ConcurrentModelAdmin:
 
 ConcurrentModelAdmin
 ---------------------
 .. autoclass:: concurrency.admin.ConcurrentModelAdmin
 
+.. _ConcurrencyActionMixin:
 
 ConcurrencyActionMixin
 ----------------------
 .. autoclass:: concurrency.admin.ConcurrencyActionMixin
 
+
+.. _ConcurrencyListEditableMixin:
+
+ConcurrencyListEditableMixin
+-----------------------------
+.. autoclass:: concurrency.admin.ConcurrencyListEditableMixin
 
 
 -----------
@@ -133,16 +141,17 @@ Add concurrency check to existing classes.
 
 
 
+.. _disable_concurrency:
 
-.. _concurrency_field_signer:
+``disable_concurrency()``
+--------------------------
+.. versionadded:: 0.6
 
-``concurrency_field_signer``
+Context manager to temporary disable concurrency checking
 
-.. autofunction:: concurrency.api.apply_concurrency_check
 
 
 .. _disable_sanity_check:
-
 
 ``disable_sanity_check()``
 --------------------------

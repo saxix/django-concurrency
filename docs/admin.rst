@@ -13,13 +13,20 @@ Admin Integration
 
 Handle ``list_editable``
 ------------------------
+.. versionadded:: 0.6
+
+Extend your ModelAdmin with :ref:`ConcurrencyListEditableMixin` or use :ref:`ConcurrentModelAdmin`
+
+
+.. _admin_action:
 
 Check admin's action execution for concurrency
 ----------------------------------------------
 
 .. versionadded:: 0.6
 
-Extend your ModelAdmin with `ConcurrencyActionMixin` or use `ConcurrentModelAdmin`
+Extend your ModelAdmin with :ref:`ConcurrencyActionMixin` or use :ref:`ConcurrentModelAdmin`
+
 
 
 Update existing actions templates to be managed by concurrency

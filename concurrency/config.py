@@ -43,8 +43,7 @@ class AppSettings(object):
         'SANITY_CHECK': True,
         'FIELD_SIGNER': 'concurrency.forms.VersionFieldSigner',
         'LIST_EDITABLE_POLICY': CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
-        'HANDLER409' : 'concurrency.views.conflict',
-    }
+        'HANDLER409': 'concurrency.views.conflict'}
 
     def __init__(self, prefix):
         """

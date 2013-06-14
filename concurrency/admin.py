@@ -161,5 +161,8 @@ class ConcurrencyListEditableMixin(object):
             else:
                 raise
 
-class ConcurrentModelAdmin(ConcurrencyActionMixin, ConcurrencyListEditableMixin, admin.ModelAdmin):
+
+class ConcurrentModelAdmin(ConcurrencyActionMixin,
+                           ConcurrencyListEditableMixin,
+                           admin.ModelAdmin):
     pass

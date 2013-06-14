@@ -70,8 +70,16 @@ def concurrency_check(model_instance, force_insert=False, force_update=False, us
     if not force_insert:
         _select_lock(model_instance)
 
+
 @contextmanager
 def disable_sanity_check(model):
     old_value, model._revisionmetainfo.sanity_check = model._revisionmetainfo.sanity_check, False
     yield
     model._revisionmetainfo.sanity_check = old_value
+
+
+@contextmanager
+def disable_concurrency(model):
+    old_value, model._revisionmetainfo.enabled = model._revisionmetainfo.enabled, False
+    yield
+    model._revisionmetainfo.enabled = old_value

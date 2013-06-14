@@ -1,5 +1,6 @@
 from django.test import TestCase
-from concurrency.api import is_changed, get_revision_of_object, get_version, get_object_with_version, disable_sanity_check
+from concurrency.api import (is_changed, get_revision_of_object,
+                             get_version, get_object_with_version, disable_sanity_check)
 from concurrency.tests.models import TestModel0, TestModelWithCustomSave
 
 
@@ -19,16 +20,13 @@ class ConcurrencyTestApi(TestCase):
         o1 = TestModel0.objects.create()
         self.assertEqual(get_version(o1, o1.version), o1)
 
-
     def test_get_object_version(self):
         o1 = TestModel0.objects.create()
         self.assertEqual(get_object_with_version(TestModel0.objects, o1.pk, o1.version), o1)
 
-
     def test_patched_get_version(self):
         o1 = TestModel0.objects.create()
         self.assertEqual(o1.get_concurrency_version(o1.version), o1)
-
 
     def test_patched_get_object_version(self):
         o1 = TestModel0.objects.create()
@@ -39,5 +37,3 @@ class ConcurrencyTestApi(TestCase):
             with disable_sanity_check(TestModelWithCustomSave):
                 m = TestModelWithCustomSave(username="New", last_name="1", version=1)
                 self.assertEqual(2222, m.save())
-
-

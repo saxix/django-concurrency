@@ -1,6 +1,7 @@
 Release 0.6.0 (dev)
 ---------------------------------
 
+* new :ref:`disable_concurrency` context manager
 * added documentation for :ref:`concurrency.middleware.ConcurrencyMiddleware <concurrencymiddleware>`
 * **BACKWARD INCOMPATIBLE** Fixed typo: ``CONCURRECY_SANITY_CHECK`` now ``CONCURRENCY_SANITY_CHECK``
 * added :ref:`disable_sanity_check` context manager

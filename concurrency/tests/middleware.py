@@ -56,7 +56,6 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
             self.assertEqual(res.context['request_path'], url)
 
 
-
 class CT(DjangoAdminTestCase):
     MIDDLEWARE_CLASSES = ('django.middleware.common.CommonMiddleware',
                           'django.contrib.sessions.middleware.SessionMiddleware',

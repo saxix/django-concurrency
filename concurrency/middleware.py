@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
 from django.core.signals import got_request_exception
 from django.core.urlresolvers import get_callable
 from concurrency.core import RecordModifiedError

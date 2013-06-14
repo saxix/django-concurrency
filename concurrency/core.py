@@ -1,6 +1,5 @@
 import logging
 from functools import update_wrapper
-from django.conf import settings
 from django.db import connections, router
 from django.utils.translation import ugettext as _
 from concurrency.config import conf
@@ -31,7 +30,8 @@ def _select_lock(model_instance, version_value=None):
         NOWAIT = connections[alias].features.has_select_for_update_nowait
         entry = model_instance.__class__.objects.select_for_update(nowait=NOWAIT).filter(**kwargs)
         if not entry:
-            raise RecordModifiedError(_('Record has been modified or no version value passed'), target=model_instance)
+            raise RecordModifiedError(_('Record has been modified or no version value passed'),
+                                      target=model_instance)
 
     elif is_versioned and conf.SANITY_CHECK and model_instance._revisionmetainfo.sanity_check:
         raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.' % value))
@@ -50,7 +50,8 @@ def _wrap_save(func):
     from concurrency.api import concurrency_check
 
     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-        concurrency_check(self, force_insert, force_update, using, **kwargs)
+        if self._revisionmetainfo.enabled:
+            concurrency_check(self, force_insert, force_update, using, **kwargs)
         return func(self, force_insert, force_update, using, **kwargs)
 
     return update_wrapper(inner, func)
@@ -69,3 +70,4 @@ class RevisionMetaInfo:
     versioned_save = False
     manually = False
     sanity_check = conf.SANITY_CHECK
+    enabled = True
