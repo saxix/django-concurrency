@@ -23,7 +23,7 @@ Each time a ``RecordModifiedError`` is raised a go up to the ConcurrencyMiddlewa
                             'django.contrib.auth.middleware.AuthenticationMiddleware',
                             'django.contrib.messages.middleware.MessageMiddleware')
 
-        CONCURRENCY_HANDLER409 = 'concurrency.views.conflict'
+        CONCURRENCY_HANDLER409 = 'demoproject.demoapp.views.conflict'
         CONCURRENCY_POLICY = 2
 
 ``views.py``
