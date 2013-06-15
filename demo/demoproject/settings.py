@@ -17,7 +17,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'concurrency',
     'import_export',
-    # 'demoproject.demoapp'
+    'demoproject.demoapp'
 )
 
 TEMPLATE_DIRS = ['demoproject/templates']
@@ -27,3 +27,45 @@ db = os.environ.get('DBENGINE', None)
 if db:
     mod = __import__('demoproject.settings_%s' % db, fromlist=['demoproject'])
     DATABASES = mod.DATABASES
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'full': {
+            'format': '%(levelname)-8s: %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'verbose': {
+            'format': '%(levelname)-8s: %(asctime)s %(name)-25s %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)-8s %(asctime)s %(name)-25s %(funcName)s %(message)s'
+        },
+        'debug': {
+            'format': '%(levelno)s:%(levelname)-8s %(name)s %(funcName)s:%(lineno)s:: %(message)s'
+        }
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler'
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'debug'
+        }
+    },
+    'loggers': {
+        'concurrency': {
+            'handlers': ['null'],
+            'propagate': False,
+            'level': 'DEBUG'
+        }
+    }
+}

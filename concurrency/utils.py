@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
 import logging
 import warnings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.importlib import import_module
-
 from concurrency.exceptions import RecordModifiedError
 
-logger = logging.getLogger('tests.concurrency')
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
@@ -74,7 +74,8 @@ class ConcurrencyTestMixin(object):
     concurrency_kwargs = {}
 
     def _get_concurrency_target(self, **kwargs):
-        # WARNING this method must be idempotent. ie must returns always a fresh copy of the record
+        # WARNING this method must be idempotent. ie must returns
+        # always a fresh copy of the record
         args = dict(self.concurrency_kwargs)
         args.update(kwargs)
         return self.concurrency_model.objects.get_or_create(**args)[0]

@@ -1,6 +1,9 @@
-from import_export.admin import ImportExportMixin
 from concurrency.admin import ConcurrentModelAdmin
-
+try:
+    from import_export.admin import ImportExportMixin
+except:
+    class ImportExportMixin(object):
+        pass
 
 class DemoModelAdmin(ImportExportMixin, ConcurrentModelAdmin):
     # list_display = [f.name for f in DemoModel._meta.fields]

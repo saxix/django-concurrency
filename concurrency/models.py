@@ -1,8 +1,9 @@
+from __future__ import absolute_import, unicode_literals
 import logging
 from django.db.models.signals import class_prepared
 from concurrency.core import _wrap_model_save
 
-logger = logging.getLogger('concurrency')
+logger = logging.getLogger(__name__)
 
 __all__ = []
 

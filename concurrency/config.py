@@ -1,6 +1,7 @@
+from __future__ import absolute_import, unicode_literals
+from six import string_types
 from django.core.exceptions import ImproperlyConfigured
 from django.test.signals import setting_changed
-from six import string_types
 from concurrency.utils import import_by_path
 
 

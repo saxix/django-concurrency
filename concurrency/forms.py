@@ -1,3 +1,4 @@
+from __future__ import absolute_import, unicode_literals
 from django import forms
 from django.conf import settings
 from django.core import validators
@@ -8,6 +9,7 @@ from django.utils import timezone
 from django.utils.importlib import import_module
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
+from concurrency.config import conf
 from concurrency.core import _select_lock, RecordModifiedError
 from concurrency.exceptions import VersionError
 
@@ -64,7 +66,7 @@ class VersionFieldSigner(Signer):
 
 
 def get_signer():
-    path = getattr(settings, 'CONCURRENCY_FIELD_SIGNER', 'concurrency.forms.VersionFieldSigner')
+    path = conf.FIELD_SIGNER
     i = path.rfind('.')
     module, attr = path[:i], path[i + 1:]
     try:

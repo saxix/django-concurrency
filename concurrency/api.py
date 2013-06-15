@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
-from contextlib import contextmanager
+from __future__ import absolute_import, unicode_literals
 import logging
+from contextlib import contextmanager
 from django.core.exceptions import ImproperlyConfigured
 from concurrency.core import _select_lock, _wrap_model_save
 from concurrency.exceptions import RecordModifiedError
 
-__all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_object', 'RecordModifiedError']
+__all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_object',
+           'RecordModifiedError', 'disable_concurrency', 'disable_sanity_check',
+           'get_object_with_version', 'get_version', 'is_changed']
 
-logger = logging.getLogger('concurrency')
+logger = logging.getLogger(__name__)
 
 
 def get_revision_of_object(obj):
     """
+        returns teh version of the passed object
 
     @param obj:
     @return:
@@ -22,6 +26,11 @@ def get_revision_of_object(obj):
 
 
 def is_changed(obj):
+    """
+        returns True if `obj` is changed or deleted on the database
+    :param obj:
+    :return:
+    """
     revision_field = obj.RevisionMetaInfo.field
     version = getattr(obj, revision_field.attname)
     return not obj.__class__.objects.filter(**{obj._meta.pk.name: obj.pk,
@@ -29,12 +38,28 @@ def is_changed(obj):
 
 
 def get_version(model_instance, version):
+    """
+        try go load from the database one object with specific version
+
+    :param model_instance: instance in memory
+    :param version: version number
+    :return:
+    """
     version_field = model_instance.RevisionMetaInfo.field
     kwargs = {'pk': model_instance.pk, version_field.name: version}
     return model_instance.__class__.objects.get(**kwargs)
 
 
 def get_object_with_version(manager, pk, version):
+    """
+        try go load from the database one object with specific version.
+        Raises DoesNotExists otherwise.
+
+    :param manager: django.models.Manager
+    :param pk: primaryKey
+    :param version: version number
+    :return:
+    """
     version_field = manager.model.RevisionMetaInfo.field
     kwargs = {'pk': pk, version_field.name: version}
     return manager.get(**kwargs)
@@ -73,6 +98,10 @@ def concurrency_check(model_instance, force_insert=False, force_update=False, us
 
 @contextmanager
 def disable_sanity_check(model):
+    """
+        temporary disable sanity check for passed model
+    :param model:
+    """
     old_value, model._revisionmetainfo.sanity_check = model._revisionmetainfo.sanity_check, False
     yield
     model._revisionmetainfo.sanity_check = old_value
@@ -80,6 +109,10 @@ def disable_sanity_check(model):
 
 @contextmanager
 def disable_concurrency(model):
+    """
+        temporary disable concurrency check for passed model
+    :param model:
+    """
     old_value, model._revisionmetainfo.enabled = model._revisionmetainfo.enabled, False
     yield
     model._revisionmetainfo.enabled = old_value

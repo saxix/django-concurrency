@@ -1,17 +1,19 @@
 ## -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from django.utils.encoding import force_text
 from django.contrib import admin, messages
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db.models import Q
-from django.forms.formsets import ManagementForm, TOTAL_FORM_COUNT, INITIAL_FORM_COUNT, MAX_NUM_FORM_COUNT
+from django.forms.formsets import (ManagementForm, TOTAL_FORM_COUNT, INITIAL_FORM_COUNT,
+MAX_NUM_FORM_COUNT)
 from django.forms.models import BaseModelFormSet
 from django.utils.safestring import mark_safe
 from django.contrib.admin import helpers
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.translation import ugettext as _
 from concurrency.api import get_revision_of_object
 from concurrency.config import conf, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
 from concurrency.exceptions import RecordModifiedError
-from django.utils.encoding import force_text
 
 
 class ConcurrencyActionMixin(object):
@@ -157,7 +159,7 @@ class ConcurrencyListEditableMixin(object):
             super(ConcurrencyListEditableMixin, self).save_model(request, obj, form, change)
         except RecordModifiedError:
             if self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_SILENT:
-                messages.error(request, "Record with pk `{0.pk}` has been modified and was not updated".format(obj))
+                messages.error(request, _("Record with pk `{0.pk}` has been modified and was not updated").format(obj))
             else:
                 raise
 

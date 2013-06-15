@@ -1,3 +1,4 @@
+from __future__ import absolute_import, unicode_literals
 import logging
 from functools import update_wrapper
 from django.db import connections, router
@@ -15,7 +16,7 @@ except ImportError:
 
 logging.getLogger('concurrency').addHandler(NullHandler())
 
-logger = logging.getLogger('concurrency')
+logger = logging.getLogger(__name__)
 
 __all__ = []
 
@@ -24,12 +25,14 @@ def _select_lock(model_instance, version_value=None):
     version_field = model_instance.RevisionMetaInfo.field
     value = version_value or getattr(model_instance, version_field.name)
     is_versioned = value != version_field.get_default()
-    if model_instance.pk is not None:
+    if model_instance.pk is not None and is_versioned:
         kwargs = {'pk': model_instance.pk, version_field.name: value}
         alias = router.db_for_write(model_instance)
         NOWAIT = connections[alias].features.has_select_for_update_nowait
         entry = model_instance.__class__.objects.select_for_update(nowait=NOWAIT).filter(**kwargs)
         if not entry:
+            logger.debug("Conflict detected on `{0}` pk:`{0.pk}`, "
+                         "version `{1}` not found".format(model_instance, value))
             raise RecordModifiedError(_('Record has been modified or no version value passed'),
                                       target=model_instance)
 
