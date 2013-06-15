@@ -12,7 +12,7 @@ Using ``pip``::
 Go to https://github.com/saxix/django-concurrency if you need to download a package or clone the repo.
 
 
-|concurrency| does not need to be installed into ``INSTALLED_APPS`` unless you want run tests
+|concurrency| does not need to be listed into ``INSTALLED_APPS`` unless you want run the tests
 
 
 
@@ -22,14 +22,17 @@ Go to https://github.com/saxix/django-concurrency if you need to download a pack
 Test suite
 ----------
 
-|concurrency| come with a set of tests that can simulate different scenarions
+|concurrency| comes with a set of tests that can simulate different scenarions
 
 * basic versioned model
 * inherited model
 * inherited model from abstract model
-* inherited model from external projcet model
+* inherited model from external project model
 * django User model
 * models with custom save
+* proxy models
+* admin actions
+
 
 How to run the tests
 ---------------------

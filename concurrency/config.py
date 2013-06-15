@@ -9,9 +9,9 @@ from concurrency.utils import import_by_path
 # 0 do not save updated records, save others, show message to the user
 # 1 abort whole transaction
 
-CONCURRENCY_LIST_EDITABLE_POLICY_SILENT = 0
-CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL = 1
-
+CONCURRENCY_POLICY_SILENT = 0
+CONCURRENCY_POLICY_ABORT_ALL = 1
+CONCURRENCY_POLICY_RAISE = 2
 
 class AppSettings(object):
     """
@@ -43,7 +43,7 @@ class AppSettings(object):
     defaults = {
         'SANITY_CHECK': True,
         'FIELD_SIGNER': 'concurrency.forms.VersionFieldSigner',
-        'LIST_EDITABLE_POLICY': CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
+        'POLICY': CONCURRENCY_POLICY_SILENT,
         'HANDLER409': 'concurrency.views.conflict'}
 
     def __init__(self, prefix):

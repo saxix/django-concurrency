@@ -1,11 +1,60 @@
+from django.contrib.admin import site, ModelAdmin
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
+from concurrency.admin import ConcurrentModelAdmin
 from concurrency.forms import VersionFieldSigner
 from concurrency.tests.base import AdminTestCase, SENTINEL
-from concurrency.tests.models import TestModel1, TestModel0
+from concurrency.tests.models import TestModel1, TestModel0, ConcurrentModel
+
+
+class TestConcurrentModelAdmin(AdminTestCase):
+    def setUp(self):
+        super(TestConcurrentModelAdmin, self).setUp()
+        assert isinstance(site._registry[ConcurrentModel], ConcurrentModelAdmin)
+
+    def test_standard_update(self):
+        target, __ = ConcurrentModel.objects.get_or_create(dummy_char='aaa')
+        url = reverse('admin:concurrency_concurrentmodel_change', args=[target.pk])
+        res = self.app.get(url, user='sax')
+        target = res.context['original']
+        old_version = target.version
+        form = res.form
+        form['dummy_char'] = 'UPDATED'
+        res = form.submit().follow()
+        target = ConcurrentModel.objects.get(pk=target.pk)
+        new_version = target.version
+        self.assertGreater(new_version, old_version)
+
+    def test_creation(self):
+        url = reverse('admin:concurrency_concurrentmodel_add')
+        res = self.app.get(url, user='sax')
+        form = res.form
+        form['dummy_char'] = 'CHAR'
+        res = form.submit().follow()
+        self.assertTrue(ConcurrentModel.objects.filter(dummy_char='CHAR').exists())
+        self.assertGreater(ConcurrentModel.objects.get(dummy_char='CHAR').version, 0)
+
+    def test_conflict(self):
+        target, __ = ConcurrentModel.objects.get_or_create(dummy_char='aaa')
+        url = reverse('admin:concurrency_concurrentmodel_change', args=[target.pk])
+        res = self.app.get(url, user='sax')
+        form = res.form
+
+        target.save()  # create conflict here
+
+        res = form.submit()
+        self.assertIn('original', res.context)
+        self.assertTrue(res.context['adminform'].form.errors,
+                        res.context['adminform'].form.errors)
+        self.assertIn(_('Record Modified'),
+                      str(res.context['adminform'].form.errors),
+                      res.context['adminform'].form.errors)
 
 
 class TestAdminEdit(AdminTestCase):
+    def setUp(self):
+        super(TestAdminEdit, self).setUp()
+        assert isinstance(site._registry[TestModel1], ModelAdmin)
 
     def _create_conflict(self, pk):
         u = TestModel1.objects.get(pk=pk)
@@ -42,7 +91,8 @@ class TestAdminEdit(AdminTestCase):
         target = res.context['original']
         old_version = target.version
         form = res.form
-        form.submit().follow()
+        form['dummy_char'] = 'UPDATED'
+        res = form.submit().follow()
         target = TestModel0.objects.get(pk=target.pk)
         new_version = target.version
         self.assertGreater(new_version, old_version)

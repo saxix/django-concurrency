@@ -13,6 +13,10 @@ __all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_obje
 logger = logging.getLogger(__name__)
 
 
+def get_version_fieldname(obj):
+    return obj.RevisionMetaInfo.field.attname
+
+
 def get_revision_of_object(obj):
     """
         returns teh version of the passed object

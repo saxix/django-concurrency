@@ -1,6 +1,5 @@
 from __future__ import absolute_import, unicode_literals
 from django import forms
-from django.conf import settings
 from django.core import validators
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from django.core.signing import Signer, BadSignature

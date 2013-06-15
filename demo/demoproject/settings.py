@@ -7,19 +7,30 @@ AUTHENTICATION_BACKENDS = ('demoproject.backends.AnyUserBackend',)
 SITE_ID = 1
 ROOT_URLCONF = 'demoproject.urls'
 SECRET_KEY = ';klkj;okj;lkn;lklj;lkj;kjmlliuewhy2ioqwjdkh'
-INSTALLED_APPS = [
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.admin',
-    'concurrency',
-    'demoproject.demoapp'
-]
+
+INSTALLED_APPS = ['django.contrib.auth',
+                  'django.contrib.contenttypes',
+                  'django.contrib.sessions',
+                  'django.contrib.sites',
+                  'django.contrib.messages',
+                  'django.contrib.staticfiles',
+                  'django.contrib.admin',
+                  'concurrency',
+                  'demoproject.demoapp']
+
+# MIDDLEWARE_CLASSES = ('django.middleware.common.CommonMiddleware',
+#                        'concurrency.middleware.ConcurrencyMiddleware',
+#                       'django.contrib.sessions.middleware.SessionMiddleware',
+#                       'django.middleware.csrf.CsrfViewMiddleware',
+#                       'django.contrib.auth.middleware.AuthenticationMiddleware',
+#                       'django.contrib.messages.middleware.MessageMiddleware',)
+
+# CONCURRENCY_HANDLER409 = 'demoproject.demoapp.views.conflict'
+# CONCURRENCY_POLICY = 2
+
 try:
     import import_export
+
     INSTALLED_APPS.append('import_export')
 except ImportError:
     pass

@@ -31,8 +31,8 @@ try:
             res = res.click(_("Export"))
             res.form['file_format'] = 0
             res = res.form.submit()
-            buffer = StringIO.StringIO(res.body)
-            c = csv.reader(buffer)
+            io = StringIO(res.body)
+            c = csv.reader(io)
             list(c)
 
         def get_file_to_upload(self, filename):
