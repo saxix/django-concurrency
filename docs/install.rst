@@ -46,6 +46,7 @@ Option 2: using demo project
     ::
 
         $ cd demo
+        $ pip install -r demoproject/requirements.pip
         $ ./manage.py test adminactions
 
 Option 3: execute in your project

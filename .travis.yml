@@ -15,6 +15,7 @@ env:
   - DJANGO="https://www.djangoproject.com/download/1.6a1/tarball/" DBENGINE=pg
 
 install:
+  - pip install -r demo/demoproject/requirements.pip
   - pip install -r requirements.pip
   - sh -c "if [ '$DBENGINE' = 'pg' ]; then pip install -q psycopg2; fi"
   - sh -c "if [ '$DBENGINE' = 'mysql' ]; then pip install -q MySQL-python; fi"

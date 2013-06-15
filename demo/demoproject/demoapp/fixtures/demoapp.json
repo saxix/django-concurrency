@@ -1,0 +1,1 @@
+[{"pk": 1, "model": "demoapp.demomodel", "fields": {"char": "aa1", "integer": 1, "version": 1371221369533415}}, {"pk": 2, "model": "demoapp.demomodel", "fields": {"char": "bb41111111122aaa", "integer": 2, "version": 1371221369413696}}, {"pk": 3, "model": "demoapp.demomodel", "fields": {"char": "11", "integer": 11, "version": 1371221369252343}}]

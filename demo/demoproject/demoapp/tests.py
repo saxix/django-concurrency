@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import StringIO
+from six import StringIO
 import os
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import User

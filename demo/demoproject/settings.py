@@ -7,7 +7,7 @@ AUTHENTICATION_BACKENDS = ('demoproject.backends.AnyUserBackend',)
 SITE_ID = 1
 ROOT_URLCONF = 'demoproject.urls'
 SECRET_KEY = ';klkj;okj;lkn;lklj;lkj;kjmlliuewhy2ioqwjdkh'
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -16,9 +16,13 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'concurrency',
-    'import_export',
     'demoproject.demoapp'
-)
+]
+try:
+    import import_export
+    INSTALLED_APPS.append('import_export')
+except ImportError:
+    pass
 
 TEMPLATE_DIRS = ['demoproject/templates']
 from demoproject.settings_sqlite import *  # NOQA
