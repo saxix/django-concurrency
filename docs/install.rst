@@ -47,7 +47,7 @@ Option 2: using demo project
 
         $ cd demo
         $ pip install -r demoproject/requirements.pip
-        $ ./manage.py test adminactions
+        $ ./manage.py test concurrency demoapp
 
 Option 3: execute in your project
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
