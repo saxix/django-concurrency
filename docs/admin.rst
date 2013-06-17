@@ -17,6 +17,8 @@ Handle ``list_editable``
 
 Extend your ModelAdmin with :ref:`ConcurrencyListEditableMixin` or use :ref:`ConcurrentModelAdmin`
 
+.. seealso:: :ref:`list_editable_policies`
+
 
 .. _admin_action:
 

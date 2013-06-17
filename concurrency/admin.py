@@ -6,14 +6,14 @@ from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db.models import Q
 from django.forms.formsets import (ManagementForm, TOTAL_FORM_COUNT, INITIAL_FORM_COUNT,
                                    MAX_NUM_FORM_COUNT)
-from django.forms.models import BaseModelFormSet, modelform_factory
+from django.forms.models import BaseModelFormSet
 from django.utils.safestring import mark_safe
 from django.contrib.admin import helpers
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from concurrency import forms
-from concurrency.api import get_revision_of_object, get_version_fieldname
-from concurrency.config import conf, CONCURRENCY_POLICY_SILENT
+from concurrency.api import get_revision_of_object
+from concurrency.config import conf, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
 
@@ -148,7 +148,7 @@ class ConcurrentBaseModelFormSet(BaseModelFormSet):
 
 
 class ConcurrencyListEditableMixin(object):
-    list_editable_policy = conf.POLICY
+    list_editable_policy = conf.POLICY & CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
 
     def get_changelist_formset(self, request, **kwargs):
         kwargs['formset'] = ConcurrentBaseModelFormSet
@@ -162,7 +162,7 @@ class ConcurrencyListEditableMixin(object):
                     obj.version = int(version)
             super(ConcurrencyListEditableMixin, self).save_model(request, obj, form, change)
         except RecordModifiedError:
-            if self.list_editable_policy == CONCURRENCY_POLICY_SILENT:
+            if self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_SILENT:
                 messages.error(request, _("Record with pk `{0.pk}` has been modified and was not updated").format(obj))
             else:
                 raise
@@ -172,4 +172,4 @@ class ConcurrentModelAdmin(ConcurrencyActionMixin,
                            ConcurrencyListEditableMixin,
                            admin.ModelAdmin):
     form = ConcurrentForm
-    formfield_overrides = {forms.VersionField: {'widget': VersionWidget},}
+    formfield_overrides = {forms.VersionField: {'widget': VersionWidget}}

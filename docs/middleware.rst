@@ -8,7 +8,7 @@ ConcurrencyMiddleware
 You can globally intercept :ref:`RecordModifiedError`
 adding :ref:`concurrency.middleware.ConcurrencyMiddleware <concurrencymiddleware>` to your :setting:`MIDDLEWARE_CLASSES`.
 Each time a ``RecordModifiedError`` is raised a go up to the ConcurrencyMiddleware the handler defined in
-:setting:`CONCURRECY_HANDLER409` is invoked.
+:setting:`CONCURRENCY_HANDLER409` is invoked.
 
 **Example**
 
@@ -24,7 +24,7 @@ Each time a ``RecordModifiedError`` is raised a go up to the ConcurrencyMiddlewa
                             'django.contrib.messages.middleware.MessageMiddleware')
 
         CONCURRENCY_HANDLER409 = 'demoproject.demoapp.views.conflict'
-        CONCURRENCY_POLICY = 2
+        CONCURRENCY_POLICY = 2  # CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
 
 ``views.py``
 
@@ -111,12 +111,12 @@ Each time a ``RecordModifiedError`` is raised a go up to the ConcurrencyMiddlewa
     </table>
 
 If you want to use ConcurrentMiddleware in the admin and you are using
-:ref:`ConcurrentModelAdmin` remeber to set your ModelAdmin to NOT use :ref:`ConcurrentForm`
+:ref:`ConcurrentModelAdmin` remember to set your ModelAdmin to NOT use :ref:`ConcurrentForm`
 
 .. code-block:: python
 
     from django import forms
 
     class MyModelAdmin(ConcurrentModelAdmin):
-        form = forms.ModelForm  # override default ConcurrentForm
+        form = forms.ModelForm  # overrides default ConcurrentForm
 

@@ -3,7 +3,7 @@ import logging
 from functools import update_wrapper
 from django.db import connections, router
 from django.utils.translation import ugettext as _
-from concurrency.config import conf
+from concurrency.config import conf, CONCURRENCY_POLICY_CALLBACK
 from concurrency.exceptions import RecordModifiedError, InconsistencyError
 
 # Set default logging handler to avoid "No handler found" warnings.
@@ -33,8 +33,11 @@ def _select_lock(model_instance, version_value=None):
         if not entry:
             logger.debug("Conflict detected on `{0}` pk:`{0.pk}`, "
                          "version `{1}` not found".format(model_instance, value))
-            raise RecordModifiedError(_('Record has been modified or no version value passed'),
-                                      target=model_instance)
+            if conf.POLICY & CONCURRENCY_POLICY_CALLBACK:
+                conf._callback(model_instance)
+            else:
+                raise RecordModifiedError(_('Record has been modified or no version value passed'),
+                                          target=model_instance)
 
     elif is_versioned and conf.SANITY_CHECK and model_instance._revisionmetainfo.sanity_check:
         raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.' % value))

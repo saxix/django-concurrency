@@ -92,6 +92,8 @@ Middleware
 
 ConcurrencyMiddleware
 ----------------------
+.. seealso:: :ref:`middleware`
+
 .. autoclass:: concurrency.middleware.ConcurrencyMiddleware
 
 

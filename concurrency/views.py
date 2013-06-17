@@ -11,6 +11,10 @@ class ConflictResponse(HttpResponse):
 handler409 = 'concurrency.views.conflict'
 
 
+def callback(target, *args, **kwargs):
+    pass
+
+
 def conflict(request, target=None, template_name='409.html'):
     """
     409 error handler.
