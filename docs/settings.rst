@@ -77,7 +77,7 @@ Demand the conflict management to the callable defined in :setting:`CONCURRENCY_
 
 ``CONCURRENCY_LIST_EDITABLE_POLICY_SILENT``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Used by admin's integations to handle ``list_editable``.
+Used by admin's integrations to handle ``list_editable`` conflicts.
 Do not save conflite record, continue and save all no-coflict records,
 show a message to the user
 

@@ -13,23 +13,26 @@ Cookbook
 Unable to import data ?
 -----------------------
 
-|app| check that any model, when saved, has no version, anyway this is not True
+|concurrency| check that any model, when saved, has no version, anyway this is not true
 when you are importing data from a file or loading a fixture.
 This is internally known as ``SANITY_CHECK``. To solve this you can:
 
 **Globally disable:**
 
-`settings.py`::
+`settings.py`
+.. code-block:: python
 
         CONCURRENCY_SANITY_CHECK = False
 
-**Temporary disable** ::
+**Temporary disable**
+.. code-block:: python
 
     from concurrency.config import conf
 
     conf.SANITY_CHECK = False
 
-**Temporary disable per Model** ::
+**Temporary disable per Model**
+.. code-block:: python
 
     from concurrency.api import disable_sanity_check
 
@@ -41,14 +44,16 @@ This is internally known as ``SANITY_CHECK``. To solve this you can:
 Add version management to new models
 -------------------------------------
 
-`models.py`::
+`models.py`
+.. code-block:: python
 
     from concurrency.fields import IntegerVersionField
 
     class ConcurrentModel( models.Model ):
         version = IntegerVersionField( )
 
-`tests.py`::
+`tests.py`
+.. code-block:: python
 
     a = ConcurrentModel.objects.get(pk=1)
     b = ConcurrentModel.objects.get(pk=1)
@@ -64,7 +69,8 @@ Add version management to Django and/or plugged in applications models
 Concurrency can work even with existing models, anyway if you are adding concurrency management to
 and existing database remember to edit the database's table:
 
-`your_app.models.py`::
+`your_app.models.py`
+.. code-block:: python
 
     from django.contrib.auth import User
     from concurrency.api import apply_concurrency_check
@@ -75,10 +81,12 @@ and existing database remember to edit the database's table:
 
 Manually handle concurrency
 ---------------------------
-
 .. versionchanged:: 0.4
 
-::
+Use :function:`concurrency.api.concurrency_check`
+
+
+.. code-block:: python
 
     from concurrency.api import concurrency_check
 
@@ -96,7 +104,9 @@ Manually handle concurrency
 Test Utilities
 --------------
 
-:ref:`ConcurrencyTestMixin` offer a very simple test function for your existing models::
+:ref:`ConcurrencyTestMixin` offer a very simple test function for your existing models
+
+.. code-block:: python
 
     from concurrency.utils import ConcurrencyTestMixin
     from myproject.models import MyModel

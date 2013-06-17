@@ -21,10 +21,10 @@ def conflict(request, target=None, template_name='409.html'):
 
     Templates: `409.html`
     Context:
-       `target` : The model to save
-        `saved` : The object stored in the db that produce the
-                   conflict or None if not found (ie. deleted)
-        `request_path` : The path of the requested URL (e.g., '/app/pages/bad_page/')
+    `target` : The model to save
+    `saved` : The object stored in the db that produce the
+               conflict or None if not found (ie. deleted)
+    `request_path` : The path of the requested URL (e.g., '/app/pages/bad_page/')
 
     """
     try:

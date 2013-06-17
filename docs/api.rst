@@ -162,6 +162,28 @@ Context manager to temporary disable concurrency checking
 Context manager to disable sanity check checking for one model. see :ref:`import_data`
 
 
+.. templatefilter:: identity
+
+``identity``
+------------
+.. autofunction:: concurrency.templatetags.concurrency.identity
+
+
+.. templatefilter:: version
+
+``version``
+------------
+.. autofunction:: concurrency.templatetags.concurrency.version
+
+
+
+.. templatefilter:: is_version
+
+``is_version``
+---------------
+.. autofunction:: concurrency.templatetags.concurrency.is_version
+
+
 
 ---------------------
 Test Utilties

@@ -12,9 +12,11 @@
 # serve to show the default.
 
 import sys, os
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
 from django.conf import settings
+
 settings.configure()
 
 import concurrency
@@ -43,7 +45,13 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.coverage',
               'sphinx.ext.viewcode',
               'version',
-              'github']
+              'github',
+              'djangodocs']
+intersphinx_mapping = {
+    'python': ('http://python.readthedocs.org/en/v2.7.2/', None),
+    'django': ('http://django.readthedocs.org/en/latest/', None),
+    'sphinx': ('http://sphinx.readthedocs.org/en/latest/', None),
+}
 
 next_version = '0.6'
 todo_include_todos = True
