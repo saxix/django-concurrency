@@ -12,7 +12,7 @@ from django.contrib.admin import helpers
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from concurrency import forms
-from concurrency.api import get_revision_of_object
+from concurrency.api import get_revision_of_object, get_version_fieldname
 from concurrency.config import conf, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
@@ -159,7 +159,7 @@ class ConcurrencyListEditableMixin(object):
             if change:
                 version = request.POST.get('_concurrency_version_{0.pk}'.format(obj), None)
                 if version:
-                    obj.version = int(version)
+                    setattr(obj, get_version_fieldname(obj), int(version))
             super(ConcurrencyListEditableMixin, self).save_model(request, obj, form, change)
         except RecordModifiedError:
             if self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_SILENT:
@@ -173,3 +173,6 @@ class ConcurrentModelAdmin(ConcurrencyActionMixin,
                            admin.ModelAdmin):
     form = ConcurrentForm
     formfield_overrides = {forms.VersionField: {'widget': VersionWidget}}
+
+    def save_model(self, request, obj, form, change):
+        return super(ConcurrentModelAdmin, self).save_model(request, obj, form, change)
