@@ -23,10 +23,7 @@ try:
                                        username='sax')
 
         def test_export_csv(self):
-            for i in range(1, 10):
-                DemoModel.objects.get_or_create(char=str(i), integer=i)
-
-            url = reverse('admin:demoapp_demomodel_changelist')
+            url = reverse('admin:demoapp_importexport_changelist')
             res = self.app.get(url, user='sax')
             res = res.click(_("Export"))
             res.form['file_format'] = 0
@@ -41,7 +38,7 @@ try:
             return open(filepath).read()
 
         def test_import_csv_no_version(self):
-            url = reverse('admin:demoapp_demomodel_changelist')
+            url = reverse('admin:demoapp_importexport_changelist')
             res = self.app.get(url, user='sax')
             res = res.click(_("Import"))
             res.form['import_file'] = ("import_file2",
@@ -51,7 +48,7 @@ try:
             res = res.form.submit()
 
         def test_import_csv_with_version(self):
-            url = reverse('admin:demoapp_demomodel_changelist')
+            url = reverse('admin:demoapp_importexport_changelist')
             res = self.app.get(url, user='sax')
             res = res.click(_("Import"))
             with disable_concurrency(DemoModel):
