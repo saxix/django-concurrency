@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from concurrency.tests.base import AdminTestCase, SENTINEL
 from concurrency.tests.models import ListEditableConcurrentModel, NoActionsConcurrentModel
+from django.contrib.admin.models import LogEntry
+from django.contrib.contenttypes.models import ContentType
 
 
 class TestListEditable(AdminTestCase):
@@ -38,6 +40,56 @@ class TestListEditable(AdminTestCase):
         res = form.submit('_save').follow()
         self.assertTrue(self.TARGET.objects.filter(dummy_char=SENTINEL).exists())
         self.assertFalse(self.TARGET.objects.filter(dummy_char='CHAR').exists())
+
+    def test_message_user(self):
+        res = self.app.get('/admin/', user='sax')
+        res = res.click(self.TARGET._meta.verbose_name_plural)
+
+        self._create_conflict(1)
+
+        form = res.forms['changelist-form']
+        form['form-0-dummy_char'] = 'CHAR1'
+        form['form-1-dummy_char'] = 'CHAR2'
+        res = form.submit('_save').follow()
+
+        messages = map(str, list(res.context['messages']))
+
+        self.assertIn('Record with pk `1` has been modified and was not updated',
+                      messages)
+        self.assertIn('1 ListEditable-ConcurrentModel was changed successfully.',
+                      messages)
+
+    def test_message_user_no_changes(self):
+        res = self.app.get('/admin/', user='sax')
+        res = res.click(self.TARGET._meta.verbose_name_plural)
+
+        self._create_conflict(1)
+
+        form = res.forms['changelist-form']
+        form['form-0-dummy_char'] = 'CHAR1'
+        res = form.submit('_save').follow()
+
+        messages = map(str, list(res.context['messages']))
+
+        self.assertIn('No ListEditable-ConcurrentModel were changed due conflict errors',
+                      messages)
+        self.assertEqual(len(messages), 1)
+
+    def test_log_change(self):
+        res = self.app.get('/admin/', user='sax')
+        res = res.click(self.TARGET._meta.verbose_name_plural)
+        log_filter = dict(user__username='sax',
+                          content_type=ContentType.objects.get_for_model(self.TARGET))
+
+        logs = list(LogEntry.objects.filter(**log_filter).values_list('pk', flat=True))
+
+        self._create_conflict(1)
+
+        form = res.forms['changelist-form']
+        form['form-0-dummy_char'] = 'CHAR1'
+        res = form.submit('_save').follow()
+        new_logs = LogEntry.objects.filter(**log_filter).exclude(id__in=logs).exists()
+        self.assertFalse(new_logs, "LogEntry created even if conflict error")
 
 
 class TestListEditableWithNoActions(TestListEditable):
