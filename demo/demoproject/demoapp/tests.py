@@ -10,17 +10,17 @@ from concurrency.api import disable_concurrency
 from demoproject.demoapp.models import DemoModel
 
 try:
-    from import_export.admin import ImportExportMixin
+    from import_export.admin import ImportExportMixin  # NOQA
     import csv
 
     class TestAdminEdit(WebTest):
 
         def setUp(self):
             self.user = User.objects.get_or_create(is_superuser=True,
-                                       is_staff=True,
-                                       is_active=True,
-                                       email='sax@example.com',
-                                       username='sax')
+                                                   is_staff=True,
+                                                   is_active=True,
+                                                   email='sax@example.com',
+                                                   username='sax')
 
         def test_export_csv(self):
             url = reverse('admin:demoapp_importexport_changelist')
@@ -57,8 +57,6 @@ try:
                 res.form['input_format'] = 0
                 res = res.form.submit()
                 res = res.form.submit()
-
-
 
 except:
     pass

@@ -29,7 +29,7 @@ INSTALLED_APPS = ['django.contrib.auth',
 # CONCURRENCY_POLICY = 2
 
 try:
-    import import_export
+    import import_export  # NOQA
 
     INSTALLED_APPS.append('import_export')
 except ImportError:

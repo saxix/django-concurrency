@@ -23,6 +23,7 @@ try:
 except:
     pass
 
+
 def register(site):
     site.register(DemoModel, DemoModelAdmin)
     site.register(proxy_factory("ImportExport"), ImportExportDemoModelAdmin)
