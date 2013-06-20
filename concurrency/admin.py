@@ -198,7 +198,7 @@ class ConcurrentModelAdmin(ConcurrencyActionMixin,
         opts = self.model._meta
         if self._concurrency_list_editable_errors:
             names = force_unicode(opts.verbose_name), force_unicode(opts.verbose_name_plural)
-            pattern = ur"(?P<num>\d+) ({0}|{1})".format(*names)
+            pattern = r"(?P<num>\d+) ({0}|{1})".format(*names)
             rex = re.compile(pattern)
             m = rex.match(message)
             concurrency_errros = len(self._concurrency_list_editable_errors)
