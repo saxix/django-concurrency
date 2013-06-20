@@ -3,18 +3,14 @@ from __future__ import absolute_import, unicode_literals
 import logging
 from contextlib import contextmanager
 from django.core.exceptions import ImproperlyConfigured
-from concurrency.core import _select_lock, _wrap_model_save
+from concurrency.core import _select_lock, _wrap_model_save, get_version_fieldname
 from concurrency.exceptions import RecordModifiedError
 
 __all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_object',
            'RecordModifiedError', 'disable_concurrency', 'disable_sanity_check',
-           'get_object_with_version', 'get_version', 'is_changed']
+           'get_object_with_version', 'get_version', 'is_changed', 'get_version_fieldname']
 
 logger = logging.getLogger(__name__)
-
-
-def get_version_fieldname(obj):
-    return obj.RevisionMetaInfo.field.attname
 
 
 def get_revision_of_object(obj):

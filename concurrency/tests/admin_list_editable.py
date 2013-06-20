@@ -2,7 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 from django.contrib.admin.models import LogEntry
 from django.contrib.contenttypes.models import ContentType
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 
 from concurrency.tests.base import AdminTestCase, SENTINEL
 from concurrency.tests.models import ListEditableConcurrentModel, NoActionsConcurrentModel
@@ -59,7 +59,7 @@ class TestListEditable(AdminTestCase):
 
         self.assertIn('Record with pk `1` has been modified and was not updated',
                       messages)
-        self.assertIn('1 %s was changed successfully.' % force_unicode(self.TARGET._meta.verbose_name),
+        self.assertIn('1 %s was changed successfully.' % force_text(self.TARGET._meta.verbose_name),
                       messages)
 
     def test_message_user_no_changes(self):
@@ -72,9 +72,9 @@ class TestListEditable(AdminTestCase):
         form['form-0-dummy_char'] = 'CHAR1'
         res = form.submit('_save').follow()
 
-        messages = map(str, list(res.context['messages']))
+        messages = list(map(str, list(res.context['messages'])))
 
-        self.assertIn('No %s were changed due conflict errors' % force_unicode(self.TARGET._meta.verbose_name),
+        self.assertIn('No %s were changed due conflict errors' % force_text(self.TARGET._meta.verbose_name),
                       messages)
         self.assertEqual(len(messages), 1)
 

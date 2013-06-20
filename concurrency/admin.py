@@ -1,7 +1,7 @@
 ## -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 import re
-from django.utils.encoding import force_text, force_unicode
+from django.utils.encoding import force_text
 from django.contrib import admin, messages
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db.models import Q
@@ -13,7 +13,8 @@ from django.contrib.admin import helpers
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import ungettext, ugettext as _
 from concurrency import forms
-from concurrency.api import get_revision_of_object, get_version_fieldname
+from concurrency import core
+from concurrency.api import get_revision_of_object
 from concurrency.config import conf, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
@@ -160,7 +161,7 @@ class ConcurrencyListEditableMixin(object):
             if change:
                 version = request.POST.get('_concurrency_version_{0.pk}'.format(obj), None)
                 if version:
-                    setattr(obj, get_version_fieldname(obj), int(version))
+                    core._set_version(obj, version)
             super(ConcurrencyListEditableMixin, self).save_model(request, obj, form, change)
         except RecordModifiedError:
             self._concurrency_list_editable_errors.append(obj.pk)
@@ -169,35 +170,25 @@ class ConcurrencyListEditableMixin(object):
             else:
                 raise
 
-
-class ConcurrentModelAdmin(ConcurrencyActionMixin,
-                           ConcurrencyListEditableMixin,
-                           admin.ModelAdmin):
-    form = ConcurrentForm
-    formfield_overrides = {forms.VersionField: {'widget': VersionWidget}}
-
     def changelist_view(self, request, extra_context=None):
         self._concurrency_list_editable_errors = []
-        return super(ConcurrentModelAdmin, self).changelist_view(request, extra_context)
-
-    def save_model(self, request, obj, form, change):
-        return super(ConcurrentModelAdmin, self).save_model(request, obj, form, change)
+        return super(ConcurrencyListEditableMixin, self).changelist_view(request, extra_context)
 
     def log_change(self, request, object, message):
         if object.pk in self._concurrency_list_editable_errors:
             return
-        super(ConcurrentModelAdmin, self).log_change(request, object, message)
+        super(ConcurrencyListEditableMixin, self).log_change(request, object, message)
 
     def log_deletion(self, request, object, object_repr):
         if object.pk in self._concurrency_list_editable_errors:
             return
-        super(ConcurrentModelAdmin, self).log_deletion(request, object, object_repr)
+        super(ConcurrencyListEditableMixin, self).log_deletion(request, object, object_repr)
 
     def message_user(self, request, message, **kwargs):
         # This is ugly but we do not want to touch the changelist_view() code.
         opts = self.model._meta
         if self._concurrency_list_editable_errors:
-            names = force_unicode(opts.verbose_name), force_unicode(opts.verbose_name_plural)
+            names = force_text(opts.verbose_name), force_text(opts.verbose_name_plural)
             pattern = r"(?P<num>\d+) ({0}|{1})".format(*names)
             rex = re.compile(pattern)
             m = rex.match(message)
@@ -213,12 +204,19 @@ class ConcurrentModelAdmin(ConcurrencyActionMixin,
                                              "Records `{0}` have been modified and were not updated",
                                              concurrency_errros).format(ids))
                     if updated_record == 1:
-                        name = force_unicode(opts.verbose_name)
+                        name = force_text(opts.verbose_name)
                     else:
-                        name = force_unicode(opts.verbose_name_plural)
+                        name = force_text(opts.verbose_name_plural)
                     message = ungettext("%(count)s %(name)s was changed successfully.",
                                         "%(count)s %(name)s were changed successfully.",
                                         updated_record) % {'count': updated_record,
                                                            'name': name}
 
-        return super(ConcurrentModelAdmin, self).message_user(request, message, **kwargs)
+        return super(ConcurrencyListEditableMixin, self).message_user(request, message, **kwargs)
+
+
+class ConcurrentModelAdmin(ConcurrencyActionMixin,
+                           ConcurrencyListEditableMixin,
+                           admin.ModelAdmin):
+    form = ConcurrentForm
+    formfield_overrides = {forms.VersionField: {'widget': VersionWidget}}

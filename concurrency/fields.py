@@ -47,9 +47,14 @@ class VersionField(Field):
         if hasattr(cls, 'RevisionMetaInfo'):
             return
         setattr(cls, 'RevisionMetaInfo', RevisionMetaInfo())
+        #TODO: allow user customization of RevisionMetaInfo
+        cls._revisionmetainfo = cls.RevisionMetaInfo
         _wrap_model_save(cls)
         cls.RevisionMetaInfo.field = self
         cls.RevisionMetaInfo.manually = self.manually
+
+    def _set_version_value(self, model_instance, value):
+        setattr(model_instance, self.attname, int(value))
 
 
 class IntegerVersionField(VersionField):
@@ -68,7 +73,7 @@ class IntegerVersionField(VersionField):
     def pre_save(self, model_instance, add):
         old_value = getattr(model_instance, self.attname, 0)
         value = max(int(old_value) + 1, (int(time.time() * 1000000) - OFFSET))
-        setattr(model_instance, self.attname, value)
+        self._set_version_value(model_instance, value)
         return value
 
 
@@ -84,7 +89,7 @@ class AutoIncVersionField(VersionField):
 
     def pre_save(self, model_instance, add):
         value = int(getattr(model_instance, self.attname, 0)) + 1
-        setattr(model_instance, self.attname, value)
+        self._set_version_value(model_instance, value)
         return value
 
 

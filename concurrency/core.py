@@ -1,4 +1,4 @@
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import
 import logging
 from functools import update_wrapper
 from django.db import connections, router
@@ -19,6 +19,20 @@ logging.getLogger('concurrency').addHandler(NullHandler())
 logger = logging.getLogger(__name__)
 
 __all__ = []
+
+
+def get_version_fieldname(obj):
+    return obj.RevisionMetaInfo.field.attname
+
+
+def _set_version(obj, version):
+    """
+    Set the given version on the passed object
+
+    This function should be used with 'raw' values, any type conversion should be managed in
+    VersionField._set_version_value(). This is needed for future enhancement of concurrency.
+    """
+    obj._revisionmetainfo.field._set_version_value(obj, version)
 
 
 def _select_lock(model_instance, version_value=None):
@@ -49,7 +63,6 @@ def _wrap_model_save(model, force=False):
         old_save = getattr(model, 'save')
         setattr(model, 'save', _wrap_save(old_save))
         model.RevisionMetaInfo.versioned_save = True
-        model._revisionmetainfo = RevisionMetaInfo()
 
 
 def _wrap_save(func):
