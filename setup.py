@@ -24,7 +24,7 @@ setup(
     ],
     include_package_data=True,
     description="Optimistic locking library for Django",
-    long_description=open('README').read(),
+    long_description=open('README.rst').read(),
     license="MIT License",
     keywords="django",
     classifiers=[
