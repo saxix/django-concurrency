@@ -3,7 +3,7 @@ Django Concurrency
 ==================
 
 
-.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=develop
+.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
    :target: http://travis-ci.org/saxix/django-concurrency/
 
 

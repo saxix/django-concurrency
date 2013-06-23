@@ -16,9 +16,9 @@ Overview
   :target: https://coveralls.io/r/saxix/django-concurrency?branch=master
 
 
-django-concurrency is an optimistic locking library for Django Models
+django-concurrency is a optimistic locking library for Django Models
 
-It prevents users from doing concurrent editing in Django both from UI and from a
+It prevents users from doing concurrent editing in Django both from UI as from a
 django command.
 
 

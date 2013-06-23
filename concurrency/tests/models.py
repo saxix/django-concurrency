@@ -5,7 +5,7 @@ from concurrency.api import concurrency_check
 from concurrency.fields import IntegerVersionField, AutoIncVersionField
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('concurrency.test')
 
 
 class AbstractConcurrentModel(models.Model):
@@ -224,3 +224,14 @@ class TestModelWithCustomOptions(ConcurrentModel):
     class ConcurrencyMeta:
         enabled = False
         # sanity_check = False
+
+
+class TriggeredConcurrentModel(models.Model):
+    version = TriggerVersionField(db_column='cm_version_id')
+
+    class Meta:
+        abstract = True
+        app_label = 'concurrency'
+
+
+
