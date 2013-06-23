@@ -93,12 +93,29 @@ class AutoIncVersionField(VersionField):
         return value
 
 
+class TriggerVersionField(VersionField):
+    form_class = forms.VersionField
+
+    def get_internal_type(self):
+        return "BigIntegerField"
+
+    def pre_save(self, model_instance, add):
+        pass
+
+    def contribute_to_class(self, cls, name):
+        super(TriggerVersionField, self).contribute_to_class(cls, name)
+        register_trigger(self, cls, name)
+
+
+def register_trigger(version_field, model, name):
+    pass
+
 try:
     from south.modelsinspector import add_introspection_rules
 
     rules = [
         (
-            (IntegerVersionField, AutoIncVersionField),
+            (IntegerVersionField, AutoIncVersionField, TriggerVersionField),
             [], {"verbose_name": ["verbose_name", {"default": None}],
                  "name": ["name", {"default": None}],
                  "help_text": ["help_text", {"default": ''}],

@@ -31,6 +31,13 @@ django command.
 * Admin integration (handle :ref:`actions <admin_action>` and :ref:`list_editable <list_editable>`)
 
 
+Todo
+====
+
+- intercept external updates
+    (ie changes done using DB browser lile SQLDeveloper, pgAdmin, phpMyAdmin...)
+-
+
 How it works
 ============
 

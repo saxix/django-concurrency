@@ -7,11 +7,10 @@ Django Concurrency
    :target: http://travis-ci.org/saxix/django-concurrency/
 
 
-django-concurrency is a optimistic locking library for Django 1.4.
+django-concurrency is a optimistic locking library for Django.
 
 It prevents users from doing concurrent editing in Django both from UI as from a
 django command.
-
 
 
 How it works

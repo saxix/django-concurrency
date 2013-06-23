@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from django.db import models
 from django.db.models.base import ModelBase
 from concurrency.api import concurrency_check
-from concurrency.fields import IntegerVersionField, AutoIncVersionField
+from concurrency.fields import IntegerVersionField, AutoIncVersionField, TriggerVersionField
 import logging
 
 logger = logging.getLogger('concurrency.test')
@@ -212,3 +212,13 @@ class NoActionsConcurrentModel(ConcurrentModel):
         proxy = True
         verbose_name = "NoActions-ConcurrentModel"
         verbose_name_plural = "NoActions-ConcurrentModels"
+
+
+
+class TriggeredConcurrentModel(models.Model):
+    version = TriggerVersionField(db_column='cm_version_id')
+
+    class Meta:
+        abstract = True
+        app_label = 'concurrency'
+
