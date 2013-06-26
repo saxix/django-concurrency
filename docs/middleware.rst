@@ -7,7 +7,7 @@ ConcurrencyMiddleware
 
 You can globally intercept :ref:`RecordModifiedError`
 adding :ref:`concurrency.middleware.ConcurrencyMiddleware <concurrencymiddleware>` to your :setting:`MIDDLEWARE_CLASSES`.
-Each time a ``RecordModifiedError`` is raised a go up to the ConcurrencyMiddleware the handler defined in
+Each time a ``RecordModifiedError`` is raised it goes up to the ConcurrencyMiddleware and the handler defined in
 :setting:`CONCURRENCY_HANDLER409` is invoked.
 
 **Example**
