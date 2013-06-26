@@ -114,7 +114,7 @@ Helpers
 ``concurrency_check()``
 ------------------------
 
-Sometimes, VersionField(s) cannot wraps the save() method,
+Sometimes, VersionField(s) cannot wrap the save() method,
 is these cirumstances you can check it manually ::
 
     from concurrency.core import concurrency_check

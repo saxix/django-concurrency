@@ -58,7 +58,7 @@ Add version management to new models
     a = ConcurrentModel.objects.get(pk=1)
     b = ConcurrentModel.objects.get(pk=1)
     a.save()
-    b.save() # this will raise ``RecordModifedError``
+    b.save() # this will raise ``RecordModifiedError``
 
 
 Add version management to Django and/or plugged in applications models
@@ -67,7 +67,7 @@ Add version management to Django and/or plugged in applications models
 .. versionchanged:: 0.4
 
 Concurrency can work even with existing models, anyway if you are adding concurrency management to
-and existing database remember to edit the database's table:
+an existing database remember to edit the database's tables:
 
 `your_app.models.py`
 .. code-block:: python

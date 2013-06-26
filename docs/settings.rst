@@ -51,7 +51,7 @@ HANDLER409
 Default: ``concurrency.views.conflict``
 
 Handler to intercept :ref:`RecordModifiedError` into :ref:`concurrencymiddleware`.
-The default implementation (:ref:`handler409`) renders ``409.html`` passing in the context the object that
+The default implementation (:ref:`handler409`) renders ``409.html`` while passing into the context the object that
 is going to be saved (``target``) and the same object as stored in the database (``saved``)
 
 .. seealso:: :ref:`middleware`
@@ -78,7 +78,7 @@ Demand the conflict management to the callable defined in :setting:`CONCURRENCY_
 ``CONCURRENCY_LIST_EDITABLE_POLICY_SILENT``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Used by admin's integrations to handle ``list_editable`` conflicts.
-Do not save conflite record, continue and save all no-coflict records,
+Do not save conflicting records, continue and save all non-conflicting records,
 show a message to the user
 
 ``CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL``
@@ -101,6 +101,6 @@ Default: ``True``
 If you wand to disable the check raised when you try to save an object with a revision number set
 but without pk (this should not happen) you can set ``CONCURRECY_SANITY_CHECK=False`` in your settings.
 
-This is useful if you have some existing test code that use factories that creates a random number that
-prevent the sanity check to pass
+This is useful if you have some existing test code that uses factories which create a random number thus
+preventing the sanity check from passing
 
