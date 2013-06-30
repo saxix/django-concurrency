@@ -7,7 +7,10 @@ Django Concurrency
    :target: http://travis-ci.org/saxix/django-concurrency/
 
 
-django-concurrency is a optimistic locking library for Django 1.4.
+.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png
+   :target: https://coveralls.io/r/saxix/django-concurrency
+
+django-concurrency is a optimistic locking library for Django. (requires version >=1.4)
 
 It prevents users from doing concurrent editing in Django both from UI as from a
 django command.

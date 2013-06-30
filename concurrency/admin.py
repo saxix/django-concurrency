@@ -177,9 +177,12 @@ class ConcurrencyListEditableMixin(object):
             super(ConcurrencyListEditableMixin, self).save_model(request, obj, form, change)
         except RecordModifiedError:
             self._add_conflict(request, obj)
-            if self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_SILENT:
-                pass
-            else:
+            # If policy is set to 'silent' the user will be informed using message_user
+            # raise Exception if not silent.
+            # NOTE:
+            #   list_editable_policy MUST have the LIST_EDITABLE_POLICY_ABORT_ALL
+            #   set to work properly
+            if not self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_SILENT:
                 raise
 
     def log_change(self, request, object, message):
