@@ -9,6 +9,7 @@ docs/build/
 *.pyc
 *.log
 *.pot
+*.mo
 *.pyc
 *.egg-info
 *.sqlite
