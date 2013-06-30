@@ -54,7 +54,7 @@ def _select_lock(model_instance, version_value=None):
                                           target=model_instance)
 
     elif is_versioned and conf.SANITY_CHECK and model_instance._revisionmetainfo.sanity_check:
-        raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.' % value))
+        raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.') % value)
 
 
 def _wrap_model_save(model, force=False):

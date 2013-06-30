@@ -41,3 +41,6 @@ matrix:
       env: DJANGO="Django==1.4.5" DBENGINE=pg
     - python: 3.2
       env: DJANGO="Django==1.5.1" DBENGINE=mysql
+
+after_success:
+  - coveralls

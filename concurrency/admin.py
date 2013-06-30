@@ -205,7 +205,7 @@ class ConcurrencyListEditableMixin(object):
             if m:
                 updated_record = int(m.group('num')) - concurrency_errros
                 if updated_record == 0:
-                    message = _("No %(name)s were changed due conflict errors" % {'name': names[0]})
+                    message = _("No %(name)s were changed due conflict errors") % {'name': names[0]}
                 else:
                     ids = ",".join(map(str, conflicts))
                     messages.error(request,

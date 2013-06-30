@@ -20,7 +20,7 @@ from concurrency.tests.models import TestModel0, TestModel1, TestModel2, TestMod
 from concurrency.utils import ConcurrencyTestMixin
 
 
-logger = logging.getLogger('concurrency.tests')
+logger = logging.getLogger(__name__)
 
 __all__ = ['ConcurrencyTest0', 'AutoIncConcurrencyTest', 'ConcurrencyTest1',
            'ConcurrencyTest2', 'ConcurrencyTest3', 'ConcurrencyTest4',

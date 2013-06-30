@@ -5,7 +5,7 @@ from concurrency.api import concurrency_check
 from concurrency.fields import IntegerVersionField, AutoIncVersionField
 import logging
 
-logger = logging.getLogger('concurrency.test')
+logger = logging.getLogger(__name__)
 
 
 class AbstractConcurrentModel(models.Model):
