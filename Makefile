@@ -17,8 +17,13 @@ test:
 	export PYTHONPATH=${PYTHONPATH}
 	coverage run demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE}
 
+coverage:
+	export PYTHONPATH=${PYTHONPATH}
+	coverage run demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE}
+	coverage report
+
 clean:
-	rm -fr ${BUILDDIR}/
+	rm -fr ${BUILDDIR} dist *.egg-info .coverage
 	find concurrency/locale -name django.mo | xargs rm -f
 
 .PHONY: docs
