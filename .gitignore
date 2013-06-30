@@ -1,4 +1,5 @@
 notes.txt
+.coverage
 /.idea
 /.tox
 docs/build/
