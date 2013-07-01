@@ -1,5 +1,6 @@
 ## -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+import operator
 import re
 from django.utils.encoding import force_text
 from django.contrib import admin, messages
@@ -96,8 +97,9 @@ class ConcurrencyActionMixin(object):
                                                    'expected:  `%s` found' % x)
                     filters.append(Q(**{'pk': pk,
                                         revision_field.attname: version}))
-                queryset = queryset.filter(*filters)
-                if len(selected) != len(queryset):
+
+                queryset = queryset.filter(reduce(operator.or_, filters))
+                if len(selected) != queryset.count():
                     messages.error(request, 'One or more record were updated. '
                                             '(Probably by other user) '
                                             'The execution was aborted.')
