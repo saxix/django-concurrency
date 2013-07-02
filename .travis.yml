@@ -12,7 +12,7 @@ env:
   - DJANGO="Django==1.5.1" DBENGINE=mysql
   - DJANGO="Django==1.5.1" DBENGINE=pg
 
-  - DJANGO="https://www.djangoproject.com/download/1.6a1/tarball/" DBENGINE=pg
+  - DJANGO="https://www.djangoproject.com/download/1.6b1/tarball/" DBENGINE=pg
 
 install:
   - pip install -r demo/demoproject/requirements.pip -r requirements.pip python-coveralls coverage
