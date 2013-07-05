@@ -1,7 +1,12 @@
 VERSION=2.0.0
 BUILDDIR='~build'
 DJANGO_SETTINGS_MODULE:=demoproject.settings
-PYTHONPATH := ${PWD}/demo/:${PWD}
+PYTHONPATH:=${PWD}/demo/:${PWD}
+
+
+install-deps:
+	pip install -r demo/demoproject/requirements.pip -r requirements.pip python-coveralls coverage
+
 
 locale:
 	cd concurrency && django-admin.py makemessages -l en
