@@ -20,7 +20,14 @@ from concurrency.tests.models import TestModel0, TestModel1, TestModel2, TestMod
 from concurrency.utils import ConcurrencyTestMixin
 
 
-logger = logging.getLogger('concurrency.tests')
+logger = logging.getLogger(__name__)
+
+__all__ = ['ConcurrencyTest0', 'AutoIncConcurrencyTest', 'ConcurrencyTest1',
+           'ConcurrencyTest2', 'ConcurrencyTest3', 'ConcurrencyTest4',
+           'ConcurrencyTest0_Proxy', 'ConcurrencyTest5', 'ConcurrencyTestTestCustomUser',
+           'ConcurrencyTestExistingModelUser', 'ConcurrencyTestExistingModel',
+           'ConcurrencyTestModelWithCustomSave', 'ConcurrencyTestExistingModelWithCustomSave',
+           'TestIssue3', 'TestAbstractModelWithCustomSave']
 
 
 class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
@@ -45,7 +52,7 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
 
     def _check_save(self, obj):
         obj.save()
-        assert obj.pk is not None # sanity check
+        assert obj.pk is not None  # sanity check
 
     def _get_form_data(self, **kwargs):
         data = {}
@@ -156,8 +163,9 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
         # self.assertGreater(obj._get_test_revision_number(), original_version)
         self.assertNotEqual(obj._get_test_revision_number(), original_version)
 
-        form = formClass(self._get_form_data(**{version_field_name: VersionFieldSigner().sign(obj._get_test_revision_number())}),
-                         instance=obj)
+        form = formClass(
+            self._get_form_data(**{version_field_name: VersionFieldSigner().sign(obj._get_test_revision_number())}),
+            instance=obj)
         self.assertTrue(form.is_valid(), form.errors)
         pre_save_version = obj._get_test_revision_number()
         obj_after = form.save()
@@ -298,7 +306,7 @@ class ConcurrencyTestTestCustomUser(ConcurrencyTest0):
 
     def _check_save(self, obj):
         obj.save()
-        assert obj.pk is not None # sanity check
+        assert obj.pk is not None  # sanity check
         self.assertTrue(obj.version)
 
     def _get_form_data(self, **kwargs):

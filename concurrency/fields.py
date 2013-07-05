@@ -6,7 +6,7 @@ from django.db.models.fields import Field
 from concurrency import forms
 from concurrency.core import RevisionMetaInfo, _wrap_model_save
 
-logger = logging.getLogger('concurrency')
+logger = logging.getLogger(__name__)
 
 OFFSET = int(time.mktime((2000, 1, 1, 0, 0, 0, 0, 0, 0)))
 
@@ -31,6 +31,9 @@ class VersionField(Field):
     def get_default(self):
         return 0
 
+    def to_python(self, value):
+        return int(value)
+
     def validate(self, value, model_instance):
         pass
 
@@ -44,9 +47,14 @@ class VersionField(Field):
         if hasattr(cls, 'RevisionMetaInfo'):
             return
         setattr(cls, 'RevisionMetaInfo', RevisionMetaInfo())
+        #TODO: allow user customization of RevisionMetaInfo
+        cls._revisionmetainfo = cls.RevisionMetaInfo
         _wrap_model_save(cls)
         cls.RevisionMetaInfo.field = self
         cls.RevisionMetaInfo.manually = self.manually
+
+    def _set_version_value(self, model_instance, value):
+        setattr(model_instance, self.attname, int(value))
 
 
 class IntegerVersionField(VersionField):
@@ -63,9 +71,9 @@ class IntegerVersionField(VersionField):
         return "BigIntegerField"
 
     def pre_save(self, model_instance, add):
-        old_value = getattr(model_instance, self.attname) or 0
-        value = max(old_value + 1, (int(time.time() * 1000000) - OFFSET))
-        setattr(model_instance, self.attname, value)
+        old_value = getattr(model_instance, self.attname, 0)
+        value = max(int(old_value) + 1, (int(time.time() * 1000000) - OFFSET))
+        self._set_version_value(model_instance, value)
         return value
 
 
@@ -80,8 +88,8 @@ class AutoIncVersionField(VersionField):
         return "BigIntegerField"
 
     def pre_save(self, model_instance, add):
-        value = (getattr(model_instance, self.attname) or 0) + 1
-        setattr(model_instance, self.attname, value)
+        value = int(getattr(model_instance, self.attname, 0)) + 1
+        self._set_version_value(model_instance, value)
         return value
 
 

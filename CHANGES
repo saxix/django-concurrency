@@ -1,17 +1,31 @@
+Release 0.6.0 (beta)
+---------------------------------
+
+* new :ref:`disable_concurrency` context manager
+* added documentation for :ref:`concurrency.middleware.ConcurrencyMiddleware <concurrencymiddleware>`
+* **BACKWARD INCOMPATIBLE** Fixed typo: ``CONCURRECY_SANITY_CHECK`` now ``CONCURRENCY_SANITY_CHECK``
+* added :ref:`disable_sanity_check` context manager
+* added configuration
+* check admin actions for concurrent deletion
+* added concurrency check for admin's :ref:`list_editable`
+
+
 Release 0.5.0
 ---------------------------------
+
 * python 3.x compatibility
-* new :ref:`CONCURRENCY_FIELD_SIGNER`
+* new :setting:`CONCURRENCY_FIELD_SIGNER`
 
 
 Release 0.4.0
 ---------------------------------
 
-* start deprecation of ``concurrency.core.VersionChangedError``, ``concurrency.core.RecordModifiedError``, ``concurrency.core.InconsistencyError``,moved in ``concurrency.exceptions``
+* start deprecation of ``concurrency.core.VersionChangedError``, ``concurrency.core.RecordModifiedError``,
+    ``concurrency.core.InconsistencyError``,moved in ``concurrency.exceptions``
 * start deprecation of ``concurrency.core.apply_concurrency_check``, ``concurrency.core.concurrency_check`` moved in ``concurrency.api``
-* added :ref:`CONCURRECY_SANITY_CHECK` settings entry
+* added :setting:`CONCURRECY_SANITY_CHECK` settings entry
 * signing of version number to avoid tampering (:ref:`concurrentform`)
-* added :ref:`ConcurrencyTestMixin` to help test on concurrency managed models
+* added :ref:`concurrencytestmixin` to help test on concurrency managed models
 * changed way to add concurrency to exisiting models (:ref:`apply_concurrency_check`)
 * fixed #4 (thanks FrankBie)
 * removed RandomVersionField

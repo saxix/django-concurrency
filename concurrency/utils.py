@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
 import logging
 import warnings
-
+from django.core.exceptions import ImproperlyConfigured
+from django.utils.importlib import import_module
 from concurrency.exceptions import RecordModifiedError
 
-logger = logging.getLogger('tests.concurrency')
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
@@ -52,12 +54,6 @@ def deprecated(replacement=None, version=None):
     return outer
 
 
-@deprecated('concurrency.api.get_revision_of_object')
-def get_revision_of_object(obj):
-    import concurrency.api
-    return concurrency.api.get_revision_of_object(obj)
-
-
 class ConcurrencyTestMixin(object):
     """
     Mixin class to test Models that use `VersionField`
@@ -78,7 +74,8 @@ class ConcurrencyTestMixin(object):
     concurrency_kwargs = {}
 
     def _get_concurrency_target(self, **kwargs):
-        # WARNING this method must be idempotent. ie must returns always a fresh copy of the record
+        # WARNING this method must be idempotent. ie must returns
+        # always a fresh copy of the record
         args = dict(self.concurrency_kwargs)
         args.update(kwargs)
         return self.concurrency_model.objects.get_or_create(**args)[0]
@@ -91,7 +88,7 @@ class ConcurrencyTestMixin(object):
         v2 = api.get_revision_of_object(target_copy)
         assert v1 == v2, "got same row with different version (%s/%s)" % (v1, v2)
         target.save()
-        assert target.pk is not None # sanity check
+        assert target.pk is not None  # sanity check
         self.assertRaises(RecordModifiedError, target_copy.save)
 
     def test_concurrency_safety(self):
@@ -109,3 +106,30 @@ class ConcurrencyTestMixin(object):
 
         self.assertTrue(revision_field in target._meta.fields,
                         "%s: version field not in meta.fields" % self.concurrency_model)
+
+
+class ConcurrencyAdminTestMixin(object):
+    pass
+
+
+def import_by_path(dotted_path, error_prefix=''):
+    """
+    Import a dotted module path and return the attribute/class designated by the
+    last name in the path. Raise ImproperlyConfigured if something goes wrong.
+    """
+    try:
+        module_path, class_name = dotted_path.rsplit('.', 1)
+    except ValueError:
+        raise ImproperlyConfigured("%s%s doesn't look like a module path" % (
+            error_prefix, dotted_path))
+    try:
+        module = import_module(module_path)
+    except ImportError as e:
+        raise ImproperlyConfigured('%sError importing module %s: "%s"' % (
+            error_prefix, module_path, e))
+    try:
+        attr = getattr(module, class_name)
+    except AttributeError:
+        raise ImproperlyConfigured('%sModule "%s" does not define a "%s" attribute/class' % (
+            error_prefix, module_path, class_name))
+    return attr

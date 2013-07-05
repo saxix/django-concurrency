@@ -1,8 +1,10 @@
+from __future__ import absolute_import
 import logging
-from functools import update_wrapper, wraps
-from django.conf import settings
+from functools import update_wrapper
 from django.db import connections, router
 from django.utils.translation import ugettext as _
+from concurrency.config import conf, CONCURRENCY_POLICY_CALLBACK
+from concurrency.exceptions import RecordModifiedError, InconsistencyError
 
 # Set default logging handler to avoid "No handler found" warnings.
 try:  # Python 2.7+
@@ -14,40 +16,45 @@ except ImportError:
 
 logging.getLogger('concurrency').addHandler(NullHandler())
 
-logger = logging.getLogger('concurrency')
-
-from concurrency.exceptions import VersionChangedError, RecordModifiedError, InconsistencyError
-from concurrency.utils import deprecated
-
+logger = logging.getLogger(__name__)
 
 __all__ = []
 
 
-@deprecated('concurrency.api.apply_concurrency_check', '0.5')
-def apply_concurrency_check(model, fieldname, versionclass):
-    from concurrency.api import apply_concurrency_check as acc
-    return acc(model, fieldname, versionclass)
+def get_version_fieldname(obj):
+    return obj.RevisionMetaInfo.field.attname
 
 
-@deprecated('concurrency.api.concurrency_check', '0.5')
-def concurrency_check(model_instance, force_insert=False, force_update=False, using=None, **kwargs):
-    from concurrency.api import concurrency_check as cc
-    return cc(model_instance, force_insert, force_update, using, **kwargs)
+def _set_version(obj, version):
+    """
+    Set the given version on the passed object
+
+    This function should be used with 'raw' values, any type conversion should be managed in
+    VersionField._set_version_value(). This is needed for future enhancement of concurrency.
+    """
+    obj._revisionmetainfo.field._set_version_value(obj, version)
 
 
 def _select_lock(model_instance, version_value=None):
     version_field = model_instance.RevisionMetaInfo.field
     value = version_value or getattr(model_instance, version_field.name)
     is_versioned = value != version_field.get_default()
-    if model_instance.pk is not None:
+    if model_instance.pk is not None and is_versioned:
         kwargs = {'pk': model_instance.pk, version_field.name: value}
         alias = router.db_for_write(model_instance)
         NOWAIT = connections[alias].features.has_select_for_update_nowait
         entry = model_instance.__class__.objects.select_for_update(nowait=NOWAIT).filter(**kwargs)
         if not entry:
-            raise RecordModifiedError(_('Record has been modified'), target=model_instance)
-    elif is_versioned and getattr(settings, 'CONCURRECY_SANITY_CHECK', True):
-        raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.' % value))
+            logger.debug("Conflict detected on `{0}` pk:`{0.pk}`, "
+                         "version `{1}` not found".format(model_instance, value))
+            if conf.POLICY & CONCURRENCY_POLICY_CALLBACK:
+                conf._callback(model_instance)
+            else:
+                raise RecordModifiedError(_('Record has been modified or no version value passed'),
+                                          target=model_instance)
+
+    elif is_versioned and conf.SANITY_CHECK and model_instance._revisionmetainfo.sanity_check:
+        raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.') % value)
 
 
 def _wrap_model_save(model, force=False):
@@ -59,9 +66,11 @@ def _wrap_model_save(model, force=False):
 
 
 def _wrap_save(func):
-    from concurrency.api import  concurrency_check
+    from concurrency.api import concurrency_check
+
     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-        concurrency_check(self, force_insert, force_update, using, **kwargs)
+        if self._revisionmetainfo.enabled:
+            concurrency_check(self, force_insert, force_update, using, **kwargs)
         return func(self, force_insert, force_update, using, **kwargs)
 
     return update_wrapper(inner, func)
@@ -79,4 +88,5 @@ class RevisionMetaInfo:
     field = None
     versioned_save = False
     manually = False
-
+    sanity_check = conf.SANITY_CHECK
+    enabled = True

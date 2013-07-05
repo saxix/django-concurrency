@@ -1,3 +1,4 @@
+from __future__ import absolute_import, unicode_literals
 from django.core.exceptions import ValidationError, SuspiciousOperation
 from django.utils.translation import ugettext as _
 from django.db import DatabaseError
@@ -18,5 +19,6 @@ class InconsistencyError(DatabaseError):
 
 
 class VersionError(SuspiciousOperation):
-    def __init__(self, message=None, code=None, params=None):
+
+    def __init__(self, message=None, code=None, params=None, *args, **kwargs):
         self.message = message or _("Version number is missing or has been tampered with")

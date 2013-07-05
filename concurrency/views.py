@@ -11,18 +11,20 @@ class ConflictResponse(HttpResponse):
 handler409 = 'concurrency.views.conflict'
 
 
+def callback(target, *args, **kwargs):
+    pass
+
+
 def conflict(request, target=None, template_name='409.html'):
     """
     409 error handler.
 
-    Templates: :template:`409.html`
+    Templates: `409.html`
     Context:
-        target
-            The model to save
-        saved
-            The object stored in the db that produce the conflict or None if not found (ie. deleted)
-        request_path
-            The path of the requested URL (e.g., '/app/pages/bad_page/')
+    `target` : The model to save
+    `saved` : The object stored in the db that produce the
+               conflict or None if not found (ie. deleted)
+    `request_path` : The path of the requested URL (e.g., '/app/pages/bad_page/')
 
     """
     try:
@@ -33,11 +35,10 @@ def conflict(request, target=None, template_name='409.html'):
             '<p>The request was unsuccessful due to a conflict. '
             'The object changed during the transaction.</p>')
     try:
-        saved = target.__class__.objects.get(pk=target.pk)
+        saved = target.__class__._default_manager.get(pk=target.pk)
     except target.__class__.DoesNotExists:
         saved = None
     ctx = RequestContext(request, {'target': target,
                                    'saved': saved,
                                    'request_path': request.path})
     return ConflictResponse(template.render(ctx))
-

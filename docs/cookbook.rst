@@ -8,18 +8,52 @@ Cookbook
 .. contents::
    :local:
 
+.. _import_data:
 
-Add version to new models
---------------------------
+Unable to import data ?
+-----------------------
 
-`models.py`::
+|concurrency| check that any model, when saved, has no version, anyway this is not true
+when you are importing data from a file or loading a fixture.
+This is internally known as ``SANITY_CHECK``. To solve this you can:
+
+**Globally disable:**
+
+`settings.py`
+.. code-block:: python
+
+        CONCURRENCY_SANITY_CHECK = False
+
+**Temporary disable**
+.. code-block:: python
+
+    from concurrency.config import conf
+
+    conf.SANITY_CHECK = False
+
+**Temporary disable per Model**
+.. code-block:: python
+
+    from concurrency.api import disable_sanity_check
+
+    with disable_sanity_check(Model):
+        Model.object
+
+
+
+Add version management to new models
+-------------------------------------
+
+`models.py`
+.. code-block:: python
 
     from concurrency.fields import IntegerVersionField
 
     class ConcurrentModel( models.Model ):
         version = IntegerVersionField( )
 
-`tests.py`::
+`tests.py`
+.. code-block:: python
 
     a = ConcurrentModel.objects.get(pk=1)
     b = ConcurrentModel.objects.get(pk=1)
@@ -27,15 +61,16 @@ Add version to new models
     b.save() # this will raise ``RecordModifedError``
 
 
-Django and/or plugged in applications models
---------------------------------------------
+Add version management to Django and/or plugged in applications models
+-----------------------------------------------------------------------
 
 .. versionchanged:: 0.4
 
 Concurrency can work even with existing models, anyway if you are adding concurrency management to
 and existing database remember to edit the database's table:
 
-`your_app.models.py`::
+`your_app.models.py`
+.. code-block:: python
 
     from django.contrib.auth import User
     from concurrency.api import apply_concurrency_check
@@ -46,10 +81,12 @@ and existing database remember to edit the database's table:
 
 Manually handle concurrency
 ---------------------------
-
 .. versionchanged:: 0.4
 
-::
+Use :function:`concurrency.api.concurrency_check`
+
+
+.. code-block:: python
 
     from concurrency.api import concurrency_check
 
@@ -67,7 +104,9 @@ Manually handle concurrency
 Test Utilities
 --------------
 
-:ref:`ConcurrencyTestMixin` offer a very simple test function for your existing models::
+:ref:`ConcurrencyTestMixin` offer a very simple test function for your existing models
+
+.. code-block:: python
 
     from concurrency.utils import ConcurrencyTestMixin
     from myproject.models import MyModel

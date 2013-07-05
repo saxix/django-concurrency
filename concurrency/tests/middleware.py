@@ -1,21 +1,16 @@
 # -*- coding: utf-8 -*-
 import mock
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
-from django.test import TestCase
 from concurrency.core import RecordModifiedError
 from concurrency.forms import VersionFieldSigner
 from concurrency.middleware import ConcurrencyMiddleware
-from concurrency.tests import TestModel0
-from concurrency.tests.contrib_admin import DjangoAdminTestCase
+from concurrency.tests.models import TestModel0
+from concurrency.tests.base import DjangoAdminTestCase, AdminTestCase
 
 
-class ConcurrencyMiddlewareTest(TestCase):
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
+class ConcurrencyMiddlewareTest(AdminTestCase):
 
     def _get_request(self, path):
         request = HttpRequest()
@@ -31,13 +26,34 @@ class ConcurrencyMiddlewareTest(TestCase):
         """
         Tests that RecordModifiedError is handled correctly.
         """
-        m, __ = TestModel0.objects.get_or_create(username="New", last_name="1")
+        m, __ = TestModel0.objects.get_or_create(id=1)
         copy = TestModel0.objects.get(pk=m.pk)
         copy.save()
         request = self._get_request('/')
         r = ConcurrencyMiddleware().process_exception(request, RecordModifiedError(target=m))
         self.assertEqual(r.status_code, 409)
-        # self.assertIn('target', r.context)
+
+    def test_in_admin(self):
+        middlewares = list(settings.MIDDLEWARE_CLASSES) + ['concurrency.middleware.ConcurrencyMiddleware']
+        with self.settings(MIDDLEWARE_CLASSES=middlewares):
+            saved, __ = TestModel0.objects.get_or_create(id=1)
+
+            url = reverse('admin:concurrency_testmodel0_change', args=[saved.pk])
+            res = self.app.get(url, user='sax')
+            form = res.form
+
+            saved.save()  # create conflict here
+
+            res = form.submit(expect_errors=True)
+            target = res.context['target']
+
+            self.assertEqual(res.status_code, 409)
+            self.assertIn('target', res.context)
+            self.assertIn('saved', res.context)
+
+            self.assertEqual(res.context['target'].version, target.version)
+            self.assertEqual(res.context['saved'].version, saved.version)
+            self.assertEqual(res.context['request_path'], url)
 
 
 class CT(DjangoAdminTestCase):

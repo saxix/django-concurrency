@@ -4,4 +4,3 @@ DATABASES = {
         'NAME': 'concurrency.sqlite',
         'HOST': '',
         'PORT': ''}}
-
