@@ -36,6 +36,8 @@ def _set_version(obj, version):
 
 
 def _select_lock(model_instance, version_value=None):
+    if not conf.ENABLED:
+        return
     version_field = model_instance.RevisionMetaInfo.field
     value = version_value or getattr(model_instance, version_field.name)
     is_versioned = value != version_field.get_default()
