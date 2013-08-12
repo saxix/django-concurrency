@@ -30,7 +30,7 @@ SENTINEL = '**concurrent_update**'
 def admin_register(model, modeladmin=ConcurrentModelAdmin):
     try:
         admin.site.unregister(model)
-    except NotRegistered:
+    except NotRegistered:  # pragma: no cover
         pass
     admin.site.register(model, modeladmin)
 
@@ -39,7 +39,7 @@ def admin_unregister(*models):
     for m in models:
         try:
             admin.site.unregister(m)
-        except NotRegistered:
+        except NotRegistered:  # pragma: no cover
             pass
 
 

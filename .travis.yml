@@ -22,7 +22,7 @@ install:
   - python setup.py -q install
 
 script:
-  - make test
+  - make coverage
 
 before_install:
   - sh -c "if [ '$DBENGINE' = 'pg' ]; then psql -c 'DROP DATABASE IF EXISTS concurrency;' -U postgres; fi"

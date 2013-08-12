@@ -70,16 +70,16 @@ class AppSettings(object):
 
         setting_changed.connect(self._handler)
 
-    def _check_config(self):
-        list_editable_policy = self.POLICY | sum(LIST_EDITABLE_POLICIES)
-        if list_editable_policy == sum(LIST_EDITABLE_POLICIES):
-            raise ImproperlyConfigured("Invalid value for `CONCURRENCY_POLICY`: "
-                                       "Use only one of `CONCURRENCY_LIST_EDITABLE_*` flags")
-
-        conflict_policy = self.POLICY | sum(CONFLICTS_POLICIES)
-        if conflict_policy == sum(CONFLICTS_POLICIES):
-            raise ImproperlyConfigured("Invalid value for `CONCURRENCY_POLICY`: "
-                                       "Use only one of `CONCURRENCY_POLICY_*` flags")
+    # def _check_config(self):
+    #     list_editable_policy = self.POLICY | sum(LIST_EDITABLE_POLICIES)
+    #     if list_editable_policy == sum(LIST_EDITABLE_POLICIES):
+    #         raise ImproperlyConfigured("Invalid value for `CONCURRENCY_POLICY`: "
+    #                                    "Use only one of `CONCURRENCY_LIST_EDITABLE_*` flags")
+    #
+    #     conflict_policy = self.POLICY | sum(CONFLICTS_POLICIES)
+    #     if conflict_policy == sum(CONFLICTS_POLICIES):
+    #         raise ImproperlyConfigured("Invalid value for `CONCURRENCY_POLICY`: "
+    #                                    "Use only one of `CONCURRENCY_POLICY_*` flags")
 
     def _set_attr(self, prefix_name, value):
         name = prefix_name[len(self.prefix) + 1:]

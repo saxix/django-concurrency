@@ -78,13 +78,13 @@ def _wrap_save(func):
     return update_wrapper(inner, func)
 
 
-def _versioned_save(self, force_insert=False, force_update=False, using=None):
-    if force_insert and force_update:
-        raise ValueError("Cannot force both insert and updating in model saving.")
-    if not force_insert:
-        _select_lock(self)
-    self.save_base(using=using, force_insert=force_insert, force_update=force_update)
-
+# def _versioned_save(self, force_insert=False, force_update=False, using=None):
+#     if force_insert and force_update:
+#         raise ValueError("Cannot force both insert and updating in model saving.")
+#     if not force_insert:
+#         _select_lock(self)
+#     self.save_base(using=using, force_insert=force_insert, force_update=force_update)
+#
 
 class RevisionMetaInfo:
     field = None

@@ -1,7 +1,7 @@
 VERSION=2.0.0
 BUILDDIR='~build'
 DJANGO_SETTINGS_MODULE:=demoproject.settings
-PYTHONPATH:=${PWD}/demo/:${PWD}
+PYTHONPATH := ${PWD}/demo/:${PWD}
 
 
 install-deps:
@@ -19,13 +19,12 @@ docs:
 	firefox ${BUILDDIR}/docs/index.html
 
 test:
-	export PYTHONPATH=${PYTHONPATH}
-	coverage run demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE}
+	demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE}
+
 
 coverage:
-	export PYTHONPATH=${PYTHONPATH}
 	coverage run demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE}
-	coverage report
+	coverage report html
 
 clean:
 	rm -fr ${BUILDDIR} dist *.egg-info .coverage
