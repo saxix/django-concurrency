@@ -1,6 +1,6 @@
 import time
 import logging
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import Field
 
 from concurrency import forms
