@@ -6,8 +6,8 @@ python:
   - 2.7
   - 3.2
 env:
-  - DJANGO="Django==1.4.5" DBENGINE=mysql
-  - DJANGO="Django==1.4.5" DBENGINE=pg
+  - DJANGO="Django==1.4.6" DBENGINE=mysql
+  - DJANGO="Django==1.4.6" DBENGINE=pg
 
   - DJANGO="Django==1.5.2" DBENGINE=mysql
   - DJANGO="Django==1.5.2" DBENGINE=pg
