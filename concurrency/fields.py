@@ -1,12 +1,12 @@
 import time
 import logging
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import Field
 
 from concurrency import forms
 from concurrency.core import RevisionMetaInfo, _wrap_model_save
 
-logger = logging.getLogger('concurrency')
+logger = logging.getLogger(__name__)
 
 OFFSET = int(time.mktime((2000, 1, 1, 0, 0, 0, 0, 0, 0)))
 

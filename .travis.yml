@@ -9,21 +9,20 @@ env:
   - DJANGO="Django==1.4.5" DBENGINE=mysql
   - DJANGO="Django==1.4.5" DBENGINE=pg
 
-  - DJANGO="Django==1.5.1" DBENGINE=mysql
-  - DJANGO="Django==1.5.1" DBENGINE=pg
+  - DJANGO="Django==1.5.2" DBENGINE=mysql
+  - DJANGO="Django==1.5.2" DBENGINE=pg
 
-  - DJANGO="https://www.djangoproject.com/download/1.6a1/tarball/" DBENGINE=pg
+  - DJANGO="https://www.djangoproject.com/download/1.6b2/tarball/" DBENGINE=pg
 
 install:
-  - pip install -r demo/demoproject/requirements.pip
-  - pip install -r requirements.pip
+  - make install-deps
   - sh -c "if [ '$DBENGINE' = 'pg' ]; then pip install -q psycopg2; fi"
   - sh -c "if [ '$DBENGINE' = 'mysql' ]; then pip install -q MySQL-python; fi"
   - pip install -q $DJANGO
   - python setup.py -q install
 
 script:
-  cd demo && ./manage.py test concurrency
+  - make coverage
 
 before_install:
   - sh -c "if [ '$DBENGINE' = 'pg' ]; then psql -c 'DROP DATABASE IF EXISTS concurrency;' -U postgres; fi"
@@ -40,4 +39,7 @@ matrix:
     - python: 3.2
       env: DJANGO="Django==1.4.5" DBENGINE=pg
     - python: 3.2
-      env: DJANGO="Django==1.5.1" DBENGINE=mysql
+      env: DJANGO="Django==1.5.2" DBENGINE=mysql
+
+after_success:
+  - coveralls

@@ -30,7 +30,7 @@ SENTINEL = '**concurrent_update**'
 def admin_register(model, modeladmin=ConcurrentModelAdmin):
     try:
         admin.site.unregister(model)
-    except NotRegistered:
+    except NotRegistered:  # pragma: no cover
         pass
     admin.site.register(model, modeladmin)
 
@@ -39,7 +39,7 @@ def admin_unregister(*models):
     for m in models:
         try:
             admin.site.unregister(m)
-        except NotRegistered:
+        except NotRegistered:  # pragma: no cover
             pass
 
 
@@ -80,11 +80,11 @@ class AdminTestCase(WebTest):
 
     def setUp(self):
         super(AdminTestCase, self).setUp()
-        self.user = User.objects.get_or_create(is_superuser=True,
-                                               is_staff=True,
-                                               is_active=True,
-                                               email='sax@example.com',
-                                               username='sax')
+        self.user, __ = User.objects.get_or_create(is_superuser=True,
+                                                   is_staff=True,
+                                                   is_active=True,
+                                                   email='sax@example.com',
+                                                   username='sax')
         for i in range(1, 10):
             ConcurrentModel.objects.get_or_create(id=i, version=0, dummy_char=str(i))
 

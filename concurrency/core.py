@@ -36,6 +36,8 @@ def _set_version(obj, version):
 
 
 def _select_lock(model_instance, version_value=None):
+    if not conf.ENABLED:
+        return
     version_field = model_instance.RevisionMetaInfo.field
     value = version_value or getattr(model_instance, version_field.name)
     is_versioned = value != version_field.get_default()
@@ -54,7 +56,7 @@ def _select_lock(model_instance, version_value=None):
                                           target=model_instance)
 
     elif is_versioned and conf.SANITY_CHECK and model_instance._revisionmetainfo.sanity_check:
-        raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.' % value))
+        raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.') % value)
 
 
 def _wrap_model_save(model, force=False):
@@ -76,13 +78,13 @@ def _wrap_save(func):
     return update_wrapper(inner, func)
 
 
-def _versioned_save(self, force_insert=False, force_update=False, using=None):
-    if force_insert and force_update:
-        raise ValueError("Cannot force both insert and updating in model saving.")
-    if not force_insert:
-        _select_lock(self)
-    self.save_base(using=using, force_insert=force_insert, force_update=force_update)
-
+# def _versioned_save(self, force_insert=False, force_update=False, using=None):
+#     if force_insert and force_update:
+#         raise ValueError("Cannot force both insert and updating in model saving.")
+#     if not force_insert:
+#         _select_lock(self)
+#     self.save_base(using=using, force_insert=force_insert, force_update=force_update)
+#
 
 class RevisionMetaInfo:
     field = None

@@ -38,13 +38,12 @@ Update existing actions templates to be managed by concurrency
 
 .. versionadded:: 0.6
 
-You ca use the  :tfilter:`identity`filter to pass both ``pk`` and ``version`` to your ModelAdmin.
-Each time you use ``{{obj.pk}}`` simply change to ``{{ obj|identity }}``.
-So in the ``admin/delete_selected_confirmation.html`` will have::
+You ca use the  :tfilter:`identity` filter to pass both ``pk`` and ``version`` to your ModelAdmin.
+Each time you use ``{{ obj.pk }}`` simply change to ``{{ obj|identity }}``.
+So in the ``admin/delete_selected_confirmation.html`` will have:
 
 .. code-block:: html
 
     {% for obj in queryset %}
     <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj|identity }}" />
     {% endfor %}
-

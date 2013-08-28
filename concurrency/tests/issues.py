@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.models import User
+import re
+from django.contrib.auth.models import User, Group
+from django.utils.encoding import force_text
+from concurrency.templatetags.concurrency import identity
 from concurrency.tests.base import AdminTestCase
 from concurrency.tests.models import ListEditableConcurrentModel
 from django.contrib.admin.sites import site
@@ -34,3 +37,13 @@ class TestIssue16(AdminTestCase):
         request2 = get_fake_request('pk=1&_concurrency_version_1=%s' % obj.version)
         model_admin.save_model(request2, obj, None, True)
         self.assertNotIn(obj.pk, model_admin._get_conflicts(request2))
+
+
+class TestIssue18(AdminTestCase):
+
+    def test_identity_tag(self):
+        obj, __ = ListEditableConcurrentModel.objects.get_or_create(pk=1)
+        self.assertTrue(re.match(r"^1,\d+$", identity(obj)))
+
+        g, __ = Group.objects.get_or_create(name='GroupTest')
+        self.assertEqual(identity(g), force_text(g.pk))

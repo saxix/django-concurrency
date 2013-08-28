@@ -1,6 +1,8 @@
 ## -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+import operator
 import re
+from functools import reduce
 from django.utils.encoding import force_text
 from django.contrib import admin, messages
 from django.core.exceptions import ImproperlyConfigured, ValidationError
@@ -96,8 +98,9 @@ class ConcurrencyActionMixin(object):
                                                    'expected:  `%s` found' % x)
                     filters.append(Q(**{'pk': pk,
                                         revision_field.attname: version}))
-                queryset = queryset.filter(*filters)
-                if len(selected) != len(queryset):
+
+                queryset = queryset.filter(reduce(operator.or_, filters))
+                if len(selected) != queryset.count():
                     messages.error(request, 'One or more record were updated. '
                                             '(Probably by other user) '
                                             'The execution was aborted.')
@@ -177,9 +180,12 @@ class ConcurrencyListEditableMixin(object):
             super(ConcurrencyListEditableMixin, self).save_model(request, obj, form, change)
         except RecordModifiedError:
             self._add_conflict(request, obj)
-            if self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_SILENT:
-                pass
-            else:
+            # If policy is set to 'silent' the user will be informed using message_user
+            # raise Exception if not silent.
+            # NOTE:
+            #   list_editable_policy MUST have the LIST_EDITABLE_POLICY_ABORT_ALL
+            #   set to work properly
+            if not self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_SILENT:
                 raise
 
     def log_change(self, request, object, message):
@@ -205,7 +211,7 @@ class ConcurrencyListEditableMixin(object):
             if m:
                 updated_record = int(m.group('num')) - concurrency_errros
                 if updated_record == 0:
-                    message = _("No %(name)s were changed due conflict errors" % {'name': names[0]})
+                    message = _("No %(name)s were changed due conflict errors") % {'name': names[0]}
                 else:
                     ids = ",".join(map(str, conflicts))
                     messages.error(request,
