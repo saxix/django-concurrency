@@ -3,11 +3,11 @@ Django Concurrency
 ==================
 
 
-.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
+.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=develop
    :target: http://travis-ci.org/saxix/django-concurrency/
 
 
-.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png
+.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=develop
    :target: https://coveralls.io/r/saxix/django-concurrency
 
 .. image:: https://pypip.in/v/django-concurrency/badge.png
