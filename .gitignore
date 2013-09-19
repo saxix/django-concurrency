@@ -1,6 +1,7 @@
+.idea
+.tox
+.*
 notes.txt
-/.idea
-/.tox
 docs/build/
 /dist
 /build

@@ -16,7 +16,7 @@ Handle ``list_editable``
 .. versionadded:: 0.6
 
 |concurrency| is able to handle conflicts in the admin's changelist view when
-:attr:`ModelAdmin.list_editable` is enabled. To enable this feature simply extends your ModelAdmin from
+:attr:`ModelAdmin.list_editable` is enabled. To enable this feature simply extend your ModelAdmin from
 :ref:`ConcurrentModelAdmin` or use :ref:`ConcurrencyListEditableMixin`
 
 .. seealso:: :ref:`list_editable_policies`

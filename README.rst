@@ -8,7 +8,7 @@ Django Concurrency
 
 
 .. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=develop
-  :target: https://coveralls.io/r/saxix/django-concurrency?branch=develop
+   :target: https://coveralls.io/r/saxix/django-concurrency
 
 .. image:: https://pypip.in/v/django-concurrency/badge.png
    :target: https://crate.io/packages/django-concurrency/
@@ -17,9 +17,9 @@ Django Concurrency
    :target: https://crate.io/packages/django-concurrency/
 
 
-django-concurrency is a optimistic locking library for Django. (requires version >=1.4)
+django-concurrency is an optimistic locking library for Django 1.4.
 
-It prevents users from doing concurrent editing in Django both from UI as from a
+It prevents users from doing concurrent editing in Django both from UI and from a
 django command.
 
 
@@ -33,14 +33,14 @@ sample code::
     class ConcurrentModel( models.Model ):
         version = IntegerVersionField( )
 
-Now if if you try::
+Now if you try::
 
     a = ConcurrentModel.objects.get(pk=1)
     b = ConcurrentModel.objects.get(pk=1)
     a.save()
     b.save()
 
-you will get a ``RecordModifedError`` on ``b.save()``
+you will get a ``RecordModifiedError`` on ``b.save()``
 
 Links
 ~~~~~
