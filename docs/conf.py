@@ -77,7 +77,7 @@ copyright = u'2012, Stefano Apostolico'
 # built documents.
 #
 # The short X.Y version.
-version = ".".join(map(str, app.VERSION[0:2]))
+version = ".".join(map(str, concurrency.VERSION[0:2]))
 # The full version, including alpha/beta/rc tags.
 release = concurrency.get_version()
 next_version = '0.6'

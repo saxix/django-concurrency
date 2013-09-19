@@ -26,7 +26,7 @@ Each time a ``RecordModifiedError`` is raised a go up to the ConcurrencyMiddlewa
         CONCURRENCY_HANDLER409 = 'demoproject.demoapp.views.conflict'
         CONCURRENCY_POLICY = 2  # CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
 
-``views.py``
+:file:`views.py`
 
 .. code-block:: python
 
@@ -67,7 +67,7 @@ Each time a ``RecordModifiedError`` is raised a go up to the ConcurrencyMiddlewa
 
 
 
-``409.html``
+:file:`409.html`
 
 .. code-block:: html
 
