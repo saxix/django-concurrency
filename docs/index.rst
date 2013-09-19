@@ -11,8 +11,9 @@ Overview
 .. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
    :target: http://travis-ci.org/saxix/django-concurrency/
 
-.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png
-   :target: https://coveralls.io/r/saxix/django-concurrency
+
+.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=master
+  :target: https://coveralls.io/r/saxix/django-concurrency?branch=master
 
 
 django-concurrency is a optimistic locking library for Django Models
