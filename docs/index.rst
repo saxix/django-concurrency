@@ -40,7 +40,6 @@ Todo
 
 - intercept external updates
     (ie changes done using DB browser like SQLDeveloper, pgAdmin, phpMyAdmin...)
--
 
 How it works
 ============
