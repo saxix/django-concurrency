@@ -21,8 +21,13 @@ docs:
 test:
 	demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE}
 
+tox:
+	pip install ${DJANGO}
+	pip install -r {toxinidir}/demo/demoproject/requirements.pip
+	django-admin.py test concurrency demoapp --settings demoproject.settings --failfast --traceback
 
-coverage:
+
+coverage: install-deps
 	coverage run demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE}
 	coverage report html
 

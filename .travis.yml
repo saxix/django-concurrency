@@ -2,9 +2,11 @@ language: python
 services:
   - MySQL
   - PostgreSQL
+
 python:
   - 2.7
   - 3.2
+
 env:
   - DJANGO="Django==1.4.8" DBENGINE=mysql
   - DJANGO="Django==1.4.8" DBENGINE=pg
