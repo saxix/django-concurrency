@@ -1,7 +1,8 @@
 from __future__ import absolute_import, unicode_literals
+import django
 from django import forms
 from django.core import validators
-from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
+from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured, ValidationError
 from django.core.signing import Signer, BadSignature
 from django.forms import ModelForm, HiddenInput
 from django.utils import timezone
@@ -24,12 +25,12 @@ class ConcurrentForm(ModelForm):
         try:
             _select_lock(self.instance, self.cleaned_data[self.instance.RevisionMetaInfo.field.name])
         except RecordModifiedError:
-            self._update_errors({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])})
+            if django.VERSION[1] >= 6:
+                self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])}))
+            else:
+                self._update_errors({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])})
 
         return super(ConcurrentForm, self).clean()
-
-    def save(self, commit=True):
-        return super(ConcurrentForm, self).save(commit)
 
 
 class VersionWidget(HiddenInput):

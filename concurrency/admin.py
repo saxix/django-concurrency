@@ -198,8 +198,9 @@ class ConcurrencyListEditableMixin(object):
             return
         super(ConcurrencyListEditableMixin, self).log_deletion(request, object, object_repr)
 
-    def message_user(self, request, message, **kwargs):
+    def message_user(self, request, message, *args, **kwargs):
         # This is ugly but we do not want to touch the changelist_view() code.
+
         opts = self.model._meta
         conflicts = self._get_conflicts(request)
         if conflicts:
@@ -227,7 +228,7 @@ class ConcurrencyListEditableMixin(object):
                                         updated_record) % {'count': updated_record,
                                                            'name': name}
 
-        return super(ConcurrencyListEditableMixin, self).message_user(request, message, **kwargs)
+        return super(ConcurrencyListEditableMixin, self).message_user(request, message, *args, **kwargs)
 
 
 class ConcurrentModelAdmin(ConcurrencyActionMixin,

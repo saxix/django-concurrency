@@ -282,6 +282,8 @@ class ConcurrencyTest0_Proxy(ConcurrencyTest0):
 
     def test_force_update(self):
         t = self.TARGET.__class__()
+        t.username = 'AAA'
+        t.save()
         t.save(force_update=True)
         t1 = TestModel0.objects.get(pk=t.pk)
         self.assertEqual(t.pk, t1.pk)

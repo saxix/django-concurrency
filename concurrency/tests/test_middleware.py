@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import mock
-from django.conf import settings
+from django.conf import settings, global_settings
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 from concurrency.core import RecordModifiedError
@@ -60,6 +60,7 @@ class TestFullStack(DjangoAdminTestCase):
     MIDDLEWARE_CLASSES = ('django.middleware.common.CommonMiddleware',
                           'django.contrib.sessions.middleware.SessionMiddleware',
                           'django.contrib.auth.middleware.AuthenticationMiddleware',
+                          'django.contrib.messages.middleware.MessageMiddleware',
                           'concurrency.middleware.ConcurrencyMiddleware',)
 
     @mock.patch('django.core.signals.got_request_exception.send', mock.Mock())
