@@ -4,7 +4,7 @@ services:
   - PostgreSQL
 python:
   - 2.7
-
+    
 env:
   - DJANGO="1.4.x" DBENGINE=mysql
   - DJANGO="1.4.x" DBENGINE=pg
@@ -20,6 +20,7 @@ install:
   - make install-deps
   - sh -c "if [ '$DBENGINE' = 'pg' ]; then pip install -q psycopg2; fi"
   - sh -c "if [ '$DBENGINE' = 'mysql' ]; then pip install -q MySQL-python; fi"
+
 
 script:
   - make ci
