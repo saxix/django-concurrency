@@ -64,6 +64,11 @@ def _wrap_model_save(model, force=False):
         logger.debug('Wrapping save method of %s' % model)
         old_save = getattr(model, 'save')
         setattr(model, 'save', _wrap_save(old_save))
+        from concurrency.api import get_version, get_object_with_version
+        #setattr(model._default_manager,
+        #        'get_object_with_version', get_object_with_version)
+        setattr(model, 'get_concurrency_version', get_version)
+
         model.RevisionMetaInfo.versioned_save = True
 
 

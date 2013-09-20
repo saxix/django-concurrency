@@ -66,7 +66,7 @@ class AppSettings(object):
             value = getattr(settings, prefix_name, default)
             self._set_attr(prefix_name, value)
             setattr(settings, prefix_name, value)
-            setting_changed.send(self, setting=prefix_name, value=value)
+            setting_changed.send(self.__class__, setting=prefix_name, value=value, enter=True)
 
         setting_changed.connect(self._handler)
 

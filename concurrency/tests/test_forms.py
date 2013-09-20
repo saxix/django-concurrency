@@ -33,12 +33,14 @@ class WidgetTest(TestCase):
 
 class FormFieldTest(SimpleTestCase):
     def setUp(self):
-        self.save_warnings_state()
+        if hasattr(self, 'save_warnings_state'):
+            self.save_warnings_state()
         warnings.filterwarnings('ignore', category=DeprecationWarning,
                                 module='django.core.validators')
 
     def tearDown(self):
-        self.restore_warnings_state()
+        if hasattr(self, 'restore_warnings_state'):
+            self.restore_warnings_state()
 
     def test_with_dummy_signer(self):
         f = VersionField(signer=DummySigner())
