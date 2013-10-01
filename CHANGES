@@ -1,5 +1,5 @@
-Release 0.6.0 (beta)
----------------------------------
+Release 0.6.0
+-------------
 
 * new :ref:`disable_concurrency` context manager
 * added documentation for :ref:`concurrency.middleware.ConcurrencyMiddleware <concurrencymiddleware>`
@@ -11,7 +11,7 @@ Release 0.6.0 (beta)
 
 
 Release 0.5.0
----------------------------------
+-------------
 
 * python 3.x compatibility
 * new :setting:`CONCURRENCY_FIELD_SIGNER`
