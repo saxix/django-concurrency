@@ -114,7 +114,7 @@ Helpers
 ``concurrency_check()``
 ------------------------
 
-Sometimes, VersionField(s) cannot wraps the save() method,
+Sometimes, VersionField(s) cannot wrap the save() method,
 is these cirumstances you can check it manually ::
 
     from concurrency.core import concurrency_check
@@ -160,6 +160,11 @@ Context manager to temporary disable concurrency checking
 .. versionadded:: 0.6
 
 Context manager to disable sanity check checking for one model. see :ref:`import_data`
+
+
+------------
+Templatetags
+------------
 
 
 .. templatefilter:: identity
@@ -209,7 +214,7 @@ Signining
 tampered with, its value is `signed`. The default VersionSigner is ``concurrency.forms.VersionFieldSigner`` that simply
 extends ``django.core.signing.Signer``. If you want change your Signer you can set :setting:`CONCURRENCY_FIELD_SIGNER` in your settings
 
-    ``mysigner.py`` ::
+    :file:`mysigner.py` ::
 
         class DummySigner():
             """ Dummy signer that simply returns the raw version value. (Simply do not sign it) """
@@ -219,7 +224,7 @@ extends ``django.core.signing.Signer``. If you want change your Signer you can s
             def unsign(self, signed_value):
                 return smart_str(signed_value)
 
-    ``settings.py`` ::
+    :file:`settings.py` ::
 
         CONCURRENCY_FIELD_SIGNER = "myapp.mysigner.DummySigner"
 

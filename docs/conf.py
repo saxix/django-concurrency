@@ -53,7 +53,7 @@ intersphinx_mapping = {
     'sphinx': ('http://sphinx.readthedocs.org/en/latest/', None),
 }
 
-next_version = '0.6'
+next_version = '0.7'
 todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
@@ -77,7 +77,7 @@ copyright = u'2012, Stefano Apostolico'
 # built documents.
 #
 # The short X.Y version.
-version = ".".join(map(str, app.VERSION[0:2]))
+version = ".".join(map(str, concurrency.VERSION[0:2]))
 # The full version, including alpha/beta/rc tags.
 release = concurrency.get_version()
 next_version = '0.6'

@@ -3,3 +3,5 @@ mock>=1.0.1
 webtest
 django-webtest
 selenium
+django
+

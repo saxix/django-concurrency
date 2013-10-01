@@ -3,8 +3,8 @@ branch = True
 source = concurrency
 include =
 
-omit =
-
+omit = concurrency/__init__.py
+       concurrency/tests/settings.py
 
 [report]
 # Regexes for lines to exclude from consideration
@@ -17,6 +17,7 @@ exclude_lines =
     # Don't complain if tests don't hit defensive assertion code:
     raise AssertionError
     raise NotImplementedError
+    except ImportError
     # Don't complain if non-runnable code isn't run:
     #if 0:
     if __name__ == .__main__.:

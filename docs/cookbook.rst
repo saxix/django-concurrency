@@ -19,12 +19,14 @@ This is internally known as ``SANITY_CHECK``. To solve this you can:
 
 **Globally disable:**
 
-`settings.py`
+edit your :file:`settings.py` and add:
+
 .. code-block:: python
 
         CONCURRENCY_SANITY_CHECK = False
 
 **Temporary disable**
+
 .. code-block:: python
 
     from concurrency.config import conf
@@ -32,6 +34,7 @@ This is internally known as ``SANITY_CHECK``. To solve this you can:
     conf.SANITY_CHECK = False
 
 **Temporary disable per Model**
+
 .. code-block:: python
 
     from concurrency.api import disable_sanity_check
@@ -44,7 +47,8 @@ This is internally known as ``SANITY_CHECK``. To solve this you can:
 Add version management to new models
 -------------------------------------
 
-`models.py`
+:file:`models.py`
+
 .. code-block:: python
 
     from concurrency.fields import IntegerVersionField
@@ -52,13 +56,14 @@ Add version management to new models
     class ConcurrentModel( models.Model ):
         version = IntegerVersionField( )
 
-`tests.py`
+:file:`tests.py`
+
 .. code-block:: python
 
     a = ConcurrentModel.objects.get(pk=1)
     b = ConcurrentModel.objects.get(pk=1)
     a.save()
-    b.save() # this will raise ``RecordModifedError``
+    b.save() # this will raise ``RecordModifiedError``
 
 
 Add version management to Django and/or plugged in applications models
@@ -67,9 +72,10 @@ Add version management to Django and/or plugged in applications models
 .. versionchanged:: 0.4
 
 Concurrency can work even with existing models, anyway if you are adding concurrency management to
-and existing database remember to edit the database's table:
+an existing database remember to edit the database's tables:
 
-`your_app.models.py`
+:file:`your_app.models.py`
+
 .. code-block:: python
 
     from django.contrib.auth import User
@@ -83,7 +89,7 @@ Manually handle concurrency
 ---------------------------
 .. versionchanged:: 0.4
 
-Use :function:`concurrency.api.concurrency_check`
+Use :ref:`concurrency_check`
 
 
 .. code-block:: python

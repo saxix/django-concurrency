@@ -45,7 +45,7 @@ def _select_lock(model_instance, version_value=None):
         kwargs = {'pk': model_instance.pk, version_field.name: value}
         alias = router.db_for_write(model_instance)
         NOWAIT = connections[alias].features.has_select_for_update_nowait
-        entry = model_instance.__class__.objects.select_for_update(nowait=NOWAIT).filter(**kwargs)
+        entry = model_instance.__class__._base_manager.select_for_update(nowait=NOWAIT).filter(**kwargs)
         if not entry:
             logger.debug("Conflict detected on `{0}` pk:`{0.pk}`, "
                          "version `{1}` not found".format(model_instance, value))
@@ -64,6 +64,11 @@ def _wrap_model_save(model, force=False):
         logger.debug('Wrapping save method of %s' % model)
         old_save = getattr(model, 'save')
         setattr(model, 'save', _wrap_save(old_save))
+        from concurrency.api import get_version, get_object_with_version
+        #setattr(model._default_manager,
+        #        'get_object_with_version', get_object_with_version)
+        setattr(model, 'get_concurrency_version', get_version)
+
         model.RevisionMetaInfo.versioned_save = True
 
 
@@ -78,13 +83,13 @@ def _wrap_save(func):
     return update_wrapper(inner, func)
 
 
-def _versioned_save(self, force_insert=False, force_update=False, using=None):
-    if force_insert and force_update:
-        raise ValueError("Cannot force both insert and updating in model saving.")
-    if not force_insert:
-        _select_lock(self)
-    self.save_base(using=using, force_insert=force_insert, force_update=force_update)
-
+# def _versioned_save(self, force_insert=False, force_update=False, using=None):
+#     if force_insert and force_update:
+#         raise ValueError("Cannot force both insert and updating in model saving.")
+#     if not force_insert:
+#         _select_lock(self)
+#     self.save_base(using=using, force_insert=force_insert, force_update=force_update)
+#
 
 class RevisionMetaInfo:
     field = None

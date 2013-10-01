@@ -30,7 +30,7 @@ SENTINEL = '**concurrent_update**'
 def admin_register(model, modeladmin=ConcurrentModelAdmin):
     try:
         admin.site.unregister(model)
-    except NotRegistered:
+    except NotRegistered:  # pragma: no cover
         pass
     admin.site.register(model, modeladmin)
 
@@ -39,7 +39,7 @@ def admin_unregister(*models):
     for m in models:
         try:
             admin.site.unregister(m)
-        except NotRegistered:
+        except NotRegistered:  # pragma: no cover
             pass
 
 
@@ -102,7 +102,8 @@ class DjangoAdminTestCase(TestCase):
 
     def setUp(self):
         super(DjangoAdminTestCase, self).setUp()
-        self.sett = self.settings(INSTALLED_APPS=INSTALLED_APPS,
+        self.sett = self.settings(
+                                #INSTALLED_APPS=INSTALLED_APPS,
                                   MIDDLEWARE_CLASSES=self.MIDDLEWARE_CLASSES,
                                   AUTHENTICATION_BACKENDS=self.AUTHENTICATION_BACKENDS,
                                   PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),  # fastest hasher
