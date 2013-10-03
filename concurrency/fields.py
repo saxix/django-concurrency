@@ -73,7 +73,7 @@ class VersionField(Field):
         if hasattr(cls, '_concurrencymeta'):
             return
         setattr(cls, '_concurrencymeta', ConcurrencyOptions())
-        cls._concurrencymeta.field = self
+        cls._concurrencymeta._field = self
         cls._concurrencymeta._base = cls
         cls._concurrencymeta.manually = self.manually
 

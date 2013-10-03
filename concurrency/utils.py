@@ -102,7 +102,7 @@ class ConcurrencyTestMixin(object):
         self.assertTrue(hasattr(target, '_concurrencymeta'),
                         "%s is not under concurrency management" % self.concurrency_model)
         info = getattr(target, '_concurrencymeta', None)
-        revision_field = info.field
+        revision_field = info._field
 
         self.assertTrue(revision_field in target._meta.fields,
                         "%s: version field not in meta.fields" % self.concurrency_model)
