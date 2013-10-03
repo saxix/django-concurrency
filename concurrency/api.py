@@ -87,7 +87,7 @@ def apply_concurrency_check(model, fieldname, versionclass):
     ver.contribute_to_class(model, fieldname)
     model._concurrencymeta._field = ver
 
-    if not model._concurrencymeta.versioned_save:
+    if not model._concurrencymeta._versioned_save:
         _wrap_model_save(model)
 
 

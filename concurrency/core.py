@@ -60,7 +60,7 @@ def _select_lock(model_instance, version_value=None):
 
 
 def _wrap_model_save(model, force=False):
-    if force or not model._concurrencymeta.versioned_save:
+    if force or not model._concurrencymeta._versioned_save:
         logger.debug('Wrapping save method of %s' % model)
         old_save = getattr(model, 'save')
         setattr(model, 'save', _wrap_save(old_save))
@@ -69,7 +69,7 @@ def _wrap_model_save(model, force=False):
         #        'get_object_with_version', get_object_with_version)
         setattr(model, 'get_concurrency_version', get_version)
 
-        model._concurrencymeta.versioned_save = True
+        model._concurrencymeta._versioned_save = True
 
 
 def _wrap_save(func):
@@ -93,7 +93,7 @@ def _wrap_save(func):
 
 class ConcurrencyOptions:
     _field = None
-    versioned_save = False
+    _versioned_save = False
     manually = False
     sanity_check = conf.SANITY_CHECK
     enabled = True
