@@ -5,7 +5,7 @@ from django.db.models.fields import Field
 from django.db.models.signals import class_prepared
 
 from concurrency import forms
-from concurrency.core import RevisionMetaInfo, _wrap_model_save
+from concurrency.core import ConcurrencyOptions, _wrap_model_save
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ class VersionField(Field):
         super(VersionField, self).contribute_to_class(cls, name)
         if hasattr(cls, '_concurrencymeta'):
             return
-        setattr(cls, '_concurrencymeta', RevisionMetaInfo())
+        setattr(cls, '_concurrencymeta', ConcurrencyOptions())
         #TODO: allow user customization of RevisionMetaInfo
         _wrap_model_save(cls)
         cls._concurrencymeta.field = self

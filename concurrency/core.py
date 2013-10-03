@@ -91,7 +91,7 @@ def _wrap_save(func):
 #     self.save_base(using=using, force_insert=force_insert, force_update=force_update)
 #
 
-class RevisionMetaInfo:
+class ConcurrencyOptions:
     field = None
     versioned_save = False
     manually = False
