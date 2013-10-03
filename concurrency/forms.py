@@ -23,7 +23,7 @@ class ConcurrentForm(ModelForm):
 
     def clean(self):
         try:
-            _select_lock(self.instance, self.cleaned_data[self.instance._revisionmetainfo.field.name])
+            _select_lock(self.instance, self.cleaned_data[self.instance._concurrencymeta.field.name])
         except RecordModifiedError:
             if django.VERSION[1] >= 6:
                 self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])}))
