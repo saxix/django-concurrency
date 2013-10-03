@@ -94,6 +94,6 @@ def _wrap_save(func):
 class ConcurrencyOptions:
     _field = None
     _versioned_save = False
-    manually = False
+    _manually = False
     sanity_check = conf.SANITY_CHECK
     enabled = True
