@@ -13,7 +13,7 @@ OFFSET = int(time.mktime((2000, 1, 1, 0, 0, 0, 0, 0, 0)))
 
 
 def class_prepared_concurrency_handler(sender, **kwargs):
-    if hasattr(sender, 'RevisionMetaInfo') and not (sender.RevisionMetaInfo.manually):
+    if hasattr(sender, '_revisionmetainfo') and not (sender._revisionmetainfo.manually):
         _wrap_model_save(sender)
         from concurrency.api import get_version, get_object_with_version
         setattr(sender._default_manager.__class__,
@@ -59,14 +59,13 @@ class VersionField(Field):
 
     def contribute_to_class(self, cls, name):
         super(VersionField, self).contribute_to_class(cls, name)
-        if hasattr(cls, 'RevisionMetaInfo'):
+        if hasattr(cls, '_revisionmetainfo'):
             return
-        setattr(cls, 'RevisionMetaInfo', RevisionMetaInfo())
+        setattr(cls, '_revisionmetainfo', RevisionMetaInfo())
         #TODO: allow user customization of RevisionMetaInfo
-        cls._revisionmetainfo = cls.RevisionMetaInfo
         _wrap_model_save(cls)
-        cls.RevisionMetaInfo.field = self
-        cls.RevisionMetaInfo.manually = self.manually
+        cls._revisionmetainfo.field = self
+        cls._revisionmetainfo.manually = self.manually
 
     def _set_version_value(self, model_instance, value):
         setattr(model_instance, self.attname, int(value))

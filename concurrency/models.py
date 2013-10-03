@@ -9,7 +9,7 @@ __all__ = []
 
 #
 #def class_prepared_concurrency_handler(sender, **kwargs):
-#    if hasattr(sender, 'RevisionMetaInfo') and not (sender.RevisionMetaInfo.manually):
+#    if hasattr(sender, 'RevisionMetaInfo') and not (sender._revisionmetainfo.manually):
 #        _wrap_model_save(sender)
 #        from concurrency.api import get_version, get_object_with_version
 #        setattr(sender._default_manager.__class__,

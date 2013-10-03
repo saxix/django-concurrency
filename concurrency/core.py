@@ -22,7 +22,7 @@ __all__ = []
 
 
 def get_version_fieldname(obj):
-    return obj.RevisionMetaInfo.field.attname
+    return obj._revisionmetainfo.field.attname
 
 
 def _set_version(obj, version):
@@ -38,7 +38,7 @@ def _set_version(obj, version):
 def _select_lock(model_instance, version_value=None):
     if not conf.ENABLED:
         return
-    version_field = model_instance.RevisionMetaInfo.field
+    version_field = model_instance._revisionmetainfo.field
     value = version_value or getattr(model_instance, version_field.name)
     is_versioned = value != version_field.get_default()
     if model_instance.pk is not None and is_versioned:
@@ -60,7 +60,7 @@ def _select_lock(model_instance, version_value=None):
 
 
 def _wrap_model_save(model, force=False):
-    if force or not model.RevisionMetaInfo.versioned_save:
+    if force or not model._revisionmetainfo.versioned_save:
         logger.debug('Wrapping save method of %s' % model)
         old_save = getattr(model, 'save')
         setattr(model, 'save', _wrap_save(old_save))
@@ -69,7 +69,7 @@ def _wrap_model_save(model, force=False):
         #        'get_object_with_version', get_object_with_version)
         setattr(model, 'get_concurrency_version', get_version)
 
-        model.RevisionMetaInfo.versioned_save = True
+        model._revisionmetainfo.versioned_save = True
 
 
 def _wrap_save(func):

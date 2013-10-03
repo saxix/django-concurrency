@@ -13,7 +13,7 @@ def identity(obj):
     """
     returns a string representing "<pk>,<version>" of the passed object
     """
-    if hasattr(obj, 'RevisionMetaInfo'):
+    if hasattr(obj, '_revisionmetainfo'):
         return mark_safe("{0},{1}".format(unlocalize(obj.pk), get_revision_of_object(obj)))
     else:
         return mark_safe(unlocalize(obj.pk))
