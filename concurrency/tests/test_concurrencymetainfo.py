@@ -1,11 +1,11 @@
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import ConcurrencyTestMixin
-from concurrency.tests.models import TestModelWithCustomRevisionMetaInfo, ConcurrentModel
+from concurrency.tests.models import TestModelWithCustomOptions, ConcurrentModel
 from django.test import TestCase
 
 
 class TestCustomConcurrencyMeta(TestCase):
-    concurrency_model = TestModelWithCustomRevisionMetaInfo
+    concurrency_model = TestModelWithCustomOptions
     concurrency_kwargs = {'username': 'test'}
 
     def setUp(self):
@@ -26,8 +26,8 @@ class TestCustomConcurrencyMeta(TestCase):
         assert not self.TARGET._concurrencymeta.sanity_check
 
     def test_meta_inheritance(self):
-        # TestModelWithCustomRevisionMetaInfo extends ConcurrentModel
-        # but we disabled concurrency only in TestModelWithCustomRevisionMetaInfo
+        # TestModelWithCustomOptions extends ConcurrentModel
+        # but we disabled concurrency only in TestModelWithCustomOptions
         import concurrency.api as api
         concurrency_enabled1 = ConcurrentModel.objects.get_or_create(**{'dummy_char': 'test'})[0]
         concurrency_enabled2 = ConcurrentModel.objects.get_or_create(**{'dummy_char': 'test'})[0]

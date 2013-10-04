@@ -3,6 +3,10 @@ BUILDDIR='~build'
 DJANGO_SETTINGS_MODULE:=demoproject.settings
 PYTHONPATH := ${PWD}/demo/:${PWD}
 PIP=${VIRTUAL_ENV}/bin/pip
+DJANGO_14=django==1.4.8
+DJANGO_15=django==1.5.4
+DJANGO_16=https://www.djangoproject.com/m/releases/1.6/Django-1.6b4.tar.gz
+DJANGO_DEV=git+git://github.com/django/django.git
 
 mkbuilddir:
 	mkdir -p ${BUILDDIR}
@@ -24,13 +28,22 @@ test:
 	demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE}
 
 
-ci:
-	@[ "${DJANGO}" = "1.4.x" ] && pip install django==1.4.8 || :
-	@[ "${DJANGO}" = "1.5.x" ] && pip install django==1.5.4 || :
-	@[ "${DJANGO}" = "1.6.x" ] && pip install https://www.djangoproject.com/m/releases/1.6/Django-1.6b4.tar.gz || :
-	@[ "${DJANGO}" = "dev" ] && pip install git+git://github.com/django/django.git || :
+init-db:
+	sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -e 'DROP DATABASE IF EXISTS concurrency;'; fi"
+	sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -c 'DROP DATABASE IF EXISTS concurrency;' -U postgres; fi"
 
-	@[ "${DBENGINE}" = "pg" ] && pip install -q psycopg2 || :
+	sh -c "if [ '${DBENGINE}' = 'mysql' ]; then pip install MySQL-python; fi"
+	sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2; fi"
+
+	sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS concurrency;'; fi"
+	sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -c 'CREATE DATABASE concurrency;' -U postgres; fi"
+
+ci:
+	sh -c "if [ '${DJANGO}' = '1.4.x' ]; then pip install ${DJANGO_14}; fi"
+	sh -c "if [ '${DJANGO}' = '1.5.x' ]; then pip install ${DJANGO_15}; fi"
+	sh -c "if [ '${DJANGO}' = '1.6.x' ]; then pip install ${DJANGO_16}; fi"
+	sh -c "if [ '${DJANGO}' = 'dev' ]; then pip install ${DJANGO_DEV}; fi"
+
 	@pip install coverage
 	@python -c "from __future__ import print_function;import django;print('Django version:', django.get_version())"
 

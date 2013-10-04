@@ -214,7 +214,7 @@ class NoActionsConcurrentModel(ConcurrentModel):
         verbose_name_plural = "NoActions-ConcurrentModels"
 
 
-class TestModelWithCustomRevisionMetaInfo(ConcurrentModel):
+class TestModelWithCustomOptions(ConcurrentModel):
     username = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
 
