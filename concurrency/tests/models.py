@@ -116,7 +116,7 @@ class TestModel2(TestModel1):
 
 
 class TestModel3(TestModel2):
-    """ necessario per testare il comportamento diverso in caso di 'order_with_respect_to' """
+    """ it's needed to check when 'order_with_respect_to' is used """
     name3 = models.CharField(max_length=30, blank=True, null=True)
     fk = models.ForeignKey(TestModel2, related_name="parent", blank=True, null=True)
 
@@ -212,3 +212,15 @@ class NoActionsConcurrentModel(ConcurrentModel):
         proxy = True
         verbose_name = "NoActions-ConcurrentModel"
         verbose_name_plural = "NoActions-ConcurrentModels"
+
+
+class TestModelWithCustomRevisionMetaInfo(ConcurrentModel):
+    username = models.CharField(max_length=30, blank=True, null=True)
+    last_name = models.CharField(max_length=30, blank=True, null=True)
+
+    class Meta:
+        app_label = 'concurrency'
+
+    class ConcurrencyMeta:
+        enabled = False
+        sanity_check = False

@@ -22,7 +22,7 @@ __all__ = []
 
 
 def get_version_fieldname(obj):
-    return obj.RevisionMetaInfo.field.attname
+    return obj._concurrencymeta._field.attname
 
 
 def _set_version(obj, version):
@@ -32,13 +32,13 @@ def _set_version(obj, version):
     This function should be used with 'raw' values, any type conversion should be managed in
     VersionField._set_version_value(). This is needed for future enhancement of concurrency.
     """
-    obj._revisionmetainfo.field._set_version_value(obj, version)
+    obj._concurrencymeta._field._set_version_value(obj, version)
 
 
 def _select_lock(model_instance, version_value=None):
     if not conf.ENABLED:
         return
-    version_field = model_instance.RevisionMetaInfo.field
+    version_field = model_instance._concurrencymeta._field
     value = version_value or getattr(model_instance, version_field.name)
     is_versioned = value != version_field.get_default()
     if model_instance.pk is not None and is_versioned:
@@ -55,12 +55,12 @@ def _select_lock(model_instance, version_value=None):
                 raise RecordModifiedError(_('Record has been modified or no version value passed'),
                                           target=model_instance)
 
-    elif is_versioned and conf.SANITY_CHECK and model_instance._revisionmetainfo.sanity_check:
+    elif is_versioned and conf.SANITY_CHECK and model_instance._concurrencymeta.sanity_check:
         raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.') % value)
 
 
 def _wrap_model_save(model, force=False):
-    if force or not model.RevisionMetaInfo.versioned_save:
+    if force or not model._concurrencymeta._versioned_save:
         logger.debug('Wrapping save method of %s' % model)
         old_save = getattr(model, 'save')
         setattr(model, 'save', _wrap_save(old_save))
@@ -69,14 +69,14 @@ def _wrap_model_save(model, force=False):
         #        'get_object_with_version', get_object_with_version)
         setattr(model, 'get_concurrency_version', get_version)
 
-        model.RevisionMetaInfo.versioned_save = True
+        model._concurrencymeta._versioned_save = True
 
 
 def _wrap_save(func):
     from concurrency.api import concurrency_check
 
     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-        if self._revisionmetainfo.enabled:
+        if self._concurrencymeta.enabled:
             concurrency_check(self, force_insert, force_update, using, **kwargs)
         return func(self, force_insert, force_update, using, **kwargs)
 
@@ -91,9 +91,9 @@ def _wrap_save(func):
 #     self.save_base(using=using, force_insert=force_insert, force_update=force_update)
 #
 
-class RevisionMetaInfo:
-    field = None
-    versioned_save = False
-    manually = False
+class ConcurrencyOptions:
+    _field = None
+    _versioned_save = False
+    _manually = False
     sanity_check = conf.SANITY_CHECK
     enabled = True

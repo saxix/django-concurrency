@@ -1,6 +1,8 @@
 Release 0.7.0 (dev)
 -------------------
 
+* it's now possible disable concurrency in Models that extends concurrency enabled models
+* fixed #23 (thanks matklad)
 
 Release 0.6.0
 -------------
@@ -42,5 +44,5 @@ Release 0.4.0
 Release 0.3.2
 ---------------------------------
 
-* fixed #3 (thanks  pombredanne)
-* fixed #1 (thanks  mbrochh)
+* fixed #3 (thanks pombredanne)
+* fixed #1 (thanks mbrochh)

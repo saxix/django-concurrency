@@ -1,11 +1,12 @@
 import time
+import copy
 import logging
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import Field
 from django.db.models.signals import class_prepared
 
 from concurrency import forms
-from concurrency.core import RevisionMetaInfo, _wrap_model_save
+from concurrency.core import ConcurrencyOptions, _wrap_model_save
 
 logger = logging.getLogger(__name__)
 
@@ -13,18 +14,28 @@ OFFSET = int(time.mktime((2000, 1, 1, 0, 0, 0, 0, 0, 0)))
 
 
 def class_prepared_concurrency_handler(sender, **kwargs):
-    if hasattr(sender, 'RevisionMetaInfo') and not (sender.RevisionMetaInfo.manually):
-        _wrap_model_save(sender)
+    if hasattr(sender, '_concurrencymeta'):
+        origin = getattr(sender._concurrencymeta._base, '_concurrencymeta')
+        local = copy.deepcopy(origin)
+        setattr(sender, '_concurrencymeta', local)
+
+        if hasattr(sender, 'ConcurrencyMeta'):
+            sender._concurrencymeta.enabled = getattr(sender.ConcurrencyMeta, 'enabled')
+            sender._concurrencymeta.sanity_check = getattr(sender.ConcurrencyMeta, 'sanity_check')
+
+        if not (sender._concurrencymeta._manually):
+            _wrap_model_save(sender)
         from concurrency.api import get_version, get_object_with_version
+
         setattr(sender._default_manager.__class__,
                 'get_object_with_version', get_object_with_version)
         setattr(sender, 'get_concurrency_version', get_version)
-
     else:
         logger.debug('Skipped concurrency for %s' % sender)
 
 
 class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_prepared_concurrency_handler')
+
 
 class VersionField(Field):
     """ Base class """
@@ -59,14 +70,12 @@ class VersionField(Field):
 
     def contribute_to_class(self, cls, name):
         super(VersionField, self).contribute_to_class(cls, name)
-        if hasattr(cls, 'RevisionMetaInfo'):
+        if hasattr(cls, '_concurrencymeta'):
             return
-        setattr(cls, 'RevisionMetaInfo', RevisionMetaInfo())
-        #TODO: allow user customization of RevisionMetaInfo
-        cls._revisionmetainfo = cls.RevisionMetaInfo
-        _wrap_model_save(cls)
-        cls.RevisionMetaInfo.field = self
-        cls.RevisionMetaInfo.manually = self.manually
+        setattr(cls, '_concurrencymeta', ConcurrencyOptions())
+        cls._concurrencymeta._field = self
+        cls._concurrencymeta._base = cls
+        cls._concurrencymeta._manually = self.manually
 
     def _set_version_value(self, model_instance, value):
         setattr(model_instance, self.attname, int(value))

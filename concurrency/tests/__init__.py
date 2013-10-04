@@ -10,3 +10,4 @@ from concurrency.tests.test_admin_list_editable import TestListEditable, TestLis
 from concurrency.tests.test_admin_actions import TestAdminActions  # NOQA
 from concurrency.tests.test_issues import *  # NOQA
 from concurrency.tests.test_south import *  # NOQA
+from concurrency.tests.test_concurrencymetainfo import *  # NOQA

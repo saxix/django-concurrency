@@ -82,7 +82,7 @@ class ConcurrencyActionMixin(object):
             # perform an action on it, so bail.
             selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
 
-            revision_field = self.model.RevisionMetaInfo.field
+            revision_field = self.model._concurrencymeta._field
             if not selected:
                 return None
 
