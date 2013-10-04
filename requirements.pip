@@ -4,4 +4,4 @@ webtest
 django-webtest
 selenium
 django
-
+tox
