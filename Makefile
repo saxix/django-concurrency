@@ -30,10 +30,7 @@ ci:
 	@[ "${DJANGO}" = "1.6.x" ] && pip install https://www.djangoproject.com/m/releases/1.6/Django-1.6b4.tar.gz || :
 	@[ "${DJANGO}" = "dev" ] && pip install git+git://github.com/django/django.git || :
 
-	@python -c "import django;print 'python version:', django.get_version();"
-
 	@[ "${DBENGINE}" = "pg" ] && pip install -q psycopg2 || :
-	@[ "${DBENGINE}" = "mysql" ] && pip install git+git@github.com:django/django.git || :
 	@pip install coverage
 	@python -c "from __future__ import print_function;import django;print('Django version:', django.get_version())"
 
