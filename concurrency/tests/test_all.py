@@ -150,7 +150,7 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
         self.assertRaises(RecordModifiedError, b.save)
 
     def test_form_save(self):
-        formClass = modelform_factory(self.TARGET.__class__)
+        formClass = modelform_factory(self.TARGET.__class__, fields=('version',))
         original_version = self.TARGET._get_test_revision_number()
         version_field_name = self.TARGET._concurrencymeta._field.name
 

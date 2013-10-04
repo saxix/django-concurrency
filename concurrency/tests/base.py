@@ -48,6 +48,7 @@ class TestModel1Admin(admin.ModelAdmin):
         forms.VersionField: {'widget': VersionWidget()},
     }
     form = modelform_factory(TestModel1, ConcurrentForm,
+                             fields=('version', 'username', 'last_name', 'dummy_char', 'date_field'),
                              widgets={'version': VersionWidget()})
 
 
