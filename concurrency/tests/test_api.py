@@ -26,7 +26,6 @@ class ConcurrencyTestApi(TestCase):
         o1 = TestModel0.objects.create()
         self.assertEqual(get_object_with_version(TestModel0.objects, o1.pk, o1.version), o1)
 
-
     def test_patched_get_version(self):
         o1 = TestModel0.objects.create()
         self.assertEqual(o1.get_concurrency_version(o1.version), o1)

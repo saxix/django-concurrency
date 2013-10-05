@@ -17,5 +17,3 @@ try:
 except ImportError:
     class SouthTestCase(object):
         pass
-
-

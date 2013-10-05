@@ -7,7 +7,7 @@ DJANGO_14=django==1.4.8
 DJANGO_15=django==1.5.4
 DJANGO_16=https://www.djangoproject.com/m/releases/1.6/Django-1.6b4.tar.gz
 DJANGO_DEV=git+git://github.com/django/django.git
-$DBENGINE=sqlite
+DBENGINE=sqlite
 
 mkbuilddir:
 	mkdir -p ${BUILDDIR}
@@ -30,10 +30,12 @@ test:
 
 
 init-db:
-	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -e 'DROP DATABASE IF EXISTS test_concurrency;'; fi"
-	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -c 'DROP DATABASE IF EXISTS test_concurrency;' -U postgres; fi"
-
+	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -e 'DROP DATABASE IF EXISTS concurrency;'; fi"
+	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS concurrency;'; fi"
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then pip install MySQL-python; fi"
+
+	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -c 'DROP DATABASE IF EXISTS concurrency;' -U postgres; fi"
+	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -c 'CREATE DATABASE concurrency;' -U postgres; fi"
 	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2; fi"
 
 ci:
@@ -45,10 +47,11 @@ ci:
 	@python -c "from __future__ import print_function;import django;print('Django version:', django.get_version())"
 	@echo "Database:" ${DBENGINE}
 
-	coverage run demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE}
-	coverage report
+	coverage run demo/manage.py test concurrency --noinput --settings=${DJANGO_SETTINGS_MODULE} --failfast
 
-cov-html: coverage mkbuilddir
+
+coverage: mkbuilddir
+	coverage report
 	coverage html
 
 clean:

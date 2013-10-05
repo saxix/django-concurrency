@@ -5,4 +5,7 @@ DATABASES = {
         'HOST': '127.0.0.1',
         'PORT': '',
         'USER': 'postgres',
-        'PASSWORD': ''}}
+        'PASSWORD': '',
+        'OPTIONS': {
+            'autocommit': True,  # same value for all versions of django (is the default in 1.6)
+        }}}

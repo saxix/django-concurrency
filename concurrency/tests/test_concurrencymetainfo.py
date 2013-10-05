@@ -38,7 +38,6 @@ class TestCustomConcurrencyMeta(TestCase):
         assert concurrency_enabled1.pk is not None  # sanity check
         self.assertRaises(RecordModifiedError, concurrency_enabled2.save)
 
-
         concurrency_disabled1 = ConcurrentModel.objects.get_or_create(**{'dummy_char': 'test'})[0]
         concurrency_disabled2 = ConcurrentModel.objects.get_or_create(**{'dummy_char': 'test'})[0]
         v1 = api.get_revision_of_object(concurrency_disabled1)
@@ -49,4 +48,3 @@ class TestCustomConcurrencyMeta(TestCase):
         v1 = api.get_revision_of_object(concurrency_disabled1)
         v2 = api.get_revision_of_object(concurrency_disabled2)
         assert v1 != v2
-
