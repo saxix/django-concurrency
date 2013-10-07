@@ -1,16 +1,11 @@
-from django.contrib.admin import site, ModelAdmin
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
-from concurrency.admin import ConcurrentModelAdmin
 from concurrency.forms import VersionFieldSigner
 from concurrency.tests.base import AdminTestCase, SENTINEL
 from concurrency.tests.models import TestModel1, TestModel0, ConcurrentModel
 
 
 class TestConcurrentModelAdmin(AdminTestCase):
-    #def setUp(self):
-    #    super(TestConcurrentModelAdmin, self).setUp()
-    #    assert isinstance(site._registry[ConcurrentModel], ConcurrentModelAdmin)
 
     def test_standard_update(self):
         target, __ = ConcurrentModel.objects.get_or_create(dummy_char='aaa')

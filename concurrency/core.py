@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import logging
 from functools import update_wrapper
-from django.db import connections, router, transaction
+from django.db import connections, router
 from django.utils.translation import ugettext as _
 from concurrency.config import conf, CONCURRENCY_POLICY_CALLBACK
 from concurrency.exceptions import RecordModifiedError, InconsistencyError
@@ -63,11 +63,9 @@ def _wrap_model_save(model, force=False):
     if force or not model._concurrencymeta._versioned_save:
         logger.debug('Wrapping save method of %s' % model)
         old_save = getattr(model, 'save')
-        #print 111.5, getattr(old_save, 'concurrency', None)
         setattr(model, 'save', _wrap_save(old_save))
-        from concurrency.api import get_version, get_object_with_version
-        #setattr(model._default_manager,
-        #        'get_object_with_version', get_object_with_version)
+        from concurrency.api import get_version
+
         setattr(model, 'get_concurrency_version', get_version)
 
         model._concurrencymeta._versioned_save = True
@@ -75,24 +73,14 @@ def _wrap_model_save(model, force=False):
 
 def _wrap_save(func):
     from concurrency.api import concurrency_check
-    #print 111.1, '_wrap_save'
+
     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-        #print 111.2, self, 'inner'
         if self._concurrencymeta.enabled:
             concurrency_check(self, force_insert, force_update, using, **kwargs)
         return func(self, force_insert, force_update, using, **kwargs)
 
     return update_wrapper(inner, func)
 
-_wrap_save.concurrency=1
-
-# def _versioned_save(self, force_insert=False, force_update=False, using=None):
-#     if force_insert and force_update:
-#         raise ValueError("Cannot force both insert and updating in model saving.")
-#     if not force_insert:
-#         _select_lock(self)
-#     self.save_base(using=using, force_insert=force_insert, force_update=force_update)
-#
 
 class ConcurrencyOptions:
     _field = None

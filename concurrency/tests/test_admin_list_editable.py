@@ -12,10 +12,6 @@ from concurrency.tests.models import ListEditableConcurrentModel, NoActionsConcu
 class TestListEditable(AdminTestCase):
     TARGET = ListEditableConcurrentModel
 
-    #def setUp(self):
-    #    super(TestListEditable, self).setUp()
-
-
     def _create_conflict(self, pk):
         u = self.TARGET.objects.get(pk=pk)
         u.dummy_char = SENTINEL
@@ -108,6 +104,7 @@ class TestListEditable(AdminTestCase):
         new_logs = LogEntry.objects.filter(**log_filter).exclude(id__in=logs).exists()
         self.assertFalse(new_logs, "LogEntry created even if conflict error")
         transaction.rollback()
+
 
 class TestListEditableWithNoActions(TestListEditable):
     TARGET = NoActionsConcurrentModel

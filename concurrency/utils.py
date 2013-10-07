@@ -2,8 +2,6 @@
 from __future__ import absolute_import, unicode_literals
 import logging
 import warnings
-from django.core.exceptions import ImproperlyConfigured
-from django.utils.importlib import import_module
 from concurrency.exceptions import RecordModifiedError
 
 logger = logging.getLogger(__name__)

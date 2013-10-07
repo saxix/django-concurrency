@@ -1,6 +1,5 @@
 import os
-from django.db import transaction
-from django.test import TransactionTestCase, TestCase
+from django.test import TransactionTestCase
 import django.core.management
 from django.contrib.admin.options import ModelAdmin
 from django.contrib.admin.sites import NotRegistered
@@ -99,7 +98,7 @@ class AdminTestCase(WebTestMixin, TransactionTestCase):
 
     def tearDown(self):
         super(AdminTestCase, self).tearDown()
-        #transaction.rollback()
+
 
 class DjangoAdminTestCase(TransactionTestCase):
     urls = 'concurrency.tests.urls'
@@ -112,7 +111,7 @@ class DjangoAdminTestCase(TransactionTestCase):
             #INSTALLED_APPS=INSTALLED_APPS,
             MIDDLEWARE_CLASSES=self.MIDDLEWARE_CLASSES,
             AUTHENTICATION_BACKENDS=self.AUTHENTICATION_BACKENDS,
-            PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),  # fastest hasher
+            PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',), # fastest hasher
             STATIC_URL='/static/',
             SOUTH_TESTS_MIGRATE=False,
             TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),))

@@ -1,5 +1,4 @@
 from concurrency.exceptions import RecordModifiedError
-from concurrency.utils import ConcurrencyTestMixin
 from concurrency.tests.models import TestModelWithCustomOptions, ConcurrentModel
 from django.test import TestCase
 

@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 import operator
 import re
 from functools import reduce
-from django.db import transaction
 from django.utils.encoding import force_text
 from django.contrib import admin, messages
 from django.core.exceptions import ImproperlyConfigured, ValidationError

@@ -23,7 +23,6 @@ def class_prepared_concurrency_handler(sender, **kwargs):
             sender._concurrencymeta.enabled = getattr(sender.ConcurrencyMeta, 'enabled')
             sender._concurrencymeta.sanity_check = getattr(sender.ConcurrencyMeta, 'sanity_check')
 
-
         if not (sender._concurrencymeta._manually):
             _wrap_model_save(sender)
         from concurrency.api import get_version, get_object_with_version
@@ -77,7 +76,6 @@ class VersionField(Field):
         cls._concurrencymeta._field = self
         cls._concurrencymeta._base = cls
         cls._concurrencymeta._manually = self.manually
-
 
     def _set_version_value(self, model_instance, value):
         setattr(model_instance, self.attname, int(value))

@@ -1,5 +1,3 @@
-from unittest import skipIf
-import django
 from django.test import TestCase
 from concurrency.api import (is_changed, get_revision_of_object,
                              get_version, get_object_with_version, disable_sanity_check)
