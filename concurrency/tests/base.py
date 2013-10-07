@@ -1,5 +1,6 @@
 import os
-from django.test import TransactionTestCase
+from django.db import transaction
+from django.test import TransactionTestCase, TestCase
 import django.core.management
 from django.contrib.admin.options import ModelAdmin
 from django.contrib.admin.sites import NotRegistered
@@ -87,8 +88,8 @@ class AdminTestCase(WebTestMixin, TransactionTestCase):
                                                    is_active=True,
                                                    email='sax@example.com',
                                                    username='sax')
-        for i in range(1, 10):
-            ConcurrentModel.objects.get_or_create(id=i, version=0, dummy_char=str(i))
+        #for i in range(1, 10):
+        #    ConcurrentModel.objects.get_or_create(id=i, defaults=dict(version=0, dummy_char=str(i)))
 
         admin_register(ConcurrentModel, ActionsModelAdmin)
         admin_register(ListEditableConcurrentModel, ListEditableModelAdmin)
@@ -98,7 +99,7 @@ class AdminTestCase(WebTestMixin, TransactionTestCase):
 
     def tearDown(self):
         super(AdminTestCase, self).tearDown()
-
+        #transaction.rollback()
 
 class DjangoAdminTestCase(TransactionTestCase):
     urls = 'concurrency.tests.urls'

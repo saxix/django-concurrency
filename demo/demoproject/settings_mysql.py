@@ -4,5 +4,5 @@ DATABASES = {
         'NAME': 'concurrency',
         'HOST': '127.0.0.1',
         'PORT': '',
-        'USER': 'root',
+        'USER': '',
         'PASSWORD': ''}}
