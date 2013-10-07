@@ -64,9 +64,8 @@ def _wrap_model_save(model, force=False):
         logger.debug('Wrapping save method of %s' % model)
         old_save = getattr(model, 'save')
         setattr(model, 'save', _wrap_save(old_save))
-        from concurrency.api import get_version, get_object_with_version
-        #setattr(model._default_manager,
-        #        'get_object_with_version', get_object_with_version)
+        from concurrency.api import get_version
+
         setattr(model, 'get_concurrency_version', get_version)
 
         model._concurrencymeta._versioned_save = True
@@ -82,14 +81,6 @@ def _wrap_save(func):
 
     return update_wrapper(inner, func)
 
-
-# def _versioned_save(self, force_insert=False, force_update=False, using=None):
-#     if force_insert and force_update:
-#         raise ValueError("Cannot force both insert and updating in model saving.")
-#     if not force_insert:
-#         _select_lock(self)
-#     self.save_base(using=using, force_insert=force_insert, force_update=force_update)
-#
 
 class ConcurrencyOptions:
     _field = None

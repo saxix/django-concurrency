@@ -180,6 +180,7 @@ class ConcurrencyListEditableMixin(object):
             super(ConcurrencyListEditableMixin, self).save_model(request, obj, form, change)
         except RecordModifiedError:
             self._add_conflict(request, obj)
+
             # If policy is set to 'silent' the user will be informed using message_user
             # raise Exception if not silent.
             # NOTE:

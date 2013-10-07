@@ -11,6 +11,7 @@ class TestAdminActions(AdminTestCase):
         u.save()
 
     def test_dummy_action(self):
+        ConcurrentModel.objects.get_or_create(id=1)
         res = self.app.get('/admin/', user='sax')
         res = res.click('^ConcurrentModels')
         assert 'ConcurrentModel #1' in res  # sanity check
@@ -27,6 +28,7 @@ class TestAdminActions(AdminTestCase):
         self.assertNotIn('**action_update**', res)
 
     def test_delete_allowed_if_no_updates(self):
+        ConcurrentModel.objects.get_or_create(id=1)
         res = self.app.get('/admin/', user='sax')
         res = res.click('^ConcurrentModels')
         assert 'ConcurrentModel #1' in res  # sanity check
@@ -42,6 +44,7 @@ class TestAdminActions(AdminTestCase):
         self.assertNotIn('ConcurrentModel #1', res)
 
     def test_delete_not_allowed_if_updates(self):
+        ConcurrentModel.objects.get_or_create(id=1)
         res = self.app.get('/admin/', user='sax')
         res = res.click('^ConcurrentModels')
         assert 'ConcurrentModel #1' in res  # sanity check

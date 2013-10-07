@@ -1,4 +1,3 @@
-import warnings
 from django.core.exceptions import SuspiciousOperation
 from django.forms.models import modelform_factory
 from django.forms.widgets import HiddenInput, TextInput
@@ -32,15 +31,6 @@ class WidgetTest(TestCase):
 
 
 class FormFieldTest(SimpleTestCase):
-    def setUp(self):
-        if hasattr(self, 'save_warnings_state'):
-            self.save_warnings_state()
-        warnings.filterwarnings('ignore', category=DeprecationWarning,
-                                module='django.core.validators')
-
-    def tearDown(self):
-        if hasattr(self, 'restore_warnings_state'):
-            self.restore_warnings_state()
 
     def test_with_dummy_signer(self):
         f = VersionField(signer=DummySigner())

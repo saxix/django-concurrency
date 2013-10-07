@@ -1,11 +1,9 @@
 from __future__ import absolute_import, unicode_literals
 import django
 from django import forms
-from django.core import validators
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured, ValidationError
 from django.core.signing import Signer, BadSignature
 from django.forms import ModelForm, HiddenInput
-from django.utils import timezone
 from django.utils.importlib import import_module
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
