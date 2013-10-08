@@ -20,7 +20,7 @@ from concurrency.tests.models import TestModel0, TestModel1, TestModel2, TestMod
 from concurrency.utils import ConcurrencyTestMixin
 
 
-logger = logging.getLogger('concurrency.tests')
+logger = logging.getLogger(__name__)
 
 __all__ = ['ConcurrencyTest0', 'AutoIncConcurrencyTest', 'ConcurrencyTest1',
            'ConcurrencyTest2', 'ConcurrencyTest3', 'ConcurrencyTest4',
@@ -46,7 +46,7 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
 
     @staticmethod
     def _get_REVISION_NUMBER(obj):
-        revision_field = obj.RevisionMetaInfo.field
+        revision_field = obj._concurrencymeta._field
         value = getattr(obj, revision_field.attname)
         return value
 
@@ -99,7 +99,7 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
         assert bool(t._get_test_revision_number()) is False, "version is not null %s" % t._get_test_revision_number()
         t.save()
         self.assertIsNotNone(t.pk)
-        self.assertNotEqual(t.version, self.TARGET.RevisionMetaInfo.field.get_default())
+        self.assertNotEqual(t.version, self.TARGET._concurrencymeta._field.get_default())
         self.assertTrue(bool(t.version))
 
     def test_force_update(self):
@@ -150,9 +150,9 @@ class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
         self.assertRaises(RecordModifiedError, b.save)
 
     def test_form_save(self):
-        formClass = modelform_factory(self.TARGET.__class__)
+        formClass = modelform_factory(self.TARGET.__class__, fields=('version',))
         original_version = self.TARGET._get_test_revision_number()
-        version_field_name = self.TARGET.RevisionMetaInfo.field.name
+        version_field_name = self.TARGET._concurrencymeta._field.name
 
         form = formClass(self._get_form_data(**{version_field_name: VersionFieldSigner().sign(original_version)}),
                          instance=self.TARGET)
@@ -282,6 +282,8 @@ class ConcurrencyTest0_Proxy(ConcurrencyTest0):
 
     def test_force_update(self):
         t = self.TARGET.__class__()
+        t.username = 'AAA'
+        t.save()
         t.save(force_update=True)
         t1 = TestModel0.objects.get(pk=t.pk)
         self.assertEqual(t.pk, t1.pk)

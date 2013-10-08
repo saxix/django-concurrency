@@ -16,17 +16,18 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.staticfiles',
                   'django.contrib.admin',
                   'concurrency',
+                  'concurrency.tests',
                   'demoproject.demoapp']
-
-# MIDDLEWARE_CLASSES = ('django.middleware.common.CommonMiddleware',
-#                        'concurrency.middleware.ConcurrencyMiddleware',
+#
+#MIDDLEWARE_CLASSES = ('django.middleware.common.CommonMiddleware',
+#                      'concurrency.middleware.ConcurrencyMiddleware',
 #                       'django.contrib.sessions.middleware.SessionMiddleware',
 #                       'django.middleware.csrf.CsrfViewMiddleware',
 #                       'django.contrib.auth.middleware.AuthenticationMiddleware',
 #                       'django.contrib.messages.middleware.MessageMiddleware',)
-
-# CONCURRENCY_HANDLER409 = 'demoproject.demoapp.views.conflict'
-# CONCURRENCY_POLICY = 2
+#
+#CONCURRENCY_HANDLER409 = 'demoproject.demoapp.views.conflict'
+#CONCURRENCY_POLICY = 2
 
 try:
     import import_export  # NOQA

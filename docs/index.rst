@@ -12,9 +12,13 @@ Overview
    :target: http://travis-ci.org/saxix/django-concurrency/
 
 
-django-concurrency is a optimistic locking library for Django Models
+.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=master
+  :target: https://coveralls.io/r/saxix/django-concurrency?branch=master
 
-It prevents users from doing concurrent editing in Django both from UI as from a
+
+django-concurrency is an optimistic locking library for Django Models
+
+It prevents users from doing concurrent editing in Django both from UI and from a
 django command.
 
 
@@ -35,18 +39,17 @@ Todo
 ====
 
 - intercept external updates
-    (ie changes done using DB browser lile SQLDeveloper, pgAdmin, phpMyAdmin...)
--
+    (ie changes done using DB browser like SQLDeveloper, pgAdmin, phpMyAdmin...)
 
 How it works
 ============
 
 |concurrency| works using a version field added to each model, each time a record is saved
-the version number change (the algorithm used depeneds on the VersionField used,
+the version number changes (the algorithm used depends on the VersionField used,
 (see :ref:`fields`).
 
-When a record is saved, |concurrency| try to get a lock to to the record based on the old revision
-number, if the record is not found raise a :ref:`RecordModifiedError`
+When a record is saved, |concurrency| tries to get a lock on the record based on the old revision
+number, if the record is not found a :ref:`RecordModifiedError` is raised
 
 
 Table Of Contents

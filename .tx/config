@@ -1,0 +1,9 @@
+[django-concurrency.django-concurrency]
+file_filter = concurrency/locale/<lang>/LC_MESSAGES/django.po
+source_file = concurrency/locale/en/LC_MESSAGES/django.po
+source_lang = en
+
+[main]
+host = https://www.transifex.com
+type = PO
+

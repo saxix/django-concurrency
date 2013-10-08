@@ -7,7 +7,7 @@
 
 Changelog
 =========
-This sections lists the biggest changes done on each release.
+This section lists the biggest changes done on each release.
 
 .. contents::
    :local:

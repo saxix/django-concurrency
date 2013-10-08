@@ -1,13 +1,14 @@
 import os
+from django.test import TransactionTestCase
+import django.core.management
 from django.contrib.admin.options import ModelAdmin
 from django.contrib.admin.sites import NotRegistered
-import django.core.management
 from django.contrib import admin
 from django.conf import global_settings
 from django.contrib.auth.models import User
 from django.forms.models import modelform_factory
-from django.test import TestCase
-from django_webtest import WebTest
+
+from django_webtest import WebTestMixin
 from concurrency import forms
 from concurrency.admin import ConcurrentModelAdmin
 from concurrency.forms import ConcurrentForm, VersionWidget
@@ -30,7 +31,7 @@ SENTINEL = '**concurrent_update**'
 def admin_register(model, modeladmin=ConcurrentModelAdmin):
     try:
         admin.site.unregister(model)
-    except NotRegistered:
+    except NotRegistered:  # pragma: no cover
         pass
     admin.site.register(model, modeladmin)
 
@@ -39,7 +40,7 @@ def admin_unregister(*models):
     for m in models:
         try:
             admin.site.unregister(m)
-        except NotRegistered:
+        except NotRegistered:  # pragma: no cover
             pass
 
 
@@ -48,6 +49,7 @@ class TestModel1Admin(admin.ModelAdmin):
         forms.VersionField: {'widget': VersionWidget()},
     }
     form = modelform_factory(TestModel1, ConcurrentForm,
+                             fields=('version', 'username', 'last_name', 'dummy_char', 'date_field'),
                              widgets={'version': VersionWidget()})
 
 
@@ -75,18 +77,18 @@ class ActionsModelAdmin(ConcurrentModelAdmin):
             el.save()
 
 
-class AdminTestCase(WebTest):
+class AdminTestCase(WebTestMixin, TransactionTestCase):
     urls = 'concurrency.tests.urls'
 
     def setUp(self):
         super(AdminTestCase, self).setUp()
-        self.user = User.objects.get_or_create(is_superuser=True,
-                                               is_staff=True,
-                                               is_active=True,
-                                               email='sax@example.com',
-                                               username='sax')
-        for i in range(1, 10):
-            ConcurrentModel.objects.get_or_create(id=i, version=0, dummy_char=str(i))
+        self.user, __ = User.objects.get_or_create(is_superuser=True,
+                                                   is_staff=True,
+                                                   is_active=True,
+                                                   email='sax@example.com',
+                                                   username='sax')
+        #for i in range(1, 10):
+        #    ConcurrentModel.objects.get_or_create(id=i, defaults=dict(version=0, dummy_char=str(i)))
 
         admin_register(ConcurrentModel, ActionsModelAdmin)
         admin_register(ListEditableConcurrentModel, ListEditableModelAdmin)
@@ -94,21 +96,25 @@ class AdminTestCase(WebTest):
         admin_register(TestModel1, TestModel1Admin)
         admin_register(TestModel0, ModelAdmin)
 
+    def tearDown(self):
+        super(AdminTestCase, self).tearDown()
 
-class DjangoAdminTestCase(TestCase):
+
+class DjangoAdminTestCase(TransactionTestCase):
     urls = 'concurrency.tests.urls'
     MIDDLEWARE_CLASSES = global_settings.MIDDLEWARE_CLASSES
     AUTHENTICATION_BACKENDS = global_settings.AUTHENTICATION_BACKENDS
 
     def setUp(self):
         super(DjangoAdminTestCase, self).setUp()
-        self.sett = self.settings(INSTALLED_APPS=INSTALLED_APPS,
-                                  MIDDLEWARE_CLASSES=self.MIDDLEWARE_CLASSES,
-                                  AUTHENTICATION_BACKENDS=self.AUTHENTICATION_BACKENDS,
-                                  PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),  # fastest hasher
-                                  STATIC_URL='/static/',
-                                  SOUTH_TESTS_MIGRATE=False,
-                                  TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),))
+        self.sett = self.settings(
+            #INSTALLED_APPS=INSTALLED_APPS,
+            MIDDLEWARE_CLASSES=self.MIDDLEWARE_CLASSES,
+            AUTHENTICATION_BACKENDS=self.AUTHENTICATION_BACKENDS,
+            PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',), # fastest hasher
+            STATIC_URL='/static/',
+            SOUTH_TESTS_MIGRATE=False,
+            TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),))
         self.sett.enable()
         django.core.management._commands = None  # reset commands cache
         django.core.management.call_command('syncdb', verbosity=0)

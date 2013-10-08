@@ -1,6 +1,7 @@
+.idea
+.tox
+.*
 notes.txt
-/.idea
-/.tox
 docs/build/
 /dist
 /build
@@ -9,6 +10,7 @@ docs/build/
 *.pyc
 *.log
 *.pot
+*.mo
 *.pyc
 *.egg-info
 *.sqlite

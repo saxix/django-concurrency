@@ -7,7 +7,7 @@ ConcurrencyMiddleware
 
 You can globally intercept :ref:`RecordModifiedError`
 adding :ref:`concurrency.middleware.ConcurrencyMiddleware <concurrencymiddleware>` to your :setting:`MIDDLEWARE_CLASSES`.
-Each time a ``RecordModifiedError`` is raised a go up to the ConcurrencyMiddleware the handler defined in
+Each time a ``RecordModifiedError`` is raised it goes up to the ConcurrencyMiddleware and the handler defined in
 :setting:`CONCURRENCY_HANDLER409` is invoked.
 
 **Example**
@@ -26,7 +26,7 @@ Each time a ``RecordModifiedError`` is raised a go up to the ConcurrencyMiddlewa
         CONCURRENCY_HANDLER409 = 'demoproject.demoapp.views.conflict'
         CONCURRENCY_POLICY = 2  # CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
 
-``views.py``
+:file:`views.py`
 
 .. code-block:: python
 
@@ -67,7 +67,7 @@ Each time a ``RecordModifiedError`` is raised a go up to the ConcurrencyMiddlewa
 
 
 
-``409.html``
+:file:`409.html`
 
 .. code-block:: html
 

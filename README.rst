@@ -3,14 +3,27 @@ Django Concurrency
 ==================
 
 
-.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
+.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=develop
    :target: http://travis-ci.org/saxix/django-concurrency/
 
 
-django-concurrency is a optimistic locking library for Django.
+.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=develop
+   :target: https://coveralls.io/r/saxix/django-concurrency
 
-It prevents users from doing concurrent editing in Django both from UI as from a
+.. image:: https://pypip.in/v/django-concurrency/badge.png
+   :target: https://crate.io/packages/django-concurrency/
+
+.. image:: https://pypip.in/d/django-concurrency/badge.png
+   :target: https://crate.io/packages/django-concurrency/
+
+
+django-concurrency is an optimistic locking library for Django.
+
+Tested with: 1.4.8, 1.5.4, 1.6b4, trunk.
+
+It prevents users from doing concurrent editing in Django both from UI and from a
 django command.
+
 
 
 How it works
@@ -22,14 +35,14 @@ sample code::
     class ConcurrentModel( models.Model ):
         version = IntegerVersionField( )
 
-Now if if you try::
+Now if you try::
 
     a = ConcurrentModel.objects.get(pk=1)
     b = ConcurrentModel.objects.get(pk=1)
     a.save()
     b.save()
 
-you will get a ``RecordModifedError`` on ``b.save()``
+you will get a ``RecordModifiedError`` on ``b.save()``
 
 Links
 ~~~~~

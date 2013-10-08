@@ -1,10 +1,9 @@
 from __future__ import absolute_import, unicode_literals
+import django
 from django import forms
-from django.core import validators
-from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
+from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured, ValidationError
 from django.core.signing import Signer, BadSignature
 from django.forms import ModelForm, HiddenInput
-from django.utils import timezone
 from django.utils.importlib import import_module
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
@@ -22,14 +21,14 @@ class ConcurrentForm(ModelForm):
 
     def clean(self):
         try:
-            _select_lock(self.instance, self.cleaned_data[self.instance.RevisionMetaInfo.field.name])
+            _select_lock(self.instance, self.cleaned_data[self.instance._concurrencymeta._field.name])
         except RecordModifiedError:
-            self._update_errors({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])})
+            if django.VERSION[1] >= 6:
+                self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])}))
+            else:
+                self._update_errors({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])})
 
         return super(ConcurrentForm, self).clean()
-
-    def save(self, commit=True):
-        return super(ConcurrentForm, self).save(commit)
 
 
 class VersionWidget(HiddenInput):
@@ -125,22 +124,22 @@ class VersionField(forms.IntegerField):
         return {}
 
 
-class DateVersionField(forms.DateTimeField):
-    widget = HiddenInput  # Default widget to use when rendering this type of Field.
-    hidden_widget = HiddenInput  # Default widget to use when rendering this as "hidden".
-
-    def __init__(self, *args, **kwargs):
-        kwargs.pop('input_formats', None)
-        kwargs['required'] = True
-        kwargs['initial'] = None
-        kwargs['widget'] = None
-        super(DateVersionField, self).__init__(None, *args, **kwargs)
-
-    def to_python(self, value):
-        value = super(DateVersionField, self).to_python(value)
-        if value in validators.EMPTY_VALUES:
-            return timezone.now()
-        return value
-
-    def widget_attrs(self, widget):
-        return {}
+# class DateVersionField(forms.DateTimeField):
+#     widget = HiddenInput  # Default widget to use when rendering this type of Field.
+#     hidden_widget = HiddenInput  # Default widget to use when rendering this as "hidden".
+#
+#     def __init__(self, *args, **kwargs):
+#         kwargs.pop('input_formats', None)
+#         kwargs['required'] = True
+#         kwargs['initial'] = None
+#         kwargs['widget'] = None
+#         super(DateVersionField, self).__init__(None, *args, **kwargs)
+#
+#     def to_python(self, value):
+#         value = super(DateVersionField, self).to_python(value)
+#         if value in validators.EMPTY_VALUES:
+#             return timezone.now()
+#         return value
+#
+#     def widget_attrs(self, widget):
+#         return {}

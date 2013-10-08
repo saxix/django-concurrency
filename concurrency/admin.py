@@ -1,6 +1,8 @@
 ## -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+import operator
 import re
+from functools import reduce
 from django.utils.encoding import force_text
 from django.contrib import admin, messages
 from django.core.exceptions import ImproperlyConfigured, ValidationError
@@ -80,7 +82,7 @@ class ConcurrencyActionMixin(object):
             # perform an action on it, so bail.
             selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
 
-            revision_field = self.model.RevisionMetaInfo.field
+            revision_field = self.model._concurrencymeta._field
             if not selected:
                 return None
 
@@ -96,8 +98,9 @@ class ConcurrencyActionMixin(object):
                                                    'expected:  `%s` found' % x)
                     filters.append(Q(**{'pk': pk,
                                         revision_field.attname: version}))
-                queryset = queryset.filter(*filters)
-                if len(selected) != len(queryset):
+
+                queryset = queryset.filter(reduce(operator.or_, filters))
+                if len(selected) != queryset.count():
                     messages.error(request, 'One or more record were updated. '
                                             '(Probably by other user) '
                                             'The execution was aborted.')
@@ -156,6 +159,18 @@ class ConcurrencyListEditableMixin(object):
         kwargs['formset'] = ConcurrentBaseModelFormSet
         return super(ConcurrencyListEditableMixin, self).get_changelist_formset(request, **kwargs)
 
+    def _add_conflict(self, request, obj):
+        if hasattr(request, '_concurrency_list_editable_errors'):
+            request._concurrency_list_editable_errors.append(obj.pk)
+        else:
+            request._concurrency_list_editable_errors = [obj.pk]
+
+    def _get_conflicts(self, request):
+        if hasattr(request, '_concurrency_list_editable_errors'):
+            return request._concurrency_list_editable_errors
+        else:
+            return []
+
     def save_model(self, request, obj, form, change):
         try:
             if change:
@@ -164,41 +179,43 @@ class ConcurrencyListEditableMixin(object):
                     core._set_version(obj, version)
             super(ConcurrencyListEditableMixin, self).save_model(request, obj, form, change)
         except RecordModifiedError:
-            self._concurrency_list_editable_errors.append(obj.pk)
-            if self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_SILENT:
-                pass
-            else:
+            self._add_conflict(request, obj)
+
+            # If policy is set to 'silent' the user will be informed using message_user
+            # raise Exception if not silent.
+            # NOTE:
+            #   list_editable_policy MUST have the LIST_EDITABLE_POLICY_ABORT_ALL
+            #   set to work properly
+            if not self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_SILENT:
                 raise
 
-    def changelist_view(self, request, extra_context=None):
-        self._concurrency_list_editable_errors = []
-        return super(ConcurrencyListEditableMixin, self).changelist_view(request, extra_context)
-
     def log_change(self, request, object, message):
-        if object.pk in self._concurrency_list_editable_errors:
+        if object.pk in self._get_conflicts(request):
             return
         super(ConcurrencyListEditableMixin, self).log_change(request, object, message)
 
     def log_deletion(self, request, object, object_repr):
-        if object.pk in self._concurrency_list_editable_errors:
+        if object.pk in self._get_conflicts(request):
             return
         super(ConcurrencyListEditableMixin, self).log_deletion(request, object, object_repr)
 
-    def message_user(self, request, message, **kwargs):
+    def message_user(self, request, message, *args, **kwargs):
         # This is ugly but we do not want to touch the changelist_view() code.
+
         opts = self.model._meta
-        if self._concurrency_list_editable_errors:
+        conflicts = self._get_conflicts(request)
+        if conflicts:
             names = force_text(opts.verbose_name), force_text(opts.verbose_name_plural)
             pattern = r"(?P<num>\d+) ({0}|{1})".format(*names)
             rex = re.compile(pattern)
             m = rex.match(message)
-            concurrency_errros = len(self._concurrency_list_editable_errors)
+            concurrency_errros = len(conflicts)
             if m:
-                updated_record = int(m.group('num')) - len(self._concurrency_list_editable_errors)
+                updated_record = int(m.group('num')) - concurrency_errros
                 if updated_record == 0:
-                    message = _("No %(name)s were changed due conflict errors" % {'name': names[0]})
+                    message = _("No %(name)s were changed due conflict errors") % {'name': names[0]}
                 else:
-                    ids = ",".join(map(str, self._concurrency_list_editable_errors))
+                    ids = ",".join(map(str, conflicts))
                     messages.error(request,
                                    ungettext("Record with pk `{0}` has been modified and was not updated",
                                              "Records `{0}` have been modified and were not updated",
@@ -212,7 +229,7 @@ class ConcurrencyListEditableMixin(object):
                                         updated_record) % {'count': updated_record,
                                                            'name': name}
 
-        return super(ConcurrencyListEditableMixin, self).message_user(request, message, **kwargs)
+        return super(ConcurrencyListEditableMixin, self).message_user(request, message, *args, **kwargs)
 
 
 class ConcurrentModelAdmin(ConcurrencyActionMixin,

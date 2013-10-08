@@ -1,16 +1,11 @@
-from django.contrib.admin import site, ModelAdmin
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
-from concurrency.admin import ConcurrentModelAdmin
 from concurrency.forms import VersionFieldSigner
 from concurrency.tests.base import AdminTestCase, SENTINEL
 from concurrency.tests.models import TestModel1, TestModel0, ConcurrentModel
 
 
 class TestConcurrentModelAdmin(AdminTestCase):
-    def setUp(self):
-        super(TestConcurrentModelAdmin, self).setUp()
-        assert isinstance(site._registry[ConcurrentModel], ConcurrentModelAdmin)
 
     def test_standard_update(self):
         target, __ = ConcurrentModel.objects.get_or_create(dummy_char='aaa')
@@ -38,8 +33,8 @@ class TestConcurrentModelAdmin(AdminTestCase):
         target, __ = ConcurrentModel.objects.get_or_create(dummy_char='aaa')
         url = reverse('admin:concurrency_concurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
-        form = res.form
 
+        form = res.form
         target.save()  # create conflict here
 
         res = form.submit()
@@ -52,9 +47,9 @@ class TestConcurrentModelAdmin(AdminTestCase):
 
 
 class TestAdminEdit(AdminTestCase):
-    def setUp(self):
-        super(TestAdminEdit, self).setUp()
-        assert isinstance(site._registry[TestModel1], ModelAdmin)
+    #def setUp(self):
+    #    super(TestAdminEdit, self).setUp()
+    #    assert isinstance(site._registry[TestModel1], ModelAdmin)
 
     def _create_conflict(self, pk):
         u = TestModel1.objects.get(pk=pk)
