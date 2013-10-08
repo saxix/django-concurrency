@@ -37,12 +37,41 @@ except ImportError:
     pass
 
 TEMPLATE_DIRS = ['demoproject/templates']
-from demoproject.settings_sqlite import *  # NOQA
 
 db = os.environ.get('DBENGINE', None)
-if db:
-    mod = __import__('demoproject.settings_%s' % db, fromlist=['demoproject'])
-    DATABASES = mod.DATABASES
+if db == 'mysql':
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'concurrency',
+        'HOST': '127.0.0.1',
+        'PORT': '',
+        'USER': '',
+        'PASSWORD': ''}}
+    if os.environ.get('ENABLE_TRIGGER', None):
+        DATABASES['default']['ENGINE'] = 'concurrency.db.backends.mysql'
+        # DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.mysql'
+elif db == 'pg':
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'concurrency',
+        'HOST': '127.0.0.1',
+        'PORT': '',
+        'USER': 'postgres',
+        'PASSWORD': '',
+        'OPTIONS': {
+            'autocommit': True,  # same value for all versions of django (is the default in 1.6)
+        }}}
+else:
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'concurrency.sqlite',
+        'HOST': '',
+        'PORT': ''}}
+
+
 
 LOGGING = {
     'version': 1,
