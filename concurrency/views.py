@@ -36,7 +36,7 @@ def conflict(request, target=None, template_name='409.html'):
             'The object changed during the transaction.</p>')
     try:
         saved = target.__class__._default_manager.get(pk=target.pk)
-    except target.__class__.DoesNotExists:
+    except target.__class__.DoesNotExist:
         saved = None
     ctx = RequestContext(request, {'target': target,
                                    'saved': saved,
