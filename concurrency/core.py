@@ -45,7 +45,10 @@ def _select_lock(model_instance, version_value=None):
         kwargs = {'pk': model_instance.pk, version_field.name: value}
         alias = router.db_for_write(model_instance)
         NOWAIT = connections[alias].features.has_select_for_update_nowait
-        entry = model_instance.__class__._base_manager.select_for_update(nowait=NOWAIT).filter(**kwargs)
+        if conf.USE_SELECT_FOR_UPDATE:
+            entry = model_instance.__class__._base_manager.select_for_update(nowait=NOWAIT).filter(**kwargs)
+        else:
+            entry = model_instance.__class__._base_manager.filter(**kwargs)
         if not entry:
             logger.debug("Conflict detected on `{0}` pk:`{0.pk}`, "
                          "version `{1}` not found".format(model_instance, value))
@@ -55,7 +58,7 @@ def _wrap_model_save(model, force=False):
     if force or not model._concurrencymeta._versioned_save:
         logger.debug('Wrapping save method of %s' % model)
         old_save = getattr(model, 'save')
-        setattr(model, 'save', _wrap_save(old_save))
+        setattr(model, 'save', model._concurrencymeta._field._wrap_save(old_save))
         from concurrency.api import get_version
 
         setattr(model, 'get_concurrency_version', get_version)
@@ -63,15 +66,15 @@ def _wrap_model_save(model, force=False):
         model._concurrencymeta._versioned_save = True
 
 
-def _wrap_save(func):
-    from concurrency.api import concurrency_check
-
-    def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-        if self._concurrencymeta.enabled:
-            concurrency_check(self, force_insert, force_update, using, **kwargs)
-        return func(self, force_insert, force_update, using, **kwargs)
-
-    return update_wrapper(inner, func)
+#def _wrap_save(func):
+#    from concurrency.api import concurrency_check
+#
+#    def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
+#        if self._concurrencymeta.enabled:
+#            concurrency_check(self, force_insert, force_update, using, **kwargs)
+#        return func(self, force_insert, force_update, using, **kwargs)
+#
+#    return update_wrapper(inner, func)
 
 
 class ConcurrencyOptions:

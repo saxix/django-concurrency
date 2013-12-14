@@ -1,12 +1,14 @@
 import time
 import copy
 import logging
+from functools import update_wrapper
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import Field
-from django.db.models.signals import class_prepared
+from django.db.models.signals import class_prepared, post_syncdb
 
 from concurrency import forms
 from concurrency.core import ConcurrencyOptions, _wrap_model_save
+from concurrency.api import get_revision_of_object
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +35,19 @@ def class_prepared_concurrency_handler(sender, **kwargs):
         logger.debug('Skipped concurrency for %s' % sender)
 
 
+def post_syncdb_concurrency_handler(sender, **kwargs):
+    from django.db import connection
+
+    if hasattr(connection.creation, '_create_trigger'):
+        while _TRIGGERS:
+            field = _TRIGGERS.pop()
+            connection.creation._create_trigger(field)
+
+
 class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_prepared_concurrency_handler')
+post_syncdb.connect(post_syncdb_concurrency_handler, dispatch_uid='post_syncdb_concurrency_handler')
+
+_TRIGGERS = []
 
 
 class VersionField(Field):
@@ -79,6 +93,13 @@ class VersionField(Field):
     def _set_version_value(self, model_instance, value):
         setattr(model_instance, self.attname, int(value))
 
+    def _do_update(self, base_qs, using, pk_val, values, update_fields):
+
+        if not values:
+            return update_fields is not None or base_qs.filter(pk=pk_val, ).exists()
+        else:
+            return base_qs.filter(pk=pk_val)._update(values) > 0
+
 
 class IntegerVersionField(VersionField):
     """
@@ -99,6 +120,16 @@ class IntegerVersionField(VersionField):
         self._set_version_value(model_instance, value)
         return value
 
+    @staticmethod
+    def _wrap_save(func):
+        from concurrency.api import concurrency_check
+
+        def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
+            if self._concurrencymeta.enabled:
+                concurrency_check(self, force_insert, force_update, using, **kwargs)
+            return func(self, force_insert, force_update, using, **kwargs)
+
+        return update_wrapper(inner, func)
 
 class AutoIncVersionField(VersionField):
     """
@@ -115,6 +146,17 @@ class AutoIncVersionField(VersionField):
         self._set_version_value(model_instance, value)
         return value
 
+    @staticmethod
+    def _wrap_save(func):
+        from concurrency.api import concurrency_check
+
+        def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
+            if self._concurrencymeta.enabled:
+                concurrency_check(self, force_insert, force_update, using, **kwargs)
+            return func(self, force_insert, force_update, using, **kwargs)
+
+        return update_wrapper(inner, func)
+
 
 class TriggerVersionField(VersionField):
     """
@@ -126,12 +168,32 @@ class TriggerVersionField(VersionField):
     def get_internal_type(self):
         return "BigIntegerField"
 
+    def contribute_to_class(self, cls, name, virtual_only=False):
+        _TRIGGERS.append(self)
+        super(TriggerVersionField, self).contribute_to_class(cls, name)
+
+    @staticmethod
+    def _wrap_save(original_save):
+        from concurrency.api import concurrency_check
+
+        def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
+            if self._concurrencymeta.enabled:
+                concurrency_check(self, force_insert, force_update, using, **kwargs)
+
+            original_save(self, force_insert, force_update, using, **kwargs)
+            #reload version
+            c = self.__class__._base_manager.get(pk=self.pk, version__gt=self.version)
+            print 222, c.version, self.version
+            setattr(self, self._concurrencymeta._field.name, get_revision_of_object(c))
+
+        return update_wrapper(inner, original_save)
+
 try:
     from south.modelsinspector import add_introspection_rules
 
     rules = [
         (
-            (IntegerVersionField, AutoIncVersionField),
+            (IntegerVersionField, AutoIncVersionField, TriggerVersionField),
             [], {"verbose_name": ["verbose_name", {"default": None}],
                  "name": ["name", {"default": None}],
                  "help_text": ["help_text", {"default": ''}],

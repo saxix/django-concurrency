@@ -121,3 +121,17 @@ Test Utilities
         concurrency_model = TestModel0
         concurrency_kwargs = {'username': 'test'}
 
+
+Recover deleted record with django-reversion
+---------------------------------------------
+
+Recovering delete record with `diango-reversion`_ produce a ``RecordModifeidError``.
+As both pk and version are present in the object, |concurrency| try to load the record (that does not exists)
+and this raises ``RecordModifedError``. To avoid this simply:
+
+.. code-block:: python
+
+    class ConcurrencyVersionAdmin(reversionlib.VersionAdmin):
+        def render_revision_form(self, request, obj, version, context, revert=False, recover=False):
+            with disable_concurrency(obj):
+                return super(ConcurrencyVersionAdmin, self).render_revision_form(request, obj, version, context, revert, recover)

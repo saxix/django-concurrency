@@ -5,7 +5,7 @@ from concurrency.api import concurrency_check
 from concurrency.fields import IntegerVersionField, AutoIncVersionField
 import logging
 
-logger = logging.getLogger('concurrency.test')
+logger = logging.getLogger(__name__)
 
 
 class AbstractConcurrentModel(models.Model):
@@ -49,6 +49,17 @@ class AutoIncConcurrentModel(models.Model):
     class Meta:
         app_label = 'concurrency'
 
+class TriggerConcurrentModel(models.Model):
+    version = TriggerVersionField(db_column='cm_version_id')
+    dummy_char = models.CharField(max_length=30, blank=True, null=True)
+
+    class Meta:
+        app_label = 'concurrency'
+        verbose_name = "TriggerConcurrentModel"
+        verbose_name_plural = "TriggerConcurrentModels"
+
+    def __unicode__(self):
+        return "{0.__class__.__name__} #{0.pk}".format(self)
 
 # class DateConcurrentModel(models.Model):
 #     version = DateTimeVersionField()
@@ -223,15 +234,4 @@ class TestModelWithCustomOptions(ConcurrentModel):
 
     class ConcurrencyMeta:
         enabled = False
-        # sanity_check = False
-
-
-class TriggeredConcurrentModel(models.Model):
-    version = TriggerVersionField(db_column='cm_version_id')
-
-    class Meta:
-        abstract = True
-        app_label = 'concurrency'
-
-
-
+        sanity_check = False

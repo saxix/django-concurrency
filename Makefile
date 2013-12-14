@@ -28,8 +28,8 @@ docs: mkbuilddir
 test:
 	demo/manage.py test concurrency -v3 --settings=${DJANGO_SETTINGS_MODULE}
 
-
 init-db:
+
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -e 'DROP DATABASE IF EXISTS concurrency;'; fi"
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then pip install MySQL-python; fi"
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS concurrency;'; fi"
@@ -51,6 +51,8 @@ ci:
 	coverage run demo/manage.py test concurrency --noinput --settings=${DJANGO_SETTINGS_MODULE} --failfast
 	#demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE} --noinput
 
+test:
+	demo/manage.py test concurrency --noinput --settings=${DJANGO_SETTINGS_MODULE} --failfast
 
 coverage: mkbuilddir
 	coverage report
@@ -62,3 +64,5 @@ clean:
 	find concurrency/locale -name django.mo | xargs rm -f
 
 .PHONY: docs test
+
+
