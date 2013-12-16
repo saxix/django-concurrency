@@ -90,3 +90,22 @@ SANITY_CHECK
 Default: ``False``
 
 Deprecated. Starting from 0.7 has no effect and will be removed in 0.8
+
+
+.. setting:: USE_SELECT_FOR_UPDATE
+
+USE_SELECT_FOR_UPDATE
+---------------------
+.. versionadded:: 0.7
+
+Default: ``True``
+
+Use :ref:`select_for_update` with ``nowait=True`` to lock the record during the update process.
+This grants the maximum level of isolation preventing other threads/workers to updates the record before/after the
+concurrency check.
+
+If you don't have high concurrency and you can live with some unwanted overwriting you can disable it,
+so the concurrency check will be performed by a standard ``filter()``, but consider that nobody can grant you that
+the record is modified **between** the check and the ``save()``
+
+

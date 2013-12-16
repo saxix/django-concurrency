@@ -1,9 +1,9 @@
 from concurrency.exceptions import RecordModifiedError
 from concurrency.tests.models import TestModelWithCustomOptions, ConcurrentModel
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 
 
-class TestCustomConcurrencyMeta(TestCase):
+class TestCustomConcurrencyMeta(TransactionTestCase):
     concurrency_model = TestModelWithCustomOptions
     concurrency_kwargs = {'username': 'test'}
 

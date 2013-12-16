@@ -26,7 +26,7 @@ docs: mkbuilddir
 	firefox ${BUILDDIR}/docs/index.html
 
 test:
-	demo/manage.py test concurrency -v3 --settings=${DJANGO_SETTINGS_MODULE}
+	demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE} -v2 --failfast
 
 
 init-db:

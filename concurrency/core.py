@@ -34,48 +34,63 @@ def _set_version(obj, version):
     """
     obj._concurrencymeta._field._set_version_value(obj, version)
 
-
 def _select_lock(model_instance, version_value=None):
     if not conf.ENABLED:
         return
+
     version_field = model_instance._concurrencymeta._field
     value = version_value or getattr(model_instance, version_field.name)
     is_versioned = value != version_field.get_default()
+
     if model_instance.pk is not None and is_versioned:
         kwargs = {'pk': model_instance.pk, version_field.name: value}
-        alias = router.db_for_write(model_instance)
-        NOWAIT = connections[alias].features.has_select_for_update_nowait
-        entry = model_instance.__class__._base_manager.select_for_update(nowait=NOWAIT).filter(**kwargs)
+        if model_instance._concurrencymeta._protocol == 1 and conf.USE_SELECT_FOR_UPDATE:
+            alias = router.db_for_write(model_instance)
+            NOWAIT = connections[alias].features.has_select_for_update_nowait
+            entry = model_instance.__class__._base_manager.select_for_update(nowait=NOWAIT).filter(**kwargs)
+        else:
+            entry = model_instance.__class__._base_manager.filter(**kwargs)
+
         if not entry:
             logger.debug("Conflict detected on `{0}` pk:`{0.pk}`, "
                          "version `{1}` not found".format(model_instance, value))
             conf._callback(model_instance)
 
 def _wrap_model_save(model, force=False):
-    if force or not model._concurrencymeta._versioned_save:
+    if hasattr(model, '_do_update') and not model._concurrencymeta._versioned_save:
+        logger.debug('Wrapping _do_update() method of %s' % model)
+        model._concurrencymeta._protocol = 2
+        old_do_update = getattr(model, '_do_update')
+        old_do_insert = getattr(model, '_do_insert')
+
+        setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
+        setattr(model, '_do_insert', model._concurrencymeta._field._wrap_do_insert(old_do_insert))
+
+    elif force or not model._concurrencymeta._versioned_save:
         logger.debug('Wrapping save method of %s' % model)
+        model._concurrencymeta._protocol = 1
         old_save = getattr(model, 'save')
-        setattr(model, 'save', _wrap_save(old_save))
-        from concurrency.api import get_version
+        setattr(model, 'save', model._concurrencymeta._field._wrap_save(old_save))
 
-        setattr(model, 'get_concurrency_version', get_version)
+    from concurrency.api import get_version
+    setattr(model, 'get_concurrency_version', get_version)
+    model._concurrencymeta._versioned_save = True
 
-        model._concurrencymeta._versioned_save = True
 
-
-def _wrap_save(func):
-    from concurrency.api import concurrency_check
-
-    def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-        if self._concurrencymeta.enabled:
-            concurrency_check(self, force_insert, force_update, using, **kwargs)
-        return func(self, force_insert, force_update, using, **kwargs)
-
-    return update_wrapper(inner, func)
+# def _wrap_save(func):
+#     from concurrency.api import concurrency_check
+#
+#     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
+#         if self._concurrencymeta.enabled:
+#             concurrency_check(self, force_insert, force_update, using, **kwargs)
+#         return func(self, force_insert, force_update, using, **kwargs)
+#
+#     return update_wrapper(inner, func)
 
 
 class ConcurrencyOptions:
     _field = None
+    _protocol = 1
     _versioned_save = False
     _manually = False
     enabled = True

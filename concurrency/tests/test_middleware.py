@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from django_webtest import WebTest
+from concurrency.config import CONCURRENCY_POLICY_CALLBACK
+import django
 import mock
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -8,6 +11,7 @@ from concurrency.forms import VersionFieldSigner
 from concurrency.middleware import ConcurrencyMiddleware
 from concurrency.tests.models import TestModel0
 from concurrency.tests.base import DjangoAdminTestCase, AdminTestCase
+from concurrency.views import conflict
 
 
 class ConcurrencyMiddlewareTest(AdminTestCase):
@@ -26,16 +30,18 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
         """
         Tests that RecordModifiedError is handled correctly.
         """
-        m, __ = TestModel0.objects.get_or_create(id=1)
-        copy = TestModel0.objects.get(pk=m.pk)
-        copy.save()
-        request = self._get_request('/')
-        r = ConcurrencyMiddleware().process_exception(request, RecordModifiedError(target=m))
-        self.assertEqual(r.status_code, 409)
+        with self.settings(CONCURRENCY_SANITY_CHECK=False):
+            m, __ = TestModel0.objects.get_or_create(id=1)
+            copy = TestModel0.objects.get(pk=m.pk)
+            copy.save()
+            request = self._get_request('/')
+            r = ConcurrencyMiddleware().process_exception(request, RecordModifiedError(target=m))
+            self.assertEqual(r.status_code, 409)
 
     def test_in_admin(self):
         middlewares = list(settings.MIDDLEWARE_CLASSES) + ['concurrency.middleware.ConcurrencyMiddleware']
-        with self.settings(MIDDLEWARE_CLASSES=middlewares):
+        with self.settings(MIDDLEWARE_CLASSES=middlewares,
+                           CONCURRENCY_SANITY_CHECK=False):
             saved, __ = TestModel0.objects.get_or_create(id=1)
 
             url = reverse('admin:concurrency_testmodel0_change', args=[saved.pk])
@@ -45,9 +51,10 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
             saved.save()  # create conflict here
 
             res = form.submit(expect_errors=True)
-            target = res.context['target']
 
             self.assertEqual(res.status_code, 409)
+
+            target = res.context['target']
             self.assertIn('target', res.context)
             self.assertIn('saved', res.context)
 
@@ -65,21 +72,23 @@ class TestFullStack(DjangoAdminTestCase):
 
     @mock.patch('django.core.signals.got_request_exception.send', mock.Mock())
     def test_stack(self):
-        m, __ = TestModel0.objects.get_or_create(username="New", last_name="1")
-        copy = TestModel0.objects.get(pk=m.pk)
-        url = reverse('admin:concurrency_testmodel0_change', args=[m.pk])
 
-        data = {'username': 'new_username',
-                'last_name': None,
-                'version': VersionFieldSigner().sign(m.version),
-                'char_field': None,
-                '_continue': 1,
-                'date_field': '2010-09-01'}
-        copy.save()
-        r = self.client.post(url, data, follow=True)
-        self.assertEqual(r.status_code, 409)
-        self.assertIn('target', r.context)
-        self.assertIn('saved', r.context)
-        self.assertEqual(r.context['saved'].version, copy.version)
-        self.assertEqual(r.context['target'].version, m.version)
-        self.assertEqual(r.context['request_path'], url)
+        with self.settings(CONCURRENCY_SANITY_CHECK=False,
+                           MIDDLEWARE_CLASSES=self.MIDDLEWARE_CLASSES):
+            m, __ = TestModel0.objects.get_or_create(username="New", last_name="1")
+            copy = TestModel0.objects.get(pk=m.pk)
+            url = reverse('admin:concurrency_testmodel0_change', args=[m.pk])
+            data = {'username': 'new_username',
+                    'last_name': None,
+                    'version': VersionFieldSigner().sign(m.version),
+                    'char_field': None,
+                    '_continue': 1,
+                    'date_field': '2010-09-01'}
+            copy.save()
+            r = self.client.post(url, data, follow=True)
+            self.assertEqual(r.status_code, 409)
+            self.assertIn('target', r.context)
+            self.assertIn('saved', r.context)
+            self.assertEqual(r.context['saved'].version, copy.version)
+            self.assertEqual(r.context['target'].version, m.version)
+            self.assertEqual(r.context['request_path'], url)

@@ -111,7 +111,7 @@ class DjangoAdminTestCase(TransactionTestCase):
             #INSTALLED_APPS=INSTALLED_APPS,
             MIDDLEWARE_CLASSES=self.MIDDLEWARE_CLASSES,
             AUTHENTICATION_BACKENDS=self.AUTHENTICATION_BACKENDS,
-            PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',), # fastest hasher
+            PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),  # fastest hasher
             STATIC_URL='/static/',
             SOUTH_TESTS_MIGRATE=False,
             TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),))
@@ -122,7 +122,9 @@ class DjangoAdminTestCase(TransactionTestCase):
         admin_register(TestModel0)
         admin_register(TestModel1, TestModel1Admin)
 
-        self.user, __ = User.objects.get_or_create(username='sax', is_staff=True,
+        self.user, __ = User.objects.get_or_create(username='sax',
+                                                   is_active=True,
+                                                   is_staff=True,
                                                    is_superuser=True)
         self.user.set_password('123')
         self.user.save()

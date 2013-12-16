@@ -12,6 +12,7 @@ class TestPolicy(AdminTestCase):
         callback = Mock()
 
         with self.settings(CONCURRENCY_POLICY=CONCURRENCY_POLICY_CALLBACK,
+                           CONCURRENCY_SANITY_CHECK=False,
                            CONCURRENCY_CALLBACK=callback):
             obj1, __ = TestModel0.objects.get_or_create(username='123')
             obj2 = TestModel0.objects.get(username='123')

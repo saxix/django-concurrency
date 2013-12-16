@@ -9,7 +9,7 @@ import time
 import datetime
 from django.contrib.auth.models import User
 from django.forms.models import modelform_factory
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 from concurrency.api import RecordModifiedError
 from concurrency.api import apply_concurrency_check
 from concurrency.fields import IntegerVersionField
@@ -30,7 +30,7 @@ __all__ = ['ConcurrencyTest0', 'AutoIncConcurrencyTest', 'ConcurrencyTest1',
            'TestIssue3', 'TestAbstractModelWithCustomSave']
 
 
-class ConcurrencyTest0(ConcurrencyTestMixin, TestCase):
+class ConcurrencyTest0(ConcurrencyTestMixin, TransactionTestCase):
     concurrency_model = TestModel0
     concurrency_kwargs = {'username': 'test'}
 
@@ -325,6 +325,14 @@ class ConcurrencyTestExistingModelUser(ConcurrencyTest0):
     concurrency_model = User
     concurrency_kwargs = {'username': 'test'}
     apply_concurrency_check(User, 'version', IntegerVersionField)
+
+    @classmethod
+    def setUpClass(cls):
+        super(ConcurrencyTestExistingModelUser, cls).setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        super(ConcurrencyTestExistingModelUser, cls).tearDownClass()
 
     def setUp(self):
         super(ConcurrencyTestExistingModelUser, self).setUp()

@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.template.base import TemplateDoesNotExist, Template
 from django.template.context import RequestContext
+from concurrency.exceptions import RecordModifiedError
 
 from concurrency.exceptions import RecordModifiedError
 

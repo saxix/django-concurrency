@@ -51,6 +51,7 @@ class AppSettings(object):
         'FIELD_SIGNER': 'concurrency.forms.VersionFieldSigner',
         'POLICY': CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
         'CALLBACK': 'concurrency.views.callback',
+        'USE_SELECT_FOR_UPDATE': True,
         'HANDLER409': 'concurrency.views.conflict'}
 
     def __init__(self, prefix):

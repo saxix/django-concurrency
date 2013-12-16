@@ -8,12 +8,12 @@ Django Concurrency
 Overview
 ========
 
-.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
-   :target: http://travis-ci.org/saxix/django-concurrency/
+.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=develop
+   :target: https://travis-ci.org/saxix/django-concurrency.png?branch=develop
 
 
-.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=master
-  :target: https://coveralls.io/r/saxix/django-concurrency?branch=master
+.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=develop
+  :target: https://coveralls.io/r/saxix/django-concurrency?branch=develop
 
 
 django-concurrency is an optimistic locking library for Django Models
@@ -44,12 +44,20 @@ Todo
 How it works
 ============
 
-|concurrency| works using a version field added to each model, each time a record is saved
-the version number changes (the algorithm used depends on the VersionField used,
+|concurrency| works adding a :ref:`VersionField` to each model, each time a record is saved
+the version number changes (the algorithm used depends on the :ref:`VersionField` used,
 (see :ref:`fields`).
 
 When a record is saved, |concurrency| tries to get a lock on the record based on the old revision
-number, if the record is not found a :ref:`RecordModifiedError` is raised
+number, if the record is not found a :ref:`RecordModifiedError` is raised.
+The lock is obtained using ``SELECT FOR UPDATE`` and it's requirend
+to prevent other updates during the internal django ``save()`` execution.
+The standard implementation of 'optimistic-lock` pattern requires a SQL clause like ::
+
+    UPDATE mymodel ... WHERE id = %s AND version = %s
+
+but this is impossible without change the internal django save(). As work around  |concurrency| lock the record based
+on the version number and updates that later. See :setting:`USE_SELECT_FOR_UPDATE`
 
 
 Table Of Contents

@@ -3,7 +3,7 @@ from django.forms.models import modelform_factory
 from django.forms.widgets import HiddenInput, TextInput
 from django.utils.encoding import smart_str
 from django.test import TestCase
-from concurrency.exceptions import VersionError
+from concurrency.exceptions import VersionError, RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionField, VersionFieldSigner, VersionWidget
 from concurrency.tests.models import TestModel0, TestIssue3Model
 from django.test.testcases import SimpleTestCase
@@ -110,6 +110,7 @@ class ConcurrentFormTest(TestCase):
 
     def test_save(self):
         obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
+
         obj_copy = TestIssue3Model.objects.get(pk=obj.pk)
         Form = modelform_factory(TestIssue3Model, ConcurrentForm,
                                  fields=('username', 'last_name', 'date_field',
@@ -123,6 +124,7 @@ class ConcurrentFormTest(TestCase):
                 'revision': VersionFieldSigner().sign(obj.revision)}
         form = Form(data, instance=obj)
         obj_copy.save()  # save
+
         self.assertFalse(form.is_valid())
         self.assertIn(_('Record Modified'), form.non_field_errors())
 
