@@ -18,13 +18,12 @@ default values.
 
 CALLBACK
 ------------------------
-.. versionadded:: 0.6
+.. versionchanged:: 0.7
 
-Default: None
+Default: ``concurrency.views.callback``
 
-Custom callable to handle conflicts
-
-.. seealso:: :setting:`CONCURRENCY_POLICY`
+Handler invoked used to manage concurrent editing. The default implementation
+simply raise :ref:`RecordModifiedError`
 
 
 
@@ -61,17 +60,9 @@ is going to be saved (``target``) and the same object as stored in the database 
 
 POLICY
 -------------------------------
-.. versionadded:: 0.6
+.. versionchanged:: 0.7
 
-Default: ``CONCURRENCY_POLICY_RAISE & CONCURRENCY_LIST_EDITABLE_POLICY_SILENT``
-
-``CONCURRENCY_POLICY_RAISE``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Default behaviour. Raises :ref:`RecordModifiedError` as detects a conflict.
-
-``CONCURRENCY_POLICY_CALLBACK``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Demand the conflict management to the callable defined in :setting:`CONCURRENCY_CALLBACK`
+Default: ``CONCURRENCY_LIST_EDITABLE_POLICY_SILENT``
 
 .. _list_editable_policies:
 
@@ -94,16 +85,8 @@ Stop at the first conflict and raise :ref:`recordmodifiederror`. Note that if yo
 
 SANITY_CHECK
 -----------------------
-.. versionadded:: 0.4
 .. versionchanged:: 0.7
 
 Default: ``False``
 
-.. warning:: Deprecated. Starting from 0.7 has no effect and will be removed in 0.8
-
-If you wand to disable the check raised when you try to save an object with a revision number set
-but without pk (this should not happen) you can set ``CONCURRECY_SANITY_CHECK=False`` in your settings.
-
-This is useful if you have some existing test code that uses factories which create a random number thus
-preventing the sanity check from passing
-
+Deprecated. Starting from 0.7 has no effect and will be removed in 0.8

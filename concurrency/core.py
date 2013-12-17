@@ -47,12 +47,7 @@ def _select_lock(model_instance, version_value=None):
         if not entry:
             logger.debug("Conflict detected on `{0}` pk:`{0.pk}`, "
                          "version `{1}` not found".format(model_instance, value))
-            if conf.POLICY & CONCURRENCY_POLICY_CALLBACK:
-                conf._callback(model_instance)
-            else:
-                raise RecordModifiedError(_('Record has been modified or no version value passed'),
-                                          target=model_instance)
-
+            conf._callback(model_instance)
 
 def _wrap_model_save(model, force=False):
     if force or not model._concurrencymeta._versioned_save:
