@@ -21,7 +21,6 @@ def class_prepared_concurrency_handler(sender, **kwargs):
 
         if hasattr(sender, 'ConcurrencyMeta'):
             sender._concurrencymeta.enabled = getattr(sender.ConcurrencyMeta, 'enabled')
-            sender._concurrencymeta.sanity_check = getattr(sender.ConcurrencyMeta, 'sanity_check')
 
         if not (sender._concurrencymeta._manually):
             _wrap_model_save(sender)
@@ -68,7 +67,7 @@ class VersionField(Field):
         kwargs['widget'] = forms.VersionField.widget
         return super(VersionField, self).formfield(**kwargs)
 
-    def contribute_to_class(self, cls, name):
+    def contribute_to_class(self, cls, name, virtual_only=False):
         super(VersionField, self).contribute_to_class(cls, name)
         if hasattr(cls, '_concurrencymeta'):
             return

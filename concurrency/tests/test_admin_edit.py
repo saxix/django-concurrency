@@ -38,6 +38,7 @@ class TestConcurrentModelAdmin(AdminTestCase):
         target.save()  # create conflict here
 
         res = form.submit()
+
         self.assertIn('original', res.context)
         self.assertTrue(res.context['adminform'].form.errors,
                         res.context['adminform'].form.errors)

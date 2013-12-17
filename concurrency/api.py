@@ -97,17 +97,6 @@ def concurrency_check(model_instance, force_insert=False, force_update=False, us
 
 
 @contextmanager
-def disable_sanity_check(model):
-    """
-        temporary disable sanity check for passed model
-    :param model:
-    """
-    old_value, model._concurrencymeta.sanity_check = model._concurrencymeta.sanity_check, False
-    yield
-    model._concurrencymeta.sanity_check = old_value
-
-
-@contextmanager
 def disable_concurrency(model):
     """
         temporary disable concurrency check for passed model

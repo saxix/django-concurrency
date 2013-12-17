@@ -21,9 +21,6 @@ class TestCustomConcurrencyMeta(TestCase):
     def test_enabled(self):
         assert not self.TARGET._concurrencymeta.enabled
 
-    def test_sanity_check(self):
-        assert not self.TARGET._concurrencymeta.sanity_check
-
     def test_meta_inheritance(self):
         # TestModelWithCustomOptions extends ConcurrentModel
         # but we disabled concurrency only in TestModelWithCustomOptions
