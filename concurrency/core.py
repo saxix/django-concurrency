@@ -4,7 +4,7 @@ from functools import update_wrapper
 from django.db import connections, router
 from django.utils.translation import ugettext as _
 from concurrency.config import conf, CONCURRENCY_POLICY_CALLBACK
-from concurrency.exceptions import RecordModifiedError, InconsistencyError
+from concurrency.exceptions import RecordModifiedError
 
 # Set default logging handler to avoid "No handler found" warnings.
 try:  # Python 2.7+
@@ -43,9 +43,7 @@ def _select_lock(model_instance, version_value=None):
     is_versioned = value != version_field.get_default()
     if model_instance.pk is not None and is_versioned:
         kwargs = {'pk': model_instance.pk, version_field.name: value}
-        alias = router.db_for_write(model_instance)
-        NOWAIT = connections[alias].features.has_select_for_update_nowait
-        entry = model_instance.__class__._base_manager.select_for_update(nowait=NOWAIT).filter(**kwargs)
+        entry = model_instance.__class__._base_manager.select_for_update(nowait=True).filter(**kwargs)
         if not entry:
             logger.debug("Conflict detected on `{0}` pk:`{0.pk}`, "
                          "version `{1}` not found".format(model_instance, value))
@@ -54,9 +52,6 @@ def _select_lock(model_instance, version_value=None):
             else:
                 raise RecordModifiedError(_('Record has been modified or no version value passed'),
                                           target=model_instance)
-
-    elif is_versioned and conf.SANITY_CHECK and model_instance._concurrencymeta.sanity_check:
-        raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.') % value)
 
 
 def _wrap_model_save(model, force=False):
@@ -86,5 +81,4 @@ class ConcurrencyOptions:
     _field = None
     _versioned_save = False
     _manually = False
-    sanity_check = conf.SANITY_CHECK
     enabled = True

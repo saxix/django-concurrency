@@ -223,4 +223,4 @@ class TestModelWithCustomOptions(ConcurrentModel):
 
     class ConcurrencyMeta:
         enabled = False
-        sanity_check = False
+        # sanity_check = False

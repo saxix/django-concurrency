@@ -95,8 +95,11 @@ Stop at the first conflict and raise :ref:`recordmodifiederror`. Note that if yo
 SANITY_CHECK
 -----------------------
 .. versionadded:: 0.4
+.. versionchanged:: 0.7
 
-Default: ``True``
+Default: ``False``
+
+.. warning:: Deprecated. Starting from 0.7 has no effect and will be removed in 0.8
 
 If you wand to disable the check raised when you try to save an object with a revision number set
 but without pk (this should not happen) you can set ``CONCURRECY_SANITY_CHECK=False`` in your settings.

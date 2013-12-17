@@ -1,7 +1,6 @@
 from concurrency.tests.test_all import *  # NOQA
 from concurrency.tests.test_forms import WidgetTest, FormFieldTest, ConcurrentFormTest  # NOQA
 from concurrency.tests.test_middleware import ConcurrencyMiddlewareTest, TestFullStack  # NOQA
-from concurrency.tests.test_conf import SettingsTest  # NOQA
 from concurrency.tests.test_api import ConcurrencyTestApi  # NOQA
 from concurrency.tests.test_policy import TestPolicy  # NOQA
 
