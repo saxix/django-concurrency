@@ -8,8 +8,8 @@ from django.utils.importlib import import_module
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from concurrency.config import conf
-from concurrency.core import _select_lock, RecordModifiedError
-from concurrency.exceptions import VersionError, InconsistencyError
+from concurrency.core import _select_lock
+from concurrency.exceptions import VersionError, RecordModifiedError
 
 
 class ConcurrentForm(ModelForm):
@@ -19,16 +19,10 @@ class ConcurrentForm(ModelForm):
         is good to catch RecordModifiedError in the view too.
     """
 
-    def clean22(self):
+    def clean(self):
         try:
-            version_field = self.instance._concurrencymeta._field
-            value = self.cleaned_data[self.instance._concurrencymeta._field.name]
-            is_versioned = value != version_field.get_default()
-
             if self.instance.pk:
                 _select_lock(self.instance, self.cleaned_data[self.instance._concurrencymeta._field.name])
-            elif is_versioned and conf.SANITY_CHECK and self.instance._concurrencymeta.sanity_check:
-                raise InconsistencyError(_('Version field is set (%s) but record has not `pk`.') % value)
 
         except RecordModifiedError:
             if django.VERSION[1] >= 6:

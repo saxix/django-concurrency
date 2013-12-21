@@ -2,11 +2,10 @@ import os
 
 DEBUG = True
 STATIC_URL = '/static/'
-AUTHENTICATION_BACKENDS = ('demoproject.backends.AnyUserBackend',)
 
 SITE_ID = 1
-ROOT_URLCONF = 'demoproject.urls'
-SECRET_KEY = ';klkj;okj;lkn;lklj;lkj;kjmlliuewhy2ioqwjdkh'
+ROOT_URLCONF = 'tests.urls'
+SECRET_KEY = 'abc'
 
 INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.contenttypes',
@@ -16,16 +15,9 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.staticfiles',
                   'django.contrib.admin',
                   'concurrency',
-                  'demoproject.demoapp']
+                  'tests']
 
-try:
-    import import_export  # NOQA
-
-    INSTALLED_APPS.append('import_export')
-except ImportError:
-    pass
-
-TEMPLATE_DIRS = ['demoproject/templates']
+TEMPLATE_DIRS = ['tests/templates']
 
 LOGGING = {
     'version': 1,

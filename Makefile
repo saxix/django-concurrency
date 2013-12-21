@@ -26,7 +26,7 @@ docs: mkbuilddir
 	firefox ${BUILDDIR}/docs/index.html
 
 test:
-	demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE} -v2 --failfast
+	demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE} -v2
 
 
 init-db:
@@ -48,13 +48,15 @@ ci:
 	@python -c "from __future__ import print_function;import django;print('Django version:', django.get_version())"
 	@echo "Database:" ${DBENGINE}
 
-	coverage run demo/manage.py test concurrency --noinput --settings=${DJANGO_SETTINGS_MODULE} --failfast
-	#demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE} --noinput
+	DISABLE_SELENIUM=1 $(MAKE) coverage
 
+
+locale:
+	cd concurrency && django-admin.py makemessages -l en
+	export PYTHONPATH=${PYTHONPATH} && cd concurrency && django-admin.py compilemessages --settings=${DJANGO_SETTINGS_MODULE}
 
 coverage: mkbuilddir
-	coverage report
-	coverage html
+	py.test --cov=concurrency --cov-report=html --cov-report=term --cov-config=.coveragerc -vvv
 
 clean:
 	rm -fr ${BUILDDIR} dist *.egg-info .coverage

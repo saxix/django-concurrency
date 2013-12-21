@@ -5,6 +5,7 @@ include =
 
 omit = concurrency/__init__.py
        concurrency/tests/settings.py
+       concurrency/__tests/*
 
 [report]
 # Regexes for lines to exclude from consideration

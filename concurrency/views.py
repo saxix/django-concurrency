@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from django.utils.translation import ugettext as _
 from django.http import HttpResponse
 from django.template import loader
@@ -6,17 +7,16 @@ from django.template.base import TemplateDoesNotExist, Template
 from django.template.context import RequestContext
 from concurrency.exceptions import RecordModifiedError
 
-from concurrency.exceptions import RecordModifiedError
 
 class ConflictResponse(HttpResponse):
     status_code = 409
+
 
 handler409 = 'concurrency.views.conflict'
 
 
 def callback(target, *args, **kwargs):
-    raise RecordModifiedError(_('Record has been modified or no version value passed'),
-                                          target=target)
+    raise RecordModifiedError(_('Record has been modified'), target=target)
 
 
 def conflict(request, target=None, template_name='409.html'):

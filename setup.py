@@ -19,7 +19,6 @@ setup(
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
     packages=["concurrency",
-              "concurrency.tests",
               "concurrency.templatetags"
     ],
     include_package_data=True,

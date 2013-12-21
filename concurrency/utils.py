@@ -5,7 +5,6 @@ import warnings
 from concurrency.exceptions import RecordModifiedError
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 def deprecated(replacement=None, version=None):
@@ -36,6 +35,7 @@ def deprecated(replacement=None, version=None):
     0
     >>>
     """
+
     def outer(oldfun):  # pragma: no cover
         def inner(*args, **kwargs):
             msg = "%s is deprecated" % oldfun.__name__
@@ -48,7 +48,9 @@ def deprecated(replacement=None, version=None):
                 return replacement(*args, **kwargs)
             else:
                 return oldfun(*args, **kwargs)
+
         return inner
+
     return outer
 
 
@@ -80,6 +82,7 @@ class ConcurrencyTestMixin(object):
 
     def test_concurrency_conflict(self):
         import concurrency.api as api
+
         target = self._get_concurrency_target()
         target_copy = self._get_concurrency_target()
         v1 = api.get_revision_of_object(target)
@@ -91,6 +94,7 @@ class ConcurrencyTestMixin(object):
 
     def test_concurrency_safety(self):
         import concurrency.api as api
+
         target = self.concurrency_model()
         version = api.get_revision_of_object(target)
         self.assertFalse(bool(version), "version is not null %s" % version)
@@ -108,26 +112,3 @@ class ConcurrencyTestMixin(object):
 
 class ConcurrencyAdminTestMixin(object):
     pass
-
-
-# def import_by_path(dotted_path, error_prefix=''):
-#     """
-#     Import a dotted module path and return the attribute/class designated by the
-#     last name in the path. Raise ImproperlyConfigured if something goes wrong.
-#     """
-#     try:
-#         module_path, class_name = dotted_path.rsplit('.', 1)
-#     except ValueError:
-#         raise ImproperlyConfigured("%s%s doesn't look like a module path" % (
-#             error_prefix, dotted_path))
-#     try:
-#         module = import_module(module_path)
-#     except ImportError as e:
-#         raise ImproperlyConfigured('%sError importing module %s: "%s"' % (
-#             error_prefix, module_path, e))
-#     try:
-#         attr = getattr(module, class_name)
-#     except AttributeError:
-#         raise ImproperlyConfigured('%sModule "%s" does not define a "%s" attribute/class' % (
-#             error_prefix, module_path, class_name))
-#     return attr

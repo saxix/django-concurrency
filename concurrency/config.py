@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 import warnings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import get_callable
+from django.db.models import Model
 from django.utils import six
 from django.test.signals import setting_changed
 
@@ -48,6 +49,7 @@ class AppSettings(object):
     defaults = {
         'ENABLED': True,
         'SANITY_CHECK': False,
+        'PROTOCOL': 1,
         'FIELD_SIGNER': 'concurrency.forms.VersionFieldSigner',
         'POLICY': CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
         'CALLBACK': 'concurrency.views.callback',
@@ -61,8 +63,12 @@ class AppSettings(object):
         """
         self.prefix = prefix
         from django.conf import settings
+
         if hasattr(settings, 'CONCURRENCY_SANITY_CHECK'):
-            warnings.warn('Starting from concurrency 0.7 `CONCURRENCY_SANITY_CHECK` has no effect and will be removed in 0.8')
+            warnings.warn(
+                'Starting from concurrency 0.7 `CONCURRENCY_SANITY_CHECK` has no effect and will be removed in 0.8')
+        if hasattr(Model, '_do_update'):
+            self.defaults['PROTOCOL'] = 2
 
         for name, default in self.defaults.items():
             if name != 'SANITY_CHECK':
