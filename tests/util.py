@@ -52,4 +52,4 @@ with_all_models = partial(models_parametrize, SimpleConcurrentModel, AutoIncConc
                           ProxyModel, InheritedModel,
                           CustomSaveModel, ConcreteModel)()
 
-# with_all_models = partial(models_parametrize, InheritedModel)()
+with_all_models = partial(models_parametrize, ConcreteModel)()

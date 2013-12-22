@@ -2,7 +2,7 @@
 from django.test.utils import override_settings
 import mock
 from django.http import HttpRequest
-from concurrency.core import RecordModifiedError
+from concurrency.exceptions import RecordModifiedError
 from concurrency.middleware import ConcurrencyMiddleware
 from tests.models import SimpleConcurrentModel
 

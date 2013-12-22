@@ -80,7 +80,7 @@ class TestAdminEdit(AdminTestCase):
         #test no other errors are raised
         res = form.submit()
         self.assertEqual(res.status_code, 200)
-        self.assertContains(res, "SimpleModel with this Username already exists.")
+        self.assertContains(res, "SimpleConcurrentModel with this Username already exists.")
 
     def test_standard_update(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')

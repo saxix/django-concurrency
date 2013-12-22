@@ -15,8 +15,8 @@ class SimpleConcurrentModel(models.Model):
 
     class Meta:
         app_label = 'concurrency'
-        verbose_name = "SimpleModel"
-        verbose_name_plural = "SimpleModels"
+        verbose_name = "SimpleConcurrentModel"
+        verbose_name_plural = "SimpleConcurrentModels"
 
     def __unicode__(self):
         return "{0.__class__.__name__} #{0.pk}".format(self)
@@ -40,6 +40,8 @@ class ProxyModel(SimpleConcurrentModel):
     class Meta:
         app_label = 'concurrency'
         proxy = True
+        verbose_name = "ProxyModel"
+        verbose_name_plural = "ProxyModels"
 
 
 class InheritedModel(SimpleConcurrentModel):
@@ -125,7 +127,7 @@ class ListEditableConcurrentModel(SimpleConcurrentModel):
     class Meta:
         app_label = 'concurrency'
         proxy = True
-        verbose_name = "ListEditable-ConcurrentModel"
+        verbose_name = "ListEditableConcurrentModel"
         verbose_name_plural = "ListEditableConcurrentModels"
 
 

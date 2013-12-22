@@ -6,6 +6,7 @@ from concurrency import forms
 from concurrency.admin import ConcurrentModelAdmin
 from concurrency.forms import ConcurrentForm, VersionWidget
 from tests.models import *  # noqa
+from tests.models import NoActionsConcurrentModel, ListEditableConcurrentModel
 
 
 class SimpleModelAdmin(admin.ModelAdmin):
@@ -18,7 +19,7 @@ class SimpleModelAdmin(admin.ModelAdmin):
 
 
 class ListEditableModelAdmin(ConcurrentModelAdmin):
-    list_display = ('__unicode__', 'version')
+    list_display = ('__unicode__', 'version', 'username')
     list_editable = ('username', )
     ordering = ('id', )
 
@@ -32,12 +33,12 @@ class NoActionsModelAdmin(ConcurrentModelAdmin):
 
 class ActionsModelAdmin(ConcurrentModelAdmin):
     list_display = ('__unicode__', 'version', 'username')
-    actions = ['username']
+    actions = ['dummy_action']
     ordering = ('id', )
 
     def dummy_action(self, request, queryset):
         for el in queryset:
-            el.dummy_char = '**action_update**'
+            el.username = '**action_update**'
             el.save()
 
 
@@ -49,7 +50,8 @@ def admin_register(model, modeladmin=ConcurrentModelAdmin):
     admin.site.register(model, modeladmin)
 
 
-admin_register(SimpleConcurrentModel, SimpleModelAdmin)
+admin_register(SimpleConcurrentModel, ActionsModelAdmin)
 admin_register(ProxyModel, ListEditableModelAdmin)
 admin_register(InheritedModel, ActionsModelAdmin)
-admin_register(CustomSaveModel, NoActionsModelAdmin)
+admin_register(NoActionsConcurrentModel, NoActionsModelAdmin)
+admin_register(ListEditableConcurrentModel, ActionsModelAdmin)

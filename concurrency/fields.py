@@ -55,7 +55,7 @@ class VersionField(Field):
                                            db_tablespace=db_tablespace, db_column=db_column)
 
     def get_default(self):
-        return 1
+        return 0
 
     def to_python(self, value):
         return int(value)
@@ -95,8 +95,8 @@ class VersionField(Field):
             version_field = model_instance._concurrencymeta._field
             old_version = get_revision_of_object(model_instance)
 
-            if version_field.model is not base_qs.model:
-                return func(model_instance, base_qs, using, pk_val, values, update_fields, forced_update)
+            # if version_field.model is not base_qs.model:
+            #     return func(model_instance, base_qs, using, pk_val, values, update_fields, forced_update)
 
             for i, (field, _1, value) in enumerate(values):
                 if field == version_field:
