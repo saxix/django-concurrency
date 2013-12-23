@@ -1,11 +1,15 @@
-import os
-from django.test import TransactionTestCase, TestCase
-import django.core.management
-from django.conf import global_settings
+from django.test import TransactionTestCase
 from django.contrib.auth.models import User
 from django_webtest import WebTestMixin
+from tests.admin import admin_register_models
 
 SENTINEL = '**concurrent_update**'
+
+from concurrency.api import apply_concurrency_check
+from django.contrib.auth.models import Permission
+from concurrency.fields import IntegerVersionField
+
+apply_concurrency_check(Permission, 'version', IntegerVersionField)
 
 
 class AdminTestCase(WebTestMixin, TransactionTestCase):
@@ -18,6 +22,8 @@ class AdminTestCase(WebTestMixin, TransactionTestCase):
                                                    is_active=True,
                                                    email='sax@example.com',
                                                    username='sax')
+
+        admin_register_models()
 
 
 # class DjangoAdminTestCase(TransactionTestCase):

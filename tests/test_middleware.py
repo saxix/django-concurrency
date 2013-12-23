@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
+from django.contrib.admin.sites import site
+from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 import mock
 from django.http import HttpRequest
+from concurrency.admin import ConcurrentModelAdmin
+from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
 from concurrency.exceptions import RecordModifiedError
 from concurrency.middleware import ConcurrencyMiddleware
+from tests.base import AdminTestCase
 from tests.models import SimpleConcurrentModel
+from tests.util import attributes, DELETE_ATTRIBUTE
 
 
 def _get_request(path):
@@ -26,53 +33,57 @@ def test_middleware():
         r = ConcurrencyMiddleware().process_exception(request, RecordModifiedError(target=SimpleConcurrentModel()))
     assert r.status_code == 409
 
-#
-# class ConcurrencyMiddlewareTest(AdminTestCase):
-#
-#     def _get_request(self, path):
-#         request = HttpRequest()
-#         request.META = {
-#             'SERVER_NAME': 'testserver',
-#             'SERVER_PORT': 80,
-#         }
-#         request.path = request.path_info = "/middleware/%s" % path
-#         return request
-#
-#     @mock.patch('django.core.signals.got_request_exception.send', mock.Mock())
-#     def test_process_exception(self):
-#         """
-#         Tests that RecordModifiedError is handled correctly.
-#         """
-#         m, __ = TestModel0.objects.get_or_create(id=1)
-#         copy = TestModel0.objects.get(pk=m.pk)
-#         copy.save()
-#         request = self._get_request('/')
-#         r = ConcurrencyMiddleware().process_exception(request, RecordModifiedError(target=m))
-#         self.assertEqual(r.status_code, 409)
-#
-    # def test_in_admin(self):
-    #     middlewares = list(settings.MIDDLEWARE_CLASSES) + ['concurrency.middleware.ConcurrencyMiddleware']
-    #     with self.settings(MIDDLEWARE_CLASSES=middlewares):
-#             saved, __ = TestModel0.objects.get_or_create(id=1)
-#
-#             url = reverse('admin:concurrency_testmodel0_change', args=[saved.pk])
-#             res = self.app.get(url, user='sax')
-#             form = res.form
-#
-#             saved.save()  # create conflict here
-#
-#             res = form.submit(expect_errors=True)
-#
-#             self.assertEqual(res.status_code, 409)
-#
-#             target = res.context['target']
-#             self.assertIn('target', res.context)
-#             self.assertIn('saved', res.context)
-#
-#             self.assertEqual(res.context['target'].version, target.version)
-#             self.assertEqual(res.context['saved'].version, saved.version)
-#             self.assertEqual(res.context['request_path'], url)
-#
+
+class ConcurrencyMiddlewareTest(AdminTestCase):
+    def _get_request(self, path):
+        request = HttpRequest()
+        request.META = {
+            'SERVER_NAME': 'testserver',
+            'SERVER_PORT': 80,
+        }
+        request.path = request.path_info = "/middleware/%s" % path
+        return request
+
+    @mock.patch('django.core.signals.got_request_exception.send', mock.Mock())
+    def test_process_exception(self):
+        """
+        Tests that RecordModifiedError is handled correctly.
+        """
+        m, __ = SimpleConcurrentModel.objects.get_or_create(id=1)
+        copy = SimpleConcurrentModel.objects.get(pk=m.pk)
+        copy.save()
+        request = self._get_request('/')
+        r = ConcurrencyMiddleware().process_exception(request, RecordModifiedError(target=m))
+        self.assertEqual(r.status_code, 409)
+
+    def test_in_admin(self):
+        middlewares = list(settings.MIDDLEWARE_CLASSES) + ['concurrency.middleware.ConcurrencyMiddleware']
+        model_admin = site._registry[SimpleConcurrentModel]
+
+        with attributes((model_admin.__class__, 'list_editable_policy', CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL),
+                        (ConcurrentModelAdmin, 'form', DELETE_ATTRIBUTE)):
+
+            with self.settings(MIDDLEWARE_CLASSES=middlewares):
+                saved, __ = SimpleConcurrentModel.objects.get_or_create(id=1)
+
+                url = reverse('admin:concurrency_simpleconcurrentmodel_change', args=[saved.pk])
+                res = self.app.get(url, user='sax')
+                form = res.form
+
+                saved.save()  # create conflict here
+
+                res = form.submit(expect_errors=True)
+
+                self.assertEqual(res.status_code, 409)
+
+                target = res.context['target']
+                self.assertIn('target', res.context)
+                self.assertIn('saved', res.context)
+
+                self.assertEqual(res.context['target'].version, target.version)
+                self.assertEqual(res.context['saved'].version, saved.version)
+                self.assertEqual(res.context['request_path'], url)
+
 #
 # class TestFullStack(DjangoAdminTestCase):
 #     MIDDLEWARE_CLASSES = ('django.middleware.common.CommonMiddleware',

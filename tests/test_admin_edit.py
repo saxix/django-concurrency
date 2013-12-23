@@ -49,9 +49,6 @@ class TestConcurrentModelAdmin(AdminTestCase):
 
 
 class TestAdminEdit(AdminTestCase):
-    # def setUp(self):
-    #     super(TestAdminEdit, self).setUp()
-    #     admin_register(TestModel0)
 
     def _create_conflict(self, pk):
         u = SimpleConcurrentModel.objects.get(pk=pk)

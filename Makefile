@@ -63,4 +63,7 @@ clean:
 	find . -name __pycache__ -o -name "*.py?" -o -name "*.orig" -prune | xargs rm -rf
 	find concurrency/locale -name django.mo | xargs rm -f
 
+clonedigger: mkbuilddir
+	-clonedigger concurrency -l python -o ${BUILDDIR}/clonedigger.html --fast
+
 .PHONY: docs test

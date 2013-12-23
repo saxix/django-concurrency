@@ -25,10 +25,10 @@ class ConcurrentForm(ModelForm):
                 _select_lock(self.instance, self.cleaned_data[self.instance._concurrencymeta._field.name])
 
         except RecordModifiedError:
-            if django.VERSION[1] >= 6:
-                self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])}))
-            else:
+            if django.VERSION[1] < 6:
                 self._update_errors({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])})
+            else:
+                self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])}))
 
         return super(ConcurrentForm, self).clean()
 

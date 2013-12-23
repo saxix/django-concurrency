@@ -1,10 +1,8 @@
 from django.core.exceptions import ImproperlyConfigured
-from django.db import transaction
 import pytest
 from django.contrib.auth.models import Permission
 from concurrency.api import (get_revision_of_object, is_changed, get_version,
                              apply_concurrency_check, disable_concurrency)
-from concurrency.exceptions import RecordModifiedError
 from concurrency.fields import IntegerVersionField
 from tests.models import SimpleConcurrentModel
 from tests.util import refetch, text
@@ -42,6 +40,7 @@ def test_apply_concurrency_check(model_class=SimpleConcurrentModel):
         apply_concurrency_check(Permission, 'version', IntegerVersionField)
     except ImproperlyConfigured:
         pass
+
 
 @pytest.mark.django_db(transaction=False)
 def test_disable_concurrency(model_class=SimpleConcurrentModel):

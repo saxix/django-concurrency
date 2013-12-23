@@ -57,6 +57,9 @@ class VersionField(Field):
     def get_default(self):
         return 0
 
+    def get_internal_type(self):
+        return "BigIntegerField"
+
     def to_python(self, value):
         return int(value)
 
@@ -80,6 +83,27 @@ class VersionField(Field):
     def _set_version_value(self, model_instance, value):
         setattr(model_instance, self.attname, int(value))
 
+    def pre_save(self, model_instance, add):
+        if conf.PROTOCOL >= 2:
+            if add:
+                value = self._get_next_version(model_instance)
+                self._set_version_value(model_instance, value)
+            return getattr(model_instance, self.attname)
+        value = self._get_next_version(model_instance)
+        self._set_version_value(model_instance, value)
+        return value
+
+    @staticmethod
+    def _wrap_save(func):
+        from concurrency.api import concurrency_check
+
+        def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
+            if self._concurrencymeta.enabled:
+                concurrency_check(self, force_insert, force_update, using, **kwargs)
+            return func(self, force_insert, force_update, using, **kwargs)
+
+        return update_wrapper(inner, func)
+
     def _wrap_save_base(self, func):
         def _save_base(model_instance, raw=False, force_insert=False,
                        force_update=False, using=None, update_fields=None):
@@ -95,8 +119,9 @@ class VersionField(Field):
             version_field = model_instance._concurrencymeta._field
             old_version = get_revision_of_object(model_instance)
 
-            # if version_field.model is not base_qs.model:
-            #     return func(model_instance, base_qs, using, pk_val, values, update_fields, forced_update)
+            if not version_field.model._meta.abstract:
+                if version_field.model is not base_qs.model:
+                    return func(model_instance, base_qs, using, pk_val, values, update_fields, forced_update)
 
             for i, (field, _1, value) in enumerate(values):
                 if field == version_field:
@@ -133,34 +158,34 @@ class IntegerVersionField(VersionField):
     """
     form_class = forms.VersionField
 
-    def get_internal_type(self):
-        return "BigIntegerField"
+    # def get_internal_type(self):
+    #     return "BigIntegerField"
 
     def _get_next_version(self, model_instance):
         old_value = getattr(model_instance, self.attname, 0)
         return max(int(old_value) + 1, (int(time.time() * 1000000) - OFFSET))
 
-    def pre_save(self, model_instance, add):
-        if conf.PROTOCOL >= 2:
-            if add:
-                value = self._get_next_version(model_instance)
-                self._set_version_value(model_instance, value)
-            return getattr(model_instance, self.attname)
+    # def pre_save(self, model_instance, add):
+    #     if conf.PROTOCOL >= 2:
+    #         if add:
+    #             value = self._get_next_version(model_instance)
+    #             self._set_version_value(model_instance, value)
+    #         return getattr(model_instance, self.attname)
+    #
+    #     value = self._get_next_version(model_instance)
+    #     self._set_version_value(model_instance, value)
+    #     return value
 
-        value = self._get_next_version(model_instance)
-        self._set_version_value(model_instance, value)
-        return value
-
-    @staticmethod
-    def _wrap_save(func):
-        from concurrency.api import concurrency_check
-
-        def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-            if self._concurrencymeta.enabled:
-                concurrency_check(self, force_insert, force_update, using, **kwargs)
-            return func(self, force_insert, force_update, using, **kwargs)
-
-        return update_wrapper(inner, func)
+    # @staticmethod
+    # def _wrap_save(func):
+    #     from concurrency.api import concurrency_check
+    #
+    #     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
+    #         if self._concurrencymeta.enabled:
+    #             concurrency_check(self, force_insert, force_update, using, **kwargs)
+    #         return func(self, force_insert, force_update, using, **kwargs)
+    #
+    #     return update_wrapper(inner, func)
 
 
 class AutoIncVersionField(VersionField):
@@ -170,32 +195,32 @@ class AutoIncVersionField(VersionField):
     """
     form_class = forms.VersionField
 
-    def get_internal_type(self):
-        return "BigIntegerField"
+    # def get_internal_type(self):
+    #     return "BigIntegerField"
 
     def _get_next_version(self, model_instance):
         return int(getattr(model_instance, self.attname, 0)) + 1
 
-    def pre_save(self, model_instance, add):
-        if conf.PROTOCOL >= 2:
-            if add:
-                value = self._get_next_version(model_instance)
-                self._set_version_value(model_instance, value)
-            return getattr(model_instance, self.attname)
-        value = self._get_next_version(model_instance)
-        self._set_version_value(model_instance, value)
-        return value
+    # def pre_save(self, model_instance, add):
+    #     if conf.PROTOCOL >= 2:
+    #         if add:
+    #             value = self._get_next_version(model_instance)
+    #             self._set_version_value(model_instance, value)
+    #         return getattr(model_instance, self.attname)
+    #     value = self._get_next_version(model_instance)
+    #     self._set_version_value(model_instance, value)
+    #     return value
 
-    @staticmethod
-    def _wrap_save(func):
-        from concurrency.api import concurrency_check
-
-        def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-            if self._concurrencymeta.enabled:
-                concurrency_check(self, force_insert, force_update, using, **kwargs)
-            return func(self, force_insert, force_update, using, **kwargs)
-
-        return update_wrapper(inner, func)
+    # @staticmethod
+    # def _wrap_save(func):
+    #     from concurrency.api import concurrency_check
+    #
+    #     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
+    #         if self._concurrencymeta.enabled:
+    #             concurrency_check(self, force_insert, force_update, using, **kwargs)
+    #         return func(self, force_insert, force_update, using, **kwargs)
+    #
+    #     return update_wrapper(inner, func)
 
 
 try:

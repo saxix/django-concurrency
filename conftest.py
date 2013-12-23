@@ -1,20 +1,22 @@
+import warnings
+warnings.filterwarnings("ignore",category=DeprecationWarning)
+
 import os
 import sys
 from django.conf import settings
 
+def pytest_collection_modifyitems(items):
+    pass
 
 
 def pytest_configure(config):
     here = os.path.dirname(__file__)
     sys.path.insert(0, here)
 
+
     if not settings.configured:
         os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
 
-    from concurrency.api import apply_concurrency_check
-    from django.contrib.auth.models import Permission
-    from concurrency.fields import IntegerVersionField
-    apply_concurrency_check(Permission, 'version', IntegerVersionField)
 
 def runtests(args=None):
     import pytest

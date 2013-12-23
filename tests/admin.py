@@ -8,14 +8,14 @@ from concurrency.forms import ConcurrentForm, VersionWidget
 from tests.models import *  # noqa
 from tests.models import NoActionsConcurrentModel, ListEditableConcurrentModel
 
-
-class SimpleModelAdmin(admin.ModelAdmin):
-    formfield_overrides = {
-        forms.VersionField: {'widget': VersionWidget()},
-    }
-    form = modelform_factory(SimpleConcurrentModel, ConcurrentForm,
-                             fields=('version', 'username', 'date_field'),
-                             widgets={'version': VersionWidget()})
+#
+# class SimpleModelAdmin(admin.ModelAdmin):
+#     formfield_overrides = {
+#         forms.VersionField: {'widget': VersionWidget()},
+#     }
+#     form = modelform_factory(SimpleConcurrentModel, ConcurrentForm,
+#                              fields=('version', 'username', 'date_field'),
+#                              widgets={'version': VersionWidget()})
 
 
 class ListEditableModelAdmin(ConcurrentModelAdmin):
@@ -50,8 +50,11 @@ def admin_register(model, modeladmin=ConcurrentModelAdmin):
     admin.site.register(model, modeladmin)
 
 
-admin_register(SimpleConcurrentModel, ActionsModelAdmin)
-admin_register(ProxyModel, ListEditableModelAdmin)
-admin_register(InheritedModel, ActionsModelAdmin)
-admin_register(NoActionsConcurrentModel, NoActionsModelAdmin)
-admin_register(ListEditableConcurrentModel, ActionsModelAdmin)
+def admin_register_models():
+    admin_register(SimpleConcurrentModel, ActionsModelAdmin)
+    # admin_register(ProxyModel, ListEditableModelAdmin)
+    admin_register(InheritedModel, ActionsModelAdmin)
+    admin_register(NoActionsConcurrentModel, NoActionsModelAdmin)
+    admin_register(ListEditableConcurrentModel, ListEditableModelAdmin)
+
+admin_register_models()

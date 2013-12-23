@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-from _pytest.python import fixture
 from tests.base import AdminTestCase, SENTINEL
 from tests.models import SimpleConcurrentModel
-from webtest import TestApp
+
 
 class TestAdminActions(AdminTestCase):
-
     def _create_conflict(self, pk):
         u = SimpleConcurrentModel.objects.get(pk=pk)
         u.username = SENTINEL

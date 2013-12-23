@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from functools import partial
 import pytest
 from sample_data_utils.utils import unique
@@ -52,4 +53,20 @@ with_all_models = partial(models_parametrize, SimpleConcurrentModel, AutoIncConc
                           ProxyModel, InheritedModel,
                           CustomSaveModel, ConcreteModel)()
 
-with_all_models = partial(models_parametrize, ConcreteModel)()
+# with_all_models = partial(models_parametrize, ConcreteModel)()
+
+DELETE_ATTRIBUTE = object()
+@contextmanager
+def attributes(*values):
+    backups = []
+    for target, name, value in values:
+        backups.append((target, name, getattr(target, name)))
+        if value is DELETE_ATTRIBUTE:
+            delattr(target, name)
+        else:
+            setattr(target, name, value)
+
+    yield
+
+    for target, name, value in backups:
+        setattr(target, name, value)

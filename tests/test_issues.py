@@ -11,6 +11,7 @@ from tests.admin import admin_register, ActionsModelAdmin
 from tests.base import AdminTestCase
 from tests.models import ListEditableConcurrentModel
 
+
 def get_fake_request(params):
     u, __ = User.objects.get_or_create(username='sax')
     setattr(u, 'is_authenticated()', True)

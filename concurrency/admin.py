@@ -17,7 +17,7 @@ from django.utils.translation import ungettext, ugettext as _
 from concurrency import forms
 from concurrency import core
 from concurrency.api import get_revision_of_object
-from concurrency.config import conf, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
+from concurrency.config import conf, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT, CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
 
@@ -185,7 +185,7 @@ class ConcurrencyListEditableMixin(object):
             # NOTE:
             #   list_editable_policy MUST have the LIST_EDITABLE_POLICY_ABORT_ALL
             #   set to work properly
-            if not self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_SILENT:
+            if self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL:
                 raise
 
     def log_change(self, request, object, message):

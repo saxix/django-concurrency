@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from django.contrib.admin.sites import site
 from django.db import transaction
 from django.contrib.admin.models import LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.utils.encoding import force_text
+import pytest
+from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_SILENT, CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
+from concurrency.exceptions import RecordModifiedError
+from tests.admin import ListEditableModelAdmin
 
 from tests.base import AdminTestCase, SENTINEL
-# from tests.models import ListEditableConcurrentModel, NoActionsConcurrentModel
-from tests.models import SimpleConcurrentModel, ProxyModel, NoActionsConcurrentModel
+from tests.models import ListEditableConcurrentModel
+from tests.util import attributes
 
 
 class TestListEditable(AdminTestCase):
-    TARGET = ProxyModel
+    TARGET = ListEditableConcurrentModel
 
     def _create_conflict(self, pk):
         u = self.TARGET.objects.get(pk=pk)
@@ -38,18 +43,37 @@ class TestListEditable(AdminTestCase):
         res = form.submit('_save').follow()
         self.assertTrue(self.TARGET.objects.filter(username='CHAR').exists())
 
-    def test_concurrency(self):
-        self.TARGET.objects.get_or_create(pk=8)
+    def test_concurrency_policy_abort(self):
+        self.TARGET.objects.get_or_create(pk=28)
+        model_admin = site._registry[self.TARGET]
+        with attributes((model_admin.__class__, 'list_editable_policy', CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL)):
 
-        res = self.app.get('/admin/', user='sax')
-        res = res.click(self.TARGET._meta.verbose_name_plural)
-        self._create_conflict(8)
+            res = self.app.get('/admin/', user='sax')
+            res = res.click(self.TARGET._meta.verbose_name_plural)
+            self._create_conflict(28)
 
-        form = res.forms['changelist-form']
-        form['form-0-username'] = 'CHAR'
-        res = form.submit('_save').follow()
-        self.assertTrue(self.TARGET.objects.filter(username=SENTINEL).exists())
-        self.assertFalse(self.TARGET.objects.filter(username='CHAR').exists())
+            form = res.forms['changelist-form']
+            form['form-0-username'] = 'CHAR'
+
+            with pytest.raises(RecordModifiedError):
+                res = form.submit('_save').follow()
+
+            self.assertTrue(self.TARGET.objects.filter(username=SENTINEL).exists())
+            self.assertFalse(self.TARGET.objects.filter(username='CHAR').exists())
+
+    def test_concurrency_policy_silent(self):
+        self.TARGET.objects.get_or_create(pk=18)
+        model_admin = site._registry[self.TARGET]
+        with attributes((model_admin, 'list_editable_policy', CONCURRENCY_LIST_EDITABLE_POLICY_SILENT)):
+            res = self.app.get('/admin/', user='sax')
+            res = res.click(self.TARGET._meta.verbose_name_plural)
+            self._create_conflict(18)
+
+            form = res.forms['changelist-form']
+            form['form-0-username'] = 'CHAR'
+            res = form.submit('_save').follow()
+            self.assertTrue(self.TARGET.objects.filter(username=SENTINEL).exists())
+            self.assertFalse(self.TARGET.objects.filter(username='CHAR').exists())
 
     def test_message_user(self):
         self.TARGET.objects.get_or_create(pk=1)
@@ -109,5 +133,5 @@ class TestListEditable(AdminTestCase):
         transaction.rollback()
 
 
-class TestListEditableWithNoActions(TestListEditable):
-    TARGET = NoActionsConcurrentModel
+# class TestListEditableWithNoActions(TestListEditable):
+#     TARGET = NoActionsConcurrentModel
