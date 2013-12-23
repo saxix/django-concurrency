@@ -33,7 +33,7 @@ class TestIssue16(AdminTestCase):
         model_admin = site._registry[ListEditableConcurrentModel]
 
         obj, __ = ListEditableConcurrentModel.objects.get_or_create(pk=1)
-        request1 = get_fake_request('pk=1&_concurrency_version_1=1')
+        request1 = get_fake_request('pk=1&_concurrency_version_1=2')
         model_admin.save_model(request1, obj, None, True)
         self.assertIn(obj.pk, model_admin._get_conflicts(request1))
 

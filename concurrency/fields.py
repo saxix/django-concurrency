@@ -55,7 +55,7 @@ class VersionField(Field):
                                            db_tablespace=db_tablespace, db_column=db_column)
 
     def get_default(self):
-        return 0
+        return 1
 
     def get_internal_type(self):
         return "BigIntegerField"
