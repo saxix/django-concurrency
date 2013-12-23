@@ -67,7 +67,7 @@ if db == 'pg':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'adminactions',
+            'NAME': 'concurrency',
             'HOST': '127.0.0.1',
             'PORT': '',
             'USER': 'postgres',
@@ -76,7 +76,7 @@ elif db == 'mysql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'adminactions',
+            'NAME': 'concurrency',
             'HOST': '127.0.0.1',
             'PORT': '',
             'USER': 'root',
@@ -89,7 +89,7 @@ elif db == 'myisam':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'adminactions',
+            'NAME': 'concurrency',
             'HOST': '127.0.0.1',
             'PORT': '',
             'USER': 'root',
@@ -103,6 +103,6 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'adminactions.sqlite',
+            'NAME': 'concurrency.sqlite',
             'HOST': '',
             'PORT': ''}}
