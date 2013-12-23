@@ -8,7 +8,7 @@ from tests.models import *  # noqa
 from itertools import count
 
 unique_name = unique(text, 1)
-unique_id = count()
+unique_id = count(1)
 
 
 def refetch(model_instance):

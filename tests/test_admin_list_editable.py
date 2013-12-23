@@ -56,7 +56,7 @@ class TestListEditable(AdminTestCase):
             form['form-0-username'] = 'CHAR'
 
             with pytest.raises(RecordModifiedError):
-                res = form.submit('_save').follow()
+                res = form.submit('_save')
 
             self.assertTrue(self.TARGET.objects.filter(username=SENTINEL).exists())
             self.assertFalse(self.TARGET.objects.filter(username='CHAR').exists())
@@ -64,7 +64,7 @@ class TestListEditable(AdminTestCase):
     def test_concurrency_policy_silent(self):
         self.TARGET.objects.get_or_create(pk=18)
         model_admin = site._registry[self.TARGET]
-        with attributes((model_admin, 'list_editable_policy', CONCURRENCY_LIST_EDITABLE_POLICY_SILENT)):
+        with attributes((model_admin.__class__, 'list_editable_policy', CONCURRENCY_LIST_EDITABLE_POLICY_SILENT)):
             res = self.app.get('/admin/', user='sax')
             res = res.click(self.TARGET._meta.verbose_name_plural)
             self._create_conflict(18)
