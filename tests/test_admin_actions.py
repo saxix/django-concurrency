@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # import django
-from tests.base import AdminTestCase, SENTINEL, skipIfDjangoTrunk, failIfTrunk
+from tests.base import AdminTestCase, SENTINEL, failIfTrunk
 from tests.models import SimpleConcurrentModel
+from tests.util import unique_id
 
 
 class TestAdminActions(AdminTestCase):
@@ -11,13 +12,14 @@ class TestAdminActions(AdminTestCase):
         u.save()
 
     def test_dummy_action(self):
-        SimpleConcurrentModel.objects.get_or_create(id=1)
+        id = next(unique_id)
+        SimpleConcurrentModel.objects.get_or_create(pk=id)
         res = self.app.get('/admin/', user='sax')
 
         res = res.click('^SimpleConcurrentModels')
-        assert 'SimpleConcurrentModel #1' in res  # sanity check
+        assert 'SimpleConcurrentModel #%s' % id in res  # sanity check
 
-        self._create_conflict(1)
+        self._create_conflict(id)
 
         form = res.forms['changelist-form']
         form['action'].value = 'dummy_action'
@@ -25,16 +27,17 @@ class TestAdminActions(AdminTestCase):
         sel.checked = True
         res = form.submit().follow()
 
-        self.assertIn('SimpleConcurrentModel #1', res)
+        self.assertIn('SimpleConcurrentModel #%s' % id, res)
         self.assertIn('**concurrent_update**', res)
         self.assertNotIn('**action_update**', res)
 
     @failIfTrunk
     def test_delete_allowed_if_no_updates(self):
-        SimpleConcurrentModel.objects.get_or_create(id=1)
+        id = next(unique_id)
+        SimpleConcurrentModel.objects.get_or_create(pk=id)
         res = self.app.get('/admin/', user='sax')
         res = res.click('^SimpleConcurrentModels')
-        assert 'SimpleConcurrentModel #1' in res  # sanity check
+        assert 'SimpleConcurrentModel #%s' % id in res  # sanity check
 
         form = res.forms['changelist-form']
         form['action'].value = 'delete_selected'
@@ -43,17 +46,19 @@ class TestAdminActions(AdminTestCase):
 
         res = form.submit()
         assert 'Are you sure?' in res
-        assert 'SimpleConcurrentModel #1' in res
+        assert 'SimpleConcurrentModel #%s' % id in res
         res = res.form.submit()
-        self.assertNotIn('SimpleConcurrentModel #1', res)
+        assert 'SimpleConcurrentModel #%s' % id not in res
 
     def test_delete_not_allowed_if_updates(self):
-        SimpleConcurrentModel.objects.get_or_create(id=1)
+        id = next(unique_id)
+
+        SimpleConcurrentModel.objects.get_or_create(pk=id)
         res = self.app.get('/admin/', user='sax')
         res = res.click('^SimpleConcurrentModels')
-        assert 'SimpleConcurrentModel #1' in res  # sanity check
+        assert 'SimpleConcurrentModel #%s' % id in res  # sanity check
 
-        self._create_conflict(1)
+        self._create_conflict(id)
 
         form = res.forms['changelist-form']
         form['action'].value = 'delete_selected'

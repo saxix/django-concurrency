@@ -11,7 +11,7 @@ from concurrency.exceptions import RecordModifiedError
 from concurrency.middleware import ConcurrencyMiddleware
 from tests.base import AdminTestCase
 from tests.models import SimpleConcurrentModel
-from tests.util import attributes, DELETE_ATTRIBUTE
+from tests.util import attributes, DELETE_ATTRIBUTE, unique_id
 
 
 def _get_request(path):
@@ -49,7 +49,8 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
         """
         Tests that RecordModifiedError is handled correctly.
         """
-        m, __ = SimpleConcurrentModel.objects.get_or_create(id=1)
+        id = next(unique_id)
+        m, __ = SimpleConcurrentModel.objects.get_or_create(pk=id)
         copy = SimpleConcurrentModel.objects.get(pk=m.pk)
         copy.save()
         request = self._get_request('/')
@@ -57,6 +58,8 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
         self.assertEqual(r.status_code, 409)
 
     def test_in_admin(self):
+        id = next(unique_id)
+
         middlewares = list(settings.MIDDLEWARE_CLASSES) + ['concurrency.middleware.ConcurrencyMiddleware']
         model_admin = site._registry[SimpleConcurrentModel]
 
@@ -64,7 +67,8 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
                         (ConcurrentModelAdmin, 'form', DELETE_ATTRIBUTE)):
 
             with self.settings(MIDDLEWARE_CLASSES=middlewares):
-                saved, __ = SimpleConcurrentModel.objects.get_or_create(id=1)
+
+                saved, __ = SimpleConcurrentModel.objects.get_or_create(pk=id)
 
                 url = reverse('admin:concurrency_simpleconcurrentmodel_change', args=[saved.pk])
                 res = self.app.get(url, user='sax')

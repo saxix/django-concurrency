@@ -61,7 +61,7 @@ LOGGING = {
     }
 }
 
-DBNAME= os.environ.get('DBNAME', 'concurrency')
+DBNAME = os.environ.get('DBNAME', 'concurrency')
 db = os.environ.get('DBENGINE', None)
 if db == 'pg':
     DATABASES = {

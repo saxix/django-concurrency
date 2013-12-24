@@ -4,13 +4,14 @@ from django.forms.widgets import HiddenInput, TextInput
 from django.utils.encoding import smart_str
 from django.test import TestCase
 import pytest
-from concurrency.exceptions import VersionError, RecordModifiedError
+from concurrency.exceptions import VersionError
 from concurrency.forms import ConcurrentForm, VersionField, VersionFieldSigner, VersionWidget
 from django.test.testcases import SimpleTestCase
 from django.utils.translation import ugettext as _
 from tests.models import SimpleConcurrentModel, TestIssue3Model
 
 __all__ = ['WidgetTest', 'FormFieldTest', 'ConcurrentFormTest']
+
 
 class DummySigner():
     def sign(self, value):
