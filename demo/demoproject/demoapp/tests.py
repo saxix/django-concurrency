@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 
 from django_webtest import WebTest
 from concurrency.api import disable_concurrency
-from demoproject.demoapp.models import DemoModel
+from .models import DemoModel
 
 try:
     from import_export.admin import ImportExportMixin  # NOQA

@@ -1,0 +1,38 @@
+{% load concurrency %}
+<table>
+    <tr>
+        <th>
+            Field
+        </th>
+        <th>
+            Current
+        </th>
+        <th>
+            Stored
+        </th>
+        <th>
+            Diff
+        </th>
+
+    </tr>
+    <tr>
+        {% for field, current, stored, entry in diff %}
+            {% if not field.primary_key and not field|is_version %}
+                <tr>
+                    <td>
+                        {{ field.verbose_name }}
+                    </td>
+                    <td>
+                        {{ current }}
+                    </td>
+                    <td>
+                        {{ stored }}
+                    </td>
+                    <td>
+                        {{ entry }}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </tr>
+</table>

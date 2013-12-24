@@ -1,13 +1,14 @@
-from django.core.exceptions import SuspiciousOperation
+from django.core.exceptions import SuspiciousOperation, ImproperlyConfigured
 from django.forms.models import modelform_factory
 from django.forms.widgets import HiddenInput, TextInput
 from django.utils.encoding import smart_str
 from django.test import TestCase
+import pytest
 from concurrency.exceptions import VersionError
 from concurrency.forms import ConcurrentForm, VersionField, VersionFieldSigner, VersionWidget
-from concurrency.tests.models import TestModel0, TestIssue3Model
 from django.test.testcases import SimpleTestCase
 from django.utils.translation import ugettext as _
+from tests.models import SimpleConcurrentModel, TestIssue3Model
 
 __all__ = ['WidgetTest', 'FormFieldTest', 'ConcurrentFormTest']
 
@@ -30,6 +31,10 @@ class WidgetTest(TestCase):
 
 
 class FormFieldTest(SimpleTestCase):
+    def test_with_wrong_signer(self):
+        with self.settings(CONCURRENCY_FIELD_SIGNER='invalid.Signer'):
+            with pytest.raises(ImproperlyConfigured):
+                VersionField()
 
     def test_with_dummy_signer(self):
         f = VersionField(signer=DummySigner())
@@ -52,7 +57,7 @@ class FormFieldTest(SimpleTestCase):
 
 class ConcurrentFormTest(TestCase):
     def test_version(self):
-        Form = modelform_factory(TestModel0, ConcurrentForm, exclude=('char_field',))
+        Form = modelform_factory(SimpleConcurrentModel, ConcurrentForm, exclude=('char_field',))
         form = Form()
         self.assertIsInstance(form.fields['version'].widget, HiddenInput)
 
@@ -76,7 +81,7 @@ class ConcurrentFormTest(TestCase):
         self.assertTrue(form.is_valid(), form.non_field_errors())
 
     def test_initial_value(self):
-        Form = modelform_factory(TestModel0, type('xxx', (ConcurrentForm,), {}), exclude=('char_field',))
+        Form = modelform_factory(SimpleConcurrentModel, type('xxx', (ConcurrentForm,), {}), exclude=('char_field',))
         form = Form({'username': 'aaa'})
         self.assertHTMLEqual(str(form['version']), '<input type="hidden" value="" name="version" id="id_version" />')
         self.assertTrue(form.is_valid(), form.non_field_errors())
@@ -110,6 +115,7 @@ class ConcurrentFormTest(TestCase):
 
     def test_save(self):
         obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
+
         obj_copy = TestIssue3Model.objects.get(pk=obj.pk)
         Form = modelform_factory(TestIssue3Model, ConcurrentForm,
                                  fields=('username', 'last_name', 'date_field',
@@ -123,6 +129,7 @@ class ConcurrentFormTest(TestCase):
                 'revision': VersionFieldSigner().sign(obj.revision)}
         form = Form(data, instance=obj)
         obj_copy.save()  # save
+
         self.assertFalse(form.is_valid())
         self.assertIn(_('Record Modified'), form.non_field_errors())
 
@@ -142,3 +149,21 @@ class ConcurrentFormTest(TestCase):
         obj.save()  # save again simulate concurrent editing
         self.assertRaises(ValueError, form.save)
 
+    def test_form_is_valid(self):
+        with self.settings(CONCURRECY_SANITY_CHECK=True):
+            obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
+            Form = modelform_factory(TestIssue3Model, ConcurrentForm, exclude=('char_field',))
+            data = {'username': "a",
+                    'revision': VersionFieldSigner().sign(1)}
+            form = Form(data)
+            self.assertRaises(InconsistencyError, form.is_valid)
+
+    def test_signing(self):
+        """ Do not accept version value if adding"""
+        with self.settings(CONCURRECY_SANITY_CHECK=True):
+            obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
+            Form = modelform_factory(TestIssue3Model, ConcurrentForm, exclude=('char_field',))
+            data = {'username': "a",
+                    'revision': VersionFieldSigner().sign(1)}
+            form = Form(data)
+            self.assertRaises(InconsistencyError, form.is_valid)

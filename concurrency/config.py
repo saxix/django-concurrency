@@ -1,5 +1,4 @@
 from __future__ import absolute_import, unicode_literals
-import warnings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import get_callable
 from django.utils import six
@@ -15,6 +14,7 @@ CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL = 2
 CONCURRENCY_POLICY_RAISE = 4
 CONCURRENCY_POLICY_CALLBACK = 8
 
+CONFLICTS_POLICIES = [CONCURRENCY_POLICY_RAISE, CONCURRENCY_POLICY_CALLBACK]
 LIST_EDITABLE_POLICIES = [CONCURRENCY_LIST_EDITABLE_POLICY_SILENT, CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL]
 
 
@@ -48,6 +48,7 @@ class AppSettings(object):
     defaults = {
         'ENABLED': True,
         'SANITY_CHECK': False,
+        'PROTOCOL': 1,
         'FIELD_SIGNER': 'concurrency.forms.VersionFieldSigner',
         'POLICY': CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
         'CALLBACK': 'concurrency.views.callback',
@@ -61,8 +62,12 @@ class AppSettings(object):
         """
         self.prefix = prefix
         from django.conf import settings
+
         if hasattr(settings, 'CONCURRENCY_SANITY_CHECK'):
-            warnings.warn('Starting from concurrency 0.7 `CONCURRENCY_SANITY_CHECK` has no effect and will be removed in 0.8')
+            warnings.warn(
+                'Starting from concurrency 0.7 `CONCURRENCY_SANITY_CHECK` has no effect and will be removed in 0.8')
+        if hasattr(Model, '_do_update'):
+            self.defaults['PROTOCOL'] = 2
 
         for name, default in self.defaults.items():
             if name != 'SANITY_CHECK':
@@ -73,6 +78,17 @@ class AppSettings(object):
                 setting_changed.send(self.__class__, setting=prefix_name, value=value, enter=True)
 
         setting_changed.connect(self._handler)
+
+    # def _check_config(self):
+    #     list_editable_policy = self.POLICY | sum(LIST_EDITABLE_POLICIES)
+    #     if list_editable_policy == sum(LIST_EDITABLE_POLICIES):
+    #         raise ImproperlyConfigured("Invalid value for `CONCURRENCY_POLICY`: "
+    #                                    "Use only one of `CONCURRENCY_LIST_EDITABLE_*` flags")
+    #
+    #     conflict_policy = self.POLICY | sum(CONFLICTS_POLICIES)
+    #     if conflict_policy == sum(CONFLICTS_POLICIES):
+    #         raise ImproperlyConfigured("Invalid value for `CONCURRENCY_POLICY`: "
+    #                                    "Use only one of `CONCURRENCY_POLICY_*` flags")
 
     def _set_attr(self, prefix_name, value):
         name = prefix_name[len(self.prefix) + 1:]

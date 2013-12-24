@@ -8,8 +8,8 @@ from django.utils.importlib import import_module
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from concurrency.config import conf
-from concurrency.core import _select_lock, RecordModifiedError
-from concurrency.exceptions import VersionError
+from concurrency.core import _select_lock
+from concurrency.exceptions import VersionError, RecordModifiedError
 
 
 class ConcurrentForm(ModelForm):
@@ -21,12 +21,14 @@ class ConcurrentForm(ModelForm):
 
     def clean(self):
         try:
-            _select_lock(self.instance, self.cleaned_data[self.instance._concurrencymeta._field.name])
+            if self.instance.pk:
+                _select_lock(self.instance, self.cleaned_data[self.instance._concurrencymeta._field.name])
+
         except RecordModifiedError:
-            if django.VERSION[1] >= 6:
-                self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])}))
-            else:
+            if django.VERSION[1] < 6:
                 self._update_errors({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])})
+            else:
+                self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])}))
 
         return super(ConcurrentForm, self).clean()
 

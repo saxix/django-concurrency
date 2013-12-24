@@ -7,8 +7,8 @@ from concurrency.core import _select_lock, _wrap_model_save, get_version_fieldna
 from concurrency.exceptions import RecordModifiedError
 
 __all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_object',
-           'RecordModifiedError', 'disable_concurrency', 'disable_sanity_check',
-           'get_object_with_version', 'get_version', 'is_changed', 'get_version_fieldname']
+           'RecordModifiedError', 'disable_concurrency',
+           'get_version', 'is_changed', 'get_version_fieldname']
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +20,7 @@ def get_revision_of_object(obj):
     @param obj:
     @return:
     """
-    revision_field = obj._concurrencymeta._field
-    value = getattr(obj, revision_field.attname)
-    return value
+    return getattr(obj, get_version_fieldname(obj))
 
 
 def is_changed(obj):
@@ -31,10 +29,10 @@ def is_changed(obj):
     :param obj:
     :return:
     """
-    revision_field = obj._concurrencymeta._field
-    version = getattr(obj, revision_field.attname)
+    revision_field = get_version_fieldname(obj)
+    version = get_revision_of_object(obj)
     return not obj.__class__.objects.filter(**{obj._meta.pk.name: obj.pk,
-                                               revision_field.attname: version}).exists()
+                                               revision_field: version}).exists()
 
 
 def get_version(model_instance, version):
@@ -45,24 +43,24 @@ def get_version(model_instance, version):
     :param version: version number
     :return:
     """
-    version_field = model_instance._concurrencymeta._field
-    kwargs = {'pk': model_instance.pk, version_field.name: version}
+    version_field = get_version_fieldname(model_instance)
+    kwargs = {'pk': model_instance.pk, version_field: version}
     return model_instance.__class__.objects.get(**kwargs)
 
 
-def get_object_with_version(manager, pk, version):
-    """
-        try go load from the database one object with specific version.
-        Raises DoesNotExists otherwise.
-
-    :param manager: django.models.Manager
-    :param pk: primaryKey
-    :param version: version number
-    :return:
-    """
-    version_field = manager.model._concurrencymeta._field
-    kwargs = {'pk': pk, version_field.name: version}
-    return manager.get(**kwargs)
+# def get_object_with_version(manager, pk, version):
+#     """
+#         try go load from the database one object with specific version.
+#         Raises DoesNotExists otherwise.
+#
+#     :param manager: django.models.Manager
+#     :param pk: primaryKey
+#     :param version: version number
+#     :return:
+#     """
+#     version_field = manager.model._concurrencymeta._field
+#     kwargs = {'pk': pk, version_field.name: version}
+#     return manager.get(**kwargs)
 
 
 def apply_concurrency_check(model, fieldname, versionclass):
