@@ -1,6 +1,6 @@
 Release 0.7.0 (dev)
 -------------------
-
+* new protocol
 * it's now possible disable concurrency in Models that extends concurrency enabled models
 * fixed :issue:`23` (thanks matklad)
 * new :setting:`USE_SELECT_FOR_UPDATE`

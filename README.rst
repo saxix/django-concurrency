@@ -17,9 +17,9 @@ Django Concurrency
    :target: https://crate.io/packages/django-concurrency/
 
 
-django-concurrency is an optimistic locking library for Django.
+django-concurrency is an optimistic lock [1]_ implementation for Django.
 
-Tested with: 1.4.8, 1.5.4, 1.6b4, trunk.
+Tested with: 1.4.x, 1.5.x, 1.6.x, trunk.
 
 It prevents users from doing concurrent editing in Django both from UI and from a
 django command.
@@ -52,4 +52,7 @@ Links
    * Download: http://pypi.python.org/pypi/django-concurrency/
    * Docs: http://readthedocs.org/docs/django-concurrency/en/latest/
 
+
+
+.. [1] http://en.wikipedia.org/wiki/Optimistic_concurrency_control
 
