@@ -109,3 +109,4 @@ so the concurrency check will be performed by a standard ``filter()``, but consi
 the record is modified **between** the check and the ``save()``
 
 
+.. note::  This settings is ignored if you use django >= 1.6. see :ref:`protocols`

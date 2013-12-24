@@ -48,16 +48,34 @@ How it works
 the version number changes (the algorithm used depends on the :ref:`VersionField` used,
 (see :ref:`fields`).
 
+
+|concurrency| use two different way to manage concurrent updates:
+
+django 1.4 - 1.5
+----------------
+
 When a record is saved, |concurrency| tries to get a lock on the record based on the old revision
 number, if the record is not found a :ref:`RecordModifiedError` is raised.
 The lock is obtained using ``SELECT FOR UPDATE`` and it's requirend
 to prevent other updates during the internal django ``save()`` execution.
-The standard implementation of 'optimistic-lock` pattern requires a SQL clause like ::
 
-    UPDATE mymodel ... WHERE id = %s AND version = %s
+django >= 1.6
+-----------------
 
-but this is impossible without change the internal django save(). As work around  |concurrency| lock the record based
-on the version number and updates that later. See :setting:`USE_SELECT_FOR_UPDATE`
+Full implementation of ``optimistic-lock`` pattern using a SQL clause like:
+
+.. code-block:: sql
+
+    UPDATE mymodel SET version=NEW_VERSION, ... WHERE id = PK AND version = VERSION_NUMBER
+
+
+.. _2_protocols:
+
+Why two protocols ?
+-------------------
+The initial implementation of |concurrency| used the real pattern, but it was very hard
+maintain with all  django updates/versions. With the new  implementation (django 1.6)
+the optimistic lock pattern it is easier to implement and we did.
 
 
 Table Of Contents
