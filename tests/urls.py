@@ -12,7 +12,7 @@ class SimpleConcurrentMpdel(object):
 
 urlpatterns = patterns('',
                        url('cm/(?P<pk>\d+)/',
-                       UpdateView.as_view(model=SimpleConcurrentModel),
-                       name='concurrent-edit'),
+                           UpdateView.as_view(model=SimpleConcurrentModel),
+                           name='concurrent-edit'),
                        (r'^admin/', include(include(admin.site.urls))),
                        (r'', include(include(admin.site.urls))))

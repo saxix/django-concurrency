@@ -1,10 +1,8 @@
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
-import pytest
 from concurrency.forms import VersionFieldSigner
 from tests.base import AdminTestCase, SENTINEL
 from tests.models import SimpleConcurrentModel
-from tests.util import unique_name
 
 # @pytest.mark.django_db
 # @pytest.mark.admin
@@ -54,6 +52,7 @@ from tests.util import unique_name
 #     assert 'original' in res.context
 #     assert res.context['adminform'].form.errors
 #     assert _('Record Modified') in str(res.context['adminform'].form.errors)
+from tests.util import nextname
 
 
 class TestConcurrentModelAdmin(AdminTestCase):
@@ -118,7 +117,7 @@ class TestAdminEdit(AdminTestCase):
         url = reverse('admin:concurrency_simpleconcurrentmodel_add')
         res = self.app.get(url, user='sax')
         form = res.form
-        username = unique_name(20)
+        username = nextname.next()
         form['username'] = username
         res = form.submit().follow()
         self.assertTrue(SimpleConcurrentModel.objects.filter(username=username).exists())

@@ -1,21 +1,8 @@
 from django.contrib.admin.sites import NotRegistered
 from django.contrib import admin
-from django.forms.models import modelform_factory
-
-from concurrency import forms
 from concurrency.admin import ConcurrentModelAdmin
-from concurrency.forms import ConcurrentForm, VersionWidget
 from tests.models import *  # noqa
 from tests.models import NoActionsConcurrentModel, ListEditableConcurrentModel
-
-#
-# class SimpleModelAdmin(admin.ModelAdmin):
-#     formfield_overrides = {
-#         forms.VersionField: {'widget': VersionWidget()},
-#     }
-#     form = modelform_factory(SimpleConcurrentModel, ConcurrentForm,
-#                              fields=('version', 'username', 'date_field'),
-#                              widgets={'version': VersionWidget()})
 
 
 class ListEditableModelAdmin(ConcurrentModelAdmin):
@@ -56,5 +43,6 @@ def admin_register_models():
     admin_register(InheritedModel, ActionsModelAdmin)
     admin_register(NoActionsConcurrentModel, NoActionsModelAdmin)
     admin_register(ListEditableConcurrentModel, ListEditableModelAdmin)
+
 
 admin_register_models()

@@ -1,13 +1,26 @@
 from contextlib import contextmanager
 from functools import partial
 import pytest
-from sample_data_utils.utils import unique
+from sample_data_utils.utils import infinite, _sequence_counters
+from sample_data_utils.sample import text  # noqa
 from concurrency.config import conf
-from sample_data_utils.sample import text
 from tests.models import *  # noqa
 from itertools import count
 
-unique_name = unique(text, 1)
+
+def sequence(prefix, cache=None):
+    if cache is None:
+        cache = _sequence_counters
+    if cache == -1:
+        cache = {}
+
+    if prefix not in cache:
+        cache[prefix] = infinite()
+    while cache[prefix]:
+        yield "{0}-{1}".format(prefix, next(cache[prefix]))
+
+
+nextname = sequence('username', cache={})
 unique_id = count(1)
 
 
@@ -48,13 +61,17 @@ def models_parametrize(*models):
                                    None)
 
 
-with_all_models = partial(models_parametrize, SimpleConcurrentModel, AutoIncConcurrentModel,
-                          ProxyModel, InheritedModel,
-                          CustomSaveModel, ConcreteModel)()
+MODEL_CLASSES = [SimpleConcurrentModel, AutoIncConcurrentModel,
+                 InheritedModel, CustomSaveModel,
+                 ConcreteModel, ProxyModel, ]
+
+with_all_models = partial(models_parametrize, *MODEL_CLASSES)()
 
 # with_all_models = partial(models_parametrize, ConcreteModel)()
 
 DELETE_ATTRIBUTE = object()
+
+
 @contextmanager
 def attributes(*values):
     """
@@ -70,6 +87,7 @@ def attributes(*values):
         ...
 
     """
+
     def set(target, name, value):
         if value is DELETE_ATTRIBUTE:
             delattr(target, name)
@@ -79,8 +97,12 @@ def attributes(*values):
     backups = []
 
     for target, name, value in values:
-        backups.append((target, name, getattr(target, name, DELETE_ATTRIBUTE)))
+        if hasattr(target, name):
+            backups.append((target, name, getattr(target, name)))
+        else:
+            backups.append((target, name, getattr(target, name, DELETE_ATTRIBUTE)))
         set(target, name, value)
     yield
+
     for target, name, value in backups:
         set(target, name, value)

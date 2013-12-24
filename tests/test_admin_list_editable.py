@@ -8,11 +8,10 @@ from django.utils.encoding import force_text
 import pytest
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_SILENT, CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
 from concurrency.exceptions import RecordModifiedError
-from tests.admin import ListEditableModelAdmin
 
 from tests.base import AdminTestCase, SENTINEL
 from tests.models import ListEditableConcurrentModel
-from tests.util import attributes
+from tests.util import attributes, unique_id
 
 
 class TestListEditable(AdminTestCase):
@@ -24,7 +23,6 @@ class TestListEditable(AdminTestCase):
         u.save()
 
     def test_normal_add(self):
-        #self.TARGET.objects.get_or_create(pk=1)
         res = self.app.get('/admin/', user='sax')
 
         res = res.click(self.TARGET._meta.verbose_name_plural)
@@ -35,7 +33,7 @@ class TestListEditable(AdminTestCase):
         res = form.submit().follow()
 
     def test_normal_update(self):
-        self.TARGET.objects.get_or_create(pk=1)
+        self.TARGET.objects.get_or_create(pk=next(unique_id))
         res = self.app.get('/admin/', user='sax')
         res = res.click(self.TARGET._meta.verbose_name_plural)
         form = res.forms['changelist-form']
@@ -44,13 +42,14 @@ class TestListEditable(AdminTestCase):
         self.assertTrue(self.TARGET.objects.filter(username='CHAR').exists())
 
     def test_concurrency_policy_abort(self):
-        self.TARGET.objects.get_or_create(pk=28)
+        id = next(unique_id)
+        self.TARGET.objects.get_or_create(pk=id)
         model_admin = site._registry[self.TARGET]
         with attributes((model_admin.__class__, 'list_editable_policy', CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL)):
 
             res = self.app.get('/admin/', user='sax')
             res = res.click(self.TARGET._meta.verbose_name_plural)
-            self._create_conflict(28)
+            self._create_conflict(id)
 
             form = res.forms['changelist-form']
             form['form-0-username'] = 'CHAR'
@@ -62,12 +61,13 @@ class TestListEditable(AdminTestCase):
             self.assertFalse(self.TARGET.objects.filter(username='CHAR').exists())
 
     def test_concurrency_policy_silent(self):
-        self.TARGET.objects.get_or_create(pk=18)
+        id = next(unique_id)
+        self.TARGET.objects.get_or_create(pk=id)
         model_admin = site._registry[self.TARGET]
         with attributes((model_admin.__class__, 'list_editable_policy', CONCURRENCY_LIST_EDITABLE_POLICY_SILENT)):
             res = self.app.get('/admin/', user='sax')
             res = res.click(self.TARGET._meta.verbose_name_plural)
-            self._create_conflict(18)
+            self._create_conflict(id)
 
             form = res.forms['changelist-form']
             form['form-0-username'] = 'CHAR'
@@ -76,12 +76,14 @@ class TestListEditable(AdminTestCase):
             self.assertFalse(self.TARGET.objects.filter(username='CHAR').exists())
 
     def test_message_user(self):
-        self.TARGET.objects.get_or_create(pk=1)
-        self.TARGET.objects.get_or_create(pk=2)
+        id1 = next(unique_id)
+        id2 = next(unique_id)
+        self.TARGET.objects.get_or_create(pk=id1)
+        self.TARGET.objects.get_or_create(pk=id2)
         res = self.app.get('/admin/', user='sax')
         res = res.click(self.TARGET._meta.verbose_name_plural)
 
-        self._create_conflict(1)
+        self._create_conflict(id1)
 
         form = res.forms['changelist-form']
         form['form-0-username'] = 'CHAR1'
@@ -90,18 +92,19 @@ class TestListEditable(AdminTestCase):
 
         messages = map(str, list(res.context['messages']))
 
-        self.assertIn('Record with pk `1` has been modified and was not updated',
+        self.assertIn('Record with pk `%s` has been modified and was not updated' % id1,
                       messages)
         self.assertIn('1 %s was changed successfully.' % force_text(self.TARGET._meta.verbose_name),
                       messages)
 
     def test_message_user_no_changes(self):
-        self.TARGET.objects.get_or_create(pk=5)
+        id = next(unique_id)
+        self.TARGET.objects.get_or_create(pk=id)
 
         res = self.app.get('/admin/', user='sax')
         res = res.click(self.TARGET._meta.verbose_name_plural)
 
-        self._create_conflict(5)
+        self._create_conflict(id)
 
         form = res.forms['changelist-form']
         form['form-0-username'] = 'CHAR1'
@@ -114,7 +117,8 @@ class TestListEditable(AdminTestCase):
         self.assertEqual(len(messages), 1)
 
     def test_log_change(self):
-        self.TARGET.objects.get_or_create(pk=10)
+        id = next(unique_id)
+        self.TARGET.objects.get_or_create(pk=id)
 
         res = self.app.get('/admin/', user='sax')
         res = res.click(self.TARGET._meta.verbose_name_plural)
@@ -123,7 +127,7 @@ class TestListEditable(AdminTestCase):
 
         logs = list(LogEntry.objects.filter(**log_filter).values_list('pk', flat=True))
 
-        self._create_conflict(10)
+        self._create_conflict(id)
 
         form = res.forms['changelist-form']
         form['form-0-username'] = 'CHAR1'
