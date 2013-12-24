@@ -8,7 +8,7 @@ from tests.models import SimpleConcurrentModel
 from tests.util import refetch, text
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=False)
 def test_get_revision_of_object(model_class=SimpleConcurrentModel):
     instance = model_class(username=text(10))
     instance.save()

@@ -40,10 +40,9 @@ def clone_instance(model_instance):
 
 
 def models_parametrize(*models):
-    argvalues = [m for m in models]
     ids = [m.__name__ for m in models]
     return pytest.mark.parametrize(('model_class,'),
-                                   argvalues,
+                                   models,
                                    False,
                                    ids,
                                    None)
@@ -58,15 +57,30 @@ with_all_models = partial(models_parametrize, SimpleConcurrentModel, AutoIncConc
 DELETE_ATTRIBUTE = object()
 @contextmanager
 def attributes(*values):
-    backups = []
-    for target, name, value in values:
-        backups.append((target, name, getattr(target, name)))
+    """
+        context manager to temporary set/delete object's attributes
+    :param values: tulples of (target, name, value)
+    Es.
+
+
+    with attributes((django.contrib.admin.ModelAdmin, 'list_per_page', 200)):
+        ...
+
+    with attributes((django.contrib.admin.ModelAdmin, 'list_per_page', DELETE_ATTRIBUTE)):
+        ...
+
+    """
+    def set(target, name, value):
         if value is DELETE_ATTRIBUTE:
             delattr(target, name)
         else:
             setattr(target, name, value)
 
-    yield
+    backups = []
 
+    for target, name, value in values:
+        backups.append((target, name, getattr(target, name, DELETE_ATTRIBUTE)))
+        set(target, name, value)
+    yield
     for target, name, value in backups:
-        setattr(target, name, value)
+        set(target, name, value)

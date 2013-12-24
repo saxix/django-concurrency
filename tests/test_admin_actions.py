@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from tests.base import AdminTestCase, SENTINEL
+# import django
+from tests.base import AdminTestCase, SENTINEL, skipIfDjangoTrunk, failIfTrunk
 from tests.models import SimpleConcurrentModel
 
 
@@ -28,6 +29,7 @@ class TestAdminActions(AdminTestCase):
         self.assertIn('**concurrent_update**', res)
         self.assertNotIn('**action_update**', res)
 
+    @failIfTrunk
     def test_delete_allowed_if_no_updates(self):
         SimpleConcurrentModel.objects.get_or_create(id=1)
         res = self.app.get('/admin/', user='sax')
@@ -38,6 +40,7 @@ class TestAdminActions(AdminTestCase):
         form['action'].value = 'delete_selected'
         sel = form.get('_selected_action', index=0)
         sel.checked = True
+
         res = form.submit()
         assert 'Are you sure?' in res
         assert 'SimpleConcurrentModel #1' in res

@@ -1,9 +1,59 @@
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
+import pytest
 from concurrency.forms import VersionFieldSigner
 from tests.base import AdminTestCase, SENTINEL
 from tests.models import SimpleConcurrentModel
 from tests.util import unique_name
+
+# @pytest.mark.django_db
+# @pytest.mark.admin
+# def test_creation(superuser, app):
+#     url = reverse('admin:concurrency_simpleconcurrentmodel_add')
+#     res = app.get(url, user=superuser.username)
+#
+#     form = res.form
+#     form['username'] = 'CHAR'
+#     res = form.submit().follow()
+#     assert SimpleConcurrentModel.objects.filter(username='CHAR').exists()
+#     assert SimpleConcurrentModel.objects.get(username='CHAR').version > 0
+#
+#     # self.assertTrue(SimpleConcurrentModel.objects.filter(username='CHAR').exists())
+#     # self.assertGreater(SimpleConcurrentModel.objects.get(username='CHAR').version, 0)
+#
+#
+# @pytest.mark.django_db
+# @pytest.mark.functional
+# def test_standard_update(superuser, concurrentmodel, app):
+#     url = reverse('admin:concurrency_simpleconcurrentmodel_change',
+#                   args=[concurrentmodel.pk])
+#     res = app.get(url, user=superuser.username)
+#
+#     target = res.context['original']
+#
+#     old_version = target.version
+#     form = res.form
+#     form['username'] = 'UPDATED'
+#     res = form.submit().follow()
+#     target = SimpleConcurrentModel.objects.get(pk=target.pk)
+#     new_version = target.version
+#
+#     assert new_version > old_version
+
+# @pytest.mark.django_db
+# @pytest.mark.functional
+# def test_conflict(superuser, concurrentmodel, app):
+#     url = reverse('admin:concurrency_simpleconcurrentmodel_change',
+#                   args=[concurrentmodel.pk])
+#     res = app.get(url, user=superuser.username)
+#     form = res.form
+#     concurrentmodel.save()  # create conflict here
+#
+#     res = form.submit()
+#
+#     assert 'original' in res.context
+#     assert res.context['adminform'].form.errors
+#     assert _('Record Modified') in str(res.context['adminform'].form.errors)
 
 
 class TestConcurrentModelAdmin(AdminTestCase):

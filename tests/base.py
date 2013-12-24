@@ -1,3 +1,5 @@
+import django
+import pytest
 from django.test import TransactionTestCase
 from django.contrib.auth.models import User
 from django_webtest import WebTestMixin
@@ -10,6 +12,16 @@ from django.contrib.auth.models import Permission
 from concurrency.fields import IntegerVersionField
 
 apply_concurrency_check(Permission, 'version', IntegerVersionField)
+
+DJANGO_TRUNK = django.VERSION[:2] == (1, 7)
+
+skipIfDjangoTrunk = pytest.mark.skipif(DJANGO_TRUNK,
+                                       reason="Skip if django == 1.7")
+onlyDjangoTrunk = pytest.mark.skipif(DJANGO_TRUNK,
+                                     reason="Skip if django != 1.7")
+
+failIfTrunk = pytest.mark.xfail(DJANGO_TRUNK,
+                                reason="python trunk api changes")
 
 
 class AdminTestCase(WebTestMixin, TransactionTestCase):

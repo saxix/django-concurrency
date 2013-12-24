@@ -52,7 +52,7 @@ def admin_register(model, modeladmin=ConcurrentModelAdmin):
 
 def admin_register_models():
     admin_register(SimpleConcurrentModel, ActionsModelAdmin)
-    # admin_register(ProxyModel, ListEditableModelAdmin)
+    admin_register(ProxyModel, ListEditableModelAdmin)
     admin_register(InheritedModel, ActionsModelAdmin)
     admin_register(NoActionsConcurrentModel, NoActionsModelAdmin)
     admin_register(ListEditableConcurrentModel, ListEditableModelAdmin)
