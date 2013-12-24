@@ -1,10 +1,10 @@
 from concurrency.exceptions import RecordModifiedError
-from concurrency.tests.models import TestModelWithCustomOptions, ConcurrentModel
-from django.test import TestCase
+from tests.models import ConcurrencyDisabledModel, SimpleConcurrentModel
+from django.test import TransactionTestCase
 
 
-class TestCustomConcurrencyMeta(TestCase):
-    concurrency_model = TestModelWithCustomOptions
+class TestCustomConcurrencyMeta(TransactionTestCase):
+    concurrency_model = ConcurrencyDisabledModel
     concurrency_kwargs = {'username': 'test'}
 
     def setUp(self):
@@ -25,8 +25,8 @@ class TestCustomConcurrencyMeta(TestCase):
         # TestModelWithCustomOptions extends ConcurrentModel
         # but we disabled concurrency only in TestModelWithCustomOptions
         import concurrency.api as api
-        concurrency_enabled1 = ConcurrentModel.objects.get_or_create(**{'dummy_char': 'test'})[0]
-        concurrency_enabled2 = ConcurrentModel.objects.get_or_create(**{'dummy_char': 'test'})[0]
+        concurrency_enabled1 = SimpleConcurrentModel.objects.get_or_create(**{'username': 'test'})[0]
+        concurrency_enabled2 = SimpleConcurrentModel.objects.get_or_create(**{'username': 'test'})[0]
         v1 = api.get_revision_of_object(concurrency_enabled1)
         v2 = api.get_revision_of_object(concurrency_enabled2)
         assert v1 == v2, "got same row with different version (%s/%s)" % (v1, v2)
@@ -34,8 +34,8 @@ class TestCustomConcurrencyMeta(TestCase):
         assert concurrency_enabled1.pk is not None  # sanity check
         self.assertRaises(RecordModifiedError, concurrency_enabled2.save)
 
-        concurrency_disabled1 = ConcurrentModel.objects.get_or_create(**{'dummy_char': 'test'})[0]
-        concurrency_disabled2 = ConcurrentModel.objects.get_or_create(**{'dummy_char': 'test'})[0]
+        concurrency_disabled1 = ConcurrencyDisabledModel.objects.get_or_create(**{'username': 'test'})[0]
+        concurrency_disabled2 = ConcurrencyDisabledModel.objects.get_or_create(**{'username': 'test'})[0]
         v1 = api.get_revision_of_object(concurrency_disabled1)
         v2 = api.get_revision_of_object(concurrency_disabled2)
         assert v1 == v2, "got same row with different version (%s/%s)" % (v1, v2)
