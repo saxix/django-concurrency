@@ -1,5 +1,5 @@
 from concurrency.admin import ConcurrentModelAdmin
-from demoproject.demoapp.models import DemoModel, proxy_factory
+from .models import DemoModel, proxy_factory
 
 
 class DemoModelAdmin(ConcurrentModelAdmin):
