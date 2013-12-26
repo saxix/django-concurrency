@@ -12,14 +12,14 @@ from tests.util import nextname
 @pytest.mark.django_db(transaction=False)
 @pytest.mark.skipIf('os.environ["DBENGINE"]=="pg"')
 def test_get_revision_of_object(model_class=SimpleConcurrentModel):
-    instance = model_class(username=nextname.next())
+    instance = model_class(username=next(nextname))
     instance.save()
     assert get_revision_of_object(instance) == instance.version
 
 
 @pytest.mark.django_db
 def test_is_changed(model_class=SimpleConcurrentModel):
-    instance = model_class(username=nextname.next())
+    instance = model_class(username=next(nextname))
     instance.save()
     copy = refetch(instance)
     copy.save()
@@ -28,7 +28,7 @@ def test_is_changed(model_class=SimpleConcurrentModel):
 
 @pytest.mark.django_db
 def test_get_version(model_class=SimpleConcurrentModel):
-    instance = model_class(username=nextname.next())
+    instance = model_class(username=next(nextname))
     instance.save()
     copy = refetch(instance)
     copy.save()
@@ -46,7 +46,7 @@ def test_apply_concurrency_check(model_class=SimpleConcurrentModel):
 
 @pytest.mark.django_db(transaction=False)
 def test_disable_concurrency(model_class=SimpleConcurrentModel):
-    instance = model_class(username=nextname.next())
+    instance = model_class(username=next(nextname))
     instance.save()
     copy = refetch(instance)
     copy.save()

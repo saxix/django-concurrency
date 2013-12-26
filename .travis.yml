@@ -4,6 +4,7 @@ services:
   - PostgreSQL
 python:
   - 2.7
+  - 3.2
 
 env:
   - DJANGO="1.4.x" DBENGINE=mysql
@@ -28,11 +29,13 @@ script:
 matrix:
   exclude:
     - python: 3.2
-      env: DJANGO="1.4.x" DBENGINE=mysql
-    - python: 3.2
-      env: DJANGO="1.4.x" DBENGINE=pg
+      env: DJANGO="1.4.x"
     - python: 3.2
       env: DJANGO="1.5.x"
+    - python: 3.2
+      env: DJANGO="dev"
+    - python: 3.2
+      env: DBENGINE=mysql
 
 after_success:
   - coveralls

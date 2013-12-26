@@ -7,7 +7,7 @@ from tests.util import with_all_models, unique_id, nextname, with_std_models
 @pytest.mark.django_db
 @with_all_models
 def test_standard_save(model_class):
-    instance = model_class(username=nextname.next())
+    instance = model_class(username=next(nextname))
     instance.save()
     assert instance.get_concurrency_version() > 0
 

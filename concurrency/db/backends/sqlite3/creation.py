@@ -24,6 +24,7 @@ END; ##
         self.trigger_fields = []
 
     def _create_trigger(self, field):
+        from django.db.utils import DatabaseError
         cursor = self.connection.cursor()
 
         opts = field.model._meta
@@ -36,8 +37,7 @@ END; ##
                                   field=field)
             try:
                 cursor.execute(stm)
-            except BaseException:
-                print stm
-                raise
+            except BaseException as exc:
+                raise DatabaseError(exc)
 
         return trigger_name

@@ -39,7 +39,7 @@ def test_create(model_class=SimpleConcurrentModel):
              ConcreteModel, ProxyModel)
 def test_update(model_class):
     # Manager.update() does not change version number
-    instance = model_class.objects.create(pk=next(unique_id), username=nextname.next().lower())
+    instance = model_class.objects.create(pk=next(unique_id), username=next(nextname).lower())
     field_value = instance.username
     model_class.objects.filter(pk=instance.pk).update(username=instance.username.upper())
 
