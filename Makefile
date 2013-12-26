@@ -19,8 +19,7 @@ make-cache:
 	    -r requirements.pip python-coveralls coverage
 
 install-deps:
-	pip install  Sphinx==1.1.3 \
-	        "setuptools>=2.0.1" \
+	pip install \
 	        -r demo/demoproject/requirements.pip \
 	        -r requirements.pip python-coveralls coverage
 
