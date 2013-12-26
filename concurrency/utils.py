@@ -150,7 +150,7 @@ def create_triggers(databases, stdout=sys.stdout):
                 if alias in databases:
                     connection = connections[alias]
                     if hasattr(connection.creation, '_create_trigger'):
-                        name = connections[alias].creation._create_trigger(model._concurrencymeta._field)
+                        connections[alias].creation._create_trigger(model._concurrencymeta._field)
                         # stdout.write('\tCreated trigger`%s`\n' % name)
                     else:
                         raise ImproperlyConfigured('TriggerVersionField need concurrency database backend')

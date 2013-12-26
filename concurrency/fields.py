@@ -263,18 +263,18 @@ class TriggerVersionField(VersionField):
     @staticmethod
     def _increment_version_number(obj):
         old_value = get_revision_of_object(obj)
-        setattr(obj, obj._concurrencymeta._field.attname, int(old_value)+1)
+        setattr(obj, obj._concurrencymeta._field.attname, int(old_value) + 1)
 
     @staticmethod
     def _wrap_save(func):
         from concurrency.api import concurrency_check
 
         def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-            reload = kwargs.pop('refetch', True)
+            reload = kwargs.pop('refetch', False)
             if self._concurrencymeta.enabled and conf.PROTOCOL == 1:
                 concurrency_check(self, force_insert, force_update, using, **kwargs)
             ret = func(self, force_insert, force_update, using, **kwargs)
-            # TriggerVersionField._increment_version_number(self)
+            TriggerVersionField._increment_version_number(self)
             if reload:
                 ret = refetch(self)
                 setattr(self,

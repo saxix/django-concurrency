@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from time import sleep
 from django.core import signals
 from django.db import connections
 import pytest
