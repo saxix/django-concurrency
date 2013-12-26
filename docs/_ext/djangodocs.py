@@ -73,7 +73,7 @@ class VersionDirective(Directive):
         node = addnodes.versionmodified()
         ret.append(node)
 
-        if self.arguments[0] == env.config.django_next_version:
+        if self.arguments[0] == env.config.next_version:
             node['version'] = "Development version"
         else:
             node['version'] = self.arguments[0]
