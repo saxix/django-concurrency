@@ -1,22 +1,30 @@
 # -*- coding: utf-8 -*-
 from time import sleep
 from django.core import signals
-from django.db import connection, connections
-from django.test import TestCase, TransactionTestCase
-from concurrency.tests.models import TriggerConcurrentModel
-# from django.test.utils import CaptureQueriesContext
+from django.db import connections
+import pytest
+from concurrency.exceptions import RecordModifiedError
+from concurrency.utils import refetch
+from tests.models import TriggerConcurrentModel
 from django.core.signals import request_started
 
 # Register an event to reset saved queries when a Django request is started.
+from tests.util import nextname
+
+
 def reset_queries(**kwargs):
     for conn in connections.all():
         conn.queries = []
+
+
 signals.request_started.connect(reset_queries)
+
 
 class CaptureQueriesContext(object):
     """
     Context manager that captures queries executed by the specified connection.
     """
+
     def __init__(self, connection):
         self.connection = connection
 
@@ -49,34 +57,27 @@ class CaptureQueriesContext(object):
         self.final_queries = len(self.connection.queries)
 
 
-class TriggerVersionFieldTest(TransactionTestCase):
-    def test_success(self):
-        # input('Starting')
+@pytest.mark.django_db
+def test_trigger():
+    instance = TriggerConcurrentModel()
+    assert instance.pk is None
+    assert instance.version == 0
 
+    instance.username = next(nextname)
+    instance.save()  # insert
+    instance = refetch(instance)
+    assert instance.version == 1
 
-        obj = TriggerConcurrentModel()
-        assert obj.pk is None
-        assert obj.version == 0
-        sleep(1)
-        obj = TriggerConcurrentModel.objects.create()
-        assert obj.pk
-        assert obj.version > 0
+    instance.username = next(nextname)
+    instance.save()  # update
+    assert instance.version == 2
 
-        obj, __ = TriggerConcurrentModel.objects.get_or_create(dummy_char='a')
-        assert obj.pk
-        assert obj.version > 0
-        sleep(1)
-        with CaptureQueriesContext(connection) as c:
-            obj.save()
-            v = obj.version
-            print obj.version, v
-            #assert v > 1
-            #print c.captured_queries
-            #assert len(c.captured_queries) == 1, c.captured_queries
-            sleep(1)
-            obj.save()
-            print obj.version, v
-            assert obj.version > v
-            #print c.captured_queries
+    instance.username = next(nextname)
+    instance.save()  # update
+    assert instance.version == 3
 
-        # input('Waiting')
+    copy = refetch(instance)
+    copy.save()
+
+    with pytest.raises(RecordModifiedError):
+        instance.save()

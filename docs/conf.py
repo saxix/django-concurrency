@@ -48,11 +48,14 @@ extensions = ['sphinx.ext.autodoc',
               'github',
               'djangodocs']
 intersphinx_mapping = {
-    'python': ('http://python.readthedocs.org/en/v2.7.2/', None),
+    'python': ('http://python.readthedocs.org/en/v2.7.5/', None),
     'django': ('http://django.readthedocs.org/en/latest/', None),
     'sphinx': ('http://sphinx.readthedocs.org/en/latest/', None),
 }
-extlinks = {'issue': ('https://github.com/saxix/django-concurrency/issues/', 'issue')}
+extlinks = {'issue': ('https://github.com/saxix/django-concurrency/issues/%s', 'issue #'),
+            'django_issue': ('https://code.djangoproject.com/ticket/%s', 'issue #'),
+
+            }
 next_version = '0.7'
 todo_include_todos = True
 
@@ -123,16 +126,11 @@ pygments_style = 'sphinx'
 # a list of builtin themes.
 
 if os.environ.get('READTHEDOCS', None) == 'True':
+    html_theme = "sphinx_rtd_theme"
+else:
     import sphinx_rtd_theme
     html_theme = "sphinx_rtd_theme"
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-else:
-    html_theme = 'default'
-    html_theme_path = ['.']
-
-import sphinx_rtd_theme
-html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

@@ -24,7 +24,8 @@ failIfTrunk = pytest.mark.xfail(DJANGO_TRUNK,
                                 reason="python trunk api changes")
 
 skipIfDjango14 = pytest.mark.skipif(django.VERSION[:2] == (1, 4),
-                                       reason="Skip if django == 1.4")
+                                    reason="Skip if django == 1.4")
+
 
 class AdminTestCase(WebTestMixin, TransactionTestCase):
     urls = 'tests.urls'

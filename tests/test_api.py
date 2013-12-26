@@ -4,8 +4,9 @@ from django.contrib.auth.models import Permission
 from concurrency.api import (get_revision_of_object, is_changed, get_version,
                              apply_concurrency_check, disable_concurrency)
 from concurrency.fields import IntegerVersionField
+from concurrency.utils import refetch
 from tests.models import SimpleConcurrentModel
-from tests.util import refetch, nextname
+from tests.util import nextname
 
 
 @pytest.mark.django_db(transaction=False)

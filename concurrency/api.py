@@ -22,7 +22,6 @@ def get_revision_of_object(obj):
     """
     return getattr(obj, get_version_fieldname(obj))
 
-
 def is_changed(obj):
     """
         returns True if `obj` is changed or deleted on the database

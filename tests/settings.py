@@ -66,7 +66,8 @@ db = os.environ.get('DBENGINE', None)
 if db == 'pg':
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'ENGINE': 'concurrency.db.backends.postgresql_psycopg2',
             'NAME': DBNAME,
             'HOST': '127.0.0.1',
             'PORT': '',
@@ -75,34 +76,21 @@ if db == 'pg':
 elif db == 'mysql':
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
+            # 'ENGINE': 'django.db.backends.mysql',
+            'ENGINE': 'concurrency.db.backends.mysql',
             'NAME': DBNAME,
             'HOST': '127.0.0.1',
             'PORT': '',
             'USER': 'root',
             'PASSWORD': '',
             'CHARSET': 'utf8',
-            'COLLATION': 'utf8_general_ci',
-            'TEST_CHARSET': 'utf8',
-            'TEST_COLLATION': 'utf8_general_ci'}}
-elif db == 'myisam':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': DBNAME,
-            'HOST': '127.0.0.1',
-            'PORT': '',
-            'USER': 'root',
-            'PASSWORD': '',
-            'CHARSET': 'utf8',
-            'OPTIONS': {'init_command': 'SET storage_engine=MyISAM', },
             'COLLATION': 'utf8_general_ci',
             'TEST_CHARSET': 'utf8',
             'TEST_COLLATION': 'utf8_general_ci'}}
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
+            'ENGINE': 'concurrency.db.backends.sqlite3',
             'NAME': '%s.sqlite' % DBNAME,
             'HOST': '',
             'PORT': ''}}

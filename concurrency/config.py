@@ -1,6 +1,8 @@
 from __future__ import absolute_import, unicode_literals
+import warnings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import get_callable
+from django.db.models import Model
 from django.utils import six
 from django.test.signals import setting_changed
 
@@ -14,7 +16,6 @@ CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL = 2
 CONCURRENCY_POLICY_RAISE = 4
 CONCURRENCY_POLICY_CALLBACK = 8
 
-CONFLICTS_POLICIES = [CONCURRENCY_POLICY_RAISE, CONCURRENCY_POLICY_CALLBACK]
 LIST_EDITABLE_POLICIES = [CONCURRENCY_LIST_EDITABLE_POLICY_SILENT, CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL]
 
 

@@ -10,11 +10,12 @@ from concurrency.templatetags.concurrency import identity
 from django.contrib.admin.sites import site
 from django.http import QueryDict
 from django.test.client import RequestFactory
+from concurrency.utils import refetch
 from tests.admin import admin_register, ActionsModelAdmin
 
 from tests.base import AdminTestCase
 from tests.models import ListEditableConcurrentModel
-from tests.util import unique_id, refetch, attributes
+from tests.util import unique_id, attributes
 
 
 def get_fake_request(params):
@@ -33,12 +34,11 @@ def get_fake_request(params):
 
 class TestIssue16(AdminTestCase):
     def test_concurrency(self):
-        id =1
+        id = 1
         admin_register(ListEditableConcurrentModel, ActionsModelAdmin)
         model_admin = site._registry[ListEditableConcurrentModel]
         with attributes((ConcurrentModelAdmin, 'list_editable_policy', CONCURRENCY_LIST_EDITABLE_POLICY_SILENT),
-                        (ConcurrentModelAdmin, 'form', ConcurrentForm),):
-
+                        (ConcurrentModelAdmin, 'form', ConcurrentForm), ):
             obj, __ = ListEditableConcurrentModel.objects.get_or_create(pk=id)
             request1 = get_fake_request('pk=%s&_concurrency_version_1=2' % id)
 

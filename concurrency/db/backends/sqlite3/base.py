@@ -1,19 +1,20 @@
-from django.db.backends.mysql.base import DatabaseWrapper as MySQLDatabaseWrapper
-from concurrency.db.backends.mysql.creation import MySQLCreation
+# from django.db.backends.sqlite3.base import *
+from django.db.backends.sqlite3.base import DatabaseWrapper as Sqlite3DatabaseWrapper
+from concurrency.db.backends.sqlite3.creation import Sqlite3Creation
 
 
-class DatabaseWrapper(MySQLDatabaseWrapper):
+class DatabaseWrapper(Sqlite3DatabaseWrapper):
     def __init__(self, *args, **kwargs):
         super(DatabaseWrapper, self).__init__(*args, **kwargs)
-        self.creation = MySQLCreation(self)
+        self.creation = Sqlite3Creation(self)
 
     def _clone(self):
         return self.__class__(self.settings_dict, self.alias)
 
     def list_triggers(self):
         cursor = self.cursor()
-        cursor.execute("SHOW TRIGGERS LIKE 'concurrency_%%';")
-        return [m[0] for m in cursor.fetchall()]
+        result = cursor.execute("select name from sqlite_master where type = 'trigger';")
+        return [m[0] for m in result.fetchall()]
 
     def drop_trigger(self, trigger_name):
         cursor = self.cursor()

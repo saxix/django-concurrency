@@ -148,22 +148,3 @@ class ConcurrentFormTest(TestCase):
         form = Form(data, instance=obj)
         obj.save()  # save again simulate concurrent editing
         self.assertRaises(ValueError, form.save)
-
-    def test_form_is_valid(self):
-        with self.settings(CONCURRECY_SANITY_CHECK=True):
-            obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
-            Form = modelform_factory(TestIssue3Model, ConcurrentForm, exclude=('char_field',))
-            data = {'username': "a",
-                    'revision': VersionFieldSigner().sign(1)}
-            form = Form(data)
-            self.assertRaises(InconsistencyError, form.is_valid)
-
-    def test_signing(self):
-        """ Do not accept version value if adding"""
-        with self.settings(CONCURRECY_SANITY_CHECK=True):
-            obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
-            Form = modelform_factory(TestIssue3Model, ConcurrentForm, exclude=('char_field',))
-            data = {'username': "a",
-                    'revision': VersionFieldSigner().sign(1)}
-            form = Form(data)
-            self.assertRaises(InconsistencyError, form.is_valid)

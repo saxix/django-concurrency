@@ -2,7 +2,12 @@
 from __future__ import absolute_import, unicode_literals
 import logging
 import warnings
+from django.core.exceptions import ImproperlyConfigured
+from django.db import router, connections
+from django.db.models.loading import get_models, get_apps
+import sys
 from concurrency.exceptions import RecordModifiedError
+
 
 logger = logging.getLogger(__name__)
 
@@ -112,3 +117,47 @@ class ConcurrencyTestMixin(object):
 
 class ConcurrencyAdminTestMixin(object):
     pass
+
+
+def get_triggers(databases):
+    triggers = {}
+    for alias in databases:
+        connection = connections[alias]
+        if hasattr(connection, 'list_triggers'):
+            triggers[alias] = [trigger_name for trigger_name in connection.list_triggers()]
+    return triggers
+
+
+def drop_triggers(databases, stdout=sys.stdout):
+    triggers = {}
+    for alias in databases:
+        connection = connections[alias]
+        if hasattr(connection, 'drop_triggers'):
+            connection.drop_triggers()
+
+    return triggers
+
+
+def create_triggers(databases, stdout=sys.stdout):
+    from concurrency.fields import TriggerVersionField
+
+    for app in get_apps():
+        for model in get_models(app):
+            if hasattr(model, '_concurrencymeta') and \
+                    isinstance(model._concurrencymeta._field, TriggerVersionField):
+                # stdout.write('Found concurrent model `%s`\n' % model.__name__)
+                alias = router.db_for_write(model)
+                if alias in databases:
+                    connection = connections[alias]
+                    if hasattr(connection.creation, '_create_trigger'):
+                        name = connections[alias].creation._create_trigger(model._concurrencymeta._field)
+                        # stdout.write('\tCreated trigger`%s`\n' % name)
+                    else:
+                        raise ImproperlyConfigured('TriggerVersionField need concurrency database backend')
+
+
+def refetch(model_instance):
+    """
+    Reload model instance from the database
+    """
+    return model_instance.__class__.objects.get(pk=model_instance.pk)
