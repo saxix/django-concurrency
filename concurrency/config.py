@@ -14,7 +14,7 @@ from django.test.signals import setting_changed
 CONCURRENCY_LIST_EDITABLE_POLICY_SILENT = 1
 CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL = 2
 CONCURRENCY_POLICY_RAISE = 4
-# CONCURRENCY_POLICY_CALLBACK = 8
+CONCURRENCY_POLICY_CALLBACK = 8
 
 LIST_EDITABLE_POLICIES = [CONCURRENCY_LIST_EDITABLE_POLICY_SILENT, CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL]
 
@@ -79,6 +79,17 @@ class AppSettings(object):
                 setting_changed.send(self.__class__, setting=prefix_name, value=value, enter=True)
 
         setting_changed.connect(self._handler)
+
+    # def _check_config(self):
+    #     list_editable_policy = self.POLICY | sum(LIST_EDITABLE_POLICIES)
+    #     if list_editable_policy == sum(LIST_EDITABLE_POLICIES):
+    #         raise ImproperlyConfigured("Invalid value for `CONCURRENCY_POLICY`: "
+    #                                    "Use only one of `CONCURRENCY_LIST_EDITABLE_*` flags")
+    #
+    #     conflict_policy = self.POLICY | sum(CONFLICTS_POLICIES)
+    #     if conflict_policy == sum(CONFLICTS_POLICIES):
+    #         raise ImproperlyConfigured("Invalid value for `CONCURRENCY_POLICY`: "
+    #                                    "Use only one of `CONCURRENCY_POLICY_*` flags")
 
     def _set_attr(self, prefix_name, value):
         name = prefix_name[len(self.prefix) + 1:]

@@ -3,11 +3,10 @@ Django Concurrency
 ==================
 
 
-.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=develop
+.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
    :target: http://travis-ci.org/saxix/django-concurrency/
 
-
-.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=develop
+.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=master
    :target: https://coveralls.io/r/saxix/django-concurrency
 
 .. image:: https://pypip.in/v/django-concurrency/badge.png
@@ -15,6 +14,10 @@ Django Concurrency
 
 .. image:: https://pypip.in/d/django-concurrency/badge.png
    :target: https://crate.io/packages/django-concurrency/
+
+.. image:: https://requires.io/github/saxix/django-concurrency/requirements.png?branch=master
+   :target: https://requires.io/github/saxix/django-concurrency/requirements/?branch=master
+   :alt: Requirements Status
 
 
 django-concurrency is an optimistic lock [1]_ implementation for Django.
@@ -43,6 +46,16 @@ Now if you try::
     b.save()
 
 you will get a ``RecordModifiedError`` on ``b.save()``
+
+
+Similar projects
+-----------------
+
+ - django-locking - http://stdbrouw.github.io/django-locking/index.html
+    similar but with different purpose
+
+ - django-optimisitc-lock - https://github.com/gavinwahl/django-optimistic-lock
+    django 1.6
 
 Links
 ~~~~~

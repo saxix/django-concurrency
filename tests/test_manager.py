@@ -1,20 +1,21 @@
 import pytest
 from concurrency.exceptions import RecordModifiedError
-from tests.models import SimpleConcurrentModel
-from tests.util import refetch, with_all_models, unique_id, nextname
+from concurrency.utils import refetch
+from tests.models import (SimpleConcurrentModel, AutoIncConcurrentModel, CustomSaveModel,
+                          InheritedModel, ConcreteModel, ProxyModel)
+from tests.util import with_all_models, unique_id, nextname, with_models, with_std_models
 
 
 @pytest.mark.django_db
-@with_all_models
+@with_std_models
 def test_get_or_create(model_class):
-    # instance, __ = model_class.objects.get_or_create(username=nextname.next())
     instance, __ = model_class.objects.get_or_create(pk=next(unique_id))
     assert instance.get_concurrency_version()
     instance.save()
 
 
 @pytest.mark.django_db
-@with_all_models
+@with_std_models
 def test_get_or_create_with_pk(model_class):
     instance, __ = model_class.objects.get_or_create(pk=next(unique_id))
     assert instance.get_concurrency_version()
@@ -33,10 +34,12 @@ def test_create(model_class=SimpleConcurrentModel):
 
 
 @pytest.mark.django_db
-@with_all_models
+@with_models(SimpleConcurrentModel, AutoIncConcurrentModel,
+             InheritedModel, CustomSaveModel,
+             ConcreteModel, ProxyModel)
 def test_update(model_class):
     # Manager.update() does not change version number
-    instance = model_class.objects.create(pk=next(unique_id), username=nextname.next().lower())
+    instance = model_class.objects.create(pk=next(unique_id), username=next(nextname).lower())
     field_value = instance.username
     model_class.objects.filter(pk=instance.pk).update(username=instance.username.upper())
 

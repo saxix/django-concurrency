@@ -22,7 +22,7 @@ setup(
               "concurrency.templatetags"
     ],
     include_package_data=True,
-    description="Optimistic locking library for Django",
+    description="Optimistic lock implementation for Django. Prevents users from doing concurrent editing.",
     long_description=open('README.rst').read(),
     license="MIT License",
     keywords="django",

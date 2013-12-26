@@ -19,8 +19,7 @@ make-cache:
 	    -r requirements.pip python-coveralls coverage
 
 install-deps:
-	pip install  Sphinx==1.1.3 \
-	        "setuptools>=2.0.1" \
+	pip install \
 	        -r demo/demoproject/requirements.pip \
 	        -r requirements.pip python-coveralls coverage
 
@@ -48,7 +47,7 @@ init-db:
 	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2; fi"
 
 ci:
-	sh -c "if [ '${DJANGO}' = '1.4.x' ]; then pip install ${DJANGO_14}; fi"
+	@sh -c "if [ '${DJANGO}' = '1.4.x' ]; then pip install ${DJANGO_14}; fi"
 	@sh -c "if [ '${DJANGO}' = '1.5.x' ]; then pip install ${DJANGO_15}; fi"
 	@sh -c "if [ '${DJANGO}' = '1.6.x' ]; then pip install ${DJANGO_16}; fi"
 	@sh -c "if [ '${DJANGO}' = 'dev' ]; then pip install ${DJANGO_DEV}; fi"

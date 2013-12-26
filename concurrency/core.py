@@ -61,14 +61,11 @@ def _wrap_model_save(model, force=False):
     if conf.PROTOCOL == 2:
         logger.debug('Wrapping _do_update() method of %s' % model)
         old_do_update = getattr(model, '_do_update')
-        # old_do_insert = getattr(model, '_do_insert')
-        # old_save_table = getattr(model, '_save_table')
-        # old_save_parents = getattr(model, '_save_parents')
         old_save_base = getattr(model, 'save_base')
+        old_save = getattr(model, 'save')
         setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
-        # setattr(model, '_do_insert', model._concurrencymeta._field._wrap_do_insert(old_do_insert))
-        # setattr(model, '_save_table', model._concurrencymeta._field._wrap_save_table(old_save_table))
         setattr(model, 'save_base', model._concurrencymeta._field._wrap_save_base(old_save_base))
+        setattr(model, 'save', model._concurrencymeta._field._wrap_save(old_save))
 
     elif conf.PROTOCOL == 1:
         logger.debug('Wrapping save method of %s' % model)

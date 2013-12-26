@@ -1,4 +1,4 @@
-.. include:: globals.rst
+.. include:: globals.txt
 
 .. _api:
 
@@ -49,7 +49,9 @@ RecordModifiedError
 
 InconsistencyError
 -------------------
-.. autoclass:: concurrency.exceptions.InconsistencyError
+.. versionchanged:: 0.7
+.. warning:: removed in 0.7
+.. class:: concurrency.exceptions.InconsistencyError
 
 
 .. _VersionError:

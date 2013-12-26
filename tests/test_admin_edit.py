@@ -117,7 +117,7 @@ class TestAdminEdit(AdminTestCase):
         url = reverse('admin:concurrency_simpleconcurrentmodel_add')
         res = self.app.get(url, user='sax')
         form = res.form
-        username = nextname.next()
+        username = next(nextname)
         form['username'] = username
         res = form.submit().follow()
         self.assertTrue(SimpleConcurrentModel.objects.filter(username=username).exists())

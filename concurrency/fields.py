@@ -4,12 +4,13 @@ import logging
 from functools import update_wrapper
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import Field
-from django.db.models.signals import class_prepared
+from django.db.models.signals import class_prepared, post_syncdb
 
 from concurrency import forms
 from concurrency.config import conf
 from concurrency.core import ConcurrencyOptions, _wrap_model_save
 from concurrency.api import get_revision_of_object, disable_concurrency
+from concurrency.utils import refetch
 
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,19 @@ def class_prepared_concurrency_handler(sender, **kwargs):
         logger.debug('Skipped concurrency for %s' % sender)
 
 
+def post_syncdb_concurrency_handler(sender, **kwargs):
+    from django.db import connection
+
+    if hasattr(connection.creation, '_create_trigger'):
+        while _TRIGGERS:
+            field = _TRIGGERS.pop()
+            connection.creation._create_trigger(field)
+
+
+class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_prepared_concurrency_handler')
+post_syncdb.connect(post_syncdb_concurrency_handler, dispatch_uid='post_syncdb_concurrency_handler')
+
+_TRIGGERS = []
 class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_prepared_concurrency_handler')
 
 
@@ -49,13 +63,14 @@ class VersionField(Field):
         db_column = kwargs.get('db_column', None)
         help_text = kwargs.get('help_text', _('record revision number'))
 
-        super(VersionField, self).__init__(verbose_name, name, editable=True,
-                                           help_text=help_text, null=False, blank=False,
-                                           default=0,
-                                           db_tablespace=db_tablespace, db_column=db_column)
+        super(VersionField, self).__init__(verbose_name, name,
+                                           help_text=help_text,
+                                           default=1,
+                                           db_tablespace=db_tablespace,
+                                           db_column=db_column)
 
     def get_default(self):
-        return 1
+        return 0
 
     def get_internal_type(self):
         return "BigIntegerField"
@@ -165,27 +180,27 @@ class IntegerVersionField(VersionField):
         old_value = getattr(model_instance, self.attname, 0)
         return max(int(old_value) + 1, (int(time.time() * 1000000) - OFFSET))
 
-    # def pre_save(self, model_instance, add):
-    #     if conf.PROTOCOL >= 2:
-    #         if add:
-    #             value = self._get_next_version(model_instance)
-    #             self._set_version_value(model_instance, value)
-    #         return getattr(model_instance, self.attname)
-    #
-    #     value = self._get_next_version(model_instance)
-    #     self._set_version_value(model_instance, value)
-    #     return value
+        # def pre_save(self, model_instance, add):
+        #     if conf.PROTOCOL >= 2:
+        #         if add:
+        #             value = self._get_next_version(model_instance)
+        #             self._set_version_value(model_instance, value)
+        #         return getattr(model_instance, self.attname)
+        #
+        #     value = self._get_next_version(model_instance)
+        #     self._set_version_value(model_instance, value)
+        #     return value
 
-    # @staticmethod
-    # def _wrap_save(func):
-    #     from concurrency.api import concurrency_check
-    #
-    #     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-    #         if self._concurrencymeta.enabled:
-    #             concurrency_check(self, force_insert, force_update, using, **kwargs)
-    #         return func(self, force_insert, force_update, using, **kwargs)
-    #
-    #     return update_wrapper(inner, func)
+        # @staticmethod
+        # def _wrap_save(func):
+        #     from concurrency.api import concurrency_check
+        #
+        #     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
+        #         if self._concurrencymeta.enabled:
+        #             concurrency_check(self, force_insert, force_update, using, **kwargs)
+        #         return func(self, force_insert, force_update, using, **kwargs)
+        #
+        #     return update_wrapper(inner, func)
 
 
 class AutoIncVersionField(VersionField):
@@ -201,26 +216,74 @@ class AutoIncVersionField(VersionField):
     def _get_next_version(self, model_instance):
         return int(getattr(model_instance, self.attname, 0)) + 1
 
-    # def pre_save(self, model_instance, add):
-    #     if conf.PROTOCOL >= 2:
-    #         if add:
-    #             value = self._get_next_version(model_instance)
-    #             self._set_version_value(model_instance, value)
-    #         return getattr(model_instance, self.attname)
-    #     value = self._get_next_version(model_instance)
-    #     self._set_version_value(model_instance, value)
-    #     return value
+        # def pre_save(self, model_instance, add):
+        #     if conf.PROTOCOL >= 2:
+        #         if add:
+        #             value = self._get_next_version(model_instance)
+        #             self._set_version_value(model_instance, value)
+        #         return getattr(model_instance, self.attname)
+        #     value = self._get_next_version(model_instance)
+        #     self._set_version_value(model_instance, value)
+        #     return value
 
-    # @staticmethod
-    # def _wrap_save(func):
-    #     from concurrency.api import concurrency_check
-    #
-    #     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-    #         if self._concurrencymeta.enabled:
-    #             concurrency_check(self, force_insert, force_update, using, **kwargs)
-    #         return func(self, force_insert, force_update, using, **kwargs)
-    #
-    #     return update_wrapper(inner, func)
+        # @staticmethod
+        # def _wrap_save(func):
+        #     from concurrency.api import concurrency_check
+        #
+        #     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
+        #         if self._concurrencymeta.enabled:
+        #             concurrency_check(self, force_insert, force_update, using, **kwargs)
+        #         return func(self, force_insert, force_update, using, **kwargs)
+        #
+        #     return update_wrapper(inner, func)
+
+
+class TriggerVersionField(VersionField):
+    """
+        Version Field increment the revision number each commit
+
+    """
+    form_class = forms.VersionField
+
+    def contribute_to_class(self, cls, name, virtual_only=False):
+        _TRIGGERS.append(self)
+        super(TriggerVersionField, self).contribute_to_class(cls, name)
+
+    def _get_next_version(self, model_instance):
+        # always returns the same value
+        return int(getattr(model_instance, self.attname, 0))
+
+    def pre_save(self, model_instance, add):
+        # always returns the same value
+        return int(getattr(model_instance, self.attname, 0))
+
+    # def _set_version_value(self, model_instance, value):
+    #     pass  # noop here
+
+    @staticmethod
+    def _increment_version_number(obj):
+        old_value = get_revision_of_object(obj)
+        setattr(obj, obj._concurrencymeta._field.attname, int(old_value) + 1)
+
+    @staticmethod
+    def _wrap_save(func):
+        from concurrency.api import concurrency_check
+
+        def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
+            reload = kwargs.pop('refetch', False)
+            if self._concurrencymeta.enabled and conf.PROTOCOL == 1:
+                concurrency_check(self, force_insert, force_update, using, **kwargs)
+            ret = func(self, force_insert, force_update, using, **kwargs)
+            TriggerVersionField._increment_version_number(self)
+            if reload:
+                ret = refetch(self)
+                setattr(self,
+                        self._concurrencymeta._field.attname,
+                        get_revision_of_object(ret))
+
+            return ret
+
+        return update_wrapper(inner, func)
 
 
 try:
@@ -228,13 +291,13 @@ try:
 
     rules = [
         (
-            (IntegerVersionField, AutoIncVersionField),
+            (IntegerVersionField, AutoIncVersionField, TriggerVersionField),
             [], {"verbose_name": ["verbose_name", {"default": None}],
                  "name": ["name", {"default": None}],
                  "help_text": ["help_text", {"default": ''}],
                  "db_column": ["db_column", {"default": None}],
                  "db_tablespace": ["db_tablespace", {"default": None}],
-                 "default": ["default", {"default": 0}],
+                 "default": ["default", {"default": 1}],
                  "manually": ["manually", {"default": False}]})
     ]
 

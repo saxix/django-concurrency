@@ -1,4 +1,4 @@
-.. include:: globals.rst
+.. include:: globals.txt
 
 .. _help:
 
@@ -41,25 +41,12 @@ Option 1: using tox
 ~~~~~~~~~~~~~~~~~~~
     ::
 
-        $ pip install tox
+        $ pip install -r requirements.pip
         $ tox
 
 Option 2: using demo project
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ::
 
-        $ cd demo
-        $ pip install -r demoproject/requirements.pip
-        $ ./manage.py test concurrency demoapp
-
-Option 3: execute in your project
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    simply add concurrency in your :setting:`INSTALLED_APPS`
-    ::
-
-        INSTALLED_APPS = (
-            'concurrency',
-            ...
-        )
+        $ make test
 

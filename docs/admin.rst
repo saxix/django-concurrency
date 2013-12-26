@@ -1,4 +1,4 @@
-.. include:: globals.rst
+.. include:: globals.txt
 .. _admin:
 
 ==================

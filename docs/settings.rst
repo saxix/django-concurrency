@@ -1,4 +1,4 @@
-.. include:: globals.rst
+.. include:: globals.txt
 .. _settings:
 
 ========
@@ -100,7 +100,7 @@ USE_SELECT_FOR_UPDATE
 
 Default: ``True``
 
-Use :ref:`select_for_update` with ``nowait=True`` to lock the record during the update process.
+Use ``select_for_update`` with ``nowait=True`` to lock the record during the update process.
 This grants the maximum level of isolation preventing other threads/workers to updates the record before/after the
 concurrency check.
 

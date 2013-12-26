@@ -4,21 +4,22 @@ from django.contrib.auth.models import Permission
 from concurrency.api import (get_revision_of_object, is_changed, get_version,
                              apply_concurrency_check, disable_concurrency)
 from concurrency.fields import IntegerVersionField
+from concurrency.utils import refetch
 from tests.models import SimpleConcurrentModel
-from tests.util import refetch, nextname
+from tests.util import nextname
 
 
 @pytest.mark.django_db(transaction=False)
 @pytest.mark.skipIf('os.environ["DBENGINE"]=="pg"')
 def test_get_revision_of_object(model_class=SimpleConcurrentModel):
-    instance = model_class(username=nextname.next())
+    instance = model_class(username=next(nextname))
     instance.save()
     assert get_revision_of_object(instance) == instance.version
 
 
 @pytest.mark.django_db
 def test_is_changed(model_class=SimpleConcurrentModel):
-    instance = model_class(username=nextname.next())
+    instance = model_class(username=next(nextname))
     instance.save()
     copy = refetch(instance)
     copy.save()
@@ -27,7 +28,7 @@ def test_is_changed(model_class=SimpleConcurrentModel):
 
 @pytest.mark.django_db
 def test_get_version(model_class=SimpleConcurrentModel):
-    instance = model_class(username=nextname.next())
+    instance = model_class(username=next(nextname))
     instance.save()
     copy = refetch(instance)
     copy.save()
@@ -45,7 +46,7 @@ def test_apply_concurrency_check(model_class=SimpleConcurrentModel):
 
 @pytest.mark.django_db(transaction=False)
 def test_disable_concurrency(model_class=SimpleConcurrentModel):
-    instance = model_class(username=nextname.next())
+    instance = model_class(username=next(nextname))
     instance.save()
     copy = refetch(instance)
     copy.save()
