@@ -29,13 +29,20 @@ script:
 matrix:
   exclude:
     - python: 3.2
-      env: DJANGO="1.4.x"
+      env: DJANGO="1.4.x" DBENGINE=mysql
     - python: 3.2
-      env: DJANGO="1.5.x"
+      env: DJANGO="1.4.x" DBENGINE=pg
     - python: 3.2
-      env: DJANGO="dev"
+      env: DJANGO="1.5.x" DBENGINE=mysql
     - python: 3.2
-      env: DBENGINE=mysql
+      env: DJANGO="1.5.x" DBENGINE=pg
+    - python: 3.2
+      env: DJANGO="dev" DBENGINE=mysql
+    - python: 3.2
+      env: DJANGO="dev" DBENGINE=pg
+    - python: 3.2
+      env: DJANGO="1.6.x" DBENGINE=mysql
+
 
 after_success:
   - coveralls
