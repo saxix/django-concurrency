@@ -48,15 +48,6 @@ Now if you try::
 you will get a ``RecordModifiedError`` on ``b.save()``
 
 
-Similar projects
------------------
-
- - django-locking - http://stdbrouw.github.io/django-locking/index.html
-    similar but with different purpose
-
- - django-optimisitc-lock - https://github.com/gavinwahl/django-optimistic-lock
-    django 1.6
-
 Links
 ~~~~~
 
