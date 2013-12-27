@@ -8,13 +8,13 @@ Django Concurrency
 Overview
 ========
 
-.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
+.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=0.7
     :target: http://travis-ci.org/saxix/django-concurrency/
-    :alt: Test status on master
+    :alt: Test status
 
-.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=master
+.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=0.7
     :target: https://coveralls.io/r/saxix/django-concurrency
-    :alt: Coverage on master
+    :alt: Coverage
 
 .. image:: https://pypip.in/v/django-concurrency/badge.png
     :target: https://crate.io/packages/django-concurrency/
@@ -23,8 +23,8 @@ Overview
     :target: https://crate.io/packages/django-concurrency/
     :alt: Downloads
 
-.. image:: https://requires.io/github/saxix/django-concurrency/requirements.png?branch=master
-    :target: https://requires.io/github/saxix/django-concurrency/requirements/?branch=master
+.. image:: https://requires.io/github/saxix/django-concurrency/requirements.png?branch=0.7b
+    :target: https://requires.io/github/saxix/django-concurrency/requirements/?branch=0.7b
     :alt: Requirements Status
 
 

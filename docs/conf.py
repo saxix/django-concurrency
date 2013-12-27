@@ -48,7 +48,7 @@ extensions = ['sphinx.ext.autodoc',
               'github',
               'djangodocs']
 intersphinx_mapping = {
-    'python': ('http://python.readthedocs.org/en/v2.7.5/', None),
+    'python': ('http://python.readthedocs.org/en/v2.7.3/', None),
     'django': ('http://django.readthedocs.org/en/latest/', None),
     'sphinx': ('http://sphinx.readthedocs.org/en/latest/', None),
 }
@@ -56,7 +56,7 @@ extlinks = {'issue': ('https://github.com/saxix/django-concurrency/issues/%s', '
             'django_issue': ('https://code.djangoproject.com/ticket/%s', 'issue #'),
 
             }
-next_version = '0.7'
+next_version = '0.8'
 todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
