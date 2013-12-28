@@ -16,9 +16,6 @@ CREATE TRIGGER {trigger_name}_u BEFORE UPDATE ON {opts.db_table}
 FOR EACH ROW SET NEW.{field.column} = OLD.{field.column}+1;
 """
 
-    def __init__(self, connection):
-        super(MySQLCreation, self).__init__(connection)
-        self.trigger_fields = []
 
     def _create_trigger(self, field):
         import MySQLdb as Database

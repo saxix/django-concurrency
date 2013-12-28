@@ -19,10 +19,6 @@ BEGIN UPDATE {opts.db_table} SET {field.column} = 0 WHERE {opts.pk.column} = NEW
 END; ##
 """
 
-    def __init__(self, connection):
-        super(Sqlite3Creation, self).__init__(connection)
-        self.trigger_fields = []
-
     def _create_trigger(self, field):
         from django.db.utils import DatabaseError
         cursor = self.connection.cursor()

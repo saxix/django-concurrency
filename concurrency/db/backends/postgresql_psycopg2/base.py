@@ -1,18 +1,16 @@
 import logging
 import re
 from django.db.backends.postgresql_psycopg2.base import DatabaseWrapper as PgDatabaseWrapper
+from concurrency.db.backends.common import TriggerMixin
 from concurrency.db.backends.postgresql_psycopg2.creation import PgCreation
 
 logger = logging.getLogger(__name__)
 
 
-class DatabaseWrapper(PgDatabaseWrapper):
+class DatabaseWrapper(TriggerMixin, PgDatabaseWrapper):
     def __init__(self, *args, **kwargs):
         super(DatabaseWrapper, self).__init__(*args, **kwargs)
         self.creation = PgCreation(self)
-
-    def _clone(self):
-        return self.__class__(self.settings_dict, self.alias)
 
     def list_triggers(self):
         cursor = self.cursor()
@@ -30,7 +28,3 @@ class DatabaseWrapper(PgDatabaseWrapper):
         logger.debug(stm)
         result = cursor.execute(stm)
         return result
-
-    def drop_triggers(self):
-        for trigger_name in self.list_triggers():
-            self.drop_trigger(trigger_name)
