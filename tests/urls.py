@@ -3,8 +3,16 @@ from django.contrib import admin
 from django.views.generic.edit import UpdateView
 from tests.models import SimpleConcurrentModel
 
-admin.autodiscover()
 
+
+try:
+    from django.apps import AppConfig
+    import django
+    django.setup()
+except ImportError:
+    pass
+
+admin.autodiscover()
 
 class SimpleConcurrentMpdel(object):
     pass
