@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.core import signals
-from django.db import connections
+from django.db import connections, IntegrityError
+import mock
 import pytest
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
@@ -80,3 +81,15 @@ def test_trigger():
 
     with pytest.raises(RecordModifiedError):
         instance.save()
+
+
+@pytest.mark.django_db
+def test_trigger_do_not_increase_version_if_error():
+    instance = TriggerConcurrentModel()
+    assert instance.pk is None
+    assert instance.version == 0
+    with mock.patch('tests.models.TriggerConcurrentModel.save', side_effect=IntegrityError):
+        with pytest.raises(IntegrityError):
+            instance.save()
+
+    assert instance.version == 0
