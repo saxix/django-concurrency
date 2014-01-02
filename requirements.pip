@@ -6,7 +6,7 @@ tox==1.6.1
 pytest==2.5.1
 pytest-cov==1.6
 pytest-django==2.4
-sample-data-utils==0.3
+sample-data-utils==0.4
 sphinx_rtd_theme==0.1.5
 Sphinx==1.2
 setuptools==2.0.2
