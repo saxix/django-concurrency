@@ -4,7 +4,6 @@ from django.views.generic.edit import UpdateView
 from tests.models import SimpleConcurrentModel
 
 
-
 try:
     from django.apps import AppConfig
     import django
