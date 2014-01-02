@@ -6,4 +6,5 @@ include MANIFEST.in
 include setup.py
 recursive-include concurrency *.py
 recursive-include concurrency/templates *.html
-recursive-include docs *.py
+recursive-exclude docs *.py
+recursive-exclude tests *.*
