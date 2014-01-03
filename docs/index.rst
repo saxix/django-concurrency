@@ -1,4 +1,4 @@
-.. include:: globals.txt
+    .. include:: globals.txt
 .. _index:
 
 ==================
@@ -8,11 +8,11 @@ Django Concurrency
 Overview
 ========
 
-.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=0.7
+.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
     :target: http://travis-ci.org/saxix/django-concurrency/
     :alt: Test status
 
-.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=0.7
+.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=master
     :target: https://coveralls.io/r/saxix/django-concurrency
     :alt: Coverage
 
