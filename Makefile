@@ -14,9 +14,8 @@ mkbuilddir:
 
 
 install-deps:
-	pip install \
-	        -r demo/demoproject/requirements.pip \
-	        -r requirements.pip python-coveralls coverage
+	pip install -q \
+	        -r requirements.pip python-coveralls
 
 
 locale:
@@ -38,11 +37,12 @@ init-db:
 test:
 	demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE} -v2
 
+
 coverage: mkbuilddir
 	py.test --cov=concurrency --cov-report=html --cov-report=term --cov-config=.coveragerc -vvv
 
 
-ci:
+ci: init-db install-deps
 	@sh -c "if [ '${DJANGO}' = '1.4.x' ]; then pip install ${DJANGO_14}; fi"
 	@sh -c "if [ '${DJANGO}' = '1.5.x' ]; then pip install ${DJANGO_15}; fi"
 	@sh -c "if [ '${DJANGO}' = '1.6.x' ]; then pip install ${DJANGO_16}; fi"
@@ -50,7 +50,6 @@ ci:
 	@pip install coverage
 	@python -c "from __future__ import print_function;import django;print('Django version:', django.get_version())"
 	@echo "Database:" ${DBENGINE}
-
 	$(MAKE) coverage
 
 
