@@ -86,13 +86,13 @@ Full implementation of ``optimistic-lock`` pattern using a SQL clause like:
 
 Why two protocols ?
 -------------------
-The initial implementation of |concurrency| used the real pattern [1],
+The initial implementation of |concurrency| used the real pattern [1]_,
 but it required a partial rewrite of original Django's code and it was
 very hard to maintain/keep updated, for this reason starting from version 0.3,
 :ref:`select_for_update()` was used.
 
 With the new  implementation (django 1.6) the optimistic lock pattern it
-is easier to implement, starting from version 0.7 C uses different implementation
+is easier to implement, starting from version 0.7 |concurrency| uses different implementation
 depending on the django version used.
 
 .. note:: From 1.0 support for django < 1.6 will be drooped
