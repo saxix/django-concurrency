@@ -56,7 +56,7 @@ extlinks = {'issue': ('https://github.com/saxix/django-concurrency/issues/%s', '
             'django_issue': ('https://code.djangoproject.com/ticket/%s', 'issue #'),
 
             }
-next_version = '0.8'
+next_version = '0.9'
 todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
