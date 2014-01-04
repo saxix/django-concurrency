@@ -3,11 +3,13 @@ from __future__ import absolute_import, unicode_literals
 import logging
 import warnings
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.importlib import import_module
+from django.db import router, connections
+from django.db.models.loading import get_models, get_apps
+import sys
 from concurrency.exceptions import RecordModifiedError
 
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 def deprecated(replacement=None, version=None):
@@ -38,6 +40,7 @@ def deprecated(replacement=None, version=None):
     0
     >>>
     """
+
     def outer(oldfun):  # pragma: no cover
         def inner(*args, **kwargs):
             msg = "%s is deprecated" % oldfun.__name__
@@ -50,7 +53,9 @@ def deprecated(replacement=None, version=None):
                 return replacement(*args, **kwargs)
             else:
                 return oldfun(*args, **kwargs)
+
         return inner
+
     return outer
 
 
@@ -82,6 +87,7 @@ class ConcurrencyTestMixin(object):
 
     def test_concurrency_conflict(self):
         import concurrency.api as api
+
         target = self._get_concurrency_target()
         target_copy = self._get_concurrency_target()
         v1 = api.get_revision_of_object(target)
@@ -93,16 +99,17 @@ class ConcurrencyTestMixin(object):
 
     def test_concurrency_safety(self):
         import concurrency.api as api
+
         target = self.concurrency_model()
         version = api.get_revision_of_object(target)
         self.assertFalse(bool(version), "version is not null %s" % version)
 
     def test_concurrency_management(self):
         target = self.concurrency_model
-        self.assertTrue(hasattr(target, 'RevisionMetaInfo'),
+        self.assertTrue(hasattr(target, '_concurrencymeta'),
                         "%s is not under concurrency management" % self.concurrency_model)
-        info = getattr(target, 'RevisionMetaInfo', None)
-        revision_field = info.field
+        info = getattr(target, '_concurrencymeta', None)
+        revision_field = info._field
 
         self.assertTrue(revision_field in target._meta.fields,
                         "%s: version field not in meta.fields" % self.concurrency_model)
@@ -112,24 +119,45 @@ class ConcurrencyAdminTestMixin(object):
     pass
 
 
-# def import_by_path(dotted_path, error_prefix=''):
-#     """
-#     Import a dotted module path and return the attribute/class designated by the
-#     last name in the path. Raise ImproperlyConfigured if something goes wrong.
-#     """
-#     try:
-#         module_path, class_name = dotted_path.rsplit('.', 1)
-#     except ValueError:
-#         raise ImproperlyConfigured("%s%s doesn't look like a module path" % (
-#             error_prefix, dotted_path))
-#     try:
-#         module = import_module(module_path)
-#     except ImportError as e:
-#         raise ImproperlyConfigured('%sError importing module %s: "%s"' % (
-#             error_prefix, module_path, e))
-#     try:
-#         attr = getattr(module, class_name)
-#     except AttributeError:
-#         raise ImproperlyConfigured('%sModule "%s" does not define a "%s" attribute/class' % (
-#             error_prefix, module_path, class_name))
-#     return attr
+def get_triggers(databases):
+    triggers = {}
+    for alias in databases:
+        connection = connections[alias]
+        if hasattr(connection, 'list_triggers'):
+            triggers[alias] = [trigger_name for trigger_name in connection.list_triggers()]
+    return triggers
+
+
+def drop_triggers(databases, stdout=sys.stdout):
+    triggers = {}
+    for alias in databases:
+        connection = connections[alias]
+        if hasattr(connection, 'drop_triggers'):
+            connection.drop_triggers()
+
+    return triggers
+
+
+def create_triggers(databases, stdout=sys.stdout):
+    from concurrency.fields import TriggerVersionField
+
+    for app in get_apps():
+        for model in get_models(app):
+            if hasattr(model, '_concurrencymeta') and \
+                    isinstance(model._concurrencymeta._field, TriggerVersionField):
+                # stdout.write('Found concurrent model `%s`\n' % model.__name__)
+                alias = router.db_for_write(model)
+                if alias in databases:
+                    connection = connections[alias]
+                    if hasattr(connection.creation, '_create_trigger'):
+                        connections[alias].creation._create_trigger(model._concurrencymeta._field)
+                        # stdout.write('\tCreated trigger`%s`\n' % name)
+                    else:
+                        raise ImproperlyConfigured('TriggerVersionField need concurrency database backend')
+
+
+def refetch(model_instance):
+    """
+    Reload model instance from the database
+    """
+    return model_instance.__class__.objects.get(pk=model_instance.pk)

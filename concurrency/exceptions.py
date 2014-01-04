@@ -14,8 +14,8 @@ class RecordModifiedError(DatabaseError):
         super(RecordModifiedError, self).__init__(*args, **kwargs)
 
 
-class InconsistencyError(DatabaseError):
-    pass
+# class InconsistencyError(DatabaseError):
+#     pass
 
 
 class VersionError(SuspiciousOperation):

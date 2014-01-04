@@ -1,4 +1,4 @@
-.. include:: globals.rst
+.. include:: globals.txt
 
 :tocdepth: 2
 

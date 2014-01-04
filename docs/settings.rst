@@ -1,4 +1,4 @@
-.. include:: globals.rst
+.. include:: globals.txt
 .. _settings:
 
 ========
@@ -18,13 +18,12 @@ default values.
 
 CALLBACK
 ------------------------
-.. versionadded:: 0.6
+.. versionchanged:: 0.7
 
-Default: None
+Default: ``concurrency.views.callback``
 
-Custom callable to handle conflicts
-
-.. seealso:: :setting:`CONCURRENCY_POLICY`
+Handler invoked used to manage concurrent editing. The default implementation
+simply raise :ref:`RecordModifiedError`
 
 
 
@@ -61,17 +60,9 @@ is going to be saved (``target``) and the same object as stored in the database 
 
 POLICY
 -------------------------------
-.. versionadded:: 0.6
+.. versionchanged:: 0.7
 
-Default: ``CONCURRENCY_POLICY_RAISE & CONCURRENCY_LIST_EDITABLE_POLICY_SILENT``
-
-``CONCURRENCY_POLICY_RAISE``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Default behaviour. Raises :ref:`RecordModifiedError` as detects a conflict.
-
-``CONCURRENCY_POLICY_CALLBACK``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Demand the conflict management to the callable defined in :setting:`CONCURRENCY_CALLBACK`
+Default: ``CONCURRENCY_LIST_EDITABLE_POLICY_SILENT``
 
 .. _list_editable_policies:
 
@@ -94,13 +85,28 @@ Stop at the first conflict and raise :ref:`recordmodifiederror`. Note that if yo
 
 SANITY_CHECK
 -----------------------
-.. versionadded:: 0.4
+.. versionchanged:: 0.7
+
+Default: ``False``
+
+Deprecated. Starting from 0.7 has no effect and will be removed in 0.8
+
+
+.. setting:: USE_SELECT_FOR_UPDATE
+
+USE_SELECT_FOR_UPDATE
+---------------------
+.. versionadded:: 0.7
 
 Default: ``True``
 
-If you wand to disable the check raised when you try to save an object with a revision number set
-but without pk (this should not happen) you can set ``CONCURRECY_SANITY_CHECK=False`` in your settings.
+Use ``select_for_update`` with ``nowait=True`` to lock the record during the update process.
+This grants the maximum level of isolation preventing other threads/workers to updates the record before/after the
+concurrency check.
 
-This is useful if you have some existing test code that uses factories which create a random number thus
-preventing the sanity check from passing
+If you don't have high concurrency and you can live with some unwanted overwriting you can disable it,
+so the concurrency check will be performed by a standard ``filter()``, but consider that nobody can grant you that
+the record is modified **between** the check and the ``save()``
 
+
+.. note::  This settings is ignored if you use django >= 1.6. see :ref:`protocols`
