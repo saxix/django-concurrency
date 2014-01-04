@@ -3,13 +3,11 @@ Django Concurrency
 ==================
 
 
-
-
 .. image:: https://pypip.in/v/django-concurrency/badge.png
-   :target: https://crate.io/packages/django-concurrency/
+    :target: https://crate.io/packages/django-concurrency/
 
 .. image:: https://pypip.in/d/django-concurrency/badge.png
-   :target: https://crate.io/packages/django-concurrency/
+    :target: https://crate.io/packages/django-concurrency/
 
 
 django-concurrency is an optimistic lock [1]_ implementation for Django.
