@@ -23,8 +23,8 @@ Overview
     :target: https://crate.io/packages/django-concurrency/
     :alt: Downloads
 
-.. image:: https://requires.io/github/saxix/django-concurrency/requirements.png?branch=0.7b
-    :target: https://requires.io/github/saxix/django-concurrency/requirements/?branch=0.7b
+.. image:: https://requires.io/github/saxix/django-concurrency/requirements.png?branch=master
+    :target: https://requires.io/github/saxix/django-concurrency/requirements/?branch=master
     :alt: Requirements Status
 
 
