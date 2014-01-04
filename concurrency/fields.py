@@ -173,34 +173,9 @@ class IntegerVersionField(VersionField):
     """
     form_class = forms.VersionField
 
-    # def get_internal_type(self):
-    #     return "BigIntegerField"
-
     def _get_next_version(self, model_instance):
         old_value = getattr(model_instance, self.attname, 0)
         return max(int(old_value) + 1, (int(time.time() * 1000000) - OFFSET))
-
-        # def pre_save(self, model_instance, add):
-        #     if conf.PROTOCOL >= 2:
-        #         if add:
-        #             value = self._get_next_version(model_instance)
-        #             self._set_version_value(model_instance, value)
-        #         return getattr(model_instance, self.attname)
-        #
-        #     value = self._get_next_version(model_instance)
-        #     self._set_version_value(model_instance, value)
-        #     return value
-
-        # @staticmethod
-        # def _wrap_save(func):
-        #     from concurrency.api import concurrency_check
-        #
-        #     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-        #         if self._concurrencymeta.enabled:
-        #             concurrency_check(self, force_insert, force_update, using, **kwargs)
-        #         return func(self, force_insert, force_update, using, **kwargs)
-        #
-        #     return update_wrapper(inner, func)
 
 
 class AutoIncVersionField(VersionField):
@@ -210,32 +185,8 @@ class AutoIncVersionField(VersionField):
     """
     form_class = forms.VersionField
 
-    # def get_internal_type(self):
-    #     return "BigIntegerField"
-
     def _get_next_version(self, model_instance):
         return int(getattr(model_instance, self.attname, 0)) + 1
-
-        # def pre_save(self, model_instance, add):
-        #     if conf.PROTOCOL >= 2:
-        #         if add:
-        #             value = self._get_next_version(model_instance)
-        #             self._set_version_value(model_instance, value)
-        #         return getattr(model_instance, self.attname)
-        #     value = self._get_next_version(model_instance)
-        #     self._set_version_value(model_instance, value)
-        #     return value
-
-        # @staticmethod
-        # def _wrap_save(func):
-        #     from concurrency.api import concurrency_check
-        #
-        #     def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-        #         if self._concurrencymeta.enabled:
-        #             concurrency_check(self, force_insert, force_update, using, **kwargs)
-        #         return func(self, force_insert, force_update, using, **kwargs)
-        #
-        #     return update_wrapper(inner, func)
 
 
 class TriggerVersionField(VersionField):
@@ -257,8 +208,6 @@ class TriggerVersionField(VersionField):
         # always returns the same value
         return int(getattr(model_instance, self.attname, 0))
 
-    # def _set_version_value(self, model_instance, value):
-    #     pass  # noop here
 
     @staticmethod
     def _increment_version_number(obj):

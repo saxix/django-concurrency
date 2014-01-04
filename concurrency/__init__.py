@@ -2,7 +2,7 @@ import subprocess
 import datetime
 import os
 
-VERSION = __version__ = (0, 7, 0, 'alpha', 0)
+VERSION = __version__ = (0, 7, 0, 'final', 0)
 __author__ = 'sax'
 
 
@@ -24,7 +24,9 @@ def get_version(version=None):
 
     elif version[3] != 'final':
         mapping = {'alpha': 'a', 'beta': 'b', 'rc': 'c'}
-        sub = mapping[version[3]] + str(version[4])
+        sub = mapping[version[3]]
+        if version[4] > 0:
+            sub += str(version[4])
 
     return main + sub
 

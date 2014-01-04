@@ -1,8 +1,9 @@
 from django.db.backends.mysql.base import DatabaseWrapper as MySQLDatabaseWrapper
+from concurrency.db.backends.common import TriggerMixin
 from concurrency.db.backends.mysql.creation import MySQLCreation
 
 
-class DatabaseWrapper(MySQLDatabaseWrapper):
+class DatabaseWrapper(TriggerMixin, MySQLDatabaseWrapper):
     def __init__(self, *args, **kwargs):
         super(DatabaseWrapper, self).__init__(*args, **kwargs)
         self.creation = MySQLCreation(self)
@@ -20,6 +21,4 @@ class DatabaseWrapper(MySQLDatabaseWrapper):
         result = cursor.execute("DROP TRIGGER IF EXISTS %s;" % trigger_name)
         return result
 
-    def drop_triggers(self):
-        for trigger_name in self.list_triggers():
-            self.drop_trigger(trigger_name)
+

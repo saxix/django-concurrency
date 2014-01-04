@@ -1,4 +1,3 @@
-
 from django.db.backends.postgresql_psycopg2.creation import DatabaseCreation
 from concurrency.db.backends.utils import get_trigger_name
 
@@ -36,16 +35,11 @@ CREATE TRIGGER {trigger_name}_i BEFORE INSERT
     EXECUTE PROCEDURE {trigger_name}_si();
 """
 
-    def __init__(self, connection):
-        super(PgCreation, self).__init__(connection)
-        self.trigger_fields = []
-
     def _create_trigger(self, field):
         from django.db.utils import DatabaseError
+
         opts = field.model._meta
         trigger_name = get_trigger_name(field, opts)
-
-        # cursor = self.connection._clone().cursor()
 
         stm = self.sql.format(trigger_name=trigger_name,
                               opts=opts,
