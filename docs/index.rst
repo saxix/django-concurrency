@@ -46,26 +46,30 @@ Overview
 * works with `South`_ and `diango-reversion`_
 * Admin integration. Handle :ref:`actions <admin_action>` and :ref:`list_editable <list_editable>` (solves :django_issue:`11313`)
 * can handle external updates (see :class:`TriggerVersionField`)
-Todo
-====
 
-- intercept external updates
-    (ie changes done using DB browser like SQLDeveloper, pgAdmin, phpMyAdmin...)
 
 .. _protocols:
 
 How it works
 ============
 
-|concurrency| works adding a :class:`concurrency.fields.VersionField` to each model, each time a record is saved
-the version number changes (the algorithm used depends on the implementation of
-:class:`concurrency.fields.VersionField` used (see :ref:`fields`).
+
+Overview
+--------
+
+|concurrency| works adding a :class:`concurrency.fields.VersionField` to each model,
+each time a record is saved the version number changes (the algorithm used depends
+on the implementation of :class:`concurrency.fields.VersionField` used (see :ref:`fields`).
 
 
 |concurrency| use two different way to manage concurrent updates:
 
+
+Protocols
+---------
+
 django 1.4 - 1.5
-----------------
+~~~~~~~~~~~~~~~~
 
 When a record is saved, |concurrency| tries to get a lock on the record based on the old revision
 number, if the record is not found a :ref:`RecordModifiedError` is raised.
@@ -73,9 +77,9 @@ The lock is obtained using ``SELECT FOR UPDATE`` and it's requirend
 to prevent other updates during the internal django ``save()`` execution.
 
 django >= 1.6
------------------
+~~~~~~~~~~~~~
 
-Full implementation of ``optimistic-lock`` pattern using a SQL clause like:
+    Full implementation of ``optimistic-lock`` pattern using a SQL clause like:
 
 .. code-block:: sql
 
@@ -85,8 +89,9 @@ Full implementation of ``optimistic-lock`` pattern using a SQL clause like:
 .. _2_protocols:
 
 Why two protocols ?
--------------------
-The initial implementation of |concurrency| used the real pattern [1]_,
+~~~~~~~~~~~~~~~~~~~
+
+    The initial implementation of |concurrency| used the real pattern [1]_,
 but it required a partial rewrite of original Django's code and it was
 very hard to maintain/keep updated, for this reason starting from version 0.3,
 :ref:`select_for_update()` was used.
