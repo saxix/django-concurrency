@@ -146,7 +146,7 @@ class VersionField(Field):
                     break
 
             if values:
-                if model_instance._concurrencymeta.enabled:
+                if model_instance._concurrencymeta.enabled and old_version:
                     filter_kwargs = {'pk': pk_val, version_field.attname: old_version}
                     updated = base_qs.filter(**filter_kwargs)._update(values) >= 1
                     if not updated:

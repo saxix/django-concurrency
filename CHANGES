@@ -2,6 +2,13 @@ Release 0.8
 -----------
 
 
+Release 0.7.1
+-------------
+
+* backward compatibility updates. Do not check for concurrency if `0` is passed as version value
+    (ie. no value provided by the form)
+
+
 Release 0.7
 -----------
 * new :class:`concurrency.fields.TriggerVersionField`
