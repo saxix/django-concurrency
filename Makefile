@@ -15,7 +15,8 @@ mkbuilddir:
 
 install-deps:
 	pip install -q \
-	        -r requirements.pip python-coveralls
+	        -r requirements.pip python-coveralls \
+	        django_extensions
 
 
 locale:
@@ -35,7 +36,7 @@ init-db:
 
 
 test:
-	demo/manage.py test concurrency --settings=${DJANGO_SETTINGS_MODULE} -v2
+	py.test -vvv
 
 
 coverage: mkbuilddir
