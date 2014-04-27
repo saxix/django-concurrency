@@ -3,8 +3,7 @@ services:
   - MySQL
   - PostgreSQL
 python:
-  - 2.7
-  - 3.2
+  - 2.7 
 
 env:
   - DJANGO="1.4.x" DBENGINE=mysql
