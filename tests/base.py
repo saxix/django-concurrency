@@ -13,18 +13,13 @@ from concurrency.fields import IntegerVersionField
 
 apply_concurrency_check(Permission, 'version', IntegerVersionField)
 
-DJANGO_TRUNK = django.VERSION[:2] == (1, 7)
+DJANGO_TRUNK = django.VERSION[:2] >= 7
 
-skipIfDjangoTrunk = pytest.mark.skipif(DJANGO_TRUNK,
-                                       reason="Skip if django == 1.7")
-onlyDjangoTrunk = pytest.mark.skipif(DJANGO_TRUNK,
-                                     reason="Skip if django != 1.7")
 
-failIfTrunk = pytest.mark.xfail(DJANGO_TRUNK,
-                                reason="python trunk api changes")
+win32only = pytest.mark.skipif("sys.platform != 'win32'")
 
-skipIfDjango14 = pytest.mark.skipif(django.VERSION[:2] == (1, 4),
-                                    reason="Skip if django == 1.4")
+skipIfDjangoVersion = lambda v: pytest.mark.skipif(django.VERSION[:2] >= v,
+                                       reason="Skip if django>={}".format(v))
 
 
 class AdminTestCase(WebTestMixin, TransactionTestCase):

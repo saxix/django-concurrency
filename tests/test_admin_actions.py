@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-# import django
-from tests.base import AdminTestCase, SENTINEL, failIfTrunk
+from tests.base import AdminTestCase, SENTINEL, skipIfDjangoVersion
 from tests.models import SimpleConcurrentModel
 from tests.util import unique_id
 
@@ -31,7 +30,7 @@ class TestAdminActions(AdminTestCase):
         self.assertIn('**concurrent_update**', res)
         self.assertNotIn('**action_update**', res)
 
-    @failIfTrunk
+    @skipIfDjangoVersion([1,7])
     def test_delete_allowed_if_no_updates(self):
         id = next(unique_id)
         SimpleConcurrentModel.objects.get_or_create(pk=id)
