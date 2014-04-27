@@ -3,7 +3,7 @@ services:
   - MySQL
   - PostgreSQL
 python:
-  - 2.7 
+  - 2.7
 
 env:
   - DJANGO="1.4.x" DBENGINE=mysql
@@ -24,31 +24,6 @@ install:
 
 script:
   - make init-db ci
-
-matrix:
-  exclude:
-    - python: 3.2
-      env: DJANGO="1.4.x" DBENGINE=mysql
-    - python: 3.2
-      env: DJANGO="1.4.x" DBENGINE=pg
-    - python: 3.2
-      env: DJANGO="1.5.x" DBENGINE=mysql
-
-    - python: 3.2
-      env: DJANGO="1.5.x" DBENGINE=pg
-    - python: 3.2
-      env: DJANGO="dev" DBENGINE=mysql
-    - python: 3.2
-      env: DJANGO="dev" DBENGINE=pg
-    - python: 3.2
-      env: DJANGO="1.6.x" DBENGINE=mysql
-
-    - python: 3.3
-      env: DJANGO="1.5.x" DBENGINE=mysql
-    - python: 3.3
-      env: DJANGO="1.6.x" DBENGINE=mysql
-    - python: 3.3
-      env: DJANGO="dev" DBENGINE=mysql
 
 
 after_success:
