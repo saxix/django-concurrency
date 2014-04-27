@@ -11,5 +11,6 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.admin',
                   'concurrency',
                   'demoproject.demoapp',
+                  'django_extensions',
                   'tests']
 # AUTHENTICATION_BACKENDS = ('demoproject.backends.AnyUserBackend',)

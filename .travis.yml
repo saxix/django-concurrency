@@ -5,6 +5,7 @@ services:
 python:
   - 2.7
   - 3.2
+  - 3.3
 
 env:
   - DJANGO="1.4.x" DBENGINE=mysql

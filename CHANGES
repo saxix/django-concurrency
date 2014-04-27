@@ -1,5 +1,9 @@
-Release 0.7.0 (dev)
--------------------
+Release 0.8
+-----------
+
+
+Release 0.7
+-----------
 * new :class:`concurrency.fields.TriggerVersionField`
 * start using pytest
 * moved tests outside main package
