@@ -18,7 +18,6 @@ It prevents users from doing concurrent editing in Django both from UI and from 
 django command.
 
 
-
 How it works
 ------------
 sample code::
@@ -36,6 +35,18 @@ Now if you try::
     b.save()
 
 you will get a ``RecordModifiedError`` on ``b.save()``
+
+
+Similar projects
+------------------------------------
+
+Other projects that handle concurrent editing are `django-optimistic-lock`_ and `django-locking`_ anyway concurrency is "a batteries included" optimistic lock management system, here some features not available elsewhere:
+
+ * can be applied to any model; not only your code (ie. django.contrib.auth.Group)
+ * works with django 1.4 and 1.5
+ * handle `list-editable`_ ChangeList. (solves `#11313 <https://code.djangoproject.com/ticket/11313>`_)
+ * handle concurrency in admin's actions
+ * can intercept changes performend out of the django app (ie using pgAdmin, phpMyAdmin, Toads)
 
 
 Links
@@ -76,6 +87,12 @@ Links
                     :target: https://requires.io/github/saxix/django-concurrency/requirements/?branch=develop
                     :alt: Requirements Status
 
+
+_list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#list-editable
+
+_django-locking: https://github.com/stdbrouw/django-locking
+
+_django-optimistic-lock: https://github.com/gavinwahl/django-optimistic-lock
 
 .. [1] http://en.wikipedia.org/wiki/Optimistic_concurrency_control
 
