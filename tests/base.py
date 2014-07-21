@@ -13,7 +13,7 @@ from concurrency.fields import IntegerVersionField
 
 apply_concurrency_check(Permission, 'version', IntegerVersionField)
 
-DJANGO_TRUNK = django.VERSION[:2] >= 7
+DJANGO_TRUNK = django.VERSION[:2] >= (1,7)
 
 
 win32only = pytest.mark.skipif("sys.platform != 'win32'")

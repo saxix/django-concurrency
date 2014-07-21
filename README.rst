@@ -38,7 +38,7 @@ you will get a ``RecordModifiedError`` on ``b.save()``
 
 
 Similar projects
-------------------------------------
+----------------
 
 Other projects that handle concurrent editing are `django-optimistic-lock`_ and `django-locking`_ anyway concurrency is "a batteries included" optimistic lock management system, here some features not available elsewhere:
 
@@ -87,12 +87,14 @@ Links
                     :target: https://requires.io/github/saxix/django-concurrency/requirements/?branch=develop
                     :alt: Requirements Status
 
+.. |wheel| image:: https://pypip.in/wheel/blackhole/badge.png
 
-_list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#list-editable
 
-_django-locking: https://github.com/stdbrouw/django-locking
+.. _list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#list-editable
 
-_django-optimistic-lock: https://github.com/gavinwahl/django-optimistic-lock
+.. _django-locking: https://github.com/stdbrouw/django-locking
+
+.. _django-optimistic-lock: https://github.com/gavinwahl/django-optimistic-lock
 
 .. [1] http://en.wikipedia.org/wiki/Optimistic_concurrency_control
 
