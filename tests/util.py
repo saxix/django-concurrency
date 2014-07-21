@@ -41,7 +41,7 @@ def clone_instance(model_instance):
 def with_models(*models, **kwargs):
     ignore = kwargs.pop('ignore', [])
     if ignore:
-        models = filter(models, lambda x: not x in ignore)
+        models = filter(models, lambda x: x not in ignore)
 
     ids = [m.__name__ for m in models]
 

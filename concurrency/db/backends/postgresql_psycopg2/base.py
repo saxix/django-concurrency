@@ -20,7 +20,7 @@ class DatabaseWrapper(TriggerMixin, PgDatabaseWrapper):
         return [m[1] for m in cursor.fetchall()]
 
     def drop_trigger(self, trigger_name):
-        if not trigger_name in self.list_triggers():
+        if trigger_name not in self.list_triggers():
             return []
         cursor = self.cursor()
         table_name = re.sub('^concurrency_(.*)_[ui]', '\\1', trigger_name)

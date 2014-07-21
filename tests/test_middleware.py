@@ -70,7 +70,7 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
 
                 saved, __ = SimpleConcurrentModel.objects.get_or_create(pk=id)
 
-                url = reverse('admin:concurrency_simpleconcurrentmodel_change', args=[saved.pk])
+                url = reverse('admin:tests_simpleconcurrentmodel_change', args=[saved.pk])
                 res = self.app.get(url, user='sax')
                 form = res.form
 

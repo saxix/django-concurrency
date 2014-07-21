@@ -208,7 +208,6 @@ class TriggerVersionField(VersionField):
         # always returns the same value
         return int(getattr(model_instance, self.attname, 0))
 
-
     @staticmethod
     def _increment_version_number(obj):
         old_value = get_revision_of_object(obj)
