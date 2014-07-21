@@ -77,7 +77,8 @@ def apply_concurrency_check(model, fieldname, versionclass):
     :type versionclass: concurrency.fields.VersionField subclass
     """
     if hasattr(model, '_concurrencymeta'):
-        raise ImproperlyConfigured("%s is already under concurrency management" % model)
+        return
+        # raise ImproperlyConfigured("%s is already under concurrency management" % model)
 
     logger.debug('Applying concurrency check to %s' % model)
 

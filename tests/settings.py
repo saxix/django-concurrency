@@ -20,6 +20,9 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'concurrency',
                   'tests']
 
+MIDDLEWARE_CLASSES = ('django.middleware.common.CommonMiddleware',
+                      'django.middleware.csrf.CsrfViewMiddleware')
+
 TEMPLATE_DIRS = ['tests/templates']
 
 LOGGING = {

@@ -11,7 +11,7 @@ class DatabaseWrapper(TriggerMixin, Sqlite3DatabaseWrapper):
 
     def list_triggers(self):
         cursor = self.cursor()
-        result = cursor.execute("select name from sqlite_master where type = 'trigger';")
+        result = cursor.execute("select name from sqlite_master where type='trigger';")
         return [m[0] for m in result.fetchall()]
 
     def drop_trigger(self, trigger_name):

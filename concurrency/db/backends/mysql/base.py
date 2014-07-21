@@ -20,5 +20,3 @@ class DatabaseWrapper(TriggerMixin, MySQLDatabaseWrapper):
         cursor = self.cursor()
         result = cursor.execute("DROP TRIGGER IF EXISTS %s;" % trigger_name)
         return result
-
-

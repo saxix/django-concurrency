@@ -3,18 +3,18 @@ from concurrency import fields
 
 
 class DemoModel(models.Model):
-    version = fields.IntegerVersionField()
+    # version = fields.IntegerVersionField()
     char = models.CharField(max_length=255)
     integer = models.IntegerField()
 
     class Meta:
         app_label = 'demoapp'
 
-
-class ProxyDemoModel(DemoModel):
-    class Meta:
-        app_label = 'demoapp'
-        proxy = True
+#
+# class ProxyDemoModel(DemoModel):
+#     class Meta:
+#         app_label = 'demoapp'
+#         proxy = True
 
 
 def proxy_factory(name):

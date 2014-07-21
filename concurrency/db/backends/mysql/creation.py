@@ -16,17 +16,18 @@ CREATE TRIGGER {trigger_name}_u BEFORE UPDATE ON {opts.db_table}
 FOR EACH ROW SET NEW.{field.column} = OLD.{field.column}+1;
 """
 
-
     def _create_trigger(self, field):
         import MySQLdb as Database
         from warnings import filterwarnings, resetwarnings
 
-        filterwarnings('ignore', message='Trigger does not exist', category=Database.Warning)
+        filterwarnings('ignore', message='Trigger does not exist',
+                       category=Database.Warning)
 
         opts = field.model._meta
         trigger_name = get_trigger_name(field, opts)
 
-        stm = self.sql.format(trigger_name=trigger_name, opts=opts, field=field)
+        stm = self.sql.format(trigger_name=trigger_name,
+                              opts=opts, field=field)
         cursor = self.connection._clone().cursor()
         try:
             cursor.execute(stm)
