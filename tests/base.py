@@ -1,4 +1,5 @@
 import django
+from django.utils import timezone
 import pytest
 from django.test import TransactionTestCase
 from django.contrib.auth.models import User
