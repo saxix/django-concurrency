@@ -1,4 +1,5 @@
 import django
+from django.utils import timezone
 import pytest
 from django.test import TransactionTestCase
 from django.contrib.auth.models import User
@@ -26,10 +27,16 @@ class AdminTestCase(WebTestMixin, TransactionTestCase):
 
     def setUp(self):
         super(AdminTestCase, self).setUp()
+
         self.user, __ = User.objects.get_or_create(is_superuser=True,
                                                    is_staff=True,
                                                    is_active=True,
+                                                   last_login=timezone.now(),
                                                    email='sax@example.com',
                                                    username='sax')
-
+        # self.user = G(User, is_superuser=True,
+        #                                            is_staff=True,
+        #                                            is_active=True,
+        #                                            email='sax@example.com',
+        #                                            username='sax')
         admin_register_models()
