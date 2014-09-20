@@ -137,12 +137,23 @@ is these cirumstances you can check it manually ::
 
 ``apply_concurrency_check()``
 ------------------------------
+
 .. versionadded:: 0.4
+
+.. versionchanged:: 0.8
 
 Add concurrency check to existing classes.
 
 .. autofunction:: concurrency.api.apply_concurrency_check
 
+
+.. note:: With Django 1.7 and the new migrations management, this utility does
+  not work anymore. To add concurrency management to a external Model,
+  you need to use a migration to add a `VersionField` to the desired Model.
+
+
+.. note:: See ``tests.auth_migrations`` for a example how to add ``IntegerVersionField``
+  to ``auth.Permission``)
 
 
 .. _disable_concurrency:

@@ -59,7 +59,7 @@ class TestConcurrentModelAdmin(AdminTestCase):
 
     def test_standard_update(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
-        url = reverse('admin:concurrency_simpleconcurrentmodel_change', args=[target.pk])
+        url = reverse('admin:tests_simpleconcurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
         target = res.context['original']
         old_version = target.version
@@ -71,7 +71,7 @@ class TestConcurrentModelAdmin(AdminTestCase):
         self.assertGreater(new_version, old_version)
 
     def test_creation(self):
-        url = reverse('admin:concurrency_simpleconcurrentmodel_add')
+        url = reverse('admin:tests_simpleconcurrentmodel_add')
         res = self.app.get(url, user='sax')
         form = res.form
         form['username'] = 'CHAR'
@@ -81,7 +81,7 @@ class TestConcurrentModelAdmin(AdminTestCase):
 
     def test_conflict(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
-        url = reverse('admin:concurrency_simpleconcurrentmodel_change', args=[target.pk])
+        url = reverse('admin:tests_simpleconcurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
 
         form = res.form
@@ -105,7 +105,7 @@ class TestAdminEdit(AdminTestCase):
         u.save()
 
     def test_creation(self):
-        url = reverse('admin:concurrency_simpleconcurrentmodel_add')
+        url = reverse('admin:tests_simpleconcurrentmodel_add')
         res = self.app.get(url, user='sax')
         form = res.form
         form['username'] = 'CHAR'
@@ -114,7 +114,7 @@ class TestAdminEdit(AdminTestCase):
         self.assertGreater(SimpleConcurrentModel.objects.get(username='CHAR').version, 0)
 
     def test_creation_with_customform(self):
-        url = reverse('admin:concurrency_simpleconcurrentmodel_add')
+        url = reverse('admin:tests_simpleconcurrentmodel_add')
         res = self.app.get(url, user='sax')
         form = res.form
         username = next(nextname)
@@ -123,14 +123,14 @@ class TestAdminEdit(AdminTestCase):
         self.assertTrue(SimpleConcurrentModel.objects.filter(username=username).exists())
         self.assertGreater(SimpleConcurrentModel.objects.get(username=username).version, 0)
 
-        #test no other errors are raised
+        # test no other errors are raised
         res = form.submit()
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, "SimpleConcurrentModel with this Username already exists.")
 
     def test_standard_update(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
-        url = reverse('admin:concurrency_simpleconcurrentmodel_change', args=[target.pk])
+        url = reverse('admin:tests_simpleconcurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
         target = res.context['original']
         old_version = target.version
@@ -144,7 +144,7 @@ class TestAdminEdit(AdminTestCase):
     def test_conflict(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
         assert target.version
-        url = reverse('admin:concurrency_simpleconcurrentmodel_change', args=[target.pk])
+        url = reverse('admin:tests_simpleconcurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
         form = res.form
 
@@ -159,7 +159,7 @@ class TestAdminEdit(AdminTestCase):
 
     def test_sanity_signer(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
-        url = reverse('admin:concurrency_simpleconcurrentmodel_change', args=[target.pk])
+        url = reverse('admin:tests_simpleconcurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
         form = res.form
         version1 = int(str(form['version'].value).split(":")[0])

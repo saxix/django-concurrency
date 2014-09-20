@@ -69,7 +69,8 @@ Add version management to new models
 Add version management to Django and/or plugged in applications models
 -----------------------------------------------------------------------
 
-.. versionchanged:: 0.4
+.. versionchanged:: 0.8
+
 
 Concurrency can work even with existing models, anyway if you are adding concurrency management to
 an existing database remember to edit the database's tables:

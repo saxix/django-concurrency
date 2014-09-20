@@ -1,4 +1,4 @@
-## -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 import operator
 import re
@@ -7,8 +7,8 @@ from django.utils.encoding import force_text
 from django.contrib import admin, messages
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db.models import Q
-from django.forms.formsets import (ManagementForm, TOTAL_FORM_COUNT, INITIAL_FORM_COUNT,
-                                   MAX_NUM_FORM_COUNT)
+from django.forms.formsets import (ManagementForm, TOTAL_FORM_COUNT,
+                                   INITIAL_FORM_COUNT, MAX_NUM_FORM_COUNT)
 from django.forms.models import BaseModelFormSet
 from django.utils.safestring import mark_safe
 from django.contrib.admin import helpers

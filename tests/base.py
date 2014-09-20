@@ -1,4 +1,5 @@
 import django
+from django.utils import timezone
 import pytest
 from django.test import TransactionTestCase
 from django.contrib.auth.models import User
@@ -13,18 +14,12 @@ from concurrency.fields import IntegerVersionField
 
 apply_concurrency_check(Permission, 'version', IntegerVersionField)
 
-DJANGO_TRUNK = django.VERSION[:2] == (1, 7)
+DJANGO_TRUNK = django.VERSION[:2] >= (1, 8)
 
-skipIfDjangoTrunk = pytest.mark.skipif(DJANGO_TRUNK,
-                                       reason="Skip if django == 1.7")
-onlyDjangoTrunk = pytest.mark.skipif(DJANGO_TRUNK,
-                                     reason="Skip if django != 1.7")
+win32only = pytest.mark.skipif("sys.platform != 'win32'")
 
-failIfTrunk = pytest.mark.xfail(DJANGO_TRUNK,
-                                reason="python trunk api changes")
-
-skipIfDjango14 = pytest.mark.skipif(django.VERSION[:2] == (1, 4),
-                                    reason="Skip if django == 1.4")
+skipIfDjangoVersion = lambda v: pytest.mark.skipif(django.VERSION[:2] >= v,
+                                                   reason="Skip if django>={}".format(v))
 
 
 class AdminTestCase(WebTestMixin, TransactionTestCase):
@@ -32,12 +27,13 @@ class AdminTestCase(WebTestMixin, TransactionTestCase):
 
     def setUp(self):
         super(AdminTestCase, self).setUp()
+
         self.user, __ = User.objects.get_or_create(is_superuser=True,
                                                    is_staff=True,
                                                    is_active=True,
+                                                   last_login=timezone.now(),
                                                    email='sax@example.com',
                                                    username='sax')
-
         admin_register_models()
 
 

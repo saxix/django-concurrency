@@ -1,27 +1,19 @@
 from contextlib import contextmanager
 from functools import partial, update_wrapper
+import itertools
 import pytest
-from sample_data_utils.utils import infinite, _sequence_counters
-from sample_data_utils.sample import text  # noqa
 from concurrency.config import conf
 from tests.models import *  # noqa
 from itertools import count
 from tests.models import TriggerConcurrentModel
 
 
-def sequence(prefix, cache=None):
-    if cache is None:
-        cache = _sequence_counters
-    if cache == -1:
-        cache = {}
+def sequence(prefix):
+    infinite = itertools.count()
+    while 1:
+        yield "{0}-{1}".format(prefix, next(infinite))
 
-    if prefix not in cache:
-        cache[prefix] = infinite()
-    while cache[prefix]:
-        yield "{0}-{1}".format(prefix, next(cache[prefix]))
-
-
-nextname = sequence('username', cache={})
+nextname = sequence('username')
 unique_id = count(1)
 
 
@@ -49,7 +41,7 @@ def clone_instance(model_instance):
 def with_models(*models, **kwargs):
     ignore = kwargs.pop('ignore', [])
     if ignore:
-        models = filter(models, lambda x: not x in ignore)
+        models = filter(models, lambda x: x not in ignore)
 
     ids = [m.__name__ for m in models]
 

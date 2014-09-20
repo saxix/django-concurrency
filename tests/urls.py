@@ -5,16 +5,13 @@ from tests.models import SimpleConcurrentModel
 
 
 try:
-    from django.apps import AppConfig
+    from django.apps import AppConfig  # noqa
     import django
     django.setup()
 except ImportError:
     pass
 
 admin.autodiscover()
-
-class SimpleConcurrentMpdel(object):
-    pass
 
 
 urlpatterns = patterns('',
