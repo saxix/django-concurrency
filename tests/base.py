@@ -13,13 +13,12 @@ from concurrency.fields import IntegerVersionField
 
 apply_concurrency_check(Permission, 'version', IntegerVersionField)
 
-DJANGO_TRUNK = django.VERSION[:2] >= (1,7)
-
+DJANGO_TRUNK = django.VERSION[:2] >= (1, 8)
 
 win32only = pytest.mark.skipif("sys.platform != 'win32'")
 
 skipIfDjangoVersion = lambda v: pytest.mark.skipif(django.VERSION[:2] >= v,
-                                       reason="Skip if django>={}".format(v))
+                                                   reason="Skip if django>={}".format(v))
 
 
 class AdminTestCase(WebTestMixin, TransactionTestCase):
@@ -27,12 +26,13 @@ class AdminTestCase(WebTestMixin, TransactionTestCase):
 
     def setUp(self):
         super(AdminTestCase, self).setUp()
+
         self.user, __ = User.objects.get_or_create(is_superuser=True,
                                                    is_staff=True,
                                                    is_active=True,
+                                                   last_login=timezone.now(),
                                                    email='sax@example.com',
                                                    username='sax')
-
         admin_register_models()
 
 

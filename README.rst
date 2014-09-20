@@ -12,7 +12,7 @@ Django Concurrency
 
 django-concurrency is an optimistic lock [1]_ implementation for Django.
 
-Tested with: 1.4.x, 1.5.x, 1.6.x, trunk.
+Tested with: 1.4.x, 1.5.x, 1.6.x, 1.7 trunk.
 
 It prevents users from doing concurrent editing in Django both from UI and from a
 django command.
@@ -44,9 +44,9 @@ Other projects that handle concurrent editing are `django-optimistic-lock`_ and 
 
  * can be applied to any model; not only your code (ie. django.contrib.auth.Group)
  * works with django 1.4 and 1.5
- * handle `list-editable`_ ChangeList. (solves `#11313 <https://code.djangoproject.com/ticket/11313>`_)
- * handle concurrency in admin's actions
- * can intercept changes performend out of the django app (ie using pgAdmin, phpMyAdmin, Toads)
+ * handle `list-editable`_ ChangeList. (handle `#11313 <https://code.djangoproject.com/ticket/11313>`_)
+ * manage concurrency conflicts in admin's actions
+ * can intercept changes performend out of the django app (ie using pgAdmin, phpMyAdmin, Toads) (using `TriggerVersionField_`
 
 
 Links
@@ -89,12 +89,15 @@ Links
 
 .. |wheel| image:: https://pypip.in/wheel/blackhole/badge.png
 
+_list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#list-editable
 
 .. _list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#list-editable
 
 .. _django-locking: https://github.com/stdbrouw/django-locking
 
 .. _django-optimistic-lock: https://github.com/gavinwahl/django-optimistic-lock
+
+.. _TriggerVersionField: https://django-concurrency.readthedocs.org/en/latest/fields.html#triggerversionfield
 
 .. [1] http://en.wikipedia.org/wiki/Optimistic_concurrency_control
 

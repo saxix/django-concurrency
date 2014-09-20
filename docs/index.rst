@@ -1,4 +1,4 @@
-    .. include:: globals.txt
+.. include:: globals.txt
 .. _index:
 
 ==================
@@ -29,10 +29,10 @@ Overview
 
 
 
-    django-concurrency is an optimistic locking library for Django Models
+django-concurrency is an optimistic locking library for Django Models
 
-    It prevents users from doing concurrent editing in Django both from UI and from a
-    django command.
+It prevents users from doing concurrent editing in Django both from UI and from a
+django command.
 
 
 .. note:: |concurrency| requires Django >= 1.4
@@ -79,7 +79,7 @@ to prevent other updates during the internal django ``save()`` execution.
 django >= 1.6
 ~~~~~~~~~~~~~
 
-    Full implementation of ``optimistic-lock`` pattern using a SQL clause like:
+Full implementation of ``optimistic-lock`` pattern using a SQL clause like:
 
 .. code-block:: sql
 
@@ -91,13 +91,13 @@ django >= 1.6
 Why two protocols ?
 ~~~~~~~~~~~~~~~~~~~
 
-    The initial implementation of |concurrency| used the real pattern [1]_,
+The initial implementation of |concurrency| used the real pattern [1]_,
 but it required a partial rewrite of original Django's code and it was
 very hard to maintain/keep updated, for this reason starting from version 0.3,
 :ref:`select_for_update()` was used.
 
 With the new  implementation (django 1.6) the optimistic lock pattern it
-is easier to implement, starting from version 0.7 |concurrency| uses different implementation
+is easier to implement. Starting from version 0.7 |concurrency| uses different implementation
 depending on the django version used.
 
 .. note:: From 1.0 support for django < 1.6 will be drooped

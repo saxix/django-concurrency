@@ -83,6 +83,7 @@ def apply_concurrency_check(model, fieldname, versionclass):
     logger.debug('Applying concurrency check to %s' % model)
 
     ver = versionclass()
+    # import ipdb; ipdb.set_trace()
     ver.contribute_to_class(model, fieldname)
     model._concurrencymeta._field = ver
 

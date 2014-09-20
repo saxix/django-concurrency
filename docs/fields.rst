@@ -40,8 +40,11 @@ The trigger is automatically created during ``syncdb()`` or you can use the :ref
             simply add the ability to create/manipulate triggers, no changes to original code.
 
 
+.. _triggers:
+
+
 ``triggers`` management command
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To easy work with |concurrency| created database triggers new command ``triggers`` is provided.
 It can:

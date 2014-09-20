@@ -17,11 +17,27 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.messages',
                   'django.contrib.staticfiles',
                   'django.contrib.admin',
+                   # 'django.contrib.admin.apps.SimpleAdminConfig'
                   'concurrency',
                   'tests']
 
-MIDDLEWARE_CLASSES = ('django.middleware.common.CommonMiddleware',
-                      'django.middleware.csrf.CsrfViewMiddleware')
+SOUTH_MIGRATION_MODULES = {
+    'tests': 'tests.south_migrations',
+}
+
+MIGRATION_MODULES = {
+    'tests': 'tests.migrations',
+    'auth': 'tests.auth_migrations',
+}
+
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+)
 
 TEMPLATE_DIRS = ['tests/templates']
 
@@ -67,14 +83,13 @@ LOGGING = {
     }
 }
 
-DBNAME = os.environ.get('DBNAME', 'concurrency')
-db = os.environ.get('DBENGINE', None)
+db = os.environ.get('DBENGINE', 'pg')
 if db == 'pg':
     DATABASES = {
         'default': {
             # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'ENGINE': 'concurrency.db.backends.postgresql_psycopg2',
-            'NAME': DBNAME,
+            'NAME': 'concurrency',
             'HOST': '127.0.0.1',
             'PORT': '',
             'USER': 'postgres',
@@ -84,7 +99,7 @@ elif db == 'mysql':
         'default': {
             # 'ENGINE': 'django.db.backends.mysql',
             'ENGINE': 'concurrency.db.backends.mysql',
-            'NAME': DBNAME,
+            'NAME': 'concurrency',
             'HOST': '127.0.0.1',
             'PORT': '',
             'USER': 'root',
@@ -97,6 +112,6 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'concurrency.db.backends.sqlite3',
-            'NAME': '%s.sqlite' % DBNAME,
+            'NAME': 'concurrency.sqlite',
             'HOST': '',
             'PORT': ''}}

@@ -1,6 +1,7 @@
 Release 0.8
 -----------
-
+* django 1.7 compatibility
+* fixes typo in ``delete_selected_confirmation.html`` template
 
 Release 0.7.1
 -------------

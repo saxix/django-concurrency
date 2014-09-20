@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.core import signals
-from django.db import connections, IntegrityError
-import mock
 import pytest
+import mock
+from django.db import connections, IntegrityError
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
 from tests.models import TriggerConcurrentModel
@@ -15,9 +14,6 @@ from tests.util import nextname
 def reset_queries(**kwargs):
     for conn in connections.all():
         conn.queries = []
-
-
-signals.request_started.connect(reset_queries)
 
 
 class CaptureQueriesContext(object):
