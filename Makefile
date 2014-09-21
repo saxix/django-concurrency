@@ -3,8 +3,8 @@ BUILDDIR='~build'
 PYTHONPATH := ${PWD}/demo/:${PWD}
 DJANGO_14='django>=1.4,<1.5'
 DJANGO_15='django>=1.5,<1.6'
-DJANGO_16='django>=1.6,>1.7'
-DJANGO_17='https://www.djangoproject.com/download/1.7c1/tarball/'
+DJANGO_16='django>=1.6,<1.7'
+DJANGO_17='django>=1.7,<1.8'
 DJANGO_DEV=git+git://github.com/django/django.git
 DBENGINE?=pg
 
@@ -13,12 +13,12 @@ DBENGINE?=pg
 mkbuilddir:
 	mkdir -p ${BUILDDIR}
 
-
-install-deps:
-	pip install -q \
-	        -r requirements.pip python-coveralls \
-	        django_extensions
-
+develop:
+	@echo "--> Installing dependencies"
+	pip install -e .
+	pip install "file://`pwd`#egg=concurrency[dev]"
+	pip install "file://`pwd`#egg=concurrency[tests]"
+	@echo ""
 
 locale:
 	cd concurrency && django-admin.py makemessages -l en
@@ -44,15 +44,13 @@ coverage: mkbuilddir
 	py.test --cov=concurrency --cov-report=html --cov-report=term --cov-config=.coveragerc -vvv
 
 
-ci: init-db install-deps
+ci: init-db develop
 	@sh -c "if [ '${DJANGO}' = '1.4.x' ]; then pip install ${DJANGO_14}; fi"
 	@sh -c "if [ '${DJANGO}' = '1.5.x' ]; then pip install ${DJANGO_15}; fi"
 	@sh -c "if [ '${DJANGO}' = '1.6.x' ]; then pip install ${DJANGO_16}; fi"
 	@sh -c "if [ '${DJANGO}' = '1.7.x' ]; then pip install ${DJANGO_17}; fi"
 	@sh -c "if [ '${DJANGO}' = 'dev' ]; then pip install ${DJANGO_DEV}; fi"
 	@pip install coverage
-	@python -c "from __future__ import print_function;import django;print('Django version:', django.get_version())"
-	@echo "Database:" ${DBENGINE}
 	$(MAKE) coverage
 
 

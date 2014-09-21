@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
+import sys
 import concurrency
 
 NAME = 'django-concurrency'
@@ -11,6 +13,44 @@ VERSIONMAP = {'final': (concurrency.VERSION, 'Development Status :: 5 - Producti
               'alpha': ('master', 'Development Status :: 3 - Alpha')}
 
 download_tag, development_status = VERSIONMAP[concurrency.VERSION[3]]
+install_requires = []
+
+tests_require = ["coverage",
+                 "django-webtest>=1.7.5",
+                 "mock>=1.0.1",
+                 "py>=1.4.19",
+                 "pytest-cache",
+                 "pytest-echo>=1.3",
+                 "pytest-cov>=1.6",
+                 "pytest-django>=2.4",
+                 "pytest>=2.5.1",
+                 "setuptools>=2.0.2",
+                 "six>=1.4.1",
+                 "Sphinx>=1.1.3",
+                 "WebTest>=2.0.11",
+]
+
+dev_requires = [
+    'psycopg2>=2.5.0,<2.6.0',
+    "ipdb",
+    "django_extensions",
+    "tox>=1.6.1",
+]
+
+
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = ['tests']
+        self.test_suite = True
+
+    def run_tests(self):
+        # import here, cause outside the eggs aren't loaded
+        import pytest
+
+        errno = pytest.main(self.test_args)
+        sys.exit(errno)
+
 
 setup(
     name=NAME,
@@ -24,6 +64,13 @@ setup(
     long_description=open('README.rst').read(),
     license="MIT License",
     keywords="django",
+    install_requires=install_requires,
+    tests_require=tests_require,
+    extras_require={
+        'tests': tests_require,
+        'dev': dev_requires,
+    },
+    cmdclass={'test': PyTest},
     classifiers=[
         development_status,
         'Environment :: Web Environment',
@@ -34,6 +81,7 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules',
