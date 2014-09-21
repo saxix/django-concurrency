@@ -72,9 +72,6 @@ def _wrap_model_save(model, force=False):
         old_save = getattr(model, 'save')
         setattr(model, 'save', model._concurrencymeta._field._wrap_save(old_save))
 
-    from concurrency.api import get_version
-
-    setattr(model, 'get_concurrency_version', get_version)
     model._concurrencymeta._versioned_save = True
 
 

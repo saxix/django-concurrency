@@ -65,7 +65,7 @@ class VersionField(Field):
 
         super(VersionField, self).__init__(verbose_name, name,
                                            help_text=help_text,
-                                           default=1,
+                                           default=0,
                                            db_tablespace=db_tablespace,
                                            db_column=db_column)
 
@@ -113,7 +113,7 @@ class VersionField(Field):
         from concurrency.api import concurrency_check
 
         def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-            if self._concurrencymeta.enabled:
+            if self._concurrencymeta.enabled and not getattr(self, '_concurrency_disabled', False):
                 concurrency_check(self, force_insert, force_update, using, **kwargs)
             return func(self, force_insert, force_update, using, **kwargs)
 
@@ -146,7 +146,7 @@ class VersionField(Field):
                     break
 
             if values:
-                if model_instance._concurrencymeta.enabled and old_version:
+                if model_instance._concurrencymeta.enabled and not getattr(model_instance, '_concurrency_disabled', False) and old_version:
                     filter_kwargs = {'pk': pk_val, version_field.attname: old_version}
                     updated = base_qs.filter(**filter_kwargs)._update(values) >= 1
                     if not updated:

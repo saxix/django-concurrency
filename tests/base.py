@@ -2,17 +2,16 @@ import django
 from django.utils import timezone
 import pytest
 from django.test import TransactionTestCase
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django_webtest import WebTestMixin
 from tests.admin import admin_register_models
 
 SENTINEL = '**concurrent_update**'
 
 from concurrency.api import apply_concurrency_check
-from django.contrib.auth.models import Permission
 from concurrency.fields import IntegerVersionField
 
-apply_concurrency_check(Permission, 'version', IntegerVersionField)
+apply_concurrency_check(Group, 'version', IntegerVersionField)
 
 DJANGO_TRUNK = django.VERSION[:2] >= (1, 8)
 

@@ -14,6 +14,7 @@ def sequence(prefix):
         yield "{0}-{1}".format(prefix, next(infinite))
 
 nextname = sequence('username')
+nextgroup = sequence('group')
 unique_id = count(1)
 
 

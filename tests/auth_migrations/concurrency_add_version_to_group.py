@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
-from django.core import validators
-from django.db import models, migrations
-from django.utils import timezone
+from concurrency.api import apply_concurrency_check
+from django.db import migrations, ProgrammingError
 from concurrency.fields import IntegerVersionField
-
 
 class Migration(migrations.Migration):
     """
@@ -24,8 +21,9 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='Permission',
+            model_name='Group',
             name='version',
-            field=IntegerVersionField(),
+            field=IntegerVersionField(help_text=b'Version', default=1),
 
-        )]
+        ),
+    ]

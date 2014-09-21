@@ -59,5 +59,5 @@ class TestIssue18(SimpleTestCase):
         obj = ListEditableConcurrentModel(pk=id)
         self.assertTrue(re.match(r"^%s,\d+$" % id, identity(obj)))
 
-        g = Group(name='GroupTest', pk=3)
+        g = User(username='UserTest', pk=3)
         self.assertEqual(identity(g), force_text(g.pk))

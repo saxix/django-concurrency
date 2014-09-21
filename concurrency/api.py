@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from inspect import isclass
 import logging
 from contextlib import contextmanager
 from django.core.exceptions import ImproperlyConfigured
+from django.db.models import Model
 from concurrency.core import _select_lock, _wrap_model_save, get_version_fieldname
 from concurrency.exceptions import RecordModifiedError
 
@@ -78,14 +80,16 @@ def apply_concurrency_check(model, fieldname, versionclass):
     """
     if hasattr(model, '_concurrencymeta'):
         return
-        # raise ImproperlyConfigured("%s is already under concurrency management" % model)
 
     logger.debug('Applying concurrency check to %s' % model)
 
     ver = versionclass()
-    # import ipdb; ipdb.set_trace()
+
     ver.contribute_to_class(model, fieldname)
     model._concurrencymeta._field = ver
+
+    from concurrency.fields import class_prepared_concurrency_handler
+    class_prepared_concurrency_handler(model)
 
     if not model._concurrencymeta._versioned_save:
         _wrap_model_save(model)
@@ -102,6 +106,13 @@ def disable_concurrency(model):
         temporary disable concurrency check for passed model
     :param model:
     """
-    old_value, model._concurrencymeta.enabled = model._concurrencymeta.enabled, False
+    if isinstance(model, Model):
+        old_value, model._concurrency_disabled = getattr(model, '_concurrency_disabled', False), True
+        model._concurrency_disabled = True
+    else:
+        old_value, model._concurrencymeta.enabled = model._concurrencymeta.enabled, False
     yield
-    model._concurrencymeta.enabled = old_value
+    if isinstance(model, Model):
+        model._concurrency_disabled  = old_value
+    else:
+        model._concurrencymeta.enabled = old_value
