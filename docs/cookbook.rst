@@ -13,33 +13,15 @@ Cookbook
 Unable to import data ?
 -----------------------
 
-|concurrency| check that any model, when saved, has no version, anyway this is not true
-when you are importing data from a file or loading a fixture.
-This is internally known as ``SANITY_CHECK``. To solve this you can:
-
-**Globally disable:**
-
-edit your :file:`settings.py` and add:
-
-.. code-block:: python
-
-        CONCURRENCY_SANITY_CHECK = False
-
-**Temporary disable**
-
-.. code-block:: python
-
-    from concurrency.config import conf
-
-    conf.SANITY_CHECK = False
+Sometimes you need to temporary disable concurrency (ie during data imports)
 
 **Temporary disable per Model**
 
 .. code-block:: python
 
-    from concurrency.api import disable_sanity_check
+    from concurrency.api import disable_concurrency
 
-    with disable_sanity_check(Model):
+    with disable_concurrency(instance):
         Model.object
 
 
