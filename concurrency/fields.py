@@ -88,7 +88,7 @@ class VersionField(Field):
 
     def contribute_to_class(self, cls, name, virtual_only=False):
         super(VersionField, self).contribute_to_class(cls, name)
-        if hasattr(cls, '_concurrencymeta'):
+        if hasattr(cls, '_concurrencymeta') or cls._meta.abstract:
             return
         setattr(cls, '_concurrencymeta', ConcurrencyOptions())
         cls._concurrencymeta._field = self
@@ -197,7 +197,8 @@ class TriggerVersionField(VersionField):
     form_class = forms.VersionField
 
     def contribute_to_class(self, cls, name, virtual_only=False):
-        _TRIGGERS.append(self)
+        if not cls._meta.abstract:
+            _TRIGGERS.append(self)
         super(TriggerVersionField, self).contribute_to_class(cls, name)
 
     def _get_next_version(self, model_instance):
