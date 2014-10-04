@@ -4,20 +4,19 @@ services:
   - PostgreSQL
 
 env:
-  - TESTENV=p27d14pg
-  - TESTENV=p27d15pg
-  - TESTENV=p27d16pg
-  - TESTENV=p27d17pg
-  - TESTENV=p27dtrunkpg
-  - TESTENV=p33d16pg
-  - TESTENV=p27d16mysql
-
+  - TESTENV=py27-d14-pg
+  - TESTENV=py27-d14-mysql
+  - TESTENV=py27-d15-pg
+  - TESTENV=py27-d15-mysql
+  - TESTENV=py27-d16-pg
+  - TESTENV=py27-d16-mysql
+  - TESTENV=py27-d17-pg
+  - TESTENV=py27-d17-mysql
 
 install:
-  - make install-deps
+  - pip install tox==1.8
 
 script:
-  - make init-db
   - tox -e $TESTENV
 
 

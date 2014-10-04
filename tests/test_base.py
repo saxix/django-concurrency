@@ -1,3 +1,4 @@
+import django
 from concurrency.fields import IntegerVersionField
 from concurrency.api import apply_concurrency_check
 import pytest
@@ -13,7 +14,11 @@ pytest.mark.django_db(transaction=False)
 @pytest.mark.django_db
 @with_all_models
 def test_standard_save(model_class):
-    instance = model_class(username=next(nextname))
+    #this test pass if executed alone,
+    # produce a Duplicate Key (only django 1.4) if executed with other tests
+    if django.VERSION[:2] == (1,4):
+        model_class.objects.all().delete()
+    instance = model_class(username=model_class.__name__)
     instance.save()
     assert instance.get_concurrency_version() > 0
 

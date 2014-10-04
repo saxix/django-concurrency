@@ -14,22 +14,6 @@ VERSIONMAP = {'final': (concurrency.VERSION, 'Development Status :: 5 - Producti
 
 download_tag, development_status = VERSIONMAP[concurrency.VERSION[3]]
 install_requires = []
-
-tests_require = ["coverage",
-                 "django-webtest>=1.7.5",
-                 "mock>=1.0.1",
-                 "py>=1.4.19",
-                 "pytest-cache",
-                 "pytest-echo>=1.3",
-                 "pytest-cov>=1.6",
-                 "pytest-django>=2.4",
-                 "pytest>=2.5.1",
-                 "setuptools>=2.0.2",
-                 "six>=1.4.1",
-                 "Sphinx>=1.1.3",
-                 "WebTest>=2.0.11",
-]
-
 dev_requires = [
     'psycopg2>=2.5.0,<2.6.0',
     "ipdb",
@@ -65,11 +49,6 @@ setup(
     license="MIT License",
     keywords="django",
     install_requires=install_requires,
-    tests_require=tests_require,
-    extras_require={
-        'tests': tests_require,
-        'dev': dev_requires,
-    },
     cmdclass={'test': PyTest},
     classifiers=[
         development_status,
