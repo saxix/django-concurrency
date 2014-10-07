@@ -36,12 +36,18 @@ def class_prepared_concurrency_handler(sender, **kwargs):
 
 
 def post_syncdb_concurrency_handler(sender, **kwargs):
+    global _TRIGGERS
     from django.db import connection
 
     if hasattr(connection.creation, '_create_trigger'):
+        unused = []
         while _TRIGGERS:
             field = _TRIGGERS.pop()
-            connection.creation._create_trigger(field)
+            if field.model.__module__ == sender.__name__:
+                connection.creation._create_trigger(field)
+            else:
+                unused.append(field)
+        _TRIGGERS = unused
 
 
 class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_prepared_concurrency_handler')
