@@ -133,6 +133,11 @@ class TestIssue3Model(models.Model):
     class Meta:
         app_label = 'tests'
 
+class TestIssue41Modal(models.Model):
+    version = TriggerVersionField()
+    
+    class Meta:
+        app_label = 'tests'
 
 class ListEditableConcurrentModel(SimpleConcurrentModel):
     """ Proxy model used by admin related test.
