@@ -113,6 +113,9 @@ class ConcurrencyActionMixin(object):
                                                 '(Probably by other user) '
                                                 'The execution was aborted.')
                         return HttpResponseRedirect(".")
+                else:
+                    messages.warning(request, 'Selecting all records, you will avoid the concurrency check')                               
+                                                   
 
             response = func(self, request, queryset)
 
