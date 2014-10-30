@@ -5,6 +5,11 @@ Release 0.9
 * fixes issue with TriggerVersioField and Proxy Models (thanx Richard Eames)
 
 
+Release 0.8.1
+-------------
+* avoid to use concurrency when selecting all items (select_across)
+
+
 Release 0.8
 -----------
 * django 1.7 compatibility
