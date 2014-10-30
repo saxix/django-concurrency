@@ -21,6 +21,8 @@ from concurrency.config import conf, CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
 
+ALL = object()
+
 
 class ConcurrencyActionMixin(object):
     check_concurrent_action = True
@@ -80,7 +82,10 @@ class ConcurrencyActionMixin(object):
 
             # Get the list of selected PKs. If nothing's selected, we can't
             # perform an action on it, so bail.
-            selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
+            if int(request.POST.get('select_across', 0)):
+                selected = ALL
+            else:
+                selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
 
             revision_field = self.model._concurrencymeta._field
             if not selected:
@@ -88,23 +93,29 @@ class ConcurrencyActionMixin(object):
 
             if self.check_concurrent_action:
                 self.delete_selected_confirmation_template = self.get_confirmation_template()
-                filters = []
-                for x in selected:
-                    try:
-                        pk, version = x.split(",")
-                    except ValueError:
-                        raise ImproperlyConfigured('`ConcurrencyActionMixin` error.'
-                                                   'A tuple with `primary_key, version_number` '
-                                                   'expected:  `%s` found' % x)
-                    filters.append(Q(**{'pk': pk,
-                                        revision_field.attname: version}))
+                
+                # If select_across we have to avoid the use of concurrency
+                if selected is not ALL:
+                    filters = []
+                    for x in selected:
+                        try:
+                            pk, version = x.split(",")
+                        except ValueError:
+                            raise ImproperlyConfigured('`ConcurrencyActionMixin` error.'
+                                                       'A tuple with `primary_key, version_number` '
+                                                       'expected:  `%s` found' % x)
+                        filters.append(Q(**{'pk': pk,
+                                            revision_field.attname: version}))
 
-                queryset = queryset.filter(reduce(operator.or_, filters))
-                if len(selected) != queryset.count():
-                    messages.error(request, 'One or more record were updated. '
-                                            '(Probably by other user) '
-                                            'The execution was aborted.')
-                    return HttpResponseRedirect(".")
+                    queryset = queryset.filter(reduce(operator.or_, filters))
+                    if len(selected) != queryset.count():
+                        messages.error(request, 'One or more record were updated. '
+                                                '(Probably by other user) '
+                                                'The execution was aborted.')
+                        return HttpResponseRedirect(".")
+                else:
+                    messages.warning(request, 'Selecting all records, you will avoid the concurrency check')                               
+                                                   
 
             response = func(self, request, queryset)
 
