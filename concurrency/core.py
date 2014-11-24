@@ -50,8 +50,9 @@ def _select_lock(model_instance, version_value=None):
             entry = model_instance.__class__._base_manager.filter(**kwargs)
 
         if not entry:
-            logger.debug("Conflict detected on `{0}` pk:`{0.pk}`, "
-                         "version `{1}` not found".format(model_instance, value))
+            logger.debug(
+                u"Conflict detected on `{0}` pk:`{0.pk}`, version `{1}` not found".format(model_instance, value)
+            )
             conf._callback(model_instance)
 
 
