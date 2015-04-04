@@ -43,7 +43,7 @@ Similar projects
 Other projects that handle concurrent editing are `django-optimistic-lock`_ and `django-locking`_ anyway concurrency is "a batteries included" optimistic lock management system, here some features not available elsewhere:
 
  * can be applied to any model; not only your code (ie. django.contrib.auth.Group)
- * works with django 1.4 and 1.5
+ * works with django 1.4-1.8
  * handle `list-editable`_ ChangeList. (handle `#11313 <https://code.djangoproject.com/ticket/11313>`_)
  * manage concurrency conflicts in admin's actions
  * can intercept changes performend out of the django app (ie using pgAdmin, phpMyAdmin, Toads) (using `TriggerVersionField_`
