@@ -15,7 +15,7 @@ mkbuilddir:
 	mkdir -p ${BUILDDIR}
 
 install-deps:
-	@pip install pip>=6
+	@pip install "pip>=6.0.8"
 	@pip install -qr requirements/tests.pip
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then pip install  MySQL-python; fi"
 	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2; fi"
@@ -35,11 +35,12 @@ init-db:
 	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -c 'CREATE DATABASE concurrency;' -U postgres; fi"
 
 test:
-	PYTHONPATH=tests py.test -vvv
+	py.test -vx --lf --pdb
 
 
-coverage: mkbuilddir install-deps
-	py.test tests -v --cov=concurrency --cov-report=html --cov-config=tests/.coveragerc -q
+coverage: mkbuilddir install-deps init-db
+	echo $PYTHONPATH;
+	py.test tests -vx --cov=concurrency --cov-report=html --cov-config=tests/.coveragerc -q
 
 
 clean:

@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import logging
 import re
 from django.db.backends.postgresql_psycopg2.base import DatabaseWrapper as PgDatabaseWrapper

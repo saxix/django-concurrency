@@ -3,7 +3,7 @@ from concurrency.db.backends.utils import get_trigger_name
 
 
 class Sqlite3Creation(DatabaseCreation):
-    sql = """
+    sql = b"""
 DROP TRIGGER IF EXISTS {trigger_name}_u; ##
 
 CREATE TRIGGER {trigger_name}_u

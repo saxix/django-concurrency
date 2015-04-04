@@ -18,8 +18,10 @@ env:
   - DBENGINE=pg
   - DBENGINE=mysql
 
+
 install:
   - pip install tox>=1.8
+
 
 script:
   - make coverage
@@ -30,9 +32,8 @@ after_success:
 
 matrix:
   allow_failures:
-    - rvm: 1.9.3
+    - env: DJANGO=dev
 
-matrix:
   exclude:
     - python: 3.4
       env: DJANGO=1.4.x

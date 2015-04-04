@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.db.backends.postgresql_psycopg2.creation import DatabaseCreation
 from concurrency.db.backends.utils import get_trigger_name
 
