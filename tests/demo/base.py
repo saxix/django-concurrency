@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import django
 from django.utils import timezone
 import pytest

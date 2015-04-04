@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from django.contrib.auth.models import Group
 from django.db import models
-from concurrency.fields import IntegerVersionField, AutoIncVersionField, TriggerVersionField
+from concurrency.fields import (IntegerVersionField, AutoIncVersionField,
+                                TriggerVersionField)
 
 __all__ = ['SimpleConcurrentModel', 'AutoIncConcurrentModel',
            'ProxyModel', 'InheritedModel', 'CustomSaveModel',

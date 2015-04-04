@@ -3,21 +3,29 @@ python:
   - "2.7"
   - "3.4"
 
+cache:
+  - pip
+
+sudo: false
+
 services:
   - MySQL
   - PostgreSQL
 
 env:
-  - DJANGO=1.4.x
-  - DJANGO=1.5.x
-  - DJANGO=1.6.x
-  - DJANGO=1.7.x
-  - DJANGO=1.8.x
-  - DJANGO=dev
+  - DJANGO=1.4.x DBENGINE=pg
+  - DJANGO=1.5.x DBENGINE=pg
+  - DJANGO=1.6.x DBENGINE=pg
+  - DJANGO=1.7.x DBENGINE=pg
+  - DJANGO=1.8.x DBENGINE=pg
+  - DJANGO=dev DBENGINE=pg
 
-  - DBENGINE=pg
-  - DBENGINE=mysql
-
+  - DJANGO=1.4.x DBENGINE=mysql
+  - DJANGO=1.5.x DBENGINE=mysql
+  - DJANGO=1.6.x DBENGINE=mysql
+  - DJANGO=1.7.x DBENGINE=mysql
+  - DJANGO=1.8.x DBENGINE=mysql
+  - DJANGO=dev DBENGINE=pg
 
 install:
   - pip install tox>=1.8
@@ -32,12 +40,25 @@ after_success:
 
 matrix:
   allow_failures:
-    - env: DJANGO=dev
+    - env: DJANGO=dev DBENGINE=pg
 
   exclude:
-    - python: 3.4
-      env: DJANGO=1.4.x
-    - python: 3.4
-      env: DJANGO=1.5.x
-    - python: 3.4
-      env: DJANGO=1.6.x
+    - python: "3.4"
+      env: DJANGO=1.4.x DBENGINE=pg
+    - python: "3.4"
+      env: DJANGO=1.5.x DBENGINE=pg
+    - python: "3.4"
+      env: DJANGO=1.6.x DBENGINE=pg
+
+    - python: "3.4"
+      env: DJANGO=1.4.x DBENGINE=mysql
+    - python: "3.4"
+      env: DJANGO=1.5.x DBENGINE=mysql
+    - python: "3.4"
+      env: DJANGO=1.6.x DBENGINE=mysql
+    - python: "3.4"
+      env: DJANGO=1.7.x DBENGINE=mysql
+    - python: "3.4"
+      env: DJANGO=1.8.x DBENGINE=mysql
+    - python: "3.4"
+      env: DJANGO=dev DBENGINE=mysql

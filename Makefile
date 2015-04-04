@@ -1,13 +1,13 @@
 VERSION=2.0.0
 BUILDDIR='~build'
-PYTHONPATH := ${PWD}/tests/:${PWD}
+PYTHONPATH:=${PWD}/tests/:${PWD}
 DJANGO_14='django>=1.4,<1.5'
 DJANGO_15='django>=1.5,<1.6'
 DJANGO_16='django>=1.6,<1.7'
 DJANGO_17='django>=1.7,<1.8'
 DJANGO_18='django>=1.8,<1.9'
 DJANGO_DEV=git+git://github.com/django/django.git
-DBENGINE?=pg
+DBENGINE?=sqlite
 DJANGO?='1.7.x'
 
 
@@ -35,12 +35,12 @@ init-db:
 	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -c 'CREATE DATABASE concurrency;' -U postgres; fi"
 
 test:
-	py.test -vx --lf --pdb
+	py.test -v
 
 
 coverage: mkbuilddir install-deps init-db
-	echo $PYTHONPATH;
-	py.test tests -vx --cov=concurrency --cov-report=html --cov-config=tests/.coveragerc -q
+	echo ${PYTHONPATH};
+	PYTHONPATH=${PWD}/tests/:${PWD} py.test tests -v --cov=concurrency --cov-report=html --cov-config=tests/.coveragerc -q
 
 
 clean:

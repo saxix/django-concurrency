@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.contrib.admin.sites import NotRegistered
 from django.contrib import admin
 from concurrency.admin import ConcurrentModelAdmin
