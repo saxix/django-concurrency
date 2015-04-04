@@ -1,11 +1,11 @@
 VERSION=2.0.0
 BUILDDIR='~build'
-PYTHONPATH := ${PWD}/demo/:${PWD}
+PYTHONPATH := ${PWD}/tests/:${PWD}
 DJANGO_14='django>=1.4,<1.5'
 DJANGO_15='django>=1.5,<1.6'
 DJANGO_16='django>=1.6,<1.7'
-DJANGO_17='django>=1.7,<1.8
-DJANGO_18='django>=1.8,<1.9
+DJANGO_17='django>=1.7,<1.8'
+DJANGO_18='django>=1.8,<1.9'
 DJANGO_DEV=git+git://github.com/django/django.git
 DBENGINE?=pg
 DJANGO?='1.7.x'
@@ -16,13 +16,14 @@ mkbuilddir:
 
 install-deps:
 	@pip install pip>=6
-	@pip install -r requirements/tests.pip
+	@pip install -qr requirements/tests.pip
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then pip install  MySQL-python; fi"
 	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2; fi"
 	@sh -c "if [ '${DJANGO}' = '1.4.x' ]; then pip install ${DJANGO_14}; fi"
 	@sh -c "if [ '${DJANGO}' = '1.5.x' ]; then pip install ${DJANGO_15}; fi"
 	@sh -c "if [ '${DJANGO}' = '1.6.x' ]; then pip install ${DJANGO_16}; fi"
 	@sh -c "if [ '${DJANGO}' = '1.7.x' ]; then pip install ${DJANGO_17}; fi"
+	@sh -c "if [ '${DJANGO}' = '1.8.x' ]; then pip install ${DJANGO_18}; fi"
 	@sh -c "if [ '${DJANGO}' = 'dev' ]; then pip install ${DJANGO_DEV}; fi"
 
 
@@ -34,11 +35,11 @@ init-db:
 	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -c 'CREATE DATABASE concurrency;' -U postgres; fi"
 
 test:
-	py.test -vvv
+	PYTHONPATH=tests py.test -vvv
 
 
-coverage: mkbuilddir
-	py.test tests --cov=concurrency --cov-report=html --cov-config=tests/.coveragerc -q
+coverage: mkbuilddir install-deps
+	py.test tests -v --cov=concurrency --cov-report=html --cov-config=tests/.coveragerc -q
 
 
 clean:

@@ -8,24 +8,21 @@ services:
   - PostgreSQL
 
 env:
-  - TESTENV=py27-d14-pg
-  - TESTENV=py27-d14-mysql
-  - TESTENV=py27-d15-pg
-  - TESTENV=py27-d15-mysql
-  - TESTENV=py27-d16-pg
-  - TESTENV=py27-d16-mysql
-  - TESTENV=py27-d17-pg
-  - TESTENV=py27-d17-mysql
-  - TESTENV=py27-d16-mysql
-  - TESTENV=py27-d18-pg
-  - TESTENV=py34-d17-pg
-  - TESTENV=py34-d18-pg
+  - DJANGO=1.4.x
+  - DJANGO=1.5.x
+  - DJANGO=1.6.x
+  - DJANGO=1.7.x
+  - DJANGO=1.8.x
+  - DJANGO=dev
+
+  - DBENGINE=pg
+  - DBENGINE=mysql
 
 install:
   - pip install tox>=1.8
 
 script:
-  - tox -e $TESTENV
+  - make coverage
 
 
 after_success:
@@ -34,3 +31,12 @@ after_success:
 matrix:
   allow_failures:
     - rvm: 1.9.3
+
+matrix:
+  exclude:
+    - python: 3.4
+      env: DJANGO=1.4.x
+    - python: 3.4
+      env: DJANGO=1.5.x
+    - python: 3.4
+      env: DJANGO=1.6.x

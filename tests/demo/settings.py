@@ -1,5 +1,6 @@
 import os
 from tempfile import mktemp
+import django
 
 DEBUG = True
 STATIC_URL = '/static/'
@@ -17,7 +18,7 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.messages',
                   'django.contrib.staticfiles',
                   'django.contrib.admin',
-                   # 'django.contrib.admin.apps.SimpleAdminConfig'
+                  # 'django.contrib.admin.apps.SimpleAdminConfig'
                   'concurrency',
                   'demo']
 
@@ -30,14 +31,16 @@ MIGRATION_MODULES = {
     'auth': 'demo.auth_migrations',
 }
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+]
+if django.VERSION[1] >= 7:
+    MIDDLEWARE_CLASSES += ['django.contrib.auth.middleware.SessionAuthenticationMiddleware', ]
 
 TEMPLATE_DIRS = ['demo/templates']
 
