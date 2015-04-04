@@ -1,8 +1,8 @@
 from django.contrib.admin.sites import NotRegistered
 from django.contrib import admin
 from concurrency.admin import ConcurrentModelAdmin
-from tests.models import *  # noqa
-from tests.models import NoActionsConcurrentModel, ListEditableConcurrentModel
+from .models import *  # noqa
+from .models import NoActionsConcurrentModel, ListEditableConcurrentModel
 
 
 class ListEditableModelAdmin(ConcurrentModelAdmin):

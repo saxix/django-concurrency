@@ -1,5 +1,5 @@
 from concurrency.exceptions import RecordModifiedError
-from tests.models import ConcurrencyDisabledModel, SimpleConcurrentModel
+from demo.models import ConcurrencyDisabledModel, SimpleConcurrentModel
 from django.test import TransactionTestCase
 
 

@@ -54,32 +54,32 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='InheritedModel',
             fields=[
-                ('simpleconcurrentmodel_ptr', models.OneToOneField(auto_created=True, to='tests.SimpleConcurrentModel', primary_key=True, serialize=False)),
+                ('simpleconcurrentmodel_ptr', models.OneToOneField(auto_created=True, to='demo.SimpleConcurrentModel', primary_key=True, serialize=False)),
                 ('extra_field', models.CharField(blank=True, null=True, max_length=30, unique=True)),
             ],
             options={
             },
-            bases=('tests.simpleconcurrentmodel',),
+            bases=('demo.simpleconcurrentmodel',),
         ),
         migrations.CreateModel(
             name='CustomSaveModel',
             fields=[
-                ('simpleconcurrentmodel_ptr', models.OneToOneField(auto_created=True, to='tests.SimpleConcurrentModel', primary_key=True, serialize=False)),
+                ('simpleconcurrentmodel_ptr', models.OneToOneField(auto_created=True, to='demo.SimpleConcurrentModel', primary_key=True, serialize=False)),
                 ('extra_field', models.CharField(blank=True, null=True, max_length=30, unique=True)),
             ],
             options={
             },
-            bases=('tests.simpleconcurrentmodel',),
+            bases=('demo.simpleconcurrentmodel',),
         ),
         migrations.CreateModel(
             name='ConcurrencyDisabledModel',
             fields=[
-                ('simpleconcurrentmodel_ptr', models.OneToOneField(auto_created=True, to='tests.SimpleConcurrentModel', primary_key=True, serialize=False)),
+                ('simpleconcurrentmodel_ptr', models.OneToOneField(auto_created=True, to='demo.SimpleConcurrentModel', primary_key=True, serialize=False)),
                 ('dummy_char', models.CharField(blank=True, null=True, max_length=30)),
             ],
             options={
             },
-            bases=('tests.simpleconcurrentmodel',),
+            bases=('demo.simpleconcurrentmodel',),
         ),
         migrations.CreateModel(
             name='TestIssue3Model',
@@ -129,7 +129,7 @@ class Migration(migrations.Migration):
                 'verbose_name': b'ListEditableConcurrentModel',
                 'verbose_name_plural': b'ListEditableConcurrentModels',
             },
-            bases=('tests.simpleconcurrentmodel',),
+            bases=('demo.simpleconcurrentmodel',),
         ),
         migrations.CreateModel(
             name='NoActionsConcurrentModel',
@@ -140,7 +140,7 @@ class Migration(migrations.Migration):
                 'verbose_name': b'NoActions-ConcurrentModel',
                 'verbose_name_plural': b'NoActions-ConcurrentModels',
             },
-            bases=('tests.simpleconcurrentmodel',),
+            bases=('demo.simpleconcurrentmodel',),
         ),
         migrations.CreateModel(
             name='ProxyModel',
@@ -151,7 +151,7 @@ class Migration(migrations.Migration):
                 'verbose_name': b'ProxyModel',
                 'verbose_name_plural': b'ProxyModels',
             },
-            bases=('tests.simpleconcurrentmodel',),
+            bases=('demo.simpleconcurrentmodel',),
         ),
 
 

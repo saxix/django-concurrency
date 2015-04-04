@@ -1,4 +1,8 @@
 language: python
+python:
+  - "2.7"
+  - "3.4"
+
 services:
   - MySQL
   - PostgreSQL
@@ -12,9 +16,13 @@ env:
   - TESTENV=py27-d16-mysql
   - TESTENV=py27-d17-pg
   - TESTENV=py27-d17-mysql
+  - TESTENV=py27-d16-mysql
+  - TESTENV=py27-d18-pg
+  - TESTENV=py34-d17-pg
+  - TESTENV=py34-d18-pg
 
 install:
-  - pip install tox==1.8
+  - pip install tox>=1.8
 
 script:
   - tox -e $TESTENV
@@ -22,3 +30,7 @@ script:
 
 after_success:
   - coveralls
+
+matrix:
+  allow_failures:
+    - rvm: 1.9.3

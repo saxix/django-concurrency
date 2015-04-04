@@ -11,11 +11,11 @@ from django.contrib.admin.sites import site
 from django.http import QueryDict
 from django.test.client import RequestFactory
 from concurrency.utils import refetch
-from tests.admin import admin_register, ActionsModelAdmin
+from demo.admin import admin_register, ActionsModelAdmin
 
-from tests.base import AdminTestCase
-from tests.models import ListEditableConcurrentModel
-from tests.util import unique_id, attributes
+from demo.base import AdminTestCase
+from demo.models import ListEditableConcurrentModel
+from demo.util import unique_id, attributes
 
 
 def get_fake_request(params):

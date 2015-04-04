@@ -9,9 +9,9 @@ from concurrency.admin import ConcurrentModelAdmin
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
 from concurrency.exceptions import RecordModifiedError
 from concurrency.middleware import ConcurrencyMiddleware
-from tests.base import AdminTestCase
-from tests.models import SimpleConcurrentModel
-from tests.util import attributes, DELETE_ATTRIBUTE, unique_id
+from demo.base import AdminTestCase
+from demo.models import SimpleConcurrentModel
+from demo.util import attributes, DELETE_ATTRIBUTE, unique_id
 
 
 def _get_request(path):
@@ -70,7 +70,7 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
 
                 saved, __ = SimpleConcurrentModel.objects.get_or_create(pk=id)
 
-                url = reverse('admin:tests_simpleconcurrentmodel_change', args=[saved.pk])
+                url = reverse('admin:demo_simpleconcurrentmodel_change', args=[saved.pk])
                 res = self.app.get(url, user='sax')
                 form = res.form
 

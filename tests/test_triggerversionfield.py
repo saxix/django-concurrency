@@ -4,11 +4,11 @@ import mock
 from django.db import connections, IntegrityError
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
-from tests.models import TriggerConcurrentModel
+from demo.models import TriggerConcurrentModel
 from django.core.signals import request_started
 
 # Register an event to reset saved queries when a Django request is started.
-from tests.util import nextname
+from demo.util import nextname
 
 
 def reset_queries(**kwargs):
@@ -84,7 +84,7 @@ def test_trigger_do_not_increase_version_if_error():
     instance = TriggerConcurrentModel()
     assert instance.pk is None
     assert instance.version == 0
-    with mock.patch('tests.models.TriggerConcurrentModel.save', side_effect=IntegrityError):
+    with mock.patch('demo.models.TriggerConcurrentModel.save', side_effect=IntegrityError):
         with pytest.raises(IntegrityError):
             instance.save()
 

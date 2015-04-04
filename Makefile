@@ -4,7 +4,8 @@ PYTHONPATH := ${PWD}/demo/:${PWD}
 DJANGO_14='django>=1.4,<1.5'
 DJANGO_15='django>=1.5,<1.6'
 DJANGO_16='django>=1.6,<1.7'
-DJANGO_17='django>=1.7,<1.8'
+DJANGO_17='django>=1.7,<1.8
+DJANGO_18='django>=1.8,<1.9
 DJANGO_DEV=git+git://github.com/django/django.git
 DBENGINE?=pg
 DJANGO?='1.7.x'
@@ -14,6 +15,7 @@ mkbuilddir:
 	mkdir -p ${BUILDDIR}
 
 install-deps:
+	@pip install pip>=6
 	@pip install -r requirements/tests.pip
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then pip install  MySQL-python; fi"
 	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2; fi"

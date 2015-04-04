@@ -3,9 +3,8 @@ from functools import partial, update_wrapper
 import itertools
 import pytest
 from concurrency.config import conf
-from tests.models import *  # noqa
 from itertools import count
-from tests.models import TriggerConcurrentModel
+from .models import *
 
 
 def sequence(prefix):

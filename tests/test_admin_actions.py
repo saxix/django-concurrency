@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from tests.base import AdminTestCase, SENTINEL, skipIfDjangoVersion
-from tests.models import SimpleConcurrentModel
-from tests.util import unique_id
+from demo.base import AdminTestCase, SENTINEL, skipIfDjangoVersion
+from demo.models import SimpleConcurrentModel
+from demo.util import unique_id
 
 
 class TestAdminActions(AdminTestCase):

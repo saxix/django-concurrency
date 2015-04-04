@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group
 from concurrency.core import _set_version
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
-from tests.util import with_all_models, unique_id, nextname, with_std_models, nextgroup
+from demo.util import with_all_models, unique_id, nextname, with_std_models, nextgroup
 
 
 pytest.mark.django_db(transaction=False)

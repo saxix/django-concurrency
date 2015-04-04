@@ -8,7 +8,7 @@ from concurrency.exceptions import VersionError
 from concurrency.forms import ConcurrentForm, VersionField, VersionFieldSigner, VersionWidget
 from django.test.testcases import SimpleTestCase
 from django.utils.translation import ugettext as _
-from tests.models import SimpleConcurrentModel, TestIssue3Model
+from demo.models import SimpleConcurrentModel, TestIssue3Model
 
 __all__ = ['WidgetTest', 'FormFieldTest', 'ConcurrentFormTest']
 

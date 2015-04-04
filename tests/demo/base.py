@@ -4,7 +4,7 @@ import pytest
 from django.test import TransactionTestCase
 from django.contrib.auth.models import User, Group
 from django_webtest import WebTestMixin
-from tests.admin import admin_register_models
+from .admin import admin_register_models
 
 SENTINEL = '**concurrent_update**'
 
@@ -22,7 +22,7 @@ skipIfDjangoVersion = lambda v: pytest.mark.skipif(django.VERSION[:2] >= v,
 
 
 class AdminTestCase(WebTestMixin, TransactionTestCase):
-    urls = 'tests.urls'
+    urls = 'demo.urls'
 
     def setUp(self):
         super(AdminTestCase, self).setUp()
