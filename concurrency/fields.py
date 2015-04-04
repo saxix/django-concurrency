@@ -4,7 +4,10 @@ import logging
 from functools import update_wrapper
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import Field
-from django.db.models.signals import class_prepared, post_syncdb
+try:
+    from django.db.models.signals import class_prepared, post_migrate
+except:
+    from django.db.models.signals import class_prepared, post_syncdb as post_migrate
 
 from concurrency import forms
 from concurrency.config import conf
@@ -45,7 +48,7 @@ def post_syncdb_concurrency_handler(sender, **kwargs):
 
 
 class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_prepared_concurrency_handler')
-post_syncdb.connect(post_syncdb_concurrency_handler, dispatch_uid='post_syncdb_concurrency_handler')
+post_migrate.connect(post_syncdb_concurrency_handler, dispatch_uid='post_syncdb_concurrency_handler')
 
 _TRIGGERS = []
 class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_prepared_concurrency_handler')

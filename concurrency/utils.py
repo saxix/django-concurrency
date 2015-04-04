@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+import sys
 import logging
 import warnings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import router, connections
-from django.db.models.loading import get_models, get_apps
-import sys
+try:
+    from django.apps import apps
+    get_models = apps.get_model
+    get_apps = apps.get_apps
+
+except ImportError:
+    from django.db.models.loading import get_models, get_apps
+
 from concurrency.exceptions import RecordModifiedError
 
 

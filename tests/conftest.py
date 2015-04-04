@@ -6,9 +6,11 @@ import warnings
 
 
 def pytest_configure(config):
+    from django.conf import settings
     sys.path.insert(0, os.path.dirname(__file__))
 
     os.environ['DJANGO_SETTINGS_MODULE'] = 'demo.settings'
+    warnings.simplefilter('default')
 
     try:
         from django.apps import AppConfig  # noqa

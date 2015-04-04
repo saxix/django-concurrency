@@ -1,6 +1,6 @@
 Release 0.9
 -----------
-* **BACKWARD INCOMPATIBLE** :ref:`disable_concurrency`  works differently if used with classes or instances
+* **BACKWARD INCOMPATIBLE** :ref:`disable_concurrency` works differently if used with classes or instances
 * better support for external Models (models that are part of plugged-in applications)
 * fixes issue with TriggerVersioField and Proxy Models (thanx Richard Eames)
 
