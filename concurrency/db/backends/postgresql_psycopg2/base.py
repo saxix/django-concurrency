@@ -18,7 +18,7 @@ class DatabaseWrapper(TriggerMixin, PgDatabaseWrapper):
         stm = "select * from pg_trigger where tgname LIKE 'concurrency_%%'; "
         logger.debug(stm)
         cursor.execute(stm)
-        return [m[1] for m in cursor.fetchall()]
+        return sorted([m[1] for m in cursor.fetchall()])
 
     def drop_trigger(self, trigger_name):
         if trigger_name not in self.list_triggers():

@@ -29,7 +29,7 @@ env:
 
 install:
   - pip install tox>=1.8
-  - pip install python-coveralls==2.0.4 coveralls==0.3
+  - pip install python-coveralls>=2.5 coveralls>=0.5
 
 
 script:

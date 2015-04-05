@@ -39,5 +39,5 @@ def test_command_list():
     call_command('triggers', 'list', stdout=out)
     out.seek(0)
     output = out.read()
-    assert output.find('concurrency_demo_triggerconcurrentmodel_u')
     assert output.find('concurrency_demo_triggerconcurrentmodel_i')
+    assert output.find('concurrency_demo_triggerconcurrentmodel_u')

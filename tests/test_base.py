@@ -1,5 +1,6 @@
 import pytest
 import django
+from concurrency.api import apply_concurrency_check
 import concurrency.config
 from concurrency.core import _set_version
 from concurrency.exceptions import RecordModifiedError
@@ -11,8 +12,16 @@ from demo.util import (with_all_models, concurrent_model, unique_id,
 pytest.mark.django_db(transaction=False)
 
 
+def pytest_generate_tests(metafunc):
+    if 'protocol' in metafunc.fixturenames:
+        if django.VERSION[1] in [4, 5]:
+            metafunc.parametrize("protocol", [1])
+        else:
+            metafunc.parametrize("protocol", [1, 2])
+
+
 @with_all_models
-@pytest.mark.parametrize("protocol", [1, 2])
+# @pytest.mark.parametrize("protocol", [1, 2])
 @pytest.mark.django_db
 def test_standard_save(model_class, protocol, monkeypatch):
     # this test pass if executed alone,
@@ -27,7 +36,6 @@ def test_standard_save(model_class, protocol, monkeypatch):
 
 @pytest.mark.django_db(transaction=False)
 @with_std_models
-@pytest.mark.parametrize("protocol", [1, 2])
 def test_conflict(model_class, protocol, monkeypatch):
     monkeypatch.setattr(concurrency.config.conf, 'PROTOCOL', protocol)
 
@@ -62,4 +70,3 @@ def test_do_not_check_if_no_version(model_class):
     instance.save()
     assert instance.get_concurrency_version() > 0
     assert instance.get_concurrency_version() != copy.get_concurrency_version()
-

@@ -1,3 +1,4 @@
+import _mysql_exceptions
 from django.db.backends.mysql.base import DatabaseWrapper as MySQLDatabaseWrapper
 from concurrency.db.backends.common import TriggerMixin
 from concurrency.db.backends.mysql.creation import MySQLCreation
@@ -13,8 +14,8 @@ class DatabaseWrapper(TriggerMixin, MySQLDatabaseWrapper):
 
     def list_triggers(self):
         cursor = self.cursor()
-        cursor.execute("SHOW TRIGGERS LIKE 'concurrency_%%';")
-        return [m[0] for m in cursor.fetchall()]
+        cursor.execute("SHOW TRIGGERS")
+        return sorted([m[0] for m in cursor.fetchall()])
 
     def drop_trigger(self, trigger_name):
         cursor = self.cursor()

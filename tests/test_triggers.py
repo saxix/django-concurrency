@@ -9,10 +9,10 @@ logger = logging.getLogger(__name__)
 @pytest.mark.django_db
 def test_list_triggers():
     conn = connections['default']
-    assert conn.list_triggers() == [u'concurrency_demo_triggerconcurrentmodel_u',
-                                    u'concurrency_demo_triggerconcurrentmodel_i']
+    assert conn.list_triggers() == [u'concurrency_demo_triggerconcurrentmodel_i',
+                                    u'concurrency_demo_triggerconcurrentmodel_u']
 
-
+@pytest.mark.last
 @pytest.mark.django_db
 def test_drop_triggers():
     conn = connections['default']

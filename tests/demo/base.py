@@ -6,13 +6,13 @@ from django.test import TransactionTestCase
 from django.contrib.auth.models import User, Group
 from django_webtest import WebTestMixin
 from .admin import admin_register_models
-# from concurrency.api import apply_concurrency_check
+from concurrency.api import apply_concurrency_check
 from concurrency.fields import IntegerVersionField
 
 SENTINEL = '**concurrent_update**'
 
 
-# apply_concurrency_check(Group, 'version', IntegerVersionField)
+apply_concurrency_check(Group, 'version', IntegerVersionField)
 
 DJANGO_TRUNK = django.VERSION[:2] >= (1, 8)
 

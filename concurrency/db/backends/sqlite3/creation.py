@@ -18,6 +18,9 @@ AFTER INSERT ON {opts.db_table}
 BEGIN UPDATE {opts.db_table} SET {field.column} = 0 WHERE {opts.pk.column} = NEW.{opts.pk.column};
 END; ##
 """
+    def __init__(self, connection):
+        super(Sqlite3Creation, self).__init__(connection)
+        self._triggers = {}
 
     def _create_trigger(self, field):
         from django.db.utils import DatabaseError
@@ -33,6 +36,7 @@ END; ##
                                   field=field)
             try:
                 cursor.execute(stm)
+                self._triggers[field] = trigger_name
             except BaseException as exc:
                 raise DatabaseError(exc)
 

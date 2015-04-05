@@ -15,13 +15,16 @@ FOR EACH ROW SET NEW.{field.column} = 1 ;
 CREATE TRIGGER {trigger_name}_u BEFORE UPDATE ON {opts.db_table}
 FOR EACH ROW SET NEW.{field.column} = OLD.{field.column}+1;
 """
+    def __init__(self, connection):
+        super(MySQLCreation, self).__init__(connection)
+        self._triggers = {}
 
     def _create_trigger(self, field):
-        import MySQLdb as Database
+        # import MySQLdb as Database
         from warnings import filterwarnings, resetwarnings
 
         filterwarnings('ignore', message='Trigger does not exist',
-                       category=Database.Warning)
+                       category=Warning)
 
         opts = field.model._meta
         trigger_name = get_trigger_name(field, opts)
@@ -31,6 +34,8 @@ FOR EACH ROW SET NEW.{field.column} = OLD.{field.column}+1;
         cursor = self.connection._clone().cursor()
         try:
             cursor.execute(stm)
+            self._triggers[field] = trigger_name
+
         except (BaseException, _mysql_exceptions.ProgrammingError) as exc:
             errno, message = exc.args
             if errno != 2014:
