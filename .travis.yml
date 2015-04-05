@@ -28,7 +28,8 @@ env:
   - DJANGO=dev DBENGINE=pg
 
 install:
-  - pip install tox>=1.8
+  - pip install tox>=1.8 
+  - pip install python-coveralls
 
 
 script:
