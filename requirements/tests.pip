@@ -1,3 +1,4 @@
+django
 coverage
 django-webtest>=1.7.5
 mock>=1.0.1
