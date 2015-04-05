@@ -13,11 +13,11 @@ install-deps:
 	@pip install -qr requirements/tests.pip
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then pip install  MySQL-python; fi"
 	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2; fi"
-	@sh -c "if [ '${DJANGO}' = '1.4.x' ]; then pip install django>=1.4,<1.5; fi"
-	@sh -c "if [ '${DJANGO}' = '1.5.x' ]; then pip install django>=1.5,<1.6}; fi"
-	@sh -c "if [ '${DJANGO}' = '1.6.x' ]; then pip install django>=1.6,<1.7}; fi"
-	@sh -c "if [ '${DJANGO}' = '1.7.x' ]; then pip install django>=1.7,<1.8}; fi"
-	@sh -c "if [ '${DJANGO}' = '1.8.x' ]; then pip install django>=1.8,<1.9}; fi"
+	@sh -c "if [ '${DJANGO}' = '1.4.x' ]; then pip install 'django>=1.4,<1.5'; fi"
+	@sh -c "if [ '${DJANGO}' = '1.5.x' ]; then pip install 'django>=1.5,<1.6'; fi"
+	@sh -c "if [ '${DJANGO}' = '1.6.x' ]; then pip install 'django>=1.6,<1.7'; fi"
+	@sh -c "if [ '${DJANGO}' = '1.7.x' ]; then pip install 'django>=1.7,<1.8'; fi"
+	@sh -c "if [ '${DJANGO}' = '1.8.x' ]; then pip install 'django>=1.8,<1.9'; fi"
 	@sh -c "if [ '${DJANGO}' = 'dev' ]; then pip install git+git://github.com/django/django.git; fi"
 
 
