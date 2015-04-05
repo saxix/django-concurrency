@@ -7,7 +7,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import router, connections
 try:
     from django.apps import apps
-    get_models = apps.get_model
+    get_models = apps.get_models
     get_apps = apps.get_apps
 
 except ImportError:

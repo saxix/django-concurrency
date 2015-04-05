@@ -28,15 +28,18 @@ env:
   - DJANGO=dev DBENGINE=pg
 
 install:
-  - pip install tox>=1.8 
-  - pip install python-coveralls
+  - pip install tox>=1.8
+  - pip install python-coveralls==2.0.4 coveralls==0.3
 
 
 script:
   - make coverage
 
+before_success:
+  - coverage erase
 
 after_success:
+  - coverage combine
   - coveralls
 
 matrix:

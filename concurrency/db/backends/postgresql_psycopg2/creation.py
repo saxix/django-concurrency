@@ -36,6 +36,10 @@ CREATE TRIGGER {trigger_name}_i BEFORE INSERT
     EXECUTE PROCEDURE {trigger_name}_si();
 """
 
+    def __init__(self, connection):
+        super(PgCreation, self).__init__(connection)
+        self._triggers = {}
+
     def _create_trigger(self, field):
         from django.db.utils import DatabaseError
 
@@ -50,8 +54,8 @@ CREATE TRIGGER {trigger_name}_i BEFORE INSERT
         self.connection.drop_trigger('{}_u'.format(trigger_name))
         try:
             self.connection.cursor().execute(stm)
-
-        except BaseException as exc:
+            self._triggers[field] = trigger_name
+        except BaseException as exc:  # pragma: no cover
             raise DatabaseError(exc)
 
         return trigger_name

@@ -41,10 +41,10 @@ class Command(BaseCommand):
                 if cmd == 'list':
                     self._list(databases)
                 elif cmd == 'create':
-                    create_triggers(databases)
+                    create_triggers(databases, stdout=self.stdout)
                     self._list(databases)
                 elif cmd == 'drop':
-                    drop_triggers(databases)
+                    drop_triggers(databases, stdout=self.stdout)
                     self._list(databases)
                 else:
                     raise Exception()

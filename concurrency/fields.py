@@ -134,6 +134,10 @@ class VersionField(Field):
 
     def _wrap_do_update(self, func):
         def _do_update(model_instance, base_qs, using, pk_val, values, update_fields, forced_update):
+
+            if conf.PROTOCOL != 2:
+                return func(model_instance, base_qs, using, pk_val, values, update_fields, forced_update)
+
             version_field = model_instance._concurrencymeta._field
             old_version = get_revision_of_object(model_instance)
 

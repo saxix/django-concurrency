@@ -1,5 +1,6 @@
 import sys
 import warnings
+import pytest
 
 
 def pytest_configure(config):
@@ -12,3 +13,6 @@ def pytest_configure(config):
         django.setup()
     except ImportError:
         pass
+
+
+windows = pytest.mark.skipif(sys.platform != 'win32', reason="requires windows")

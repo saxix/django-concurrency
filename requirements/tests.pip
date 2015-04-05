@@ -2,6 +2,7 @@ coverage
 django-webtest>=1.7.5
 mock>=1.0.1
 pytest>=2.7
+pytest-pythonpath
 pytest-cache>=1.0
 pytest-echo>=1.3
 pytest-cov>=1.6
@@ -11,3 +12,4 @@ six>=1.9
 Sphinx>=1.1.3
 WebTest>=2.0.11
 tox>=1.8
+flake8

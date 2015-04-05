@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from concurrency.api import apply_concurrency_check
-from django.db import migrations, ProgrammingError
+from django.db import migrations
 from concurrency.fields import IntegerVersionField
 
 class Migration(migrations.Migration):

@@ -12,6 +12,7 @@ def sequence(prefix):
     while 1:
         yield "{0}-{1}".format(prefix, next(infinite))
 
+
 nextname = sequence('username')
 nextgroup = sequence('group')
 unique_id = count(1)
@@ -64,6 +65,11 @@ with_all_models = partial(with_models, *MODEL_CLASSES)()
 # with_all_models = partial(models_parametrize, ConcreteModel)()
 
 DELETE_ATTRIBUTE = object()
+
+
+@pytest.fixture(params=MODEL_CLASSES)
+def concurrent_model(request):
+    return request.param
 
 
 @contextmanager
