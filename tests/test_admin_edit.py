@@ -1,8 +1,9 @@
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from concurrency.forms import VersionFieldSigner
-from tests.base import AdminTestCase, SENTINEL
-from tests.models import SimpleConcurrentModel
+from demo.base import AdminTestCase, SENTINEL
+from demo.models import SimpleConcurrentModel
+from demo.util import nextname
 
 # @pytest.mark.django_db
 # @pytest.mark.admin
@@ -52,14 +53,13 @@ from tests.models import SimpleConcurrentModel
 #     assert 'original' in res.context
 #     assert res.context['adminform'].form.errors
 #     assert _('Record Modified') in str(res.context['adminform'].form.errors)
-from tests.util import nextname
 
 
 class TestConcurrentModelAdmin(AdminTestCase):
 
     def test_standard_update(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
-        url = reverse('admin:tests_simpleconcurrentmodel_change', args=[target.pk])
+        url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
         target = res.context['original']
         old_version = target.version
@@ -71,7 +71,7 @@ class TestConcurrentModelAdmin(AdminTestCase):
         self.assertGreater(new_version, old_version)
 
     def test_creation(self):
-        url = reverse('admin:tests_simpleconcurrentmodel_add')
+        url = reverse('admin:demo_simpleconcurrentmodel_add')
         res = self.app.get(url, user='sax')
         form = res.form
         form['username'] = 'CHAR'
@@ -81,7 +81,7 @@ class TestConcurrentModelAdmin(AdminTestCase):
 
     def test_conflict(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
-        url = reverse('admin:tests_simpleconcurrentmodel_change', args=[target.pk])
+        url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
 
         form = res.form
@@ -105,7 +105,7 @@ class TestAdminEdit(AdminTestCase):
         u.save()
 
     def test_creation(self):
-        url = reverse('admin:tests_simpleconcurrentmodel_add')
+        url = reverse('admin:demo_simpleconcurrentmodel_add')
         res = self.app.get(url, user='sax')
         form = res.form
         form['username'] = 'CHAR'
@@ -114,7 +114,7 @@ class TestAdminEdit(AdminTestCase):
         self.assertGreater(SimpleConcurrentModel.objects.get(username='CHAR').version, 0)
 
     def test_creation_with_customform(self):
-        url = reverse('admin:tests_simpleconcurrentmodel_add')
+        url = reverse('admin:demo_simpleconcurrentmodel_add')
         res = self.app.get(url, user='sax')
         form = res.form
         username = next(nextname)
@@ -130,7 +130,7 @@ class TestAdminEdit(AdminTestCase):
 
     def test_standard_update(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
-        url = reverse('admin:tests_simpleconcurrentmodel_change', args=[target.pk])
+        url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
         target = res.context['original']
         old_version = target.version
@@ -144,7 +144,7 @@ class TestAdminEdit(AdminTestCase):
     def test_conflict(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
         assert target.version
-        url = reverse('admin:tests_simpleconcurrentmodel_change', args=[target.pk])
+        url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
         form = res.form
 
@@ -159,7 +159,7 @@ class TestAdminEdit(AdminTestCase):
 
     def test_sanity_signer(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
-        url = reverse('admin:tests_simpleconcurrentmodel_change', args=[target.pk])
+        url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
         form = res.form
         version1 = int(str(form['version'].value).split(":")[0])

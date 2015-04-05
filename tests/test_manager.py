@@ -1,10 +1,10 @@
 import pytest
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
-from tests.models import (SimpleConcurrentModel, AutoIncConcurrentModel,
+from demo.models import (SimpleConcurrentModel, AutoIncConcurrentModel,
                           CustomSaveModel, InheritedModel, ConcreteModel,
                           ProxyModel)
-from tests.util import unique_id, nextname, with_models, with_std_models
+from demo.util import unique_id, nextname, with_models, with_std_models
 
 
 @pytest.mark.django_db

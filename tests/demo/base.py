@@ -1,18 +1,18 @@
+from __future__ import unicode_literals
+import pytest
 import django
 from django.utils import timezone
-import pytest
 from django.test import TransactionTestCase
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django_webtest import WebTestMixin
-from tests.admin import admin_register_models
+from .admin import admin_register_models
+from concurrency.api import apply_concurrency_check
+from concurrency.fields import IntegerVersionField
 
 SENTINEL = '**concurrent_update**'
 
-from concurrency.api import apply_concurrency_check
-from django.contrib.auth.models import Permission
-from concurrency.fields import IntegerVersionField
 
-apply_concurrency_check(Permission, 'version', IntegerVersionField)
+apply_concurrency_check(Group, 'version', IntegerVersionField)
 
 DJANGO_TRUNK = django.VERSION[:2] >= (1, 8)
 
@@ -23,7 +23,7 @@ skipIfDjangoVersion = lambda v: pytest.mark.skipif(django.VERSION[:2] >= v,
 
 
 class AdminTestCase(WebTestMixin, TransactionTestCase):
-    urls = 'tests.urls'
+    urls = 'demo.urls'
 
     def setUp(self):
         super(AdminTestCase, self).setUp()

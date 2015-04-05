@@ -1,11 +1,12 @@
 import os
 from tempfile import mktemp
+import django
 
 DEBUG = True
 STATIC_URL = '/static/'
 
 SITE_ID = 1
-ROOT_URLCONF = 'tests.urls'
+ROOT_URLCONF = 'demo.urls'
 SECRET_KEY = 'abc'
 STATIC_ROOT = mktemp('static')
 MEDIA_ROOT = mktemp('media')
@@ -17,29 +18,31 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.messages',
                   'django.contrib.staticfiles',
                   'django.contrib.admin',
-                   # 'django.contrib.admin.apps.SimpleAdminConfig'
+                  # 'django.contrib.admin.apps.SimpleAdminConfig'
                   'concurrency',
-                  'tests']
+                  'demo']
 
 SOUTH_MIGRATION_MODULES = {
-    'tests': 'tests.south_migrations',
+    'demo': 'demo.south_migrations',
 }
 
 MIGRATION_MODULES = {
-    'tests': 'tests.migrations',
-    'auth': 'tests.auth_migrations',
+    'demo': 'demo.migrations',
+    'auth': 'demo.auth_migrations',
 }
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+]
+if django.VERSION[1] >= 7:
+    MIDDLEWARE_CLASSES += ['django.contrib.auth.middleware.SessionAuthenticationMiddleware', ]
 
-TEMPLATE_DIRS = ['tests/templates']
+TEMPLATE_DIRS = ['demo/templates']
 
 LOGGING = {
     'version': 1,
@@ -66,7 +69,7 @@ LOGGING = {
     'handlers': {
         'null': {
             'level': 'DEBUG',
-            'class': 'django.utils.log.NullHandler'
+            'class': 'logging.NullHandler'
         },
         'console': {
             'level': 'DEBUG',

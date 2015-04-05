@@ -9,9 +9,9 @@ import pytest
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_SILENT, CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
 from concurrency.exceptions import RecordModifiedError
 
-from tests.base import AdminTestCase, SENTINEL
-from tests.models import ListEditableConcurrentModel
-from tests.util import attributes, unique_id
+from demo.base import AdminTestCase, SENTINEL
+from demo.models import ListEditableConcurrentModel
+from demo.util import attributes, unique_id
 
 
 class TestListEditable(AdminTestCase):

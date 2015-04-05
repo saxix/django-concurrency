@@ -4,7 +4,10 @@ import logging
 from functools import update_wrapper
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import Field
-from django.db.models.signals import class_prepared, post_syncdb
+try:
+    from django.db.models.signals import class_prepared, post_migrate
+except:
+    from django.db.models.signals import class_prepared, post_syncdb as post_migrate
 
 from concurrency import forms
 from concurrency.config import conf
@@ -45,7 +48,7 @@ def post_syncdb_concurrency_handler(sender, **kwargs):
 
 
 class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_prepared_concurrency_handler')
-post_syncdb.connect(post_syncdb_concurrency_handler, dispatch_uid='post_syncdb_concurrency_handler')
+post_migrate.connect(post_syncdb_concurrency_handler, dispatch_uid='post_syncdb_concurrency_handler')
 
 _TRIGGERS = []
 class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_prepared_concurrency_handler')
@@ -65,7 +68,7 @@ class VersionField(Field):
 
         super(VersionField, self).__init__(verbose_name, name,
                                            help_text=help_text,
-                                           default=1,
+                                           default=0,
                                            db_tablespace=db_tablespace,
                                            db_column=db_column)
 
@@ -88,7 +91,7 @@ class VersionField(Field):
 
     def contribute_to_class(self, cls, name, virtual_only=False):
         super(VersionField, self).contribute_to_class(cls, name)
-        if hasattr(cls, '_concurrencymeta'):
+        if hasattr(cls, '_concurrencymeta') or cls._meta.abstract:
             return
         setattr(cls, '_concurrencymeta', ConcurrencyOptions())
         cls._concurrencymeta._field = self
@@ -113,7 +116,7 @@ class VersionField(Field):
         from concurrency.api import concurrency_check
 
         def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-            if self._concurrencymeta.enabled:
+            if self._concurrencymeta.enabled and not getattr(self, '_concurrency_disabled', False):
                 concurrency_check(self, force_insert, force_update, using, **kwargs)
             return func(self, force_insert, force_update, using, **kwargs)
 
@@ -131,6 +134,10 @@ class VersionField(Field):
 
     def _wrap_do_update(self, func):
         def _do_update(model_instance, base_qs, using, pk_val, values, update_fields, forced_update):
+
+            if conf.PROTOCOL != 2:
+                return func(model_instance, base_qs, using, pk_val, values, update_fields, forced_update)
+
             version_field = model_instance._concurrencymeta._field
             old_version = get_revision_of_object(model_instance)
 
@@ -146,7 +153,7 @@ class VersionField(Field):
                     break
 
             if values:
-                if model_instance._concurrencymeta.enabled and old_version:
+                if model_instance._concurrencymeta.enabled and not getattr(model_instance, '_concurrency_disabled', False) and old_version:
                     filter_kwargs = {'pk': pk_val, version_field.attname: old_version}
                     updated = base_qs.filter(**filter_kwargs)._update(values) >= 1
                     if not updated:
@@ -197,7 +204,8 @@ class TriggerVersionField(VersionField):
     form_class = forms.VersionField
 
     def contribute_to_class(self, cls, name, virtual_only=False):
-        _TRIGGERS.append(self)
+        if not cls._meta.abstract:
+            _TRIGGERS.append(self)
         super(TriggerVersionField, self).contribute_to_class(cls, name)
 
     def _get_next_version(self, model_instance):

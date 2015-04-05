@@ -1,0 +1,4 @@
+-r tests.pip
+psycopg2>=2.5.0,<2.6.0
+ipdb
+django_extensions

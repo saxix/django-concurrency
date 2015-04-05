@@ -2,7 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 import logging
 from contextlib import contextmanager
-from django.core.exceptions import ImproperlyConfigured
+from django.db.models import Model
 from concurrency.core import _select_lock, _wrap_model_save, get_version_fieldname
 from concurrency.exceptions import RecordModifiedError
 
@@ -49,7 +49,7 @@ def get_version(model_instance, version):
 
 
 # def get_object_with_version(manager, pk, version):
-#     """
+# """
 #         try go load from the database one object with specific version.
 #         Raises DoesNotExists otherwise.
 #
@@ -67,6 +67,28 @@ def apply_concurrency_check(model, fieldname, versionclass):
     """
     Apply concurrency management to existing Models.
 
+    if django >= 1.7 you must:
+      - copy original migrations to new location
+      - create a custom migration like::
+
+        operations = [
+            # add version to django.contrib.auth.Group
+            migrations.AddField(
+                model_name='Group',
+                name='version',
+                field=IntegerVersionField(help_text=b'Version', default=1),
+            ),
+        ]
+
+    and put in your settings.py
+
+        MIGRATION_MODULES = {
+            ...
+            ...
+            'auth': '<new.migration.package>',
+        }
+
+
     :param model: Model class to update
     :type model: django.db.Model
 
@@ -75,17 +97,21 @@ def apply_concurrency_check(model, fieldname, versionclass):
 
     :param versionclass:
     :type versionclass: concurrency.fields.VersionField subclass
+
     """
     if hasattr(model, '_concurrencymeta'):
         return
-        # raise ImproperlyConfigured("%s is already under concurrency management" % model)
 
     logger.debug('Applying concurrency check to %s' % model)
 
     ver = versionclass()
-    # import ipdb; ipdb.set_trace()
+
     ver.contribute_to_class(model, fieldname)
     model._concurrencymeta._field = ver
+
+    from concurrency.fields import class_prepared_concurrency_handler
+
+    class_prepared_concurrency_handler(model)
 
     if not model._concurrencymeta._versioned_save:
         _wrap_model_save(model)
@@ -102,6 +128,13 @@ def disable_concurrency(model):
         temporary disable concurrency check for passed model
     :param model:
     """
-    old_value, model._concurrencymeta.enabled = model._concurrencymeta.enabled, False
+    if isinstance(model, Model):
+        old_value, model._concurrency_disabled = getattr(model, '_concurrency_disabled', False), True
+        model._concurrency_disabled = True
+    else:
+        old_value, model._concurrencymeta.enabled = model._concurrencymeta.enabled, False
     yield
-    model._concurrencymeta.enabled = old_value
+    if isinstance(model, Model):
+        model._concurrency_disabled = old_value
+    else:
+        model._concurrencymeta.enabled = old_value

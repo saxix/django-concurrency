@@ -11,11 +11,11 @@ from django.contrib.admin.sites import site
 from django.http import QueryDict
 from django.test.client import RequestFactory
 from concurrency.utils import refetch
-from tests.admin import admin_register, ActionsModelAdmin
+from demo.admin import admin_register, ActionsModelAdmin
 
-from tests.base import AdminTestCase
-from tests.models import ListEditableConcurrentModel
-from tests.util import unique_id, attributes
+from demo.base import AdminTestCase
+from demo.models import ListEditableConcurrentModel
+from demo.util import unique_id, attributes
 
 
 def get_fake_request(params):
@@ -59,5 +59,5 @@ class TestIssue18(SimpleTestCase):
         obj = ListEditableConcurrentModel(pk=id)
         self.assertTrue(re.match(r"^%s,\d+$" % id, identity(obj)))
 
-        g = Group(name='GroupTest', pk=3)
+        g = User(username='UserTest', pk=3)
         self.assertEqual(identity(g), force_text(g.pk))

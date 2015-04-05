@@ -162,8 +162,13 @@ Add concurrency check to existing classes.
 --------------------------
 .. versionadded:: 0.6
 
-Context manager to temporary disable concurrency checking
+Context manager to temporary disable concurrency checking.
 
+.. versionchanged:: 0.9
+
+Starting from version 0.9, `disable_concurrency` can disable both at Model level or instance level, depending on the
+passed object.
+Passing Model is useful in django commands, loadin data or fixtures, where instance should be used by default
 
 
 .. _disable_sanity_check:

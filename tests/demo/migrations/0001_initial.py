@@ -6,7 +6,6 @@ import concurrency.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('auth', '0001_initial'),
     ]
@@ -16,13 +15,15 @@ class Migration(migrations.Migration):
             name='AutoIncConcurrentModel',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
-                ('version', concurrency.fields.AutoIncVersionField(help_text='record revision number', db_column=b'cm_version_id', default=1)),
+                ('version',
+                 concurrency.fields.AutoIncVersionField(help_text='record revision number', db_column='cm_version_id',
+                                                        default=1)),
                 ('username', models.CharField(blank=True, null=True, max_length=30)),
                 ('date_field', models.DateField(blank=True, null=True)),
             ],
             options={
-                'verbose_name': b'AutoIncConcurrentModel',
-                'verbose_name_plural': b'AutoIncConcurrentModel',
+                'verbose_name': 'AutoIncConcurrentModel',
+                'verbose_name_plural': 'AutoIncConcurrentModel',
             },
             bases=(models.Model,),
         ),
@@ -30,7 +31,9 @@ class Migration(migrations.Migration):
             name='ConcreteModel',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
-                ('version', concurrency.fields.IntegerVersionField(help_text='record revision number', db_column=b'cm_version_id', default=1)),
+                ('version',
+                 concurrency.fields.IntegerVersionField(help_text='record revision number', db_column='cm_version_id',
+                                                        default=1)),
                 ('username', models.CharField(blank=True, null=True, max_length=30, unique=True)),
             ],
             options={
@@ -41,45 +44,53 @@ class Migration(migrations.Migration):
             name='SimpleConcurrentModel',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
-                ('version', concurrency.fields.IntegerVersionField(help_text='record revision number', db_column=b'cm_version_id', default=1)),
+                ('version',
+                 concurrency.fields.IntegerVersionField(help_text='record revision number', db_column='cm_version_id',
+                                                        default=1)),
                 ('username', models.CharField(blank=True, null=True, max_length=30, unique=True)),
                 ('date_field', models.DateField(blank=True, null=True)),
             ],
             options={
-                'verbose_name': b'SimpleConcurrentModel',
-                'verbose_name_plural': b'SimpleConcurrentModels',
+                'verbose_name': 'SimpleConcurrentModel',
+                'verbose_name_plural': 'SimpleConcurrentModels',
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='InheritedModel',
             fields=[
-                ('simpleconcurrentmodel_ptr', models.OneToOneField(auto_created=True, to='tests.SimpleConcurrentModel', primary_key=True, serialize=False)),
+                ('simpleconcurrentmodel_ptr',
+                 models.OneToOneField(auto_created=True, to='demo.SimpleConcurrentModel', primary_key=True,
+                                      serialize=False)),
                 ('extra_field', models.CharField(blank=True, null=True, max_length=30, unique=True)),
             ],
             options={
             },
-            bases=('tests.simpleconcurrentmodel',),
+            bases=('demo.simpleconcurrentmodel',),
         ),
         migrations.CreateModel(
             name='CustomSaveModel',
             fields=[
-                ('simpleconcurrentmodel_ptr', models.OneToOneField(auto_created=True, to='tests.SimpleConcurrentModel', primary_key=True, serialize=False)),
+                ('simpleconcurrentmodel_ptr',
+                 models.OneToOneField(auto_created=True, to='demo.SimpleConcurrentModel', primary_key=True,
+                                      serialize=False)),
                 ('extra_field', models.CharField(blank=True, null=True, max_length=30, unique=True)),
             ],
             options={
             },
-            bases=('tests.simpleconcurrentmodel',),
+            bases=('demo.simpleconcurrentmodel',),
         ),
         migrations.CreateModel(
             name='ConcurrencyDisabledModel',
             fields=[
-                ('simpleconcurrentmodel_ptr', models.OneToOneField(auto_created=True, to='tests.SimpleConcurrentModel', primary_key=True, serialize=False)),
+                ('simpleconcurrentmodel_ptr',
+                 models.OneToOneField(auto_created=True, to='demo.SimpleConcurrentModel', primary_key=True,
+                                      serialize=False)),
                 ('dummy_char', models.CharField(blank=True, null=True, max_length=30)),
             ],
             options={
             },
-            bases=('tests.simpleconcurrentmodel',),
+            bases=('demo.simpleconcurrentmodel',),
         ),
         migrations.CreateModel(
             name='TestIssue3Model',
@@ -89,8 +100,10 @@ class Migration(migrations.Migration):
                 ('last_name', models.CharField(blank=True, null=True, max_length=30)),
                 ('char_field', models.CharField(blank=True, null=True, max_length=30)),
                 ('date_field', models.DateField(blank=True, null=True)),
-                ('version', models.CharField(blank=True, null=True, max_length=10, default=b'abc')),
-                ('revision', concurrency.fields.IntegerVersionField(help_text='record revision number', db_column=b'cm_version_id', default=1)),
+                ('version', models.CharField(blank=True, null=True, max_length=10, default='abc')),
+                ('revision',
+                 concurrency.fields.IntegerVersionField(help_text='record revision number', db_column='cm_version_id',
+                                                        default=1)),
             ],
             options={
             },
@@ -99,8 +112,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TestModelGroup',
             fields=[
-                ('group_ptr', models.OneToOneField(auto_created=True, to='auth.Group', primary_key=True, serialize=False)),
-                ('username', models.CharField(verbose_name=b'username', max_length=50)),
+                ('group_ptr',
+                 models.OneToOneField(auto_created=True, to='auth.Group', primary_key=True, serialize=False)),
+                ('username', models.CharField(verbose_name='username', max_length=50)),
             ],
             options={
             },
@@ -110,13 +124,15 @@ class Migration(migrations.Migration):
             name='TriggerConcurrentModel',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
-                ('version', concurrency.fields.TriggerVersionField(help_text='record revision number', db_column=b'cm_version_id', default=1)),
+                ('version',
+                 concurrency.fields.TriggerVersionField(help_text='record revision number', db_column='cm_version_id',
+                                                        default=1)),
                 ('username', models.CharField(blank=True, null=True, max_length=30)),
                 ('count', models.IntegerField(default=0)),
             ],
             options={
-                'verbose_name': b'TriggerConcurrentModel',
-                'verbose_name_plural': b'TriggerConcurrentModels',
+                'verbose_name': 'TriggerConcurrentModel',
+                'verbose_name_plural': 'TriggerConcurrentModels',
             },
             bases=(models.Model,),
         ),
@@ -126,10 +142,10 @@ class Migration(migrations.Migration):
             ],
             options={
                 'proxy': True,
-                'verbose_name': b'ListEditableConcurrentModel',
-                'verbose_name_plural': b'ListEditableConcurrentModels',
+                'verbose_name': 'ListEditableConcurrentModel',
+                'verbose_name_plural': 'ListEditableConcurrentModels',
             },
-            bases=('tests.simpleconcurrentmodel',),
+            bases=('demo.simpleconcurrentmodel',),
         ),
         migrations.CreateModel(
             name='NoActionsConcurrentModel',
@@ -137,10 +153,10 @@ class Migration(migrations.Migration):
             ],
             options={
                 'proxy': True,
-                'verbose_name': b'NoActions-ConcurrentModel',
-                'verbose_name_plural': b'NoActions-ConcurrentModels',
+                'verbose_name': 'NoActions-ConcurrentModel',
+                'verbose_name_plural': 'NoActions-ConcurrentModels',
             },
-            bases=('tests.simpleconcurrentmodel',),
+            bases=('demo.simpleconcurrentmodel',),
         ),
         migrations.CreateModel(
             name='ProxyModel',
@@ -148,10 +164,10 @@ class Migration(migrations.Migration):
             ],
             options={
                 'proxy': True,
-                'verbose_name': b'ProxyModel',
-                'verbose_name_plural': b'ProxyModels',
+                'verbose_name': 'ProxyModel',
+                'verbose_name_plural': 'ProxyModels',
             },
-            bases=('tests.simpleconcurrentmodel',),
+            bases=('demo.simpleconcurrentmodel',),
         ),
 
 

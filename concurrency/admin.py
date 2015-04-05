@@ -44,7 +44,7 @@ class ConcurrencyActionMixin(object):
     def get_confirmation_template(self):
         return "concurrency/delete_selected_confirmation.html"
 
-    def response_action(self, request, queryset):
+    def response_action(self, request, queryset):  # noqa
         """
         Handle an admin action. This is called if a request is POSTed to the
         changelist; it returns an HttpResponse if the action was handled, and
@@ -93,7 +93,7 @@ class ConcurrencyActionMixin(object):
 
             if self.check_concurrent_action:
                 self.delete_selected_confirmation_template = self.get_confirmation_template()
-                
+
                 # If select_across we have to avoid the use of concurrency
                 if selected is not ALL:
                     filters = []
@@ -114,8 +114,7 @@ class ConcurrencyActionMixin(object):
                                                 'The execution was aborted.')
                         return HttpResponseRedirect(".")
                 else:
-                    messages.warning(request, 'Selecting all records, you will avoid the concurrency check')                               
-                                                   
+                    messages.warning(request, 'Selecting all records, you will avoid the concurrency check')
 
             response = func(self, request, queryset)
 
@@ -194,7 +193,7 @@ class ConcurrencyListEditableMixin(object):
             # If policy is set to 'silent' the user will be informed using message_user
             # raise Exception if not silent.
             # NOTE:
-            #   list_editable_policy MUST have the LIST_EDITABLE_POLICY_ABORT_ALL
+            # list_editable_policy MUST have the LIST_EDITABLE_POLICY_ABORT_ALL
             #   set to work properly
             if self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL:
                 raise

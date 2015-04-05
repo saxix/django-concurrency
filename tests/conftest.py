@@ -1,35 +1,21 @@
-import os
 import sys
 import warnings
-
-warnings.filterwarnings("ignore", category=DeprecationWarning)
+import django
+import pytest
 
 
 def pytest_configure(config):
-    from django.conf import settings
-
-    if not settings.configured:
-        os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
+    warnings.simplefilter('default')
 
     try:
         from django.apps import AppConfig  # noqa
         import django
+
         django.setup()
     except ImportError:
         pass
 
 
-def runtests(args=None):
-    import pytest
-
-    if not args:
-        args = []
-
-    if not any(a for a in args[1:] if not a.startswith('-')):
-        args.append('concurrency')
-
-    sys.exit(pytest.main(args))
-
-
-if __name__ == '__main__':
-    runtests(sys.argv)
+windows = pytest.mark.skipif(sys.platform != 'win32', reason="requires windows")
+skip14 = pytest.mark.skipif(django.VERSION[0:2] == [1, 4], reason="skip django 1.4")
+skip15 = pytest.mark.skipif(django.VERSION[0:2] == [1, 5], reason="skip django 1.4")

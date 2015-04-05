@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from django.contrib.auth.models import Group
 from django.db import models
-from concurrency.fields import IntegerVersionField, AutoIncVersionField, TriggerVersionField
+from concurrency.fields import (IntegerVersionField, AutoIncVersionField,
+                                TriggerVersionField)
 
 __all__ = ['SimpleConcurrentModel', 'AutoIncConcurrentModel',
            'ProxyModel', 'InheritedModel', 'CustomSaveModel',
-           'ConcreteModel']
+           'ConcreteModel', 'TriggerConcurrentModel',
+           ]
 
 
 class SimpleConcurrentModel(models.Model):
@@ -14,7 +17,7 @@ class SimpleConcurrentModel(models.Model):
     date_field = models.DateField(blank=True, null=True)
 
     class Meta:
-        app_label = 'tests'
+        app_label = 'demo'
         verbose_name = "SimpleConcurrentModel"
         verbose_name_plural = "SimpleConcurrentModels"
 
@@ -28,7 +31,7 @@ class AutoIncConcurrentModel(models.Model):
     date_field = models.DateField(blank=True, null=True)
 
     class Meta:
-        app_label = 'tests'
+        app_label = 'demo'
         verbose_name = "AutoIncConcurrentModel"
         verbose_name_plural = "AutoIncConcurrentModel"
 
@@ -42,7 +45,7 @@ class TriggerConcurrentModel(models.Model):
     count = models.IntegerField(default=0)
 
     class Meta:
-        app_label = 'tests'
+        app_label = 'demo'
         verbose_name = "TriggerConcurrentModel"
         verbose_name_plural = "TriggerConcurrentModels"
 
@@ -52,7 +55,7 @@ class TriggerConcurrentModel(models.Model):
 
 class ProxyModel(SimpleConcurrentModel):
     class Meta:
-        app_label = 'tests'
+        app_label = 'demo'
         proxy = True
         verbose_name = "ProxyModel"
         verbose_name_plural = "ProxyModels"
@@ -62,7 +65,7 @@ class InheritedModel(SimpleConcurrentModel):
     extra_field = models.CharField(max_length=30, blank=True, null=True, unique=True)
 
     class Meta:
-        app_label = 'tests'
+        app_label = 'demo'
 
 
 class CustomSaveModel(SimpleConcurrentModel):
@@ -72,7 +75,7 @@ class CustomSaveModel(SimpleConcurrentModel):
         super(CustomSaveModel, self).save(*args, **kwargs)
 
     class Meta:
-        app_label = 'tests'
+        app_label = 'demo'
 
 
 class AbstractModel(models.Model):
@@ -80,7 +83,7 @@ class AbstractModel(models.Model):
     username = models.CharField(max_length=30, blank=True, null=True, unique=True)
 
     class Meta:
-        app_label = 'tests'
+        app_label = 'demo'
         abstract = True
 
 
@@ -88,14 +91,14 @@ class ConcreteModel(AbstractModel):
     pass
 
     class Meta:
-        app_label = 'tests'
+        app_label = 'demo'
 
 
 # class TestCustomUser(User):
 # version = IntegerVersionField(db_column='cm_version_id')
 #
 #     class Meta:
-#         app_label = 'tests'
+#         app_label = 'demo'
 #
 #     def __unicode__(self):
 #         return "{0.__class__.__name__} #{0.pk}".format(self)
@@ -109,12 +112,12 @@ class TestModelGroup(Group):
     username = models.CharField('username', max_length=50)
 
     class Meta:
-        app_label = 'tests'
+        app_label = 'demo'
 
 
 # class TestModelGroupWithCustomSave(TestModelGroup):
 #     class Meta:
-#         app_label = 'tests'
+#         app_label = 'demo'
 #
 #     def save(self, *args, **kwargs):
 #         super(TestModelGroupWithCustomSave, self).save(*args, **kwargs)
@@ -131,7 +134,7 @@ class TestIssue3Model(models.Model):
     revision = IntegerVersionField(db_column='cm_version_id')
 
     class Meta:
-        app_label = 'tests'
+        app_label = 'demo'
 
 
 class ListEditableConcurrentModel(SimpleConcurrentModel):
@@ -140,7 +143,7 @@ class ListEditableConcurrentModel(SimpleConcurrentModel):
     """
 
     class Meta:
-        app_label = 'tests'
+        app_label = 'demo'
         proxy = True
         verbose_name = "ListEditableConcurrentModel"
         verbose_name_plural = "ListEditableConcurrentModels"
@@ -152,7 +155,7 @@ class NoActionsConcurrentModel(SimpleConcurrentModel):
     """
 
     class Meta:
-        app_label = 'tests'
+        app_label = 'demo'
         proxy = True
         verbose_name = "NoActions-ConcurrentModel"
         verbose_name_plural = "NoActions-ConcurrentModels"
@@ -162,7 +165,7 @@ class ConcurrencyDisabledModel(SimpleConcurrentModel):
     dummy_char = models.CharField(max_length=30, blank=True, null=True)
 
     class Meta:
-        app_label = 'tests'
+        app_label = 'demo'
 
     class ConcurrencyMeta:
         enabled = False

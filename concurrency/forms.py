@@ -4,9 +4,10 @@ from django import forms
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured, ValidationError
 from django.core.signing import Signer, BadSignature
 from django.forms import ModelForm, HiddenInput
-from django.utils.importlib import import_module
+# from django.utils.importlib import import_module
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
+from importlib import import_module
 from concurrency.config import conf
 from concurrency.core import _select_lock
 from concurrency.exceptions import VersionError, RecordModifiedError
