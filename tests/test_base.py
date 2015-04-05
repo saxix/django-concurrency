@@ -10,6 +10,8 @@ from demo.util import (with_all_models, concurrent_model, unique_id,
 
 
 pytest.mark.django_db(transaction=False)
+skip14 = pytest.mark.skipif(django.VERSION[0:2] == (1, 4), reason="skip django 1.4")
+skip15 = pytest.mark.skipif(django.VERSION[0:2] == (1, 5), reason="skip django 1.4")
 
 
 def pytest_generate_tests(metafunc):
@@ -70,7 +72,7 @@ def test_do_not_check_if_no_version(model_class):
     assert instance.get_concurrency_version() > 0
     assert instance.get_concurrency_version() != copy.get_concurrency_version()
 
-
+@skip14
 @with_std_models
 @pytest.mark.django_db(transaction=False)
 def test_update_fields(model_class, protocol, monkeypatch):
@@ -93,6 +95,7 @@ def test_update_fields(model_class, protocol, monkeypatch):
     assert refetch(instance).version == copy.version
 
 
+@skip14
 @with_std_models
 @pytest.mark.django_db(transaction=False)
 def test_update_fields_still_checks(model_class, protocol, monkeypatch):
@@ -101,7 +104,6 @@ def test_update_fields_still_checks(model_class, protocol, monkeypatch):
     for conflicts.
     """
     monkeypatch.setattr(concurrency.config.conf, 'PROTOCOL', protocol)
-
     instance = model_class.objects.create(username='abc')
     copy = refetch(instance)
     instance.save()
