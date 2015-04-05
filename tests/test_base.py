@@ -21,7 +21,6 @@ def pytest_generate_tests(metafunc):
 
 
 @with_all_models
-# @pytest.mark.parametrize("protocol", [1, 2])
 @pytest.mark.django_db
 def test_standard_save(model_class, protocol, monkeypatch):
     # this test pass if executed alone,
@@ -70,3 +69,43 @@ def test_do_not_check_if_no_version(model_class):
     instance.save()
     assert instance.get_concurrency_version() > 0
     assert instance.get_concurrency_version() != copy.get_concurrency_version()
+
+
+@with_std_models
+@pytest.mark.django_db(transaction=False)
+def test_update_fields(model_class, protocol, monkeypatch):
+    """
+    Calling save with update_fields not containing version doesn't update
+    the version.
+    """
+    monkeypatch.setattr(concurrency.config.conf, 'PROTOCOL', protocol)
+
+    instance = model_class.objects.create(username='abc')
+    copy = refetch(instance)
+
+    # do not update version
+    instance.save(update_fields=['username'])
+
+    # copy can be saved
+    copy.username = 'def'
+    copy.save()
+    assert refetch(instance).username, 'def'
+    assert refetch(instance).version == copy.version
+
+
+@with_std_models
+@pytest.mark.django_db(transaction=False)
+def test_update_fields_still_checks(model_class, protocol, monkeypatch):
+    """
+    Excluding the VersionField from update_fields should still check
+    for conflicts.
+    """
+    monkeypatch.setattr(concurrency.config.conf, 'PROTOCOL', protocol)
+
+    instance = model_class.objects.create(username='abc')
+    copy = refetch(instance)
+    instance.save()
+    copy.name = 'def'
+
+    with pytest.raises(RecordModifiedError):
+        copy.save(update_fields=['username'])

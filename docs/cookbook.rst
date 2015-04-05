@@ -8,6 +8,8 @@ Cookbook
 .. contents::
    :local:
 
+
+
 .. _import_data:
 
 Unable to import data ?
@@ -66,6 +68,8 @@ an existing database remember to edit the database's tables:
 
     apply_concurrency_check(User, 'version', IntegerVersionField)
 
+
+If used with Django>=1.7 remebber to create a custom migration.
 
 
 Manually handle concurrency
