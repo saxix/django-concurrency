@@ -1,7 +1,8 @@
 language: python
 python:
   - "2.7"
-  - "3.4"
+  - "3.3"
+  - "pypy"
 
 cache:
   - pip
@@ -33,7 +34,7 @@ install:
 
 
 script:
-  - make coverage
+  - make ci
 
 before_success:
   - coverage erase

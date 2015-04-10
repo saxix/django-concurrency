@@ -32,8 +32,10 @@ test:
 	py.test -v
 
 
-coverage: mkbuilddir install-deps init-db
-	echo ${PYTHONPATH};
+ci: mkbuilddir install-deps init-db
+	$(MAKE) coverage
+
+coverage:
 	PYTHONPATH=${PWD}/tests/:${PWD} py.test tests -v --cov=concurrency --cov-report=html --cov-config=tests/.coveragerc -q
 
 
