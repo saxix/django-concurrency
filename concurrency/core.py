@@ -1,7 +1,8 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 import logging
 from django.db import connections, router
 from concurrency.config import conf
+from threading import local
 
 # Set default logging handler to avoid "No handler found" warnings.
 try:  # Python 2.7+
@@ -16,6 +17,12 @@ logging.getLogger('concurrency').addHandler(NullHandler())
 logger = logging.getLogger(__name__)
 
 __all__ = []
+
+_thread_locals = local()
+
+_thread_locals.CONCURRENCY_ENABLED = True
+_thread_locals.CONCURRENCY_INCREMENT = True
+
 
 
 def get_version_fieldname(obj):
@@ -33,7 +40,7 @@ def _set_version(obj, version):
 
 
 def _select_lock(model_instance, version_value=None):
-    if not conf.ENABLED:
+    if (not conf.ENABLED) and not _thread_locals.CONCURRENCY_ENABLED:
         return
 
     version_field = model_instance._concurrencymeta._field

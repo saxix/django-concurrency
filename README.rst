@@ -22,15 +22,21 @@ How it works
 ------------
 sample code::
 
+    from django.db import models
     from concurrency.fields import IntegerVersionField
 
     class ConcurrentModel( models.Model ):
         version = IntegerVersionField( )
+        name = models.CharField(max_length=100)
 
 Now if you try::
 
     a = ConcurrentModel.objects.get(pk=1)
+    a.name = '1'
+
     b = ConcurrentModel.objects.get(pk=1)
+    b.name = '2'
+
     a.save()
     b.save()
 

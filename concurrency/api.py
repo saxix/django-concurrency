@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 import logging
 from contextlib import contextmanager
 from django.db.models import Model
-from concurrency.core import _select_lock, _wrap_model_save, get_version_fieldname
+from concurrency.core import _select_lock, _wrap_model_save, get_version_fieldname, _thread_locals
 from concurrency.exceptions import RecordModifiedError
 
 __all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_object',
@@ -11,7 +11,6 @@ __all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_obje
            'get_version', 'is_changed', 'get_version_fieldname']
 
 logger = logging.getLogger(__name__)
-
 
 def get_revision_of_object(obj):
     """
@@ -123,18 +122,23 @@ def concurrency_check(model_instance, force_insert=False, force_update=False, us
 
 
 @contextmanager
-def disable_concurrency(model):
+def disable_concurrency(model=None):
     """
         temporary disable concurrency check for passed model
     :param model:
     """
-    if isinstance(model, Model):
+    if model is None:
+        old_value, _thread_locals.CONCURRENCY_ENABLED = _thread_locals.CONCURRENCY_ENABLED, False
+    elif isinstance(model, Model):
         old_value, model._concurrency_disabled = getattr(model, '_concurrency_disabled', False), True
         model._concurrency_disabled = True
     else:
         old_value, model._concurrencymeta.enabled = model._concurrencymeta.enabled, False
     yield
-    if isinstance(model, Model):
+
+    if model is None:
+        _thread_locals.CONCURRENCY_ENABLED = old_value
+    elif isinstance(model, Model):
         model._concurrency_disabled = old_value
     else:
         model._concurrencymeta.enabled = old_value

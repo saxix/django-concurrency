@@ -48,7 +48,7 @@ RecordModifiedError
 .. _InconsistencyError:
 
 InconsistencyError
--------------------
+------------------
 .. versionchanged:: 0.7
 .. warning:: removed in 0.7
 .. class:: concurrency.exceptions.InconsistencyError
@@ -69,7 +69,7 @@ Admin
 .. _ConcurrentModelAdmin:
 
 ConcurrentModelAdmin
----------------------
+--------------------
 .. autoclass:: concurrency.admin.ConcurrentModelAdmin
 
 .. _ConcurrencyActionMixin:
@@ -82,18 +82,18 @@ ConcurrencyActionMixin
 .. _ConcurrencyListEditableMixin:
 
 ConcurrencyListEditableMixin
------------------------------
+----------------------------
 .. autoclass:: concurrency.admin.ConcurrencyListEditableMixin
 
 
------------
+----------
 Middleware
------------
+----------
 
 .. _concurrencymiddleware:
 
 ConcurrencyMiddleware
-----------------------
+---------------------
 .. seealso:: :ref:`middleware`
 
 .. autoclass:: concurrency.middleware.ConcurrencyMiddleware
@@ -102,19 +102,19 @@ ConcurrencyMiddleware
 .. _handler409:
 
 ``concurrency.views.conflict()``
----------------------------------
+--------------------------------
 .. autoclass:: concurrency.views.conflict
 
 
 
---------
+-------
 Helpers
---------
+-------
 
 .. _concurrency_check:
 
 ``concurrency_check()``
-------------------------
+----=------------------
 
 Sometimes, VersionField(s) cannot wrap the save() method,
 is these cirumstances you can check it manually ::
@@ -168,7 +168,16 @@ Context manager to temporary disable concurrency checking.
 
 Starting from version 0.9, `disable_concurrency` can disable both at Model level or instance level, depending on the
 passed object.
-Passing Model is useful in django commands, loadin data or fixtures, where instance should be used by default
+Passing Model is useful in django commands, load data or fixtures, where instance should be used by default
+
+.. versionchanged:: 0.10
+
+Is now possible use `disable_concurrency` without any argument to disable concurrency on any Model.
+This features has been developed to be used in django commands
+
+.. note:: without argument `disable_concurrency` use threadlocals not check the state.
+Even if the dangerousness of threadlocals is often overestimated, could potentially produce side effect  in your code.
+
 
 
 .. _disable_sanity_check:

@@ -37,34 +37,6 @@ def test_get_version(model_class=SimpleConcurrentModel):
 
 
 @pytest.mark.django_db(transaction=False)
-def test_disable_concurrency(model_class=SimpleConcurrentModel):
-    instance = model_class(username=next(nextname))
-    instance.save()
-    copy = refetch(instance)
-    copy.save()
-    with disable_concurrency(SimpleConcurrentModel):
-        instance.save()
-
-
-@pytest.mark.django_db(transaction=False)
-def test_disable_concurrency_specific_model(model_class=SimpleConcurrentModel):
-    instance1 = model_class(username=next(nextname))
-    instance1.save()
-    copy1 = refetch(instance1)
-    copy1.save()
-
-    instance2 = model_class(username=next(nextname))
-    instance2.save()
-    copy2 = refetch(instance2)
-    copy2.save()
-
-    with disable_concurrency(instance1):
-        instance1.save()
-        with pytest.raises(RecordModifiedError):
-            instance2.save()
-
-
-@pytest.mark.django_db(transaction=False)
 def test_apply_concurrency_check():
     apply_concurrency_check(Group, 'version', IntegerVersionField)
 
@@ -76,5 +48,3 @@ def test_apply_concurrency_check():
 
     with pytest.raises(RecordModifiedError):
         instance.save()
-
-

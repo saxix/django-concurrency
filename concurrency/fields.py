@@ -1,9 +1,11 @@
+from __future__ import absolute_import, unicode_literals
 import time
 import copy
 import logging
 from functools import update_wrapper
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import Field
+
 try:
     from django.db.models.signals import class_prepared, post_migrate
 except:
@@ -11,10 +13,9 @@ except:
 
 from concurrency import forms
 from concurrency.config import conf
-from concurrency.core import ConcurrencyOptions, _wrap_model_save
+from concurrency.core import ConcurrencyOptions, _wrap_model_save, _thread_locals
 from concurrency.api import get_revision_of_object, disable_concurrency
 from concurrency.utils import refetch
-
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +117,9 @@ class VersionField(Field):
         from concurrency.api import concurrency_check
 
         def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-            if self._concurrencymeta.enabled and not getattr(self, '_concurrency_disabled', False):
+            if self._concurrencymeta.enabled and \
+                        _thread_locals.CONCURRENCY_ENABLED and \
+                    not getattr(self, '_concurrency_disabled', False):
                 concurrency_check(self, force_insert, force_update, using, **kwargs)
             return func(self, force_insert, force_update, using, **kwargs)
 
@@ -133,6 +136,7 @@ class VersionField(Field):
         return update_wrapper(_save_base, func)
 
     def _wrap_do_update(self, func):
+
         def _do_update(model_instance, base_qs, using, pk_val, values, update_fields, forced_update):
 
             if conf.PROTOCOL != 2:
@@ -151,9 +155,11 @@ class VersionField(Field):
                     values[i] = (field, _1, new_version)
                     field._set_version_value(model_instance, new_version)
                     break
-
             if values:
-                if model_instance._concurrencymeta.enabled and not getattr(model_instance, '_concurrency_disabled', False) and old_version:
+                if model_instance._concurrencymeta.enabled and \
+                        _thread_locals.CONCURRENCY_ENABLED and \
+                        not getattr(model_instance, '_concurrency_disabled', False) and \
+                        old_version:
                     filter_kwargs = {'pk': pk_val, version_field.attname: old_version}
                     updated = base_qs.filter(**filter_kwargs)._update(values) >= 1
                     if not updated:

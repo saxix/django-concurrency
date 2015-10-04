@@ -1,5 +1,8 @@
 Release 0.10 (dev)
 -----------------
+* :ref:`disable_concurrency` can now disable concurrency in any model
+* new :setting:`ENABLED`
+
 
 Release 0.9
 -----------
