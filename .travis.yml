@@ -47,6 +47,8 @@ after_success:
 matrix:
   allow_failures:
     - env: DJANGO=dev DBENGINE=pg
+    - python: "pypy"
+      env: DBENGINE=pg
 
   exclude:
     - python: "3.3"
