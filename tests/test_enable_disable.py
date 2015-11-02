@@ -2,7 +2,7 @@
 from django.test.utils import override_settings
 import pytest
 
-from concurrency.api import disable_concurrency, _thread_locals
+from concurrency.api import disable_concurrency
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
 from demo.models import AutoIncConcurrentModel, SimpleConcurrentModel
@@ -36,7 +36,7 @@ def test_disable_concurrency_global():
 
 
 @pytest.mark.django_db(transaction=False)
-def test_disable_concurrency(model_class=SimpleConcurrentModel):
+def test_disable_concurrency_class(model_class=SimpleConcurrentModel):
     instance = model_class(username=next(nextname))
     instance.save()
     copy = refetch(instance)
@@ -46,7 +46,7 @@ def test_disable_concurrency(model_class=SimpleConcurrentModel):
 
 
 @pytest.mark.django_db(transaction=False)
-def test_disable_concurrency_specific_model(model_class=SimpleConcurrentModel):
+def test_disable_concurrency_instance(model_class=SimpleConcurrentModel):
     instance1 = model_class(username=next(nextname))
     instance1.save()
     copy1 = refetch(instance1)

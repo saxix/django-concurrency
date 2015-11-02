@@ -1,8 +1,16 @@
-Release 0.10 (dev)
+Release 1.0 (dev)
 -----------------
+* dropped support for django prior 1.6
+* no need to use custom backends to use TriggerVerionField
+* new :ref:`TriggerVersionField.trigger_name`. fixes :issue:`41`
+* code clean
+* fixes :issue:`54` (thanks vmspike).
+* new way to create triggers (thanks vmspike)
+* fixes :issue:`53`. updates Documentation
 * :ref:`disable_concurrency` can now disable concurrency in any model
-* new :setting:`ENABLED`
-
+* :ref:`disable_concurrency` is now also a decorator
+* new :setting:`ENABLED` to fully disable concurrency
+* new :setting:`MANUAL_TRIGGERS` to disable triggers auto creation
 
 Release 0.9
 -----------

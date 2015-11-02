@@ -34,7 +34,7 @@ Extend your ModelAdmin with :ref:`ConcurrencyActionMixin` or use :ref:`Concurren
 
 
 Update existing actions templates to be managed by concurrency
----------------------------------------------------------------
+--------------------------------------------------------------
 
 .. versionadded:: 0.6
 

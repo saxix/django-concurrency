@@ -1,4 +1,5 @@
--r tests.pip
-psycopg2>=2.5.0,<2.6.0
-ipdb
+psycopg2
 django_extensions
+ipython
+pdbpp
+django>=1.6

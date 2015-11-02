@@ -101,9 +101,10 @@ ConcurrencyMiddleware
 
 .. _handler409:
 
+
 ``concurrency.views.conflict()``
 --------------------------------
-.. autoclass:: concurrency.views.conflict
+.. autofunction:: concurrency.views.conflict
 
 
 
@@ -114,7 +115,7 @@ Helpers
 .. _concurrency_check:
 
 ``concurrency_check()``
-----=------------------
+-----------------------
 
 Sometimes, VersionField(s) cannot wrap the save() method,
 is these cirumstances you can check it manually ::
@@ -135,8 +136,9 @@ is these cirumstances you can check it manually ::
 
 .. _apply_concurrency_check:
 
+
 ``apply_concurrency_check()``
-------------------------------
+-----------------------------
 
 .. versionadded:: 0.4
 
@@ -144,40 +146,78 @@ is these cirumstances you can check it manually ::
 
 Add concurrency check to existing classes.
 
-.. autofunction:: concurrency.api.apply_concurrency_check
-
-
 .. note:: With Django 1.7 and the new migrations management, this utility does
   not work anymore. To add concurrency management to a external Model,
   you need to use a migration to add a `VersionField` to the desired Model.
 
 
-.. note:: See ``tests.auth_migrations`` for a example how to add ``IntegerVersionField``
-  to ``auth.Permission``)
+.. note:: See ``demo.auth_migrations`` for a example how to add ``IntegerVersionField``
+  to ``auth.Group``)
+
+.. code-block:: python
+
+    operations = [
+        # add version to django.contrib.auth.Group
+        migrations.AddField(
+            model_name='Group',
+            name='version',
+            field=IntegerVersionField(help_text=b'Version', default=1),
+        ),
+    ]
+
+and put in your settings.py
+
+.. code-block:: python
+
+        MIGRATION_MODULES = {
+            ...
+            ...
+            'auth': '<new.migration.package>',
+        }
 
 
 .. _disable_concurrency:
 
 ``disable_concurrency()``
---------------------------
+-------------------------
+
 .. versionadded:: 0.6
 
 Context manager to temporary disable concurrency checking.
 
 .. versionchanged:: 0.9
 
-Starting from version 0.9, `disable_concurrency` can disable both at Model level or instance level, depending on the
-passed object.
-Passing Model is useful in django commands, load data or fixtures, where instance should be used by default
+Starting from version 0.9, `disable_concurrency` can disable both at Model
+level or instance level, depending on the passed object.
+Passing Model is useful in django commands, load data or fixtures,
+where instance should be used by default
 
-.. versionchanged:: 0.10
+.. versionchanged:: 1.0
 
-Is now possible use `disable_concurrency` without any argument to disable concurrency on any Model.
+Is now possible use `disable_concurrency` without any argument to disable
+concurrency on any Model.
 This features has been developed to be used in django commands
 
-.. note:: without argument `disable_concurrency` use threadlocals not check the state.
-Even if the dangerousness of threadlocals is often overestimated, could potentially produce side effect  in your code.
+examples
+~~~~~~~~
 
+.. code-block:: python
+
+    @disable_concurrency()
+    def recover_view(self, request, version_id, extra_context=None):
+        return super(ReversionConcurrentModelAdmin, self).recover_view(request,
+                                                            version_id,
+                                                            extra_context)
+
+
+.. code-block:: python
+
+    def test_recover():
+        deleted_list = revisions.get_deleted(ReversionConcurrentModel)
+        delete_version = deleted_list.get(id=5)
+
+        with disable_concurrency(ReversionConcurrentModel):
+            deleted_version.revert()
 
 
 .. _disable_sanity_check:
@@ -204,7 +244,7 @@ Templatetags
 .. templatefilter:: version
 
 ``version``
-------------
+-----------
 .. autofunction:: concurrency.templatetags.concurrency.version
 
 
@@ -212,19 +252,19 @@ Templatetags
 .. templatefilter:: is_version
 
 ``is_version``
----------------
+--------------
 .. autofunction:: concurrency.templatetags.concurrency.is_version
 
 
 
----------------------
+-------------
 Test Utilties
----------------------
+-------------
 
 .. _concurrencytestmixin:
 
 ConcurrencyTestMixin
----------------------
+--------------------
 .. autoclass:: concurrency.utils.ConcurrencyTestMixin
 
 
@@ -232,9 +272,9 @@ ConcurrencyTestMixin
 
 .. _signining:
 
----------------------
+---------
 Signining
----------------------
+---------
 .. versionadded:: 0.5
 
 ``VersionField`` is 'displayed' in the Form using an ``HiddenInput`` widget, anyway to be sure that the version is not

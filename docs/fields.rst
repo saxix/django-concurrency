@@ -30,14 +30,8 @@ TriggerVersionField
 
 This field use a database trigger to update the version field.
 Using this you can control external updates (ie using tools like phpMyAdmin, pgAdmin, SQLDeveloper).
-The trigger is automatically created during ``syncdb()`` or you can use the :ref:`triggers` management command.
-
-.. note:: if you get ``TriggerVersionField need concurrency database backend`` error, it
-            means that you are using a ``django.db.backends.XY`` backend instead of
-            ``concurrency.db.backends.XY`` or that your database is not supported.
-
-.. note:: ``concurrency.db.backends.XY`` inheriths from ``django.db.backends.XY``,
-            simply add the ability to create/manipulate triggers, no changes to original code.
+The trigger is automatically created during ``syncdb()``
+or you can use the :ref:`triggers` management command.
 
 
 .. _triggers:

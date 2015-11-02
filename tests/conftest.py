@@ -1,21 +1,31 @@
 import sys
-import warnings
+
 import django
 import pytest
 
-
-def pytest_configure(config):
-    warnings.simplefilter('default')
-
-    try:
-        from django.apps import AppConfig  # noqa
-        import django
-
-        django.setup()
-    except ImportError:
-        pass
-
-
 windows = pytest.mark.skipif(sys.platform != 'win32', reason="requires windows")
-skip14 = pytest.mark.skipif(django.VERSION[0:2] == [1, 4], reason="skip django 1.4")
-skip15 = pytest.mark.skipif(django.VERSION[0:2] == [1, 5], reason="skip django 1.4")
+
+win32only = pytest.mark.skipif("sys.platform != 'win32'")
+
+skipIfDjangoVersion = lambda v: pytest.mark.skipif("django.VERSION[:2]>={}".format(v),
+                                                   reason="Skip if django>={}".format(v))
+
+
+def pytest_configure():
+    from django.contrib.auth.models import Group
+
+    if django.VERSION[:2] == (1.6):
+        from concurrency.api import apply_concurrency_check
+        from concurrency.fields import IntegerVersionField
+        apply_concurrency_check(Group, 'version', IntegerVersionField)
+
+
+@pytest.fixture(scope='session')
+def client(request):
+    import django_webtest
+    wtm = django_webtest.WebTestMixin()
+    wtm.csrf_checks = False
+    wtm._patch_settings()
+    request.addfinalizer(wtm._unpatch_settings)
+    app = django_webtest.DjangoTestApp()
+    return app

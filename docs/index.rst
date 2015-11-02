@@ -35,20 +35,14 @@ It prevents users from doing concurrent editing in Django both from UI and from 
 django command.
 
 
-.. note:: |concurrency| requires Django >= 1.4
-
 
 * easy to add to existing Models (just add :class:`concurrency.fields.VersionField` )
 * works with third-party models (see :ref:`apply_concurrency_check`)
 * works with Django internal models
 * handle http post and standard python code (ie. django management commands)
 * complete test suite (:ref:`test_suite`)
-* works with `South`_ and `diango-reversion`_
 * Admin integration. Handle :ref:`actions <admin_action>` and :ref:`list_editable <list_editable>` (solves :django_issue:`11313`)
 * can handle external updates (see :class:`TriggerVersionField`)
-
-
-.. _protocols:
 
 How it works
 ============
@@ -62,30 +56,11 @@ each time a record is saved the version number changes (the algorithm used depen
 on the implementation of :class:`concurrency.fields.VersionField` used (see :ref:`fields`).
 
 
-|concurrency| use two different way to manage concurrent updates:
-
-
-Protocols
----------
-
-django 1.4 - 1.5
-~~~~~~~~~~~~~~~~
-
-When a record is saved, |concurrency| tries to get a lock on the record based on the old revision
-number, if the record is not found a :ref:`RecordModifiedError` is raised.
-The lock is obtained using ``SELECT FOR UPDATE`` and it's requirend
-to prevent other updates during the internal django ``save()`` execution.
-
-django >= 1.6
-~~~~~~~~~~~~~
-
-Full implementation of ``optimistic-lock`` pattern using a SQL clause like:
+Each update is converted in the following SQL clause like:
 
 .. code-block:: sql
 
     UPDATE mymodel SET version=NEW_VERSION, ... WHERE id = PK AND version = VERSION_NUMBER
-
-.. seealso:: :ref:`2_protocols`
 
 
 Table Of Contents

@@ -7,7 +7,7 @@ sys.path.insert(0, rel(os.pardir))
 
 
 if __name__ == "__main__":
-    sys.path.insert(0, 'tests')
+    sys.path.insert(0, 'tests/demoapp')
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "demo.settings")
 
     from django.core.management import execute_from_command_line

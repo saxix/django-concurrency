@@ -2,8 +2,8 @@ import pytest
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
 from demo.models import (SimpleConcurrentModel, AutoIncConcurrentModel,
-                          CustomSaveModel, InheritedModel, ConcreteModel,
-                          ProxyModel)
+                         CustomSaveModel, InheritedModel, ConcreteModel,
+                         ProxyModel)
 from demo.util import unique_id, nextname, with_models, with_std_models
 
 

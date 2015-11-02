@@ -8,7 +8,7 @@ from concurrency.exceptions import VersionError
 from concurrency.forms import ConcurrentForm, VersionField, VersionFieldSigner, VersionWidget
 from django.test.testcases import SimpleTestCase
 from django.utils.translation import ugettext as _
-from demo.models import SimpleConcurrentModel, TestIssue3Model
+from demo.models import SimpleConcurrentModel, Issue3TestModel
 
 __all__ = ['WidgetTest', 'FormFieldTest', 'ConcurrentFormTest']
 
@@ -65,8 +65,8 @@ class ConcurrentFormTest(TestCase):
         pass
 
     def test_dummy_signer(self):
-        obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
-        Form = modelform_factory(TestIssue3Model,
+        obj, __ = Issue3TestModel.objects.get_or_create(username='aaa')
+        Form = modelform_factory(Issue3TestModel,
                                  fields=('id', 'revision'),
                                  form=type('xxx', (ConcurrentForm,), {'revision': VersionField(signer=DummySigner())}))
         data = {'id': 1,
@@ -75,7 +75,7 @@ class ConcurrentFormTest(TestCase):
         self.assertTrue(form.is_valid(), form.non_field_errors())
 
     def test_signer(self):
-        Form = modelform_factory(TestIssue3Model, form=ConcurrentForm,
+        Form = modelform_factory(Issue3TestModel, form=ConcurrentForm,
                                  exclude=('char_field',))
         form = Form({'username': 'aaa'})
         self.assertTrue(form.is_valid(), form.non_field_errors())
@@ -87,7 +87,7 @@ class ConcurrentFormTest(TestCase):
         self.assertTrue(form.is_valid(), form.non_field_errors())
 
     def test_initial_value_with_custom_signer(self):
-        Form = modelform_factory(TestIssue3Model, exclude=('char_field',),
+        Form = modelform_factory(Issue3TestModel, exclude=('char_field',),
                                  form=type('xxx', (ConcurrentForm,),
                                            {'version': VersionField(signer=DummySigner())}))
         form = Form({'username': 'aaa'})
@@ -95,8 +95,8 @@ class ConcurrentFormTest(TestCase):
         self.assertTrue(form.is_valid(), form.non_field_errors())
 
     def test_tamperig(self):
-        obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
-        Form = modelform_factory(TestIssue3Model, ConcurrentForm, exclude=('char_field',))
+        obj, __ = Issue3TestModel.objects.get_or_create(username='aaa')
+        Form = modelform_factory(Issue3TestModel, ConcurrentForm, exclude=('char_field',))
         data = {'username': 'aaa',
                 'last_name': None,
                 'date_field': None,
@@ -108,16 +108,16 @@ class ConcurrentFormTest(TestCase):
         self.assertRaises(SuspiciousOperation, form.is_valid)
 
     def test_custom_name(self):
-        Form = modelform_factory(TestIssue3Model, ConcurrentForm, exclude=('char_field',))
+        Form = modelform_factory(Issue3TestModel, ConcurrentForm, exclude=('char_field',))
         form = Form()
         self.assertIsInstance(form.fields['version'].widget, TextInput)
         self.assertIsInstance(form.fields['revision'].widget, HiddenInput)
 
     def test_save(self):
-        obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
+        obj, __ = Issue3TestModel.objects.get_or_create(username='aaa')
 
-        obj_copy = TestIssue3Model.objects.get(pk=obj.pk)
-        Form = modelform_factory(TestIssue3Model, ConcurrentForm,
+        obj_copy = Issue3TestModel.objects.get(pk=obj.pk)
+        Form = modelform_factory(Issue3TestModel, ConcurrentForm,
                                  fields=('username', 'last_name', 'date_field',
                                          'char_field', 'version', 'id', 'revision'))
         data = {'username': 'aaa',
@@ -134,8 +134,8 @@ class ConcurrentFormTest(TestCase):
         self.assertIn(_('Record Modified'), form.non_field_errors())
 
     def test_is_valid(self):
-        obj, __ = TestIssue3Model.objects.get_or_create(username='aaa')
-        Form = modelform_factory(TestIssue3Model, ConcurrentForm,
+        obj, __ = Issue3TestModel.objects.get_or_create(username='aaa')
+        Form = modelform_factory(Issue3TestModel, ConcurrentForm,
                                  fields=('username', 'last_name', 'date_field',
                                          'char_field', 'version', 'id', 'revision'))
         data = {'username': 'aaa',
