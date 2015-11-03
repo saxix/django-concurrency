@@ -74,11 +74,10 @@ class VersionField(Field):
                                            db_tablespace=db_tablespace,
                                            db_column=db_column)
 
-    # def deconstruct(self):
-    #     name, path, args, kwargs = super(VersionField, self).deconstruct()
-    #     del kwargs["max_length"]
-    #     kwargs['default'] = 1
-    #     return name, path, args, kwargs
+    def deconstruct(self):
+        name, path, args, kwargs = super(VersionField, self).deconstruct()
+        kwargs['default'] = 1
+        return name, path, args, kwargs
 
     def get_default(self):
         return 0
@@ -110,14 +109,10 @@ class VersionField(Field):
         setattr(model_instance, self.attname, int(value))
 
     def pre_save(self, model_instance, add):
-        # if conf.PROTOCOL >= 2:
         if add:
             value = self._get_next_version(model_instance)
             self._set_version_value(model_instance, value)
         return getattr(model_instance, self.attname)
-        # value = self._get_next_version(model_instance)
-        # self._set_version_value(model_instance, value)
-        # return value
 
     @staticmethod
     def _wrap_save(func):
