@@ -10,8 +10,7 @@ def get_trigger_name(field):
     """
 
     :param field: Field instance
-    :param opts: Options (Model._meta)
-    :return:
+    :return: unicode
     """
     opts = field.model._meta
     return 'concurrency_{1.db_table}_{0.name}'.format(field, opts)
