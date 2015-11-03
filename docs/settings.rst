@@ -34,7 +34,7 @@ CALLBACK
 Default: ``concurrency.views.callback``
 
 Handler invoked used to manage concurrent editing. The default implementation
-simply raise :ref:`RecordModifiedError`
+simply raise :class:`RecordModifiedError <concurrency.exceptions.RecordModifiedError>`
 
 
 
@@ -60,11 +60,25 @@ HANDLER409
 
 Default: ``concurrency.views.conflict``
 
-Handler to intercept :ref:`RecordModifiedError` into :ref:`concurrencymiddleware`.
-The default implementation (:ref:`handler409`) renders ``409.html`` while passing into the context the object that
-is going to be saved (``target``) and the same object as stored in the database (``saved``)
+Handler to intercept :class:`RecordModifiedError <concurrency.exceptions.RecordModifiedError>`
+into :class:`ConcurrencyMiddleware <concurrency.middleware.ConcurrencyMiddleware>`.
+The default implementation (:ref:`concurrency.views.conflict`) renders ``409.html``
+while passing into the context the object that is going to be saved (``target``)
 
 .. seealso:: :ref:`middleware`
+
+
+.. setting:: CONCURRECY_MANUAL_TRIGGERS
+
+MANUAL_TRIGGERS
+---------------
+.. versionadded:: 1.0
+
+Default: ``False``
+
+If false do not automatically create triggers, you can create them using :ref:`triggers`
+ management command or manually using your DB client.
+
 
 
 .. setting:: CONCURRENCY_POLICY
@@ -86,20 +100,10 @@ show a message to the user
 ``CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Used by admin's integations to handle ``list_editable``.
-Stop at the first conflict and raise :ref:`recordmodifiederror`. Note that if you want to use
-:ref:`middleware` based conflict management you must set this flag.
+Stop at the first conflict and raise
+:class:`RecordModifiedError <concurrency.exceptions.RecordModifiedError>`.
+Note that if you want to use
+:class:`ConcurrencyMiddleware <concurrency.middleware.ConcurrencyMiddleware>`
+based conflict management you must set this flag.
 
 .. seealso:: :ref:`list_editable`, :ref:`middleware`
-
-
-
-.. setting:: CONCURRECY_MANUAL_TRIGGERS
-
-MANUAL_TRIGGERS
----------------
-.. versionadded:: 1.0
-
-Default: ``False``
-
-If false do not automatically create triggers, you can create them using :ref:`triggers`
- management command or manually using your DB client.

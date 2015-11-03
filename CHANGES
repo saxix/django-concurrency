@@ -2,21 +2,21 @@ Release 1.0 (dev)
 -----------------
 * dropped support for django prior 1.6
 * no need to use custom backends to use TriggerVerionField
-* new :ref:`TriggerVersionField.trigger_name`. fixes :issue:`41` (thanks Naddiseo)
+* new :attr:`TriggerVersionField.trigger_name`. fixes :issue:`41` (thanks Naddiseo)
 * code clean
 * fixes :issue:`54` (thanks vmspike).
 * new way to create triggers (thanks Naddiseo)
 * fixes :issue:`53`. updates Documentation
 * :ref:`disable_concurrency` can now disable concurrency in any model
 * :ref:`disable_concurrency` is now also a decorator
-* new :setting:`ENABLED` to fully disable concurrency
-* new :setting:`MANUAL_TRIGGERS` to disable triggers auto creation
+* new :setting:`CONCURRECY_ENABLED` to fully disable concurrency
+* new :setting:`CONCURRECY_MANUAL_TRIGGERS` to disable triggers auto creation
 
 Release 0.9
 -----------
 * django 1.8 compatibility
 * python 3.4 compatibility
-* **BACKWARD INCOMPATIBLE** :ref:`disable_concurrency` works differently if used with classes or instances
+* **BACKWARD INCOMPATIBLE** :function:`disable_concurrency` works differently if used with classes or instances
 * better support for external Models (models that are part of plugged-in applications)
 * fixes issue with TriggerVersioField and Proxy Models (thanx Richard Eames)
 
@@ -55,7 +55,7 @@ Release 0.6.0
 * new :ref:`disable_concurrency` context manager
 * added documentation for :ref:`concurrency.middleware.ConcurrencyMiddleware <concurrencymiddleware>`
 * **BACKWARD INCOMPATIBLE** Fixed typo: ``CONCURRECY_SANITY_CHECK`` now ``CONCURRENCY_SANITY_CHECK``
-* added :ref:`disable_sanity_check` context manager
+* added ``disable_sanity_check`` context manager
 * added configuration
 * check admin actions for concurrent deletion
 * added concurrency check for admin's :ref:`list_editable`

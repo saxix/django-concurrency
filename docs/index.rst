@@ -23,9 +23,6 @@ Overview
     :target: https://crate.io/packages/django-concurrency/
     :alt: Downloads
 
-.. image:: https://requires.io/github/saxix/django-concurrency/requirements.png?branch=master
-    :target: https://requires.io/github/saxix/django-concurrency/requirements/?branch=master
-    :alt: Requirements Status
 
 
 
@@ -36,13 +33,13 @@ django command.
 
 
 
-* easy to add to existing Models (just add :class:`concurrency.fields.VersionField` )
+* easy to add to existing Models (just add :ref:`concurrency.fields.VersionField` )
 * works with third-party models (see :ref:`apply_concurrency_check`)
 * works with Django internal models
 * handle http post and standard python code (ie. django management commands)
 * complete test suite (:ref:`test_suite`)
 * Admin integration. Handle :ref:`actions <admin_action>` and :ref:`list_editable <list_editable>` (solves :django_issue:`11313`)
-* can handle external updates (see :class:`concurrency.fields.TriggerVersionField`)
+* can handle external updates (see :ref:`concurrency.fields.TriggerVersionField`)
 
 How it works
 ============

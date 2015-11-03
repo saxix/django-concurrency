@@ -14,6 +14,7 @@ Forms
 
 .. _concurrentform:
 
+
 ConcurrentForm
 --------------
 .. autoclass:: concurrency.forms.ConcurrentForm
@@ -38,6 +39,8 @@ VersionChangedError
 
 
 .. _RecordModifiedError:
+
+.. class:: concurrency.exceptions.RecordModifiedError
 
 RecordModifiedError
 -------------------
@@ -91,6 +94,7 @@ Middleware
 ----------
 
 .. _concurrencymiddleware:
+.. class:: concurrency.middleware.ConcurrencyMiddleware
 
 ConcurrencyMiddleware
 ---------------------
@@ -101,9 +105,8 @@ ConcurrencyMiddleware
 
 .. _handler409:
 
-
-``concurrency.views.conflict()``
---------------------------------
+concurrency.views.conflict
+--------------------------
 .. autofunction:: concurrency.views.conflict
 
 
@@ -114,8 +117,8 @@ Helpers
 
 .. _concurrency_check:
 
-``concurrency_check()``
------------------------
+`concurrency_check`
+-------------------
 
 Sometimes, VersionField(s) cannot wrap the save() method,
 is these cirumstances you can check it manually ::
@@ -136,9 +139,10 @@ is these cirumstances you can check it manually ::
 
 .. _apply_concurrency_check:
 
+`apply_concurrency_check`
+-------------------------
 
-``apply_concurrency_check()``
------------------------------
+.. py:function::apply_concurrency_check()
 
 .. versionadded:: 0.4
 
@@ -151,8 +155,8 @@ Add concurrency check to existing classes.
   you need to use a migration to add a `VersionField` to the desired Model.
 
 
-.. note:: See ``demo.auth_migrations`` for a example how to add ``IntegerVersionField``
-  to ``auth.Group``)
+.. note:: See ``demo.auth_migrations`` for a example how to add
+:class:`IntegerVersionField <concurrency.fields.IntegerVersionField>` to :class:`auth.Group` )
 
 .. code-block:: python
 
@@ -178,12 +182,15 @@ and put in your settings.py
 
 .. _disable_concurrency:
 
-``disable_concurrency()``
--------------------------
+`disable_concurrency`
+---------------------
+.. py:function:: _disable_concurrency
 
 .. versionadded:: 0.6
 
+
 Context manager to temporary disable concurrency checking.
+
 
 .. versionchanged:: 0.9
 
@@ -192,11 +199,13 @@ level or instance level, depending on the passed object.
 Passing Model is useful in django commands, load data or fixtures,
 where instance should be used by default
 
+
 .. versionchanged:: 1.0
 
 Is now possible use `disable_concurrency` without any argument to disable
 concurrency on any Model.
 This features has been developed to be used in django commands
+
 
 examples
 ~~~~~~~~
@@ -220,14 +229,6 @@ examples
             deleted_version.revert()
 
 
-.. _disable_sanity_check:
-
-``disable_sanity_check()``
---------------------------
-.. versionadded:: 0.6
-
-Context manager to disable sanity check checking for one model. see :ref:`import_data`
-
 
 ------------
 Templatetags
@@ -236,23 +237,23 @@ Templatetags
 
 .. templatefilter:: identity
 
-``identity``
-------------
+`identity`
+----------
 .. autofunction:: concurrency.templatetags.concurrency.identity
 
 
 .. templatefilter:: version
 
-``version``
------------
+`version`
+---------
 .. autofunction:: concurrency.templatetags.concurrency.version
 
 
 
 .. templatefilter:: is_version
 
-``is_version``
---------------
+`is_version`
+------------
 .. autofunction:: concurrency.templatetags.concurrency.is_version
 
 
@@ -275,11 +276,12 @@ ConcurrencyTestMixin
 ---------
 Signining
 ---------
+
 .. versionadded:: 0.5
 
-``VersionField`` is 'displayed' in the Form using an ``HiddenInput`` widget, anyway to be sure that the version is not
-tampered with, its value is `signed`. The default VersionSigner is ``concurrency.forms.VersionFieldSigner`` that simply
-extends ``django.core.signing.Signer``. If you want change your Signer you can set :setting:`CONCURRENCY_FIELD_SIGNER` in your settings
+:ref:`concurrency.fields.VersionField` is 'displayed' in the Form using an :class:`django.forms.HiddenInput` widget, anyway to be sure that the version is not
+tampered with, its value is `signed`. The default VersionSigner is :class:`concurrency.forms.VersionFieldSigner` that simply
+extends :class:`django.core.signing.Signer`. If you want change your Signer you can set :setting:`CONCURRENCY_FIELD_SIGNER` in your settings
 
     :file:`mysigner.py` ::
 

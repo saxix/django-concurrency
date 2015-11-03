@@ -8,6 +8,8 @@ Fields
 .. contents::
     :local:
 
+.. _concurrency.fields.VersionField:
+
 VersionField
 ------------
 .. autoclass:: concurrency.fields.VersionField
@@ -23,6 +25,8 @@ AutoIncVersionField
 .. autoclass:: concurrency.fields.AutoIncVersionField
 
 
+.. _concurrency.fields.TriggerVersionField:
+
 
 TriggerVersionField
 -------------------
@@ -34,8 +38,8 @@ Using this you can control external updates (ie using tools like phpMyAdmin, pgA
 The trigger is automatically created during ``syncdb()``
 or you can use the :ref:`triggers` management command.
 
-``trigger_name``
-~~~~~~~~~~~~~~~~
+`trigger_name`
+~~~~~~~~~~~~~~
 
 .. versionadded:: 1.0
 

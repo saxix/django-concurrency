@@ -5,9 +5,9 @@
 ConcurrencyMiddleware
 =====================
 
-You can globally intercept :ref:`RecordModifiedError`
-adding :ref:`concurrency.middleware.ConcurrencyMiddleware <concurrencymiddleware>` to your :setting:`MIDDLEWARE_CLASSES`.
-Each time a ``RecordModifiedError`` is raised it goes up to the ConcurrencyMiddleware and the handler defined in
+You can globally intercept :class:`RecordModifiedError <concurrency.exceptions.RecordModifiedError>`
+adding :class:`ConcurrencyMiddleware <concurrency.middleware.ConcurrencyMiddleware>` to your :setting:`MIDDLEWARE_CLASSES`.
+Each time a :class:`RecordModifiedError <concurrency.exceptions.RecordModifiedError>` is raised it goes up to the ConcurrencyMiddleware and the handler defined in
 :setting:`CONCURRENCY_HANDLER409` is invoked.
 
 **Example**
@@ -111,7 +111,8 @@ Each time a ``RecordModifiedError`` is raised it goes up to the ConcurrencyMiddl
     </table>
 
 If you want to use ConcurrentMiddleware in the admin and you are using
-:ref:`ConcurrentModelAdmin` remember to set your ModelAdmin to NOT use :ref:`ConcurrentForm`
+:class:`concurrency.admin.ConcurrentModelAdmin` remember to set your ModelAdmin to NOT
+use :class:`concurrency.forms.ConcurrentForm`
 
 .. code-block:: python
 

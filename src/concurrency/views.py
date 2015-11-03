@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-
 from django.http import HttpResponse
 from django.template import loader
 from django.template.base import Template
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
-
 from concurrency.compat import TemplateDoesNotExist
 from concurrency.exceptions import RecordModifiedError
 
@@ -25,11 +23,11 @@ def callback(target, *args, **kwargs):
 def conflict(request, target=None, template_name='409.html'):
     """409 error handler.
 
-    Templates: `409.html`
-    Context:
-    `target` : The model to save
-    `saved`  : The object stored in the db that produce the conflict or None if not found (ie. deleted)
-    `request_path` : The path of the requested URL (e.g., '/app/pages/bad_page/')
+    :param request: Request
+
+    :param template_name: `409.html`
+
+    :param target: The model to save
 
     """
     try:
