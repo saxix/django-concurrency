@@ -92,15 +92,14 @@ Stop at the first conflict and raise :ref:`recordmodifiederror`. Note that if yo
 .. seealso:: :ref:`list_editable`, :ref:`middleware`
 
 
-.. setting:: CONCURRECY_SANITY_CHECK
 
-SANITY_CHECK
-------------
-.. versionchanged:: 0.7
+.. setting:: CONCURRECY_MANUAL_TRIGGERS
+
+MANUAL_TRIGGERS
+---------------
+.. versionadded:: 1.0
 
 Default: ``False``
 
-Deprecated. Starting from 0.7 has no effect and will be removed in 0.8
-
-
-.. setting:: USE_SELECT_FOR_UPDATE
+If false do not automatically create triggers, you can create them using :ref:`triggers`
+ management command or manually using your DB client.

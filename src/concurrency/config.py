@@ -46,7 +46,6 @@ class AppSettings(object):
     """
     defaults = {
         'ENABLED': True,
-        'SANITY_CHECK': False,
         'MANUAL_TRIGGERS': False,
         'FIELD_SIGNER': 'concurrency.forms.VersionFieldSigner',
         'POLICY': CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
