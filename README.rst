@@ -51,7 +51,7 @@ Other projects that handle concurrent editing are `django-optimistic-lock`_ and 
  * can be applied to any model; not only your code (ie. django.contrib.auth.Group)
  * handle `list-editable`_ ChangeList. (handle `#11313 <https://code.djangoproject.com/ticket/11313>`_)
  * manage concurrency conflicts in admin's actions
- * can intercept changes performend out of the django app (ie using pgAdmin, phpMyAdmin, Toads) (using `TriggerVersionField_`
+ * can intercept changes performend out of the django app (ie using pgAdmin, phpMyAdmin, Toads) (using `TriggerVersionField`_)
  * c
 
 Links

@@ -3,8 +3,10 @@ import logging
 import pytest
 import six
 from mock import Mock
-import concurrency.management.commands.triggers as command
+
 from django.core.management import call_command
+
+import concurrency.management.commands.triggers as command
 
 logger = logging.getLogger(__name__)
 

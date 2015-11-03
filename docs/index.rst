@@ -42,7 +42,7 @@ django command.
 * handle http post and standard python code (ie. django management commands)
 * complete test suite (:ref:`test_suite`)
 * Admin integration. Handle :ref:`actions <admin_action>` and :ref:`list_editable <list_editable>` (solves :django_issue:`11313`)
-* can handle external updates (see :class:`TriggerVersionField`)
+* can handle external updates (see :class:`concurrency.fields.TriggerVersionField`)
 
 How it works
 ============

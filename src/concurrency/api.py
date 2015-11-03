@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+
 import logging
+
 from django.db.models import Model
+
 from concurrency.config import conf
 from concurrency.core import _select_lock, _wrap_model_save, get_version_fieldname
 from concurrency.exceptions import RecordModifiedError

@@ -1,5 +1,7 @@
 from __future__ import absolute_import, unicode_literals
+
 import logging
+
 from concurrency.config import conf
 
 # Set default logging handler to avoid "No handler found" warnings.

@@ -1,9 +1,9 @@
 import pytest
+
 from concurrency.core import _set_version
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
-from demo.util import (with_all_models, concurrent_model, unique_id,
-                       with_std_models)
+from demo.util import concurrent_model, unique_id, with_all_models, with_std_models
 
 pytest.mark.django_db(transaction=False)
 

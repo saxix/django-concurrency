@@ -1,13 +1,16 @@
+import itertools
 from contextlib import contextmanager
 from functools import partial, update_wrapper
-import itertools
-import pytest
-from concurrency.config import conf
 from itertools import count
 
-from demo.models import AutoIncConcurrentModel, InheritedModel, CustomSaveModel, ConcreteModel, ProxyModel, \
+import pytest
+from django import db
+
+from concurrency.config import conf
+from demo.models import (
+    AutoIncConcurrentModel, ConcreteModel, CustomSaveModel, InheritedModel, ProxyModel, SimpleConcurrentModel,
     TriggerConcurrentModel
-from demo.models import SimpleConcurrentModel
+)
 
 
 def sequence(prefix):
@@ -111,10 +114,7 @@ def attributes(*values):
         set(target, name, value)
 
 
-from django import db
-
-
-def test_concurrently(times=1):
+def concurrently(times=1):
     # from: http://www.caktusgroup.com/blog/2009/05/26/testing-django-views-for-concurrency-issues/
     """
 Add this decorator to small pieces of code that you want to test
@@ -124,7 +124,7 @@ INSERT might fail when the INSERT assumes that the data has not changed
 since the SELECT.
 """
 
-    def test_concurrently_decorator(test_func):
+    def concurrently_decorator(test_func):
         def wrapper(*args, **kwargs):
             exceptions = []
             import threading
@@ -136,7 +136,7 @@ since the SELECT.
                     exceptions.append(e)
                     raise
                 finally:
-                    db.close_connection()
+                    db.connection.close()
 
             threads = []
             for i in range(times):
@@ -152,4 +152,4 @@ since the SELECT.
 
         return update_wrapper(wrapper, test_func)
 
-    return test_concurrently_decorator
+    return concurrently_decorator

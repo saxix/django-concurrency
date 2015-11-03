@@ -1,22 +1,24 @@
 from __future__ import absolute_import, unicode_literals
-import time
+
 import copy
 import logging
+import time
 from functools import update_wrapper
+
+from django.db.models.fields import Field
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from django.db.models.fields import Field
+
+from concurrency import forms
+from concurrency.api import disable_concurrency, get_revision_of_object
+from concurrency.config import conf
+from concurrency.core import ConcurrencyOptions, _wrap_model_save
+from concurrency.utils import refetch
 
 try:
     from django.db.models.signals import class_prepared, post_migrate
 except:
     from django.db.models.signals import class_prepared, post_syncdb as post_migrate
-
-from concurrency import forms
-from concurrency.config import conf
-from concurrency.core import ConcurrencyOptions, _wrap_model_save
-from concurrency.api import get_revision_of_object, disable_concurrency
-from concurrency.utils import refetch
 
 logger = logging.getLogger(__name__)
 

@@ -1,23 +1,26 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+
 import operator
 import re
 from functools import reduce
-from django.utils.encoding import force_text
+
 from django.contrib import admin, messages
+from django.contrib.admin import helpers
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db.models import Q
-from django.forms.formsets import (ManagementForm, TOTAL_FORM_COUNT,
-                                   INITIAL_FORM_COUNT, MAX_NUM_FORM_COUNT)
+from django.forms.formsets import (
+    INITIAL_FORM_COUNT, MAX_NUM_FORM_COUNT, TOTAL_FORM_COUNT, ManagementForm
+)
 from django.forms.models import BaseModelFormSet
-from django.utils.safestring import mark_safe
-from django.contrib.admin import helpers
 from django.http import HttpResponse, HttpResponseRedirect
-from django.utils.translation import ungettext, ugettext as _
-from concurrency import forms
-from concurrency import core
+from django.utils.encoding import force_text
+from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _, ungettext
+
+from concurrency import core, forms
 from concurrency.api import get_revision_of_object
-from concurrency.config import conf, CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
+from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, conf
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
 

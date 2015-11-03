@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from optparse import make_option
+
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management.base import BaseCommand
 from django.db import connections
+
 from concurrency.compat import atomic
-from concurrency.triggers import create_triggers, get_triggers, drop_triggers
+from concurrency.triggers import create_triggers, drop_triggers, get_triggers
 
 
 class Command(BaseCommand):

@@ -1,16 +1,19 @@
 from __future__ import absolute_import, unicode_literals
+
+from importlib import import_module
+
 import django
 from django import forms
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured, ValidationError
-from django.core.signing import Signer, BadSignature
-from django.forms import ModelForm, HiddenInput
+from django.core.signing import BadSignature, Signer
+from django.forms import HiddenInput, ModelForm
 # from django.utils.importlib import import_module
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
-from importlib import import_module
+
 from concurrency.config import conf
 from concurrency.core import _select_lock
-from concurrency.exceptions import VersionError, RecordModifiedError
+from concurrency.exceptions import RecordModifiedError, VersionError
 
 
 class ConcurrentForm(ModelForm):

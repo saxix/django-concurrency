@@ -45,7 +45,7 @@ install:
   - pip install tox coverage python-coveralls>=2.5 coveralls>=0.5
 
 script:
-  - tox -e $TOXENV --recreate -- -vv --cov=concurrency --cov-report=xml --cov-config=tests/.coveragerc
+  - tox -e $TOXENV --recreate -- -vv --capture=no --cov=concurrency --cov-report=xml --cov-config=tests/.coveragerc
 
 before_success:
   - coverage erase

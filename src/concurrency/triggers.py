@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 from collections import defaultdict
 
-from django.db import router, connections
+from django.db import connections, router
 
 
 def get_trigger_name(field):
