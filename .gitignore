@@ -1,8 +1,11 @@
 ˜*
+.coverage
+coverage.xml
 ~build
 .idea
 .tox
-.*
+.DS_Store
+.cache
 notes.txt
 docs/build/
 /dist

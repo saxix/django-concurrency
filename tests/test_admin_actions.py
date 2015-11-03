@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import django
 import pytest
-
 from demo.base import AdminTestCase, SENTINEL
 from demo.models import SimpleConcurrentModel
 from demo.util import unique_id
@@ -33,7 +32,7 @@ class TestAdminActions(AdminTestCase):
         self.assertIn('**concurrent_update**', res)
         self.assertNotIn('**action_update**', res)
 
-    @pytest.mark.skipif(django.VERSION[:2] >= (1,7), reason="Skip django>=1.9")
+    @pytest.mark.skipif(django.VERSION[:2] >= (1, 7), reason="Skip django>=1.9")
     def test_delete_allowed_if_no_updates(self):
         id = next(unique_id)
         SimpleConcurrentModel.objects.get_or_create(pk=id)

@@ -15,9 +15,10 @@ services:
   - PostgreSQL
 
 env:
-  - TOXENV=py27-d16-pg
-  - TOXENV=py27-d16-sqlite
-  - TOXENV=py27-d16-mysql
+#  Travis give a TemplateDoesNotExist exception with django==1.6.x
+#  - TOXENV=py27-d16-pg
+#  - TOXENV=py27-d16-sqlite
+#  - TOXENV=py27-d16-mysql
   - TOXENV=py27-d17-pg
   - TOXENV=py27-d17-sqlite
   - TOXENV=py27-d17-mysql
@@ -31,26 +32,20 @@ env:
   - TOXENV=py33-d17-sqlite
   - TOXENV=py33-d18-pg
   - TOXENV=py33-d18-sqlite
-  - TOXENV=py33-d19-pg
-  - TOXENV=py33-d19-sqlite
   - TOXENV=py34-d17-pg
   - TOXENV=py34-d17-sqlite
   - TOXENV=py34-d18-pg
   - TOXENV=py34-d18-sqlite
   - TOXENV=py34-d19-pg
   - TOXENV=py34-d19-sqlite
-  - TOXENV=py35-d17-pg
-  - TOXENV=py35-d17-sqlite
-  - TOXENV=py35-d18-pg
-  - TOXENV=py35-d18-sqlite
-  - TOXENV=py35-d19-pg
-  - TOXENV=py35-d19-sqlite
+#  - TOXENV=py35-d19-pg
+#  - TOXENV=py35-d19-sqlite
 
 install:
-  - pip install tox python-coveralls>=2.5 coveralls>=0.5
+  - pip install tox coverage python-coveralls>=2.5 coveralls>=0.5
 
 script:
-  - tox $TOXENV -- --cov=concurrency --cov-report=xml --cov-config=tests/.coveragerc
+  - tox -e $TOXENV --recreate -- --cov=concurrency --cov-report=xml --cov-config=tests/.coveragerc
 
 before_success:
   - coverage erase

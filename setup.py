@@ -13,8 +13,6 @@ except ImportError:
     sys.path.append('src')
     from concurrency import VERSION
 
-    # VERSION = __version__ = (1, 0, 0, 'alpha', 0)
-
 NAME = 'django-concurrency'
 
 
@@ -70,6 +68,7 @@ VERSIONMAP = {'final': (VERSION, 'Development Status :: 5 - Production/Stable'),
 
 download_tag, development_status = VERSIONMAP[VERSION[3]]
 install_requires = []
+
 
 class PyTest(TestCommand):
     def finalize_options(self):

@@ -2,16 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 import logging
 import warnings
-# try:
-#     from django.apps import apps
-#     get_models = apps.get_models
-#     get_apps = apps.get_apps
-#
-# except ImportError:
-#     from django.db.models.loading import get_models, get_apps
-
 from concurrency.exceptions import RecordModifiedError
-
 
 logger = logging.getLogger(__name__)
 

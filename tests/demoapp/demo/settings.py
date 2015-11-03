@@ -1,5 +1,4 @@
 import os
-import sys
 from tempfile import mktemp
 import django
 
@@ -23,32 +22,9 @@ INSTALLED_APPS = ['django.contrib.auth',
                   # 'reversion',
                   'demo']
 
-if django.VERSION[:2] != (1,9):
+if django.VERSION[:2] != (1, 9):
     INSTALLED_APPS += ['reversion']
 
-# # current reversion does not work with django 1.9
-# # so we install it only on when django < 1.9
-# # this can be removed when next version will be released
-# if sys.version_info[:2] >= (3, 3):
-#     if sys.version_info[:2] >= (3, 4):
-#         from importlib.util import find_spec as importlib_find
-#     else:
-#         from importlib import find_loader as importlib_find
-#
-#     try:
-#         importlib_find('reversion')
-#         # INSTALLED_APPS += ['reversion']
-#     except ImportError as e:
-#         print(111, 1111111, e)
-#         INSTALLED_APPS.remove('reversion')
-#
-# else:
-#     import imp
-#     try:
-#         imp.find_module('reversion')
-#         # INSTALLED_APPS += ['reversion']
-#     except ImportError:
-#         INSTALLED_APPS.remove('reversion')
 
 MIGRATION_MODULES = {
     'demo': 'demo.migrations',

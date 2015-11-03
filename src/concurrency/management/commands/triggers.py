@@ -23,10 +23,10 @@ class Command(BaseCommand):
                     help='limit to this trigger name'))
 
     def _list(self, databases):
-        FMT = "{:20} {}\n"
-        self.stdout.write(FMT.format('DATABASE', 'TRIGGERS'))
         for alias, triggers in get_triggers(databases).items():
-            self.stdout.write(FMT.format(alias, ", ".join(triggers)))
+            self.stdout.write("Database: {}".format(alias))
+            for trigger in triggers:
+                self.stdout.write("       {}".format(trigger))
         self.stdout.write('')
 
     def handle(self, cmd='list', *args, **options):
@@ -39,13 +39,19 @@ class Command(BaseCommand):
         with atomic():
             try:
                 if cmd == 'list':
-                    self._list(*databases)
+                    self._list(databases)
                 elif cmd == 'create':
-                    create_triggers(*databases, stdout=self.stdout)
-                    self._list(*databases)
+                    for alias, triggers in create_triggers(databases).items():
+                        self.stdout.write("Database: {}".format(alias))
+                        for trigger in triggers:
+                            self.stdout.write("    Created {0[2]}  for {0[1]}".format(trigger))
+                    self.stdout.write('')
                 elif cmd == 'drop':
-                    drop_triggers(*databases)
-                    self._list(*databases)
+                    for alias, triggers in drop_triggers(databases).items():
+                        self.stdout.write("Database: {}".format(alias))
+                        for trigger in triggers:
+                            self.stdout.write("    Dropped   {0[2]}".format(trigger))
+                    self.stdout.write('')
                 else:
                     raise Exception()
             except ImproperlyConfigured as e:

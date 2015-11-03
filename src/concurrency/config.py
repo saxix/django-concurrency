@@ -1,8 +1,6 @@
 from __future__ import absolute_import, unicode_literals
-import warnings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import get_callable
-from django.db.models import Model
 from django.utils import six
 from django.test.signals import setting_changed
 

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-import sys
+
+from collections import defaultdict
+
 from django.db import router, connections
 
 
@@ -15,44 +17,51 @@ def get_trigger_name(field):
     return 'concurrency_{1.db_table}_{0.name}'.format(field, opts)
 
 
-def get_triggers(*databases):
+def get_triggers(databases):
     if databases is None:
         databases = [alias for alias in connections]
 
-    triggers = {}
+    ret = {}
     for alias in databases:
         connection = connections[alias]
-        if hasattr(connection, 'list_triggers'):
-            triggers[alias] = [trigger_name for trigger_name in connection.list_triggers()]
-    return triggers
+        f = factory(connection)
+        r = f.list()
+        ret[alias] = r
+    return ret
 
 
-def drop_triggers(*databases):
-    if databases is None:
-        databases = [alias for alias in connections]
-    triggers = {}
-    for alias in databases:
-        connection = connections[alias]
-        if hasattr(connection, 'drop_triggers'):
-            connection.drop_triggers()
-
-    return triggers
-
-
-def create_triggers(databases, stdout=None):
+def drop_triggers(databases):
     global _TRIGGERS
     from concurrency.fields import _TRIGGERS
+    ret = defaultdict(lambda: [])
+
     for field in set(_TRIGGERS):
         model = field.model
         alias = router.db_for_write(model)
         if alias in databases:
-            if stdout:
-                stdout.write(alias)
+            connection = connections[alias]
+            f = factory(connection)
+            f.drop(field)
+            field._trigger_exists = False
+            ret[alias].append([model, field, field.trigger_name])
+    return ret
+
+
+def create_triggers(databases):
+    global _TRIGGERS
+    from concurrency.fields import _TRIGGERS
+    ret = defaultdict(lambda: [])
+
+    for field in set(_TRIGGERS):
+        model = field.model
+        alias = router.db_for_write(model)
+        if alias in databases:
             if not field._trigger_exists:
                 connection = connections[alias]
                 f = factory(connection)
                 f.create(field)
-    _TRIGGERS = []
+                ret[alias].append([model, field, field.trigger_name])
+    return ret
 
 
 class TriggerFactory(object):
@@ -85,12 +94,15 @@ class TriggerFactory(object):
 
     def drop(self, field):
         opts = field.model._meta
+        ret = []
         for sfx in ['_i', '_u']:
             trigger_name = "{}_{}".format(field.trigger_name, sfx)
             stm = self.drop_clause.format(trigger_name=trigger_name,
                                           opts=opts,
                                           field=field)
             self.connection.cursor().execute(stm)
+            ret.append(trigger_name)
+        return ret
 
     def _list(self):
         cursor = self.connection.cursor()
@@ -116,11 +128,6 @@ BEGIN UPDATE {opts.db_table} SET {field.column} = 0 WHERE {opts.pk.column} = NEW
 END;
 """
     list_clause = "select name from sqlite_master where type='trigger';"
-
-    # def list_triggers(self, connectio):
-    #     cursor = self.cursor()
-    #     result = cursor.execute("select name from sqlite_master where type='trigger';")
-    #     return sorted([m[0] for m in result.fetchall()])
 
 
 class PostgreSQL(TriggerFactory):
@@ -180,33 +187,6 @@ FOR EACH ROW SET NEW.{field.column} = OLD.{field.column}+1;
 """
 
     list_clause = "SHOW TRIGGERS"
-
-    # def _create_trigger(self, field):
-    #     # import MySQLdb as Database
-    #     from warnings import filterwarnings, resetwarnings
-    #     import _mysql_exceptions
-    #
-    #     filterwarnings('ignore', message='Trigger does not exist',
-    #                    category=Warning)
-    #
-    #     opts = field.model._meta
-    #     trigger_name = get_trigger_name(field, opts)
-    #
-    #     stm = self.sql.format(trigger_name=trigger_name,
-    #                           opts=opts, field=field)
-    #     cursor = self.connection._clone().cursor()
-    #     try:
-    #         cursor.execute(stm)
-    #         self._triggers[field] = trigger_name
-    #
-    #     except (BaseException, _mysql_exceptions.ProgrammingError) as exc:
-    #         errno, message = exc.args
-    #         if errno != 2014:
-    #             import traceback
-    #             traceback.print_exc(exc)
-    #             raise
-    #     resetwarnings()
-    #     return trigger_name
 
 
 def factory(conn):

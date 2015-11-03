@@ -93,6 +93,19 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='DropTriggerConcurrentModel',
+            fields=[
+                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
+                ('version', concurrency.fields.TriggerVersionField(default=0, db_column='cm_version_id', help_text='record revision number')),
+                ('username', models.CharField(max_length=30, blank=True, null=True)),
+                ('count', models.IntegerField(default=0)),
+            ],
+            options={
+                'verbose_name_plural': 'TriggerConcurrentModels',
+                'verbose_name': 'TriggerConcurrentModel',
+            },
+        ),
+        migrations.CreateModel(
             name='ConcurrencyDisabledModel',
             fields=[
                 ('simpleconcurrentmodel_ptr', models.OneToOneField(primary_key=True, auto_created=True, serialize=False, parent_link=True, to='demo.SimpleConcurrentModel')),

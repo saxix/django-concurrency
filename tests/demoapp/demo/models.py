@@ -53,6 +53,16 @@ class TriggerConcurrentModel(models.Model):
         return "{0.__class__.__name__} #{0.pk}".format(self)
 
 
+class DropTriggerConcurrentModel(models.Model):
+    # only used to test drop triggers
+    version = TriggerVersionField(db_column='cm_version_id')
+    username = models.CharField(max_length=30, blank=True, null=True)
+    count = models.IntegerField(default=0)
+
+    class Meta:
+        app_label = 'demo'
+
+
 class ProxyModel(SimpleConcurrentModel):
     class Meta:
         app_label = 'demo'

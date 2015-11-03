@@ -2,7 +2,6 @@ from __future__ import absolute_import, unicode_literals
 import time
 import copy
 import logging
-from six import u
 from functools import update_wrapper
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
@@ -53,7 +52,6 @@ class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_p
 _TRIGGERS = []
 if not conf.MANUAL_TRIGGERS:
     post_migrate.connect(post_syncdb_concurrency_handler, dispatch_uid='post_syncdb_concurrency_handler')
-
 
 
 class VersionField(Field):

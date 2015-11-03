@@ -1,6 +1,4 @@
-coverage
 django-webtest>=1.7.5
-flake8
 mock>=1.0.1
 pytest>=2.8
 pytest-pythonpath
@@ -8,7 +6,6 @@ pytest-cache>=1.0
 pytest-echo>=1.3
 pytest-cov>=1.6
 pytest-django>=2.8
-pytest-xdist
 WebTest>=2.0.11
 tox>=2.1.1
 
