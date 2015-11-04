@@ -2,15 +2,12 @@ import itertools
 from contextlib import contextmanager
 from functools import partial, update_wrapper
 from itertools import count
-
 import pytest
-
 from demo.models import (
     AutoIncConcurrentModel, ConcreteModel, CustomSaveModel, InheritedModel, ProxyModel,
     SimpleConcurrentModel, TriggerConcurrentModel
 )
 from django import db
-
 from concurrency.config import conf
 
 
@@ -42,7 +39,7 @@ def clone_instance(model_instance):
 
     fieldnames = [fld.name for fld in model_instance._meta.fields]
 
-    new_kwargs = dict([(name, getattr(model_instance, name)) for name in fieldnames])
+    new_kwargs = {name: getattr(model_instance, name) for name in fieldnames}
     return model_instance.__class__(**new_kwargs)
 
 

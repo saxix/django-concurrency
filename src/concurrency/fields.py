@@ -57,7 +57,7 @@ if not conf.MANUAL_TRIGGERS:
 class VersionField(Field):
     """ Base class """
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         verbose_name = kwargs.get('verbose_name', None)
         name = kwargs.get('name', None)
         db_tablespace = kwargs.get('db_tablespace', None)
@@ -116,8 +116,8 @@ class VersionField(Field):
         cls._wrap_model_methods(model)
         model._concurrencymeta.versioned_save = True
 
-    @classmethod
-    def _wrap_model_methods(cls, model):
+    @staticmethod
+    def _wrap_model_methods(model):
         old_do_update = getattr(model, '_do_update')
         setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
 
@@ -238,9 +238,9 @@ class TriggerVersionField(VersionField):
         old_value = get_revision_of_object(obj)
         setattr(obj, obj._concurrencymeta._field.attname, int(old_value) + 1)
 
-    @classmethod
-    def _wrap_model_methods(cls, model):
-        super(TriggerVersionField, cls)._wrap_model_methods(model)
+    @staticmethod
+    def _wrap_model_methods(model):
+        super(TriggerVersionField, TriggerVersionField)._wrap_model_methods(model)
         old_save = getattr(model, 'save')
         setattr(model, 'save', model._concurrencymeta._field._wrap_save(old_save))
 
