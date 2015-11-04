@@ -224,7 +224,6 @@ class TriggerVersionField(VersionField):
     def trigger_name(self):
         from concurrency.triggers import get_trigger_name
         return get_trigger_name(self)
-        # return self._trigger_name
 
     def _get_next_version(self, model_instance):
         # always returns the same value
@@ -242,8 +241,6 @@ class TriggerVersionField(VersionField):
     @classmethod
     def _wrap_model_methods(cls, model):
         super(TriggerVersionField, cls)._wrap_model_methods(model)
-        # old_do_update = getattr(model, '_do_update')
-        # setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
         old_save = getattr(model, 'save')
         setattr(model, 'save', model._concurrencymeta._field._wrap_save(old_save))
 
