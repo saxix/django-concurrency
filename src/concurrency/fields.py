@@ -35,7 +35,7 @@ def class_prepared_concurrency_handler(sender, **kwargs):
             sender._concurrencymeta.enabled = getattr(sender.ConcurrencyMeta, 'enabled')
 
         if not (sender._concurrencymeta.manually):
-            sender._concurrencymeta._field.wrap_model(sender)
+            sender._concurrencymeta.field.wrap_model(sender)
 
         setattr(sender, 'get_concurrency_version', get_revision_of_object)
 
@@ -97,7 +97,7 @@ class VersionField(Field):
         if hasattr(cls, '_concurrencymeta') or cls._meta.abstract:
             return
         setattr(cls, '_concurrencymeta', ConcurrencyOptions())
-        cls._concurrencymeta._field = self
+        cls._concurrencymeta.field = self
         cls._concurrencymeta.base = cls
 
     def _set_version_value(self, model_instance, value):
@@ -119,12 +119,12 @@ class VersionField(Field):
     @staticmethod
     def _wrap_model_methods(model):
         old_do_update = getattr(model, '_do_update')
-        setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
+        setattr(model, '_do_update', model._concurrencymeta.field._wrap_do_update(old_do_update))
 
     def _wrap_do_update(self, func):
 
         def _do_update(model_instance, base_qs, using, pk_val, values, update_fields, forced_update):
-            version_field = model_instance._concurrencymeta._field
+            version_field = model_instance._concurrencymeta.field
             old_version = get_revision_of_object(model_instance)
 
             if not version_field.model._meta.abstract:
@@ -236,13 +236,13 @@ class TriggerVersionField(VersionField):
     @staticmethod
     def _increment_version_number(obj):
         old_value = get_revision_of_object(obj)
-        setattr(obj, obj._concurrencymeta._field.attname, int(old_value) + 1)
+        setattr(obj, obj._concurrencymeta.field.attname, int(old_value) + 1)
 
     @staticmethod
     def _wrap_model_methods(model):
         super(TriggerVersionField, TriggerVersionField)._wrap_model_methods(model)
         old_save = getattr(model, 'save')
-        setattr(model, 'save', model._concurrencymeta._field._wrap_save(old_save))
+        setattr(model, 'save', model._concurrencymeta.field._wrap_save(old_save))
 
     @staticmethod
     def _wrap_save(func):
@@ -253,7 +253,7 @@ class TriggerVersionField(VersionField):
             if reload:
                 ret = refetch(self)
                 setattr(self,
-                        self._concurrencymeta._field.attname,
+                        self._concurrencymeta.field.attname,
                         get_revision_of_object(ret))
             return ret
         return update_wrapper(inner, func)

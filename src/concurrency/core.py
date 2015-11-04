@@ -20,7 +20,7 @@ __all__ = []
 
 
 def get_version_fieldname(obj):
-    return obj._concurrencymeta._field.attname
+    return obj._concurrencymeta.field.attname
 
 
 def _set_version(obj, version):
@@ -30,14 +30,14 @@ def _set_version(obj, version):
     This function should be used with 'raw' values, any type conversion should be managed in
     VersionField._set_version_value(). This is needed for future enhancement of concurrency.
     """
-    obj._concurrencymeta._field._set_version_value(obj, version)
+    obj._concurrencymeta.field._set_version_value(obj, version)
 
 
 def _select_lock(model_instance, version_value=None):
     if (not conf.ENABLED):
         return
 
-    version_field = model_instance._concurrencymeta._field
+    version_field = model_instance._concurrencymeta.field
     value = version_value or getattr(model_instance, version_field.name)
     is_versioned = value != version_field.get_default()
 
@@ -52,7 +52,7 @@ def _select_lock(model_instance, version_value=None):
 
 
 class ConcurrencyOptions:
-    _field = None
+    field = None
     versioned_save = False
     manually = False
     enabled = True

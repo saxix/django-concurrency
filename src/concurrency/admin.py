@@ -90,7 +90,7 @@ class ConcurrencyActionMixin(object):
             else:
                 selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
 
-            revision_field = self.model._concurrencymeta._field
+            revision_field = self.model._concurrencymeta.field
             if not selected:
                 return None
 

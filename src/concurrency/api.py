@@ -60,7 +60,7 @@ def apply_concurrency_check(model, fieldname, versionclass):
     ver = versionclass()
 
     ver.contribute_to_class(model, fieldname)
-    model._concurrencymeta._field = ver
+    model._concurrencymeta.field = ver
 
     from concurrency.fields import class_prepared_concurrency_handler
 
