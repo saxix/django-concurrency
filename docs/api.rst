@@ -115,34 +115,11 @@ concurrency.views.conflict
 Helpers
 -------
 
-.. _concurrency_check:
-
-`concurrency_check`
--------------------
-
-Sometimes, VersionField(s) cannot wrap the save() method,
-is these cirumstances you can check it manually ::
-
-    from concurrency.core import concurrency_check
-
-    class AbstractModelWithCustomSave(models.Model):
-        version = IntegerVersionField(db_column='cm_version_id', manually=True)
-
-    def save(self, *args, **kwargs):
-        concurrency_check(self, *args, **kwargs)
-        super(SecurityConcurrencyBaseModel, self).save(*args, **kwargs)
-
-.. note:: Please note ``manually=True`` argument in `IntegerVersionField()` definition
-
-
-
 
 .. _apply_concurrency_check:
 
-`apply_concurrency_check`
--------------------------
-
-.. py:function::apply_concurrency_check()
+`apply_concurrency_check()`
+---------------------------
 
 .. versionadded:: 0.4
 
@@ -182,9 +159,8 @@ and put in your settings.py
 
 .. _disable_concurrency:
 
-`disable_concurrency`
----------------------
-.. py:function:: _disable_concurrency
+`disable_concurrency()`
+-----------------------
 
 .. versionadded:: 0.6
 

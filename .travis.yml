@@ -8,7 +8,6 @@ cache:
 branches:
   only:
     - develop
-    - feature/travis
 
 services:
   - MySQL
