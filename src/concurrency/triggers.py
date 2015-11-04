@@ -31,7 +31,7 @@ def get_triggers(databases):
     for alias in databases:
         connection = connections[alias]
         f = factory(connection)
-        r = f.list()
+        r = f.get_list()
         ret[alias] = r
     return ret
 
@@ -78,12 +78,12 @@ class TriggerFactory(object):
         self.connection = connection
 
     def get_trigger(self, field):
-        if field.trigger_name in self.list():
+        if field.trigger_name in self.get_list():
             return field.trigger_name
         return None
 
     def create(self, field):
-        if field.trigger_name not in self.list():
+        if field.trigger_name not in self.get_list():
             stm = self.update_clause.format(trigger_name=field.trigger_name,
                                             opts=field.model._meta,
                                             field=field)
@@ -110,7 +110,7 @@ class TriggerFactory(object):
         cursor.execute(self.list_clause)
         return cursor.fetchall()
 
-    def list(self):
+    def get_list(self):
         return sorted([m[0] for m in self._list()])
 
 
@@ -144,7 +144,7 @@ CREATE TRIGGER {trigger_name} BEFORE UPDATE
 
     list_clause = "select * from pg_trigger where tgname LIKE 'concurrency_%%'; "
 
-    def list(self):
+    def get_list(self):
         return sorted([m[1] for m in self._list()])
 
 

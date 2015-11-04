@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def test_list_triggers():
     conn = connections['default']
 
-    assert factory(conn).list() == [
+    assert factory(conn).get_list() == [
         u'concurrency_demo_droptriggerconcurrentmodel_version',
         u'concurrency_demo_triggerconcurrentmodel_version']
 
@@ -26,4 +26,4 @@ def test_drop_triggers():
     f = [f for f in DropTriggerConcurrentModel._meta.fields if f.name == 'version'][0]
     ret = factory(conn).drop(f)
     assert ret == [u'concurrency_demo_droptriggerconcurrentmodel_version']
-    assert factory(conn).list() == [u'concurrency_demo_triggerconcurrentmodel_version']
+    assert factory(conn).get_list() == [u'concurrency_demo_triggerconcurrentmodel_version']
