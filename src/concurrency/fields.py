@@ -113,11 +113,11 @@ class VersionField(Field):
     def wrap_model(cls, model, force=False):
         if not force and model._concurrencymeta.versioned_save:
             return
-        cls._wrap_model_methods(model, force)
+        cls._wrap_model_methods(model)
         model._concurrencymeta.versioned_save = True
 
     @classmethod
-    def _wrap_model_methods(cls, model, force=False):
+    def _wrap_model_methods(cls, model):
         old_do_update = getattr(model, '_do_update')
         setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
 
@@ -240,8 +240,8 @@ class TriggerVersionField(VersionField):
         setattr(obj, obj._concurrencymeta._field.attname, int(old_value) + 1)
 
     @classmethod
-    def _wrap_model_methods(cls, model, force=False):
-        super(TriggerVersionField, cls)._wrap_model_methods(model, force)
+    def _wrap_model_methods(cls, model):
+        super(TriggerVersionField, cls)._wrap_model_methods(model)
         # old_do_update = getattr(model, '_do_update')
         # setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
         old_save = getattr(model, 'save')
