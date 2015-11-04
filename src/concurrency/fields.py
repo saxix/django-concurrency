@@ -26,19 +26,18 @@ OFFSET = int(time.mktime((2000, 1, 1, 0, 0, 0, 0, 0, 0)))
 
 def class_prepared_concurrency_handler(sender, **kwargs):
     if hasattr(sender, '_concurrencymeta'):
-        origin = getattr(sender._concurrencymeta._base, '_concurrencymeta')
-        local = copy.deepcopy(origin)
-        setattr(sender, '_concurrencymeta', local)
+        if sender != sender._concurrencymeta.base:
+            origin = getattr(sender._concurrencymeta.base, '_concurrencymeta')
+            local = copy.deepcopy(origin)
+            setattr(sender, '_concurrencymeta', local)
 
         if hasattr(sender, 'ConcurrencyMeta'):
             sender._concurrencymeta.enabled = getattr(sender.ConcurrencyMeta, 'enabled')
 
-        if not (sender._concurrencymeta._manually):
-            sender._concurrencymeta._field._wrap_model_save(sender)
+        if not (sender._concurrencymeta.manually):
+            sender._concurrencymeta._field.wrap_model(sender)
 
         setattr(sender, 'get_concurrency_version', get_revision_of_object)
-    else:
-        logger.debug('Skipped concurrency for %s' % sender)
 
 
 def post_syncdb_concurrency_handler(sender, **kwargs):
@@ -99,7 +98,7 @@ class VersionField(Field):
             return
         setattr(cls, '_concurrencymeta', ConcurrencyOptions())
         cls._concurrencymeta._field = self
-        cls._concurrencymeta._base = cls
+        cls._concurrencymeta.base = cls
 
     def _set_version_value(self, model_instance, value):
         setattr(model_instance, self.attname, int(value))
@@ -111,12 +110,16 @@ class VersionField(Field):
         return getattr(model_instance, self.attname)
 
     @classmethod
-    def _wrap_model_save(cls, model, force=False):
-        if not force and model._concurrencymeta._versioned_save:
+    def wrap_model(cls, model, force=False):
+        if not force and model._concurrencymeta.versioned_save:
             return
+        cls._wrap_model_methods(model, force)
+        model._concurrencymeta.versioned_save = True
+
+    @classmethod
+    def _wrap_model_methods(cls, model, force=False):
         old_do_update = getattr(model, '_do_update')
         setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
-        model._concurrencymeta._versioned_save = True
 
     def _wrap_do_update(self, func):
 
@@ -237,14 +240,12 @@ class TriggerVersionField(VersionField):
         setattr(obj, obj._concurrencymeta._field.attname, int(old_value) + 1)
 
     @classmethod
-    def _wrap_model_save(cls, model, force=False):
-        if not force and model._concurrencymeta._versioned_save:
-            return
-        old_do_update = getattr(model, '_do_update')
+    def _wrap_model_methods(cls, model, force=False):
+        super(TriggerVersionField, cls)._wrap_model_methods(model, force)
+        # old_do_update = getattr(model, '_do_update')
+        # setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
         old_save = getattr(model, 'save')
-        setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
         setattr(model, 'save', model._concurrencymeta._field._wrap_save(old_save))
-        model._concurrencymeta._versioned_save = True
 
     @staticmethod
     def _wrap_save(func):

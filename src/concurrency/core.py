@@ -53,6 +53,7 @@ def _select_lock(model_instance, version_value=None):
 
 class ConcurrencyOptions:
     _field = None
-    _versioned_save = False
-    _manually = False
+    versioned_save = False
+    manually = False
     enabled = True
+    base = None
