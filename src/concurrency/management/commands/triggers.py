@@ -12,6 +12,9 @@ from concurrency.triggers import create_triggers, drop_triggers, get_triggers
 class Command(BaseCommand):
     args = ''
     help = 'register Report classes and create one ReportConfiguration per each'
+    requires_model_validation = False
+    # requires_system_checks = False
+
     option_list = BaseCommand.option_list + (
         make_option('-d', '--database',
                     action='store',

@@ -140,10 +140,6 @@ class VersionField(Field):
     def _wrap_do_update(self, func):
 
         def _do_update(model_instance, base_qs, using, pk_val, values, update_fields, forced_update):
-
-            # if conf.PROTOCOL != 2:
-            #     return func(model_instance, base_qs, using, pk_val, values, update_fields, forced_update)
-
             version_field = model_instance._concurrencymeta._field
             old_version = get_revision_of_object(model_instance)
 
@@ -213,7 +209,6 @@ class TriggerVersionField(VersionField):
 
     def __init__(self, *args, **kwargs):
         self._trigger_name = kwargs.pop('trigger_name', None)
-        self._trigger_exists = False
         super(TriggerVersionField, self).__init__(*args, **kwargs)
 
     def contribute_to_class(self, cls, name, virtual_only=False):
@@ -221,21 +216,39 @@ class TriggerVersionField(VersionField):
             _TRIGGERS.append(self)
         super(TriggerVersionField, self).contribute_to_class(cls, name)
 
-    @cached_property
+    def check(self, **kwargs):
+        errors = []
+        model = self.model
+        from django.db import router, connections
+        from concurrency.triggers import factory
+        from django.core.checks import Warning, register, Error
+        alias = router.db_for_write(model)
+        connection = connections[alias]
+        f = factory(connection)
+        if not f.get_trigger(self):
+            errors.append(
+                Warning(
+                    'Missed trigger for field {}'.format(self),
+                    hint=None,
+                    obj=None,
+                    id='concurrency.W001',
+                )
+            )
+        return errors
+
+    @property
     def trigger_name(self):
-        # TODO: this property i due a race contition with mysql backend
-        if self._trigger_name is None:
-            from concurrency.triggers import get_trigger_name
-            self._trigger_name = get_trigger_name(self)
-        return self._trigger_name
+        from concurrency.triggers import get_trigger_name
+        return get_trigger_name(self)
+        # return self._trigger_name
 
     def _get_next_version(self, model_instance):
         # always returns the same value
-        return int(getattr(model_instance, self.attname, 0))
+        return int(getattr(model_instance, self.attname, 1))
 
     def pre_save(self, model_instance, add):
         # always returns the same value
-        return int(getattr(model_instance, self.attname, 0))
+        return 1
 
     @staticmethod
     def _increment_version_number(obj):
@@ -246,8 +259,6 @@ class TriggerVersionField(VersionField):
     def _wrap_save(func):
         def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
             reload = kwargs.pop('refetch', False)
-            # if self._concurrencymeta.enabled and conf.PROTOCOL == 1:
-            #     concurrency_check(self, force_insert, force_update, using, **kwargs)
             ret = func(self, force_insert, force_update, using, **kwargs)
             TriggerVersionField._increment_version_number(self)
             if reload:

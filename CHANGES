@@ -1,16 +1,18 @@
 Release 1.0 (dev)
 -----------------
-* dropped support for django prior 1.6
-* no need to use custom backends to use TriggerVerionField
-* new :attr:`TriggerVersionField.trigger_name`. fixes :issue:`41` (thanks Naddiseo)
+* **BACKWARD INCOMPATIBLE**:: dropped support for django prior 1.6
 * code clean
 * fixes :issue:`54` (thanks vmspike).
-* new way to create triggers (thanks Naddiseo)
 * fixes :issue:`53`. updates Documentation
 * :ref:`disable_concurrency` can now disable concurrency in any model
 * :ref:`disable_concurrency` is now also a decorator
+* **BACKWARD INCOMPATIBLE**:: removed custom backends. ``TriggerVerionField`` can be used with standard Django
+* new way to create triggers (thanks Naddiseo)
+* new trigger code
+* new :method:`TriggerVersionField.check`.
+* new :attr:`TriggerVersionField.trigger_name`.
 * new :setting:`CONCURRECY_ENABLED` to fully disable concurrency
-* new :setting:`CONCURRECY_MANUAL_TRIGGERS` to disable triggers auto creation
+* new :setting:`CONCURRECY_MANUAL_TRIGGERS` to disable triggers auto creation fixes :issue:`41` (thanks Naddiseo)
 
 Release 0.9
 -----------

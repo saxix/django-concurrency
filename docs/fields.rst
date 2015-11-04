@@ -38,6 +38,12 @@ Using this you can control external updates (ie using tools like phpMyAdmin, pgA
 The trigger is automatically created during ``syncdb()``
 or you can use the :ref:`triggers` management command.
 
+.. versionchanged:: 1.0
+
+.. warning:: Before |concurrency| 1.0 two triggers per field were created,
+if you are upgrading you must manually remove old triggers and recreate them
+using :ref:`triggers`_ management command
+
 `trigger_name`
 ~~~~~~~~~~~~~~
 
@@ -51,18 +57,19 @@ Otherwise for each `TriggerVersionField` will be created two triggers named:
 
 .. code-block:: python
 
-        'concurrency_[DBTABLENAME]_[FIELDNAME]_i'  # insert trigger
-        'concurrency_[DBTABLENAME]_[FIELDNAME]_u'  # update trigger
+        'concurrency_[DBTABLENAME]_[FIELDNAME]'
+
+.. warning:: Any name will be automatically prefixed with ``concurrency_``
 
 
 .. _triggers:
 
-
 `triggers` management command
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To easy work with |concurrency| created database triggers new command ``triggers`` is provided.
-It can:
+.. command:: triggers
+
+Helper command to work with triggers:
 
     * ``list``   : list existing triggers for each database
 

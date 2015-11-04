@@ -9,3 +9,6 @@ except ImportError:  # pragma no cover
 class ConcurrencyConfig(AppConfig):
     name = 'concurrency'
     verbose = 'Django Concurrency'
+
+    def ready(self):
+        super(ConcurrencyConfig, self).ready()

@@ -43,11 +43,6 @@ def _select_lock(model_instance, version_value=None):
 
     if model_instance.pk is not None and is_versioned:
         kwargs = {'pk': model_instance.pk, version_field.name: value}
-        # if conf.PROTOCOL == 1 and conf.USE_SELECT_FOR_UPDATE:
-        #     alias = router.db_for_write(model_instance)
-        #     NOWAIT = connections[alias].features.has_select_for_update_nowait
-        #     entry = model_instance.__class__._base_manager.select_for_update(nowait=NOWAIT).filter(**kwargs)
-        # else:
         entry = model_instance.__class__._base_manager.filter(**kwargs)
 
         if not entry:
@@ -59,7 +54,6 @@ def _select_lock(model_instance, version_value=None):
 def _wrap_model_save(model, force=False):
     if not force and model._concurrencymeta._versioned_save:
         return
-    # if conf.PROTOCOL == 2:
     logger.debug('Wrapping _do_update() method of %s' % model)
     old_do_update = getattr(model, '_do_update')
     old_save_base = getattr(model, 'save_base')
@@ -67,12 +61,6 @@ def _wrap_model_save(model, force=False):
     setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
     setattr(model, 'save_base', model._concurrencymeta._field._wrap_save_base(old_save_base))
     setattr(model, 'save', model._concurrencymeta._field._wrap_save(old_save))
-
-    # elif conf.PROTOCOL == 1:
-    #     logger.debug('Wrapping save method of %s' % model)
-    #     old_save = getattr(model, 'save')
-    #     setattr(model, 'save', model._concurrencymeta._field._wrap_save(old_save))
-
     model._concurrencymeta._versioned_save = True
 
 
