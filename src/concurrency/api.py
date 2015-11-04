@@ -6,7 +6,7 @@ import logging
 from django.db.models import Model
 
 from concurrency.config import conf
-from concurrency.core import _select_lock, _wrap_model_save, get_version_fieldname
+from concurrency.core import _select_lock, get_version_fieldname  # _wrap_model_save
 from concurrency.exceptions import RecordModifiedError
 
 __all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_object',
@@ -82,7 +82,7 @@ def apply_concurrency_check(model, fieldname, versionclass):
     class_prepared_concurrency_handler(model)
 
     if not model._concurrencymeta._versioned_save:
-        _wrap_model_save(model)
+        versionclass._wrap_model_save(model)
 
 
 def concurrency_check(model_instance, force_insert=False, force_update=False, using=None, **kwargs):

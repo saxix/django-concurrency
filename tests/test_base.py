@@ -33,7 +33,7 @@ def test_conflict(model_class):
     assert copy.get_concurrency_version() > instance.get_concurrency_version()
 
 
-@pytest.mark.django_db(transaction=False)
+@pytest.mark.django_db(transaction=True)
 @with_std_models
 def test_do_not_check_if_no_version(model_class):
     id = next(unique_id)

@@ -51,18 +51,18 @@ def _select_lock(model_instance, version_value=None):
             conf._callback(model_instance)
 
 
-def _wrap_model_save(model, force=False):
-    if not force and model._concurrencymeta._versioned_save:
-        return
-    logger.debug('Wrapping _do_update() method of %s' % model)
-    old_do_update = getattr(model, '_do_update')
-    old_save_base = getattr(model, 'save_base')
-    old_save = getattr(model, 'save')
-    setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
-    setattr(model, 'save_base', model._concurrencymeta._field._wrap_save_base(old_save_base))
-    setattr(model, 'save', model._concurrencymeta._field._wrap_save(old_save))
-    model._concurrencymeta._versioned_save = True
-
+# def _wrap_model_save(model, force=False):
+#     if not force and model._concurrencymeta._versioned_save:
+#         return
+#     logger.debug('Wrapping _do_update() method of %s' % model)
+#     old_do_update = getattr(model, '_do_update')
+#     old_save_base = getattr(model, 'save_base')
+#     old_save = getattr(model, 'save')
+#     setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
+#     setattr(model, 'save_base', model._concurrencymeta._field._wrap_save_base(old_save_base))
+#     setattr(model, 'save', model._concurrencymeta._field._wrap_save(old_save))
+#     model._concurrencymeta._versioned_save = True
+#
 
 class ConcurrencyOptions:
     _field = None

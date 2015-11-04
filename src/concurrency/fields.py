@@ -6,13 +6,12 @@ import time
 from functools import update_wrapper
 
 from django.db.models.fields import Field
-from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from concurrency import forms
-from concurrency.api import disable_concurrency, get_revision_of_object
+from concurrency.api import get_revision_of_object
 from concurrency.config import conf
-from concurrency.core import ConcurrencyOptions, _wrap_model_save
+from concurrency.core import ConcurrencyOptions
 from concurrency.utils import refetch
 
 try:
@@ -35,7 +34,7 @@ def class_prepared_concurrency_handler(sender, **kwargs):
             sender._concurrencymeta.enabled = getattr(sender.ConcurrencyMeta, 'enabled')
 
         if not (sender._concurrencymeta._manually):
-            _wrap_model_save(sender)
+            sender._concurrencymeta._field._wrap_model_save(sender)
 
         setattr(sender, 'get_concurrency_version', get_revision_of_object)
     else:
@@ -60,8 +59,6 @@ class VersionField(Field):
     """ Base class """
 
     def __init__(self, **kwargs):
-        self.manually = kwargs.pop('manually', False)
-
         verbose_name = kwargs.get('verbose_name', None)
         name = kwargs.get('name', None)
         db_tablespace = kwargs.get('db_tablespace', None)
@@ -103,7 +100,6 @@ class VersionField(Field):
         setattr(cls, '_concurrencymeta', ConcurrencyOptions())
         cls._concurrencymeta._field = self
         cls._concurrencymeta._base = cls
-        cls._concurrencymeta._manually = self.manually
 
     def _set_version_value(self, model_instance, value):
         setattr(model_instance, self.attname, int(value))
@@ -114,28 +110,13 @@ class VersionField(Field):
             self._set_version_value(model_instance, value)
         return getattr(model_instance, self.attname)
 
-    @staticmethod
-    def _wrap_save(func):
-        from concurrency.api import concurrency_check
-
-        def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-            if self._concurrencymeta.enabled and \
-                    conf.ENABLED and \
-                    not getattr(self, '_concurrency_disabled', False):
-                concurrency_check(self, force_insert, force_update, using, **kwargs)
-            return func(self, force_insert, force_update, using, **kwargs)
-
-        return update_wrapper(inner, func)
-
-    def _wrap_save_base(self, func):
-        def _save_base(model_instance, raw=False, force_insert=False,
-                       force_update=False, using=None, update_fields=None):
-            if force_insert:
-                with disable_concurrency(model_instance):
-                    return func(model_instance, raw, force_insert, force_update, using, update_fields)
-            return func(model_instance, raw, force_insert, force_update, using, update_fields)
-
-        return update_wrapper(_save_base, func)
+    @classmethod
+    def _wrap_model_save(cls, model, force=False):
+        if not force and model._concurrencymeta._versioned_save:
+            return
+        old_do_update = getattr(model, '_do_update')
+        setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
+        model._concurrencymeta._versioned_save = True
 
     def _wrap_do_update(self, func):
 
@@ -221,7 +202,7 @@ class TriggerVersionField(VersionField):
         model = self.model
         from django.db import router, connections
         from concurrency.triggers import factory
-        from django.core.checks import Warning, register, Error
+        from django.core.checks import Warning
         alias = router.db_for_write(model)
         connection = connections[alias]
         f = factory(connection)
@@ -255,6 +236,16 @@ class TriggerVersionField(VersionField):
         old_value = get_revision_of_object(obj)
         setattr(obj, obj._concurrencymeta._field.attname, int(old_value) + 1)
 
+    @classmethod
+    def _wrap_model_save(cls, model, force=False):
+        if not force and model._concurrencymeta._versioned_save:
+            return
+        old_do_update = getattr(model, '_do_update')
+        old_save = getattr(model, 'save')
+        setattr(model, '_do_update', model._concurrencymeta._field._wrap_do_update(old_do_update))
+        setattr(model, 'save', model._concurrencymeta._field._wrap_save(old_save))
+        model._concurrencymeta._versioned_save = True
+
     @staticmethod
     def _wrap_save(func):
         def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
@@ -266,9 +257,7 @@ class TriggerVersionField(VersionField):
                 setattr(self,
                         self._concurrencymeta._field.attname,
                         get_revision_of_object(ret))
-
             return ret
-
         return update_wrapper(inner, func)
 
 
