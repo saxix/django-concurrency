@@ -58,9 +58,9 @@ Links
 ~~~~~
 
 +--------------------+----------------+--------------+------------------------+
-| Stable             | |master-build| | |master-cov| | |master-req|           |
+| Stable             | |master-build| | |master-cov| |                        |
 +--------------------+----------------+--------------+------------------------+
-| Development        | |dev-build|    | |dev-cov|    | |dev-req|              |
+| Development        | |dev-build|    | |dev-cov|    |                        |
 +--------------------+----------------+--------------+------------------------+
 | Project home page: |https://github.com/saxix/django-concurrency             |
 +--------------------+---------------+----------------------------------------+
@@ -74,7 +74,7 @@ Links
 .. |master-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
                     :target: http://travis-ci.org/saxix/django-concurrency/
 
-.. |master-cov| image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=master
+.. |master-cov| image:: https://img.shields.io/coveralls/saxix/django-concurrency/master.svg
                     :target: https://coveralls.io/r/saxix/django-concurrency
 
 .. |master-req| image:: https://requires.io/github/saxix/django-concurrency/requirements.png?branch=master
@@ -85,7 +85,7 @@ Links
 .. |dev-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=develop
                   :target: http://travis-ci.org/saxix/django-concurrency/
 
-.. |dev-cov| image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=develop
+.. |dev-cov| image:: https://img.shields.io/coveralls/saxix/django-concurrency/develop.svg
                 :target: https://coveralls.io/r/saxix/django-concurrency
 
 .. |dev-req| image:: https://requires.io/github/saxix/django-concurrency/requirements.png?branch=develop

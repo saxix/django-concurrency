@@ -8,21 +8,13 @@ Django Concurrency
 Overview
 ========
 
-.. image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
+.. image:: https://img.shields.io/travis/saxix/django-concurrency/master.svg
     :target: http://travis-ci.org/saxix/django-concurrency/
     :alt: Test status
 
-.. image:: https://coveralls.io/repos/saxix/django-concurrency/badge.png?branch=master
+.. image:: https://img.shields.io/coveralls/saxix/django-concurrency/master.svg
     :target: https://coveralls.io/r/saxix/django-concurrency
     :alt: Coverage
-
-.. image:: https://pypip.in/v/django-concurrency/badge.png
-    :target: https://crate.io/packages/django-concurrency/
-
-.. image:: https://pypip.in/d/django-concurrency/badge.png
-    :target: https://crate.io/packages/django-concurrency/
-    :alt: Downloads
-
 
 
 
