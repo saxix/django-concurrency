@@ -58,7 +58,7 @@ class ConcurrencyActionMixin(object):
         # whose button was pushed.
         try:
             action_index = int(request.POST.get('index', 0))
-        except ValueError:
+        except ValueError:  # pragma: no cover
             action_index = 0
 
         # Construct the action form.

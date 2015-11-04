@@ -29,9 +29,6 @@ class ConcurrentForm(ModelForm):
                 _select_lock(self.instance, self.cleaned_data[self.instance._concurrencymeta._field.name])
 
         except RecordModifiedError:
-            if django.VERSION[1] < 6:
-                self._update_errors({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])})
-            else:
                 self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])}))
 
         return super(ConcurrentForm, self).clean()
@@ -128,24 +125,3 @@ class VersionField(forms.IntegerField):
 
     def widget_attrs(self, widget):
         return {}
-
-
-# class DateVersionField(forms.DateTimeField):
-#     widget = HiddenInput  # Default widget to use when rendering this type of Field.
-#     hidden_widget = HiddenInput  # Default widget to use when rendering this as "hidden".
-#
-#     def __init__(self, *args, **kwargs):
-#         kwargs.pop('input_formats', None)
-#         kwargs['required'] = True
-#         kwargs['initial'] = None
-#         kwargs['widget'] = None
-#         super(DateVersionField, self).__init__(None, *args, **kwargs)
-#
-#     def to_python(self, value):
-#         value = super(DateVersionField, self).to_python(value)
-#         if value in validators.EMPTY_VALUES:
-#             return timezone.now()
-#         return value
-#
-#     def widget_attrs(self, widget):
-#         return {}

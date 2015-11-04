@@ -2,6 +2,8 @@
 from __future__ import absolute_import, unicode_literals
 from collections import defaultdict
 from django.db import connections, router
+from concurrency.fields import _TRIGGERS  # noqa
+from django.db.utils import DatabaseError
 
 
 def get_trigger_name(field):
@@ -33,7 +35,6 @@ def get_triggers(databases):
 
 def drop_triggers(databases):
     global _TRIGGERS
-    from concurrency.fields import _TRIGGERS
     ret = defaultdict(lambda: [])
 
     for field in set(_TRIGGERS):
@@ -50,7 +51,6 @@ def drop_triggers(databases):
 
 def create_triggers(databases):
     global _TRIGGERS
-    from concurrency.fields import _TRIGGERS
     ret = defaultdict(lambda: [])
 
     for field in set(_TRIGGERS):
@@ -75,19 +75,14 @@ class TriggerFactory(object):
         self.connection = connection
 
     def get_trigger(self, field):
-        triggers = self.list()
-        if field.trigger_name in triggers:
+        if field.trigger_name in self.list():
             return field.trigger_name
         return None
 
     def create(self, field):
-        from django.db.utils import DatabaseError
-
-        opts = field.model._meta
-        triggers = self.list()
-        if field.trigger_name not in triggers:
+        if field.trigger_name not in self.list():
             stm = self.update_clause.format(trigger_name=field.trigger_name,
-                                            opts=opts,
+                                            opts=field.model._meta,
                                             field=field)
             try:
                 self.connection.cursor().execute(stm)
@@ -119,8 +114,7 @@ class TriggerFactory(object):
 class Sqlite3(TriggerFactory):
     drop_clause = """DROP TRIGGER IF EXISTS {trigger_name};"""
 
-    update_clause = """
-CREATE TRIGGER {trigger_name}
+    update_clause = """CREATE TRIGGER {trigger_name}
 AFTER UPDATE ON {opts.db_table}
 BEGIN UPDATE {opts.db_table} SET {field.column} = {field.column}+1 WHERE {opts.pk.column} = NEW.{opts.pk.column};
 END;"""
@@ -131,9 +125,7 @@ END;"""
 class PostgreSQL(TriggerFactory):
     drop_clause = r"""DROP TRIGGER IF EXISTS {trigger_name} ON {opts.db_table};"""
 
-    update_clause = r"""
-
-CREATE OR REPLACE FUNCTION func_{trigger_name}()
+    update_clause = r"""CREATE OR REPLACE FUNCTION func_{trigger_name}()
     RETURNS TRIGGER as
     '
     BEGIN
@@ -162,7 +154,6 @@ FOR EACH ROW SET NEW.{field.column} = OLD.{field.column}+1;
 """
 
     list_clause = "SHOW TRIGGERS"
-
 
 
 def factory(conn):

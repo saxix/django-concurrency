@@ -8,6 +8,7 @@ cache:
 branches:
   only:
     - develop
+    - feature/travis
 
 services:
   - MySQL
@@ -41,7 +42,7 @@ env:
 #  - TOXENV=py35-d19-sqlite
 
 install:
-  - pip install tox coverage python-coveralls>=2.5 coveralls>=0.5
+  - pip install tox coverage coveralls>=0.5
 
 script:
   - tox -e $TOXENV --recreate -- -vv --capture=no --cov=concurrency --cov-report=xml --cov-config=tests/.coveragerc

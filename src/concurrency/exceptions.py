@@ -15,10 +15,6 @@ class RecordModifiedError(DatabaseError):
         super(RecordModifiedError, self).__init__(*args, **kwargs)
 
 
-# class InconsistencyError(DatabaseError):
-#     pass
-
-
 class VersionError(SuspiciousOperation):
 
     def __init__(self, message=None, code=None, params=None, *args, **kwargs):
