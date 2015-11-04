@@ -95,7 +95,7 @@ def attributes(*values):
 
     """
 
-    def set(target, name, value):
+    def _set(target, name, value):
         if value is DELETE_ATTRIBUTE:
             delattr(target, name)
         else:
@@ -108,11 +108,11 @@ def attributes(*values):
             backups.append((target, name, getattr(target, name)))
         else:
             backups.append((target, name, getattr(target, name, DELETE_ATTRIBUTE)))
-        set(target, name, value)
+        _set(target, name, value)
     yield
 
     for target, name, value in backups:
-        set(target, name, value)
+        _set(target, name, value)
 
 
 def concurrently(times=1):
