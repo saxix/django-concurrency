@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals, print_function
+from __future__ import absolute_import, print_function, unicode_literals
+
 import logging
 
 import pytest
 from django.test import TestCase
 
-from concurrency.utils import ConcurrencyTestMixin
 from demo.models import SimpleConcurrentModel
+
+from concurrency.utils import ConcurrencyTestMixin
 
 logger = logging.getLogger(__name__)
 

@@ -1,62 +1,65 @@
+import pytest
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
-from concurrency.forms import VersionFieldSigner
-from demo.base import AdminTestCase, SENTINEL
+
+from demo.base import SENTINEL, AdminTestCase
 from demo.models import SimpleConcurrentModel
 from demo.util import nextname
 
-# @pytest.mark.django_db
-# @pytest.mark.admin
-# def test_creation(superuser, app):
-#     url = reverse('admin:concurrency_simpleconcurrentmodel_add')
-#     res = app.get(url, user=superuser.username)
-#
-#     form = res.form
-#     form['username'] = 'CHAR'
-#     res = form.submit().follow()
-#     assert SimpleConcurrentModel.objects.filter(username='CHAR').exists()
-#     assert SimpleConcurrentModel.objects.get(username='CHAR').version > 0
-#
-#     # self.assertTrue(SimpleConcurrentModel.objects.filter(username='CHAR').exists())
-#     # self.assertGreater(SimpleConcurrentModel.objects.get(username='CHAR').version, 0)
-#
-#
-# @pytest.mark.django_db
-# @pytest.mark.functional
-# def test_standard_update(superuser, concurrentmodel, app):
-#     url = reverse('admin:concurrency_simpleconcurrentmodel_change',
-#                   args=[concurrentmodel.pk])
-#     res = app.get(url, user=superuser.username)
-#
-#     target = res.context['original']
-#
-#     old_version = target.version
-#     form = res.form
-#     form['username'] = 'UPDATED'
-#     res = form.submit().follow()
-#     target = SimpleConcurrentModel.objects.get(pk=target.pk)
-#     new_version = target.version
-#
-#     assert new_version > old_version
+from concurrency.forms import VersionFieldSigner
 
-# @pytest.mark.django_db
-# @pytest.mark.functional
-# def test_conflict(superuser, concurrentmodel, app):
-#     url = reverse('admin:concurrency_simpleconcurrentmodel_change',
-#                   args=[concurrentmodel.pk])
-#     res = app.get(url, user=superuser.username)
-#     form = res.form
-#     concurrentmodel.save()  # create conflict here
-#
-#     res = form.submit()
-#
-#     assert 'original' in res.context
-#     assert res.context['adminform'].form.errors
-#     assert _('Record Modified') in str(res.context['adminform'].form.errors)
+
+@pytest.mark.django_db
+@pytest.mark.admin
+def test_creation(admin_user, client):
+    url = reverse('admin:demo_simpleconcurrentmodel_add')
+    res = client.get(url, user=admin_user.username)
+
+    form = res.form
+    form['username'] = 'CHAR'
+    res = form.submit().follow()
+    assert SimpleConcurrentModel.objects.filter(username='CHAR').exists()
+    assert SimpleConcurrentModel.objects.get(username='CHAR').version > 0
+
+
+@pytest.mark.django_db
+@pytest.mark.functional
+def test_standard_update(admin_user, client):
+    concurrentmodel = SimpleConcurrentModel.objects.create()
+    url = reverse('admin:demo_simpleconcurrentmodel_change',
+                  args=[concurrentmodel.pk])
+    res = client.get(url, user=admin_user.username)
+
+    target = res.context['original']
+
+    old_version = target.version
+    form = res.form
+    form['username'] = 'UPDATED'
+    res = form.submit().follow()
+    target = SimpleConcurrentModel.objects.get(pk=target.pk)
+    new_version = target.version
+
+    assert new_version > old_version
+
+
+@pytest.mark.django_db
+@pytest.mark.functional
+def test_conflict(admin_user, client):
+    concurrentmodel = SimpleConcurrentModel.objects.create()
+    url = reverse('admin:demo_simpleconcurrentmodel_change',
+                  args=[concurrentmodel.pk])
+    res = client.get(url, user=admin_user.username)
+    form = res.form
+    concurrentmodel.save()  # create conflict here
+
+    res = form.submit()
+
+    assert 'original' in res.context
+    assert res.context['adminform'].form.errors
+    assert _('Record Modified') in str(res.context['adminform'].form.errors)
 
 
 class TestConcurrentModelAdmin(AdminTestCase):
-
     def test_standard_update(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
         url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
@@ -98,7 +101,6 @@ class TestConcurrentModelAdmin(AdminTestCase):
 
 
 class TestAdminEdit(AdminTestCase):
-
     def _create_conflict(self, pk):
         u = SimpleConcurrentModel.objects.get(pk=pk)
         u.username = SENTINEL

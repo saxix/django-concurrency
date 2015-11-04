@@ -1,12 +1,15 @@
 import pytest
 from django.contrib.auth.models import Group
-from concurrency.fields import IntegerVersionField
-from concurrency.exceptions import RecordModifiedError
-from concurrency.api import (get_revision_of_object, is_changed, get_version,
-                             apply_concurrency_check)
-from concurrency.utils import refetch
+
 from demo.models import SimpleConcurrentModel
-from demo.util import nextname, nextgroup
+from demo.util import nextgroup, nextname
+
+from concurrency.api import (
+    apply_concurrency_check, get_revision_of_object, get_version, is_changed
+)
+from concurrency.exceptions import RecordModifiedError
+from concurrency.fields import IntegerVersionField
+from concurrency.utils import refetch
 
 
 @pytest.mark.django_db(transaction=False)

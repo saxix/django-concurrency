@@ -4,13 +4,14 @@ from functools import partial, update_wrapper
 from itertools import count
 
 import pytest
+
+from demo.models import (
+    AutoIncConcurrentModel, ConcreteModel, CustomSaveModel, InheritedModel, ProxyModel,
+    SimpleConcurrentModel, TriggerConcurrentModel
+)
 from django import db
 
 from concurrency.config import conf
-from demo.models import (
-    AutoIncConcurrentModel, ConcreteModel, CustomSaveModel, InheritedModel, ProxyModel, SimpleConcurrentModel,
-    TriggerConcurrentModel
-)
 
 
 def sequence(prefix):

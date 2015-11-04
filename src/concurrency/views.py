@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+
 from django.http import HttpResponse
 from django.template import loader
 from django.template.base import Template
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
+
 from concurrency.compat import TemplateDoesNotExist
 from concurrency.exceptions import RecordModifiedError
 
 
 class ConflictResponse(HttpResponse):
     status_code = 409
-
-
-handler409 = 'concurrency.views.conflict'
 
 
 def callback(target, *args, **kwargs):

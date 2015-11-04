@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
-import pytest
 import mock
-from django.db import connections, IntegrityError
-from concurrency.exceptions import RecordModifiedError
-from concurrency.utils import refetch
-from demo.models import TriggerConcurrentModel
+import pytest
 from django.core.signals import request_started
+from django.db import IntegrityError, connections
 
+from demo.models import TriggerConcurrentModel
 # Register an event to reset saved queries when a Django request is started.
 from demo.util import nextname
+
+from concurrency.exceptions import RecordModifiedError
+from concurrency.utils import refetch
 
 
 def reset_queries(**kwargs):

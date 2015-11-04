@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+
 from collections import defaultdict
+
 from django.db import connections, router
-from concurrency.fields import _TRIGGERS  # noqa
 from django.db.utils import DatabaseError
+
+from concurrency.fields import _TRIGGERS  # noqa
 
 
 def get_trigger_name(field):

@@ -1,11 +1,12 @@
 import pytest
+from django import db
+from django.db import transaction
+
+from demo.models import TriggerConcurrentModel
+from demo.util import concurrently
 
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
-from demo.models import TriggerConcurrentModel
-from demo.util import concurrently
-from django import db
-from django.db import transaction
 
 
 @pytest.mark.django_db(transaction=True)

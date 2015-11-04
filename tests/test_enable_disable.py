@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-from django.test.utils import override_settings
 import pytest
+from django.test.utils import override_settings
+
+from demo.models import AutoIncConcurrentModel, SimpleConcurrentModel
+from demo.util import nextname
 
 from concurrency.api import disable_concurrency
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
-from demo.models import AutoIncConcurrentModel, SimpleConcurrentModel
-from demo.util import nextname
 
 
 @pytest.mark.django_db(transaction=False)

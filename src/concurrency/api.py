@@ -51,21 +51,6 @@ def get_version(model_instance, version):
     return model_instance.__class__.objects.get(**kwargs)
 
 
-# def get_object_with_version(manager, pk, version):
-# """
-#         try go load from the database one object with specific version.
-#         Raises DoesNotExists otherwise.
-#
-#     :param manager: django.models.Manager
-#     :param pk: primaryKey
-#     :param version: version number
-#     :return:
-#     """
-#     version_field = manager.model._concurrencymeta._field
-#     kwargs = {'pk': pk, version_field.name: version}
-#     return manager.get(**kwargs)
-
-
 def apply_concurrency_check(model, fieldname, versionclass):
     if hasattr(model, '_concurrencymeta'):
         return

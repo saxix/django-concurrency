@@ -1,6 +1,15 @@
 from __future__ import unicode_literals
-from django.contrib.admin.sites import NotRegistered
+
 from django.contrib import admin
+from django.contrib.admin.sites import NotRegistered
+
+from concurrency.admin import ConcurrentModelAdmin
+from concurrency.api import disable_concurrency
+
+from .models import *  # noqa
+from .models import (
+    ListEditableConcurrentModel, NoActionsConcurrentModel, ReversionConcurrentModel
+)
 
 try:
     from reversion import VersionAdmin
@@ -8,10 +17,6 @@ except ImportError:
     class VersionAdmin(object):
         pass
 
-from concurrency.admin import ConcurrentModelAdmin
-from concurrency.api import disable_concurrency
-from .models import *  # noqa
-from .models import (NoActionsConcurrentModel, ListEditableConcurrentModel, ReversionConcurrentModel)
 
 
 class ListEditableModelAdmin(ConcurrentModelAdmin):

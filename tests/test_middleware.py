@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
+import mock
 from django.conf import settings
 from django.contrib.admin.sites import site
 from django.core.urlresolvers import reverse
-from django.test.utils import override_settings
-import mock
 from django.http import HttpRequest
+from django.test.utils import override_settings
+
+from demo.base import AdminTestCase
+from demo.models import SimpleConcurrentModel
+from demo.util import DELETE_ATTRIBUTE, attributes, unique_id
+
 from concurrency.admin import ConcurrentModelAdmin
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
 from concurrency.exceptions import RecordModifiedError
 from concurrency.middleware import ConcurrencyMiddleware
-from demo.base import AdminTestCase
-from demo.models import SimpleConcurrentModel
-from demo.util import attributes, DELETE_ATTRIBUTE, unique_id
 
 
 def _get_request(path):

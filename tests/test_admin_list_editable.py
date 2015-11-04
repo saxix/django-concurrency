@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-from django.contrib.admin.sites import site
-from django.db import transaction
-from django.contrib.admin.models import LogEntry
-from django.contrib.contenttypes.models import ContentType
-from django.utils.encoding import force_text
-import pytest
-from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_SILENT, CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
-from concurrency.exceptions import RecordModifiedError
 
-from demo.base import AdminTestCase, SENTINEL
+import pytest
+from django.contrib.admin.models import LogEntry
+from django.contrib.admin.sites import site
+from django.contrib.contenttypes.models import ContentType
+from django.db import transaction
+from django.utils.encoding import force_text
+
+from demo.base import SENTINEL, AdminTestCase
 from demo.models import ListEditableConcurrentModel
 from demo.util import attributes, unique_id
+
+from concurrency.config import (
+    CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
+)
+from concurrency.exceptions import RecordModifiedError
 
 
 class TestListEditable(AdminTestCase):

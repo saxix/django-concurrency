@@ -1,5 +1,6 @@
 import os
 from tempfile import mktemp
+
 import django
 
 DEBUG = True

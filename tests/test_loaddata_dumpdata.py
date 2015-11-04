@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals, print_function
+from __future__ import absolute_import, print_function, unicode_literals
+
+import json
 import logging
 import os
-import json
+
 import pytest
-from six import StringIO
 from django.core.management import call_command
+from six import StringIO
+
+from demo.models import SimpleConcurrentModel
+
 from concurrency.api import disable_concurrency
 from concurrency.exceptions import RecordModifiedError
-from demo.models import SimpleConcurrentModel
 
 logger = logging.getLogger(__name__)
 

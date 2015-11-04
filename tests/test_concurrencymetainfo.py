@@ -1,6 +1,8 @@
-from concurrency.exceptions import RecordModifiedError
-from demo.models import ConcurrencyDisabledModel, SimpleConcurrentModel
 from django.test import TransactionTestCase
+
+from demo.models import ConcurrencyDisabledModel, SimpleConcurrentModel
+
+from concurrency.exceptions import RecordModifiedError
 
 
 class TestCustomConcurrencyMeta(TransactionTestCase):
