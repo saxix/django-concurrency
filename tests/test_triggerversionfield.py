@@ -84,7 +84,6 @@ def test_trigger():
         instance.save()
 
 
-
 @pytest.mark.django_db
 def test_trigger_do_not_increase_version_if_error():
     instance = TriggerConcurrentModel()

@@ -1,23 +1,22 @@
 from __future__ import absolute_import, unicode_literals
-
 import copy
 import logging
 import time
 from functools import update_wrapper
-
 from django.db.models.fields import Field
-try:
-    from django.apps import apps
-    get_model = apps.get_model
-except ImportError:
-    from django.db.models.loading import get_model
 from django.utils.translation import ugettext_lazy as _
-
 from concurrency import forms
 from concurrency.api import get_revision_of_object
 from concurrency.config import conf
 from concurrency.core import ConcurrencyOptions
 from concurrency.utils import refetch
+
+try:
+    from django.apps import apps
+
+    get_model = apps.get_model
+except ImportError:
+    from django.db.models.loading import get_model
 
 try:
     from django.db.models.signals import class_prepared, post_migrate
@@ -54,6 +53,7 @@ def post_syncdb_concurrency_handler(sender, **kwargs):
 
 class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_prepared_concurrency_handler')
 
+
 class TriggerRegistry(object):
     # FIXME: this is very bad. it seems required only by tests
     # see
@@ -66,11 +66,12 @@ class TriggerRegistry(object):
         self._fields.append([field.model._meta.app_label, field.model.__name__])
 
     def __iter__(self):
-        return  iter([get_model(*i)._concurrencymeta.field for i in self._fields])
+        return iter([get_model(*i)._concurrencymeta.field for i in self._fields])
 
     def __contains__(self, field):
         target = [field.model._meta.app_label, field.model.__name__]
         return target in self._fields
+
 
 _TRIGGERS = TriggerRegistry()
 # _TRIGGERS = []
@@ -163,10 +164,10 @@ class VersionField(Field):
                     field._set_version_value(model_instance, new_version)
                     break
             if values:
-                if model_instance._concurrencymeta.enabled and \
-                        conf.ENABLED and \
-                        not getattr(model_instance, '_concurrency_disabled', False) and \
-                        old_version:
+                if (model_instance._concurrencymeta.enabled and
+                        conf.ENABLED and
+                        not getattr(model_instance, '_concurrency_disabled', False) and
+                        old_version):
                     filter_kwargs = {'pk': pk_val, version_field.attname: old_version}
                     updated = base_qs.filter(**filter_kwargs)._update(values) >= 1
                     if not updated:
@@ -224,7 +225,7 @@ class TriggerVersionField(VersionField):
     def contribute_to_class(self, cls, name, virtual_only=False):
         super(TriggerVersionField, self).contribute_to_class(cls, name)
         if not cls._meta.abstract or cls._meta.proxy:
-            if not self in _TRIGGERS:
+            if self not in _TRIGGERS:
                 _TRIGGERS.append(self)
 
     def check(self, **kwargs):
@@ -283,6 +284,7 @@ class TriggerVersionField(VersionField):
                         self._concurrencymeta.field.attname,
                         get_revision_of_object(ret))
             return ret
+
         return update_wrapper(inner, func)
 
 

@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
-
 import logging
-
 import django
 import pytest
-
 from demo.models import TriggerConcurrentModel
 
 logger = logging.getLogger(__name__)
@@ -16,8 +13,8 @@ def obj():
     return TriggerConcurrentModel.objects.create()
 
 
-@pytest.mark.skipif(django.VERSION[:2]<(1,7),
-                   reason="Skip if django< 1.7")
+@pytest.mark.skipif(django.VERSION[:2] < (1, 7),
+                    reason="Skip if django< 1.7")
 @pytest.mark.django_db
 def test_check(obj, monkeypatch):
     from django.core.checks import Warning

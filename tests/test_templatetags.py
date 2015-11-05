@@ -6,7 +6,6 @@ import pytest
 
 from concurrency.templatetags.concurrency import identity, version, is_version
 from demo.models import SimpleConcurrentModel
-from django.utils.translation import ugettext as _
 
 logger = logging.getLogger(__name__)
 

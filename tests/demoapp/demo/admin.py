@@ -18,7 +18,6 @@ except ImportError:
         pass
 
 
-
 class ListEditableModelAdmin(ConcurrentModelAdmin):
     list_display = ('__unicode__', 'version', 'username')
     list_editable = ('username',)
