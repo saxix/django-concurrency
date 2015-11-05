@@ -15,15 +15,14 @@ def get_trigger_name(field):
     :param field: Field instance
     :return: unicode
     """
-    opts = field.model._meta
     if field._trigger_name:
         name = field._trigger_name
     else:
-        name = '{1.db_table}_{0.name}'.format(field, opts)
+        name = '{1.db_table}_{0.name}'.format(field, field.model._meta)
     return 'concurrency_{}'.format(name)
 
 
-def get_triggers(databases):
+def get_triggers(databases=None):
     if databases is None:
         databases = [alias for alias in connections]
 
@@ -36,10 +35,9 @@ def get_triggers(databases):
     return ret
 
 
-def drop_triggers(databases):
+def drop_triggers(*databases):
     global _TRIGGERS
     ret = defaultdict(lambda: [])
-
     for field in set(_TRIGGERS):
         model = field.model
         alias = router.db_for_write(model)
@@ -60,12 +58,13 @@ def create_triggers(databases):
         model = field.model
         alias = router.db_for_write(model)
         if alias in databases:
-            # if not field._trigger_exists:
-            connection = connections[alias]
-            f = factory(connection)
-            f.create(field)
-            ret[alias].append([model, field, field.trigger_name])
-    _TRIGGERS = []
+            if not field._trigger_exists:
+                field._trigger_exists = True
+                connection = connections[alias]
+                f = factory(connection)
+                f.create(field)
+                ret[alias].append([model, field, field.trigger_name])
+    # _TRIGGERS = []
     return ret
 
 

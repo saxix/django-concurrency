@@ -2,7 +2,7 @@ from django.conf.urls import include, patterns, url
 from django.contrib import admin
 from django.views.generic.edit import UpdateView
 
-from .models import SimpleConcurrentModel
+from demo.models import SimpleConcurrentModel
 
 # try:
 # from django.apps import AppConfig  # noqa

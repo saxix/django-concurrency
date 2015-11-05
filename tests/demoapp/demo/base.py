@@ -9,7 +9,7 @@ from django_webtest import WebTestMixin
 from concurrency.api import apply_concurrency_check
 from concurrency.fields import IntegerVersionField
 
-from .admin import admin_register_models
+from demo.admin import admin_register_models
 
 SENTINEL = '**concurrent_update**'
 

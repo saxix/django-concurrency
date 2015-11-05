@@ -1,4 +1,5 @@
 ˜*
+.appveyor.yml
 .coverage
 coverage.xml
 ~build
@@ -19,4 +20,3 @@ docs/build/
 *.pyc
 *.egg-info
 *.sqlite
-*/settings/active.py

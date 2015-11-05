@@ -73,11 +73,16 @@ def test_trigger():
     instance.save()  # update
     assert instance.version == 3
 
+    instance.username = next(nextname)
+    instance.save(refetch=True)  # update
+    assert instance.version == 4
+
     copy = refetch(instance)
     copy.save()
 
     with pytest.raises(RecordModifiedError):
         instance.save()
+
 
 
 @pytest.mark.django_db

@@ -6,8 +6,8 @@ from django.contrib.admin.sites import NotRegistered
 from concurrency.admin import ConcurrentModelAdmin
 from concurrency.api import disable_concurrency
 
-from .models import *  # noqa
-from .models import (
+from demo.models import *  # noqa
+from demo.models import (
     ListEditableConcurrentModel, NoActionsConcurrentModel, ReversionConcurrentModel
 )
 

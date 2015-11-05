@@ -6,6 +6,11 @@ import time
 from functools import update_wrapper
 
 from django.db.models.fields import Field
+try:
+    from django.apps import apps
+    get_model = apps.get_model
+except ImportError:
+    from django.db.models.loading import get_model
 from django.utils.translation import ugettext_lazy as _
 
 from concurrency import forms
@@ -49,7 +54,27 @@ def post_syncdb_concurrency_handler(sender, **kwargs):
 
 class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_prepared_concurrency_handler')
 
-_TRIGGERS = []
+class TriggerRegistry(object):
+    # FIXME: this is very bad. it seems required only by tests
+    # see
+    # https://github.com/pytest-dev/pytest-django/issues/75
+    # https://code.djangoproject.com/ticket/22280#comment:20
+
+    _fields = []
+
+    def append(self, field):
+        self._fields.append([field.model._meta.app_label, field.model.__name__])
+
+    def __iter__(self):
+        return  iter([get_model(*i)._concurrencymeta.field for i in self._fields])
+
+    def __contains__(self, field):
+        target = [field.model._meta.app_label, field.model.__name__]
+        return target in self._fields
+
+_TRIGGERS = TriggerRegistry()
+# _TRIGGERS = []
+
 if not conf.MANUAL_TRIGGERS:
     post_migrate.connect(post_syncdb_concurrency_handler, dispatch_uid='post_syncdb_concurrency_handler')
 
@@ -193,12 +218,14 @@ class TriggerVersionField(VersionField):
 
     def __init__(self, *args, **kwargs):
         self._trigger_name = kwargs.pop('trigger_name', None)
+        self._trigger_exists = False
         super(TriggerVersionField, self).__init__(*args, **kwargs)
 
     def contribute_to_class(self, cls, name, virtual_only=False):
-        if not cls._meta.abstract:
-            _TRIGGERS.append(self)
         super(TriggerVersionField, self).contribute_to_class(cls, name)
+        if not cls._meta.abstract or cls._meta.proxy:
+            if not self in _TRIGGERS:
+                _TRIGGERS.append(self)
 
     def check(self, **kwargs):
         errors = []
