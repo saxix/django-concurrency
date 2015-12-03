@@ -7,6 +7,7 @@ sys.path.insert(0, rel(os.pardir))
 
 
 if __name__ == "__main__":
+    sys.path.insert(0, 'src')
     sys.path.insert(0, 'tests/demoapp')
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "demo.settings")
 

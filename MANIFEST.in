@@ -4,7 +4,6 @@ include CHANGES
 include LICENSE
 include MANIFEST.in
 include setup.py
-recursive-include concurrency *.py
-recursive-include concurrency/templates *.html
-recursive-exclude docs *.py
-recursive-exclude tests *.*
+recursive-include src/concurrency *
+recursive-exclude src/django_concurrency.egg-info *
+recursive-exclude src *.py[oc]
