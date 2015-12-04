@@ -108,3 +108,8 @@ _list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#
 
 .. [1] http://en.wikipedia.org/wiki/Optimistic_concurrency_control
 
+
+
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+   :alt: Join the chat at https://gitter.im/saxix/django-concurrency
+   :target: https://gitter.im/saxix/django-concurrency?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
