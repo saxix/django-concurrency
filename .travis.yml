@@ -1,39 +1,51 @@
 language: python
-python:
-  - "2.7"
-  - "3.4"
+sudo: false
 
 cache:
-  - pip
+  directories:
+    - $HOME/.cache/pip
 
-sudo: false
+branches:
+  only:
+    - develop
+    - feature/travis
 
 services:
   - MySQL
   - PostgreSQL
 
 env:
-  - DJANGO=1.4.x DBENGINE=pg
-  - DJANGO=1.5.x DBENGINE=pg
-  - DJANGO=1.6.x DBENGINE=pg
-  - DJANGO=1.7.x DBENGINE=pg
-  - DJANGO=1.8.x DBENGINE=pg
-  - DJANGO=dev DBENGINE=pg
-
-  - DJANGO=1.4.x DBENGINE=mysql
-  - DJANGO=1.5.x DBENGINE=mysql
-  - DJANGO=1.6.x DBENGINE=mysql
-  - DJANGO=1.7.x DBENGINE=mysql
-  - DJANGO=1.8.x DBENGINE=mysql
-  - DJANGO=dev DBENGINE=pg
+#  Travis give a TemplateDoesNotExist exception with django==1.6.x
+#  - TOXENV=py27-d16-pg
+#  - TOXENV=py27-d16-sqlite
+#  - TOXENV=py27-d16-mysql
+  - TOXENV=py27-d17-pg
+  - TOXENV=py27-d17-sqlite
+  - TOXENV=py27-d17-mysql
+  - TOXENV=py27-d18-pg
+  - TOXENV=py27-d18-sqlite
+  - TOXENV=py27-d18-mysql
+  - TOXENV=py27-d19-pg
+  - TOXENV=py27-d19-sqlite
+  - TOXENV=py27-d19-mysql
+  - TOXENV=py33-d17-pg
+  - TOXENV=py33-d17-sqlite
+  - TOXENV=py33-d18-pg
+  - TOXENV=py33-d18-sqlite
+  - TOXENV=py34-d17-pg
+  - TOXENV=py34-d17-sqlite
+  - TOXENV=py34-d18-pg
+  - TOXENV=py34-d18-sqlite
+  - TOXENV=py34-d19-pg
+  - TOXENV=py34-d19-sqlite
+#  - TOXENV=py35-d19-pg
+#  - TOXENV=py35-d19-sqlite
 
 install:
-  - pip install tox>=1.8
-  - pip install python-coveralls>=2.5 coveralls>=0.5
-
+  - pip install tox coverage coveralls>=0.5
 
 script:
-  - make coverage
+  - tox -e $TOXENV --recreate -- -vv --capture=no --cov=concurrency --cov-report=xml --cov-config=tests/.coveragerc
 
 before_success:
   - coverage erase
@@ -42,27 +54,3 @@ after_success:
   - coverage combine
   - coveralls
 
-matrix:
-  allow_failures:
-    - env: DJANGO=dev DBENGINE=pg
-
-  exclude:
-    - python: "3.4"
-      env: DJANGO=1.4.x DBENGINE=pg
-    - python: "3.4"
-      env: DJANGO=1.5.x DBENGINE=pg
-    - python: "3.4"
-      env: DJANGO=1.6.x DBENGINE=pg
-
-    - python: "3.4"
-      env: DJANGO=1.4.x DBENGINE=mysql
-    - python: "3.4"
-      env: DJANGO=1.5.x DBENGINE=mysql
-    - python: "3.4"
-      env: DJANGO=1.6.x DBENGINE=mysql
-    - python: "3.4"
-      env: DJANGO=1.7.x DBENGINE=mysql
-    - python: "3.4"
-      env: DJANGO=1.8.x DBENGINE=mysql
-    - python: "3.4"
-      env: DJANGO=dev DBENGINE=mysql

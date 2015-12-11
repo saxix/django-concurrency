@@ -1,0 +1,11 @@
+[
+  {
+    "model": "demo.simpleconcurrentmodel",
+    "fields": {
+      "username": "loaded",
+      "version": 1446479791301679,
+      "date_field": null
+    },
+    "pk": 1
+  }
+]

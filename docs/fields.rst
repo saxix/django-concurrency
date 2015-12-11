@@ -8,6 +8,8 @@ Fields
 .. contents::
     :local:
 
+.. _concurrency.fields.VersionField:
+
 VersionField
 ------------
 .. autoclass:: concurrency.fields.VersionField
@@ -23,31 +25,51 @@ AutoIncVersionField
 .. autoclass:: concurrency.fields.AutoIncVersionField
 
 
+.. _concurrency.fields.TriggerVersionField:
+
 
 TriggerVersionField
 -------------------
 .. class:: concurrency.fields.TriggerVersionField
 
+
 This field use a database trigger to update the version field.
 Using this you can control external updates (ie using tools like phpMyAdmin, pgAdmin, SQLDeveloper).
-The trigger is automatically created during ``syncdb()`` or you can use the :ref:`triggers` management command.
+The trigger is automatically created during ``syncdb()``
+or you can use the :ref:`triggers` management command.
 
-.. note:: if you get ``TriggerVersionField need concurrency database backend`` error, it
-            means that you are using a ``django.db.backends.XY`` backend instead of
-            ``concurrency.db.backends.XY`` or that your database is not supported.
+.. versionchanged:: 1.0
 
-.. note:: ``concurrency.db.backends.XY`` inheriths from ``django.db.backends.XY``,
-            simply add the ability to create/manipulate triggers, no changes to original code.
+.. warning:: Before |concurrency| 1.0 two triggers per field were created,
+if you are upgrading you must manually remove old triggers and recreate them
+using :ref:`triggers`_ management command
+
+`trigger_name`
+~~~~~~~~~~~~~~
+
+.. versionadded:: 1.0
+
+.. attribute:: TriggerVersionField.trigger_name
+
+Starting from 1.0 you can customize the name of the trigger created.
+Otherwise for each `TriggerVersionField` will be created two triggers named:
+
+
+.. code-block:: python
+
+        'concurrency_[DBTABLENAME]_[FIELDNAME]'
+
+.. warning:: Any name will be automatically prefixed with ``concurrency_``
 
 
 .. _triggers:
 
+`triggers` management command
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``triggers`` management command
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. command:: triggers
 
-To easy work with |concurrency| created database triggers new command ``triggers`` is provided.
-It can:
+Helper command to work with triggers:
 
     * ``list``   : list existing triggers for each database
 

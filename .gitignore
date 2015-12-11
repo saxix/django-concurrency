@@ -1,8 +1,12 @@
 ˜*
+.appveyor.yml
+.coverage
+coverage.xml
 ~build
 .idea
 .tox
-.*
+.DS_Store
+.cache
 notes.txt
 docs/build/
 /dist
@@ -16,4 +20,3 @@ docs/build/
 *.pyc
 *.egg-info
 *.sqlite
-*/settings/active.py

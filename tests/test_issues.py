@@ -1,21 +1,25 @@
 # -*- coding: utf-8 -*-
 import re
-from django.contrib.auth.models import User, Group
+
+import django
+import pytest
+from django.contrib.admin.sites import site
+from django.contrib.auth.models import User
+from django.http import QueryDict
+from django.test.client import RequestFactory
 from django.test.testcases import SimpleTestCase
 from django.utils.encoding import force_text
+
+from demo.admin import ActionsModelAdmin, admin_register
+from demo.base import AdminTestCase
+from demo.models import ListEditableConcurrentModel, ReversionConcurrentModel
+from demo.util import attributes, unique_id
+
 from concurrency.admin import ConcurrentModelAdmin
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
 from concurrency.forms import ConcurrentForm
 from concurrency.templatetags.concurrency import identity
-from django.contrib.admin.sites import site
-from django.http import QueryDict
-from django.test.client import RequestFactory
 from concurrency.utils import refetch
-from demo.admin import admin_register, ActionsModelAdmin
-
-from demo.base import AdminTestCase
-from demo.models import ListEditableConcurrentModel
-from demo.util import unique_id, attributes
 
 
 def get_fake_request(params):
@@ -61,3 +65,23 @@ class TestIssue18(SimpleTestCase):
 
         g = User(username='UserTest', pk=3)
         self.assertEqual(identity(g), force_text(g.pk))
+
+
+@pytest.mark.skipif(django.VERSION[:2] >= (1, 9), reason="Skip django>=1.9 as reversion is not compatible")
+@pytest.mark.django_db()
+def test_issue_53(admin_client):
+    pytest.importorskip("reversion")
+    import reversion as revisions
+
+    with revisions.create_revision():
+        instance = ReversionConcurrentModel.objects.create()
+    pk = instance.pk
+
+    with revisions.create_revision():
+        instance.delete()
+
+    version_list = revisions.get_deleted(ReversionConcurrentModel)
+    deleted_pk = version_list[0].pk
+    admin_client.post('/admin/demo/reversionconcurrentmodel/recover/{}/'.format(deleted_pk),
+                      {'username': 'aaaa'})
+    assert ReversionConcurrentModel.objects.filter(id=pk).exists()

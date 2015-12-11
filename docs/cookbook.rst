@@ -8,6 +8,8 @@ Cookbook
 .. contents::
    :local:
 
+
+
 .. _import_data:
 
 Unable to import data ?
@@ -27,7 +29,7 @@ Sometimes you need to temporary disable concurrency (ie during data imports)
 
 
 Add version management to new models
--------------------------------------
+------------------------------------
 
 :file:`models.py`
 
@@ -49,7 +51,7 @@ Add version management to new models
 
 
 Add version management to Django and/or plugged in applications models
------------------------------------------------------------------------
+----------------------------------------------------------------------
 
 .. versionchanged:: 0.8
 
@@ -66,6 +68,8 @@ an existing database remember to edit the database's tables:
 
     apply_concurrency_check(User, 'version', IntegerVersionField)
 
+
+If used with Django>=1.7 remebber to create a custom migration.
 
 
 Manually handle concurrency
@@ -106,7 +110,7 @@ Test Utilities
 
 
 Recover deleted record with django-reversion
----------------------------------------------
+--------------------------------------------
 
 Recovering delete record with `diango-reversion`_ produce a ``RecordModifeidError``.
 As both pk and version are present in the object, |concurrency| try to load the record (that does not exists)
@@ -118,3 +122,16 @@ and this raises ``RecordModifedError``. To avoid this simply:
         def render_revision_form(self, request, obj, version, context, revert=False, recover=False):
             with disable_concurrency(obj):
                 return super(ConcurrencyVersionAdmin, self).render_revision_form(request, obj, version, context, revert, recover)
+
+
+or for (depending on django-reversion version)
+
+.. code-block:: python
+
+    class ConcurrencyVersionAdmin(reversionlib.VersionAdmin):
+
+       @disable_concurrency()
+       def recover_view(self, request, version_id, extra_context=None):
+            return super(ReversionConcurrentModelAdmin, self).recover_view(request,
+                                                                version_id,
+                                                                extra_context)
