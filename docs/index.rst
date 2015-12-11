@@ -26,8 +26,7 @@ django command.
 
 
 * easy to add to existing Models (just add :ref:`concurrency.fields.VersionField` )
-* works with third-party models (see :ref:`apply_concurrency_check`)
-* works with Django internal models
+* can be added with Django internal models (ie `auth.User` or `auth.Group`)
 * handle http post and standard python code (ie. django management commands)
 * complete test suite (:ref:`test_suite`)
 * Admin integration. Handle :ref:`actions <admin_action>` and :ref:`list_editable <list_editable>` (solves :django_issue:`11313`)

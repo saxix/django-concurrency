@@ -7,11 +7,8 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
-try:
-    from concurrency import VERSION
-except ImportError:
-    sys.path.append('src')
-    from concurrency import VERSION
+sys.path.append(os.path.join(ROOT, 'src'))
+from concurrency import VERSION
 
 NAME = 'django-concurrency'
 
@@ -91,11 +88,8 @@ setup(
     url='https://github.com/saxix/django-concurrency',
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
-    # packages=find_packages(),
-
     package_dir={'': 'src'},
     packages=find_packages('src'),
-
     include_package_data=True,
     description='Optimistic lock implementation for Django. Prevents users from doing concurrent editing.',
     long_description=open('README.rst').read(),

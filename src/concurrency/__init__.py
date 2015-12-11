@@ -4,7 +4,7 @@ import datetime
 import os
 default_app_config = 'concurrency.apps.ConcurrencyConfig'
 
-VERSION = __version__ = (1, 0, 0, 'alpha', 0)
+VERSION = __version__ = (1, 0, 0, 'final', 0)
 __author__ = 'sax'
 
 

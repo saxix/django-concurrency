@@ -33,10 +33,11 @@ CALLBACK
 
 Default: ``concurrency.views.callback``
 
-Handler invoked used to manage concurrent editing. The default implementation
+Handler invoked when a conflict is raised. The default implementation
 simply raise :class:`RecordModifiedError <concurrency.exceptions.RecordModifiedError>`
 
-
+Can be used to display the two version of the record and let the user to force
+the update or merge the values.
 
 .. setting:: CONCURRENCY_FIELD_SIGNER
 
