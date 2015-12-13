@@ -3,13 +3,6 @@ Django Concurrency
 ==================
 
 
-.. image:: https://pypip.in/v/django-concurrency/badge.png
-      :target: https://crate.io/packages/django-concurrency/
-
-.. image:: https://pypip.in/d/django-concurrency/badge.png
-       :target: https://crate.io/packages/django-concurrency/
-
-
 django-concurrency is an optimistic lock [1]_ implementation for Django.
 
 Supported Django versions: 1.7.x 1.8.x, 1.9rc1.
@@ -74,23 +67,15 @@ Links
 .. |master-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
                     :target: http://travis-ci.org/saxix/django-concurrency/
 
-.. |master-cov| image:: https://img.shields.io/coveralls/saxix/django-concurrency/master.svg
-                    :target: https://coveralls.io/r/saxix/django-concurrency
-
-.. |master-req| image:: https://requires.io/github/saxix/django-concurrency/requirements.png?branch=master
-                    :target: https://requires.io/github/saxix/django-concurrency/requirements/?branch=master
-                    :alt: Requirements Status
-
+.. |master-cov| image:: https://codecov.io/github/saxix/django-concurrency/coverage.svg?branch=master
+                    :target: https://codecov.io/github/saxix/django-concurrency?branch=master
 
 .. |dev-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=develop
                   :target: http://travis-ci.org/saxix/django-concurrency/
 
-.. |dev-cov| image:: https://img.shields.io/coveralls/saxix/django-concurrency/develop.svg
-                :target: https://coveralls.io/r/saxix/django-concurrency
+.. |dev-cov| image:: https://codecov.io/github/saxix/django-concurrency/coverage.svg?branch=develop
+                :target: https://codecov.io/github/saxix/django-concurrency?branch=develop
 
-.. |dev-req| image:: https://requires.io/github/saxix/django-concurrency/requirements.png?branch=develop
-                    :target: https://requires.io/github/saxix/django-concurrency/requirements/?branch=develop
-                    :alt: Requirements Status
 
 .. |wheel| image:: https://pypip.in/wheel/blackhole/badge.png
 

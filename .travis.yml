@@ -50,9 +50,5 @@ install:
 script:
   - tox -e $TOXENV --recreate -- -vv --capture=no --cov=concurrency --cov-report=xml --cov-config=tests/.coveragerc
 
-before_success:
-  - coverage erase
-
 after_success:
-  - coverage combine
   - codecov
