@@ -1,5 +1,5 @@
 [run]
-branch = False
+branch = 1
 source = concurrency
 
 omit = src/concurrency/__init__.py
