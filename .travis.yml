@@ -8,6 +8,7 @@ cache:
 branches:
   only:
     - develop
+    - master
     - feature/travis
 
 services:

@@ -9,7 +9,7 @@ from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
-sys.path.append(os.path.join(ROOT, 'src'))
+sys.path.insert(0, os.path.join(ROOT, 'src'))
 
 app = __import__('concurrency')
 base_url = 'https://github.com/saxix/django-concurrency/'
