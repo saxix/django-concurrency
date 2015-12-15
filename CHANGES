@@ -1,6 +1,6 @@
 Release 1.0
 -----------
-* **BACKWARD INCOMPATIBLE**:: dropped support for django prior 1.6
+* **BACKWARD INCOMPATIBLE**:: dropped support for Django prior 1.6
 * code clean
 * fixes :issue:`54` (thanks vmspike).
 * fixes :issue:`53`. updates Documentation
@@ -16,11 +16,11 @@ Release 1.0
 
 Release 0.9
 -----------
-* django 1.8 compatibility
+* Django 1.8 compatibility
 * python 3.4 compatibility
 * **BACKWARD INCOMPATIBLE** :function:`disable_concurrency` works differently if used with classes or instances
 * better support for external Models (models that are part of plugged-in applications)
-* fixes issue with TriggerVersioField and Proxy Models (thanx Richard Eames)
+* fixes issue with TriggerVersionField and Proxy Models (thanx Richard Eames)
 
 
 Release 0.8.1
@@ -30,7 +30,7 @@ Release 0.8.1
 
 Release 0.8
 -----------
-* django 1.7 compatibility
+* Django 1.7 compatibility
 * fixes typo in ``delete_selected_confirmation.html`` template
 * python 3.2/3.3 compatibility
 
@@ -77,7 +77,7 @@ Release 0.4.0
 * added :setting:`CONCURRECY_SANITY_CHECK` settings entry
 * signing of version number to avoid tampering (:ref:`concurrentform`)
 * added :ref:`concurrencytestmixin` to help test on concurrency managed models
-* changed way to add concurrency to exisiting models (:ref:`apply_concurrency_check`)
+* changed way to add concurrency to existing models (:ref:`apply_concurrency_check`)
 * fixed :issue:`4` (thanks FrankBie)
 * removed RandomVersionField
 * new :ref:`concurrency_check`
