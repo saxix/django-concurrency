@@ -1,8 +1,9 @@
-psycopg2
+coverage
 django_extensions
-ipython
-pdbpp
 django>=1.6
 flake8
+ipython
+pdbpp
+psycopg2
 pytest-xdist
-coverage
+sphinx
