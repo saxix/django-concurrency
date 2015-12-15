@@ -2,10 +2,11 @@ from __future__ import absolute_import, unicode_literals
 import subprocess
 import datetime
 import os
+__author__ = 'sax'
 default_app_config = 'concurrency.apps.ConcurrencyConfig'
 
 VERSION = __version__ = (1, 0, 0, 'final', 0)
-__author__ = 'sax'
+NAME = 'django-concurrency'
 
 
 def get_version(version=None):

@@ -1,9 +1,9 @@
 [run]
-branch = False
+branch = 1
 source = concurrency
-include =
 
-omit = **/concurrency/__init__.py
+omit = src/concurrency/__init__.py
+        tests/**
 
 [report]
 # Regexes for lines to exclude from consideration

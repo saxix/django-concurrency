@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os, sys
-here =  os.path.abspath(os.path.join(os.path.dirname(__file__)))
+here = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 rel = lambda *args: os.path.join(here, *args)
 
 sys.path.insert(0, rel(os.pardir))

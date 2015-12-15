@@ -42,10 +42,10 @@ env:
 #  - TOXENV=py35-d19-sqlite
 
 install:
-  - pip install tox coverage coveralls>=0.5
+  - pip install tox coverage python-coveralls>=2.5 coveralls>=0.5 codecov
 
 script:
-  - tox -e $TOXENV --recreate -- -vv --capture=no --cov=concurrency --cov-report=xml --cov-config=tests/.coveragerc
+  - tox -e $TOXENV -- tests -vv --capture=no --cov=concurrency --cov-report=xml --cov-config=tests/.coveragerc
 
 before_success:
   - coverage erase
@@ -53,4 +53,4 @@ before_success:
 after_success:
   - coverage combine
   - coveralls
-
+  - codecov

@@ -1,8 +1,0 @@
-psycopg2
-django_extensions
-ipython
-pdbpp
-django>=1.6
-flake8
-pytest-xdist
-coverage
