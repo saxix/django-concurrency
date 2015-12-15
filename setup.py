@@ -1,69 +1,18 @@
 #!/usr/bin/env python
 import os
 import sys
-import subprocess
-import datetime
-from setuptools import setup, find_packages
+from distutils import log
+from distutils.command.clean import clean as CleanCommand
+from distutils.dir_util import remove_tree
+
+from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 sys.path.append(os.path.join(ROOT, 'src'))
-from concurrency import VERSION
 
-NAME = 'django-concurrency'
-
-
-def get_version(version):
-    """Derives a PEP386-compliant version number from VERSION."""
-    assert len(version) == 5
-    assert version[3] in ('alpha', 'beta', 'rc', 'final')
-
-    parts = 2 if version[2] == 0 else 3
-    main = '.'.join(str(x) for x in version[:parts])
-
-    sub = ''
-    if version[3] == 'alpha' and version[4] == 0:
-        git_changeset = get_git_changeset()
-        if git_changeset:
-            sub = '.a%s' % git_changeset
-
-    elif version[3] != 'final':
-        mapping = {'alpha': 'a', 'beta': 'b', 'rc': 'c'}
-        sub = mapping[version[3]]
-        if version[4] > 0:
-            sub += str(version[4])
-
-    return main + sub
-
-
-def get_git_changeset():
-    """Returns a numeric identifier of the latest git changeset.
-
-The result is the UTC timestamp of the changeset in YYYYMMDDHHMMSS format.
-This value isn't guaranteed to be unique, but collisions are very unlikely,
-so it's sufficient for generating the development version numbers.
-"""
-    repo_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    git_log = subprocess.Popen('git log --pretty=format:%ct --quiet -1 HEAD',
-                               stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                               shell=True, cwd=repo_dir,
-                               universal_newlines=True)
-    timestamp = git_log.communicate()[0]
-    try:
-        timestamp = datetime.datetime.utcfromtimestamp(int(timestamp))
-    except ValueError:
-        return None
-    return timestamp.strftime('%Y%m%d%H%M%S')
-
-
-RELEASE = get_version(VERSION)
+app = __import__('concurrency')
 base_url = 'https://github.com/saxix/django-concurrency/'
-VERSIONMAP = {'final': (VERSION, 'Development Status :: 5 - Production/Stable'),
-              'rc': (VERSION, 'Development Status :: 4 - Beta'),
-              'beta': (VERSION, 'Development Status :: 4 - Beta'),
-              'alpha': ('master', 'Development Status :: 3 - Alpha')}
-
-download_tag, development_status = VERSIONMAP[VERSION[3]]
 install_requires = []
 
 
@@ -82,9 +31,35 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
+class Clean(CleanCommand):
+    user_options = CleanCommand.user_options + [
+        ('build-coverage=', 'c',
+         "build directory for coverage output (default: 'build.build-coverage')"),
+    ]
+
+    def initialize_options(self):
+        self.build_coverage = None
+        self.build_help = None
+        CleanCommand.initialize_options(self)
+
+    def run(self):
+        if self.all:
+            for directory in (os.path.join(self.build_base, 'coverage'),
+                              os.path.join(self.build_base, 'help')):
+                if os.path.exists(directory):
+                    remove_tree(directory, dry_run=self.dry_run)
+                else:
+                    log.warn("'%s' does not exist -- can't clean it",
+                             directory)
+        if self.build_coverage:
+            remove_tree(self.build_coverage, dry_run=self.dry_run)
+        if self.build_help:
+            remove_tree(self.build_help, dry_run=self.dry_run)
+        CleanCommand.run(self)
+
 setup(
-    name=NAME,
-    version=RELEASE,
+    name=app.NAME,
+    version=app.get_version(),
     url='https://github.com/saxix/django-concurrency',
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
@@ -98,7 +73,7 @@ setup(
     install_requires=install_requires,
     cmdclass={'test': PyTest},
     classifiers=[
-        development_status,
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',

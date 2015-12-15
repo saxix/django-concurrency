@@ -2,15 +2,14 @@ VERSION=2.0.0
 BUILDDIR='~build'
 PYTHONPATH:=${PWD}/tests/:${PWD}
 DBENGINE?=pg
-DJANGO?='1.7.x'
+DJANGO?='last'
 
 
-mkbuilddir:
+.mkbuilddir:
 	mkdir -p ${BUILDDIR}
 
-install-deps:
-	@pip install "pip>=6.0.8"
-	@pip install -qr requirements/tests.pip
+develop:
+	@pip install -U pip setuptools
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then pip install  MySQL-python; fi"
 	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2; fi"
 	@sh -c "if [ '${DJANGO}' = '1.4.x' ]; then pip install 'django>=1.4,<1.5'; fi"
@@ -18,10 +17,15 @@ install-deps:
 	@sh -c "if [ '${DJANGO}' = '1.6.x' ]; then pip install 'django>=1.6,<1.7'; fi"
 	@sh -c "if [ '${DJANGO}' = '1.7.x' ]; then pip install 'django>=1.7,<1.8'; fi"
 	@sh -c "if [ '${DJANGO}' = '1.8.x' ]; then pip install 'django>=1.8,<1.9'; fi"
+	@sh -c "if [ '${DJANGO}' = '1.9.x' ]; then pip install 'django>=1.9,<1.10'; fi"
+	@sh -c "if [ '${DJANGO}' = 'last' ]; then pip install django; fi"
 	@sh -c "if [ '${DJANGO}' = 'dev' ]; then pip install git+git://github.com/django/django.git; fi"
+	@pip install -qr requirements/tests.pip
+	@pip install -qr requirements/develop.pip
+	$(MAKE) .init-db
 
 
-init-db:
+.init-db:
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -u root -e 'DROP DATABASE IF EXISTS concurrency;'; fi"
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -u root -e 'CREATE DATABASE IF NOT EXISTS concurrency;'; fi"
 
@@ -30,14 +34,6 @@ init-db:
 
 test:
 	py.test -v
-
-
-ci: mkbuilddir install-deps init-db
-	$(MAKE) coverage
-
-coverage:
-	PYTHONPATH=${PWD}/tests/:${PWD} py.test tests -v --cov=concurrency --cov-report=html --cov-config=tests/.coveragerc -q
-
 
 clean:
 	rm -fr ${BUILDDIR} dist *.egg-info .coverage
@@ -49,10 +45,9 @@ fullclean:
 	$(MAKE) clean
 
 
-docs: mkbuilddir
+docs: .mkbuilddir
 	mkdir -p ${BUILDDIR}/docs
 	sphinx-build -aE docs/ ${BUILDDIR}/docs
 ifdef BROWSE
 	firefox ${BUILDDIR}/docs/index.html
 endif
-
