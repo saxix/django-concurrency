@@ -20,8 +20,7 @@ develop:
 	@sh -c "if [ '${DJANGO}' = '1.9.x' ]; then pip install 'django>=1.9,<1.10'; fi"
 	@sh -c "if [ '${DJANGO}' = 'last' ]; then pip install django; fi"
 	@sh -c "if [ '${DJANGO}' = 'dev' ]; then pip install git+git://github.com/django/django.git; fi"
-	@pip install -qr requirements/tests.pip
-	@pip install -qr requirements/develop.pip
+	@pip install -e .[dev]
 	$(MAKE) .init-db
 
 
@@ -36,7 +35,7 @@ test:
 	py.test -v
 
 clean:
-	rm -fr ${BUILDDIR} dist *.egg-info .coverage
+	rm -fr ${BUILDDIR} dist *.egg-info .coverage coverage.xml
 	find src -name __pycache__ -o -name "*.py?" -o -name "*.orig" -prune | xargs rm -rf
 	find src/concurrency/locale -name django.mo | xargs rm -f
 

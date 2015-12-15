@@ -17,6 +17,7 @@ install_requires = []
 
 
 class PyTest(TestCommand):
+
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_args = ['tests']
@@ -57,6 +58,27 @@ class Clean(CleanCommand):
             remove_tree(self.build_help, dry_run=self.dry_run)
         CleanCommand.run(self)
 
+install_requires = ["django"]
+test_requires = ["django-webtest>=1.7.5",
+                 "mock>=1.0.1",
+                 "pytest-cache>=1.0",
+                 "pytest-cov>=1.6",
+                 "pytest-django>=2.8",
+                 "pytest-echo>=1.3",
+                 "pytest-pythonpath",
+                 "pytest>=2.8",
+                 "tox>=2.3",
+                 "WebTest>=2.0.11"]
+
+dev_requires = ["autopep8",
+                "coverage",
+                "django_extensions",
+                "flake8",
+                "ipython",
+                "pdbpp",
+                "psycopg2",
+                "sphinx"]
+
 setup(
     name=app.NAME,
     version=app.get_version(),
@@ -71,6 +93,9 @@ setup(
     license='MIT License',
     keywords='django',
     install_requires=install_requires,
+    tests_require=test_requires,
+    extras_require={'test': test_requires,
+                    'dev': test_requires + dev_requires},
     cmdclass={'test': PyTest},
     classifiers=[
         'Development Status :: 5 - Production/Stable',

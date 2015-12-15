@@ -1,9 +1,0 @@
-coverage
-django_extensions
-django>=1.6
-flake8
-ipython
-pdbpp
-psycopg2
-pytest-xdist
-sphinx
