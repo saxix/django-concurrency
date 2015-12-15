@@ -1,3 +1,7 @@
+Release 1.0.1
+-------------
+* fixes :issue:`56` (thanks oppianmatt).
+
 Release 1.0
 -----------
 * **BACKWARD INCOMPATIBLE**:: dropped support for Django prior 1.6
