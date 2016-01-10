@@ -64,7 +64,6 @@ def test_disable_concurrency_instance(model_class=SimpleConcurrentModel):
             instance2.save()
 
 
-
 @pytest.mark.django_db(transaction=False)
 def test_disable_increment():
     instance1 = AutoIncConcurrentModel(username=next(nextname))

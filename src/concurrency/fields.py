@@ -175,8 +175,8 @@ class VersionField(Field):
 
             for i, (field, _1, value) in enumerate(values):
                 if field == version_field:
-                    if model_instance._concurrencymeta.increment and not\
-                        getattr(model_instance, '_concurrency_disable_increment', False):
+                    if (model_instance._concurrencymeta.increment and not
+                    getattr(model_instance, '_concurrency_disable_increment', False)):
                         new_version = field._get_next_version(model_instance)
                         values[i] = (field, _1, new_version)
                         field._set_version_value(model_instance, new_version)
@@ -334,8 +334,8 @@ class ConditionalVersionField(AutoIncVersionField):
         ignore_fields = instance._concurrencymeta.ignore_fields
 
         if check_fields is None:
-            fields= sorted([f.name for f in instance._meta.get_fields()
-                                   if f.name not in ignore_fields])
+            fields = sorted([f.name for f in instance._meta.get_fields()
+                             if f.name not in ignore_fields])
         else:
             fields = instance._concurrencymeta.check_fields
 
@@ -355,4 +355,3 @@ class ConditionalVersionField(AutoIncVersionField):
             return int(getattr(model_instance, self.attname, 0) + 1)
 
         return int(getattr(model_instance, self.attname, 0))
-

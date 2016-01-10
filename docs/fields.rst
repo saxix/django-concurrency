@@ -94,6 +94,7 @@ ConditionalVersionField
 
 .. versionadded:: 1.1
 
+
 This field allow to configure which fields trigger the version increment so to limit
 the scope of the concurrency checks.
 
