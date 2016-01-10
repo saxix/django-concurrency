@@ -75,6 +75,32 @@ def concurrency_check(model_instance, force_insert=False, force_update=False, us
         _select_lock(model_instance)
 
 
+class concurrency_disable_increment(object):
+    def __init__(self, model):
+        self.model = model
+        self.old_value = model._concurrencymeta.increment
+
+    def __enter__(self):
+        if isinstance(self.model, Model):
+            self.old_value, self.model._concurrency_disable_increment = getattr(self.model, '_concurrency_disable_increment', False), True
+            self.model._concurrency_disabled = True
+        else:
+            self.old_value, self.model._concurrencymeta.increment = self.model._concurrencymeta.increment, False
+
+    def __exit__(self, *args, **kwds):
+        if isinstance(self.model, Model):
+            self.model._concurrency_disable_increment = self.old_value
+        else:
+            self.model._concurrencymeta.increment = self.old_value
+
+    def __call__(self, func):
+        def wrapper(*args, **kwds):
+            with self:
+                return func(*args, **kwds)
+
+        return wrapper
+
+
 class disable_concurrency(object):
     """
         temporary disable concurrency

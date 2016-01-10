@@ -205,6 +205,19 @@ examples
             deleted_version.revert()
 
 
+`concurrency_disable_increment()`
+---------------------------------
+
+.. versionadded:: 1.1
+
+
+Context manager to temporary disable version increment.
+Concurrent save is still checked but no version increment is triggered,
+this creates 'shadow saves',
+
+It accepts both a Model or an instance as target.
+
+
 
 ------------
 Templatetags

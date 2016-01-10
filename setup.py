@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
+import imp
 from distutils import log
 from distutils.command.clean import clean as CleanCommand
 from distutils.dir_util import remove_tree
@@ -9,11 +10,26 @@ from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
-sys.path.insert(0, os.path.join(ROOT, 'src'))
+init = os.path.join(ROOT, 'src', 'concurrency', '__init__.py')
+app = imp.load_source('concurrency', init)
 
-app = __import__('concurrency')
+reqs = 'install.py%d.pip' % sys.version_info[0]
+
+# if sys.version_info[0] == 2:
+#     reqs = 'install.py2.pip'
+    # app = imp.load_source('concurrency', init)
+# elif sys.version_info[0] == 3:
+#     reqs = 'install.py3.pip'
+    # if sys.version_info[1] in [3,4]:
+    #     from importlib.machinery import SourceFileLoader
+    #     app = SourceFileLoader("adminactions", init).load_module()
+    # elif sys.version_info[1] in [5]:
+    #     import importlib.util
+    #     spec = importlib.util.spec_from_file_location("concurrency", init)
+    #     app = importlib.util.module_from_spec(spec)
+    #     spec.loader.exec_module(app)
+
 base_url = 'https://github.com/saxix/django-concurrency/'
-install_requires = []
 
 
 class PyTest(TestCommand):
@@ -58,9 +74,10 @@ class Clean(CleanCommand):
             remove_tree(self.build_help, dry_run=self.dry_run)
         CleanCommand.run(self)
 
-install_requires = ["django"]
+install_requires = []
 test_requires = ["django-webtest>=1.7.5",
                  "mock>=1.0.1",
+                 "check-manifest==0.30",
                  "pytest-cache>=1.0",
                  "pytest-cov>=1.6",
                  "pytest-django>=2.8",
@@ -104,9 +121,8 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Framework :: Django :: 1.6',
-        'Framework :: Django :: 1.7',
         'Framework :: Django :: 1.8',
+        'Framework :: Django :: 1.9',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',

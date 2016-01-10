@@ -4,6 +4,15 @@ include CHANGES
 include LICENSE
 include MANIFEST.in
 include setup.py
+include tox.ini
+include *.py
+
+exclude Makefile
+exclude .editorconfig
+exclude .tx
+
+recursive-exclude .tx *
+
+recursive-include docs *
 recursive-include src *
-recursive-exclude src/django_concurrency.egg-info *
-recursive-exclude src *.py[oc]
+recursive-include tests *

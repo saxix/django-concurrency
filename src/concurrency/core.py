@@ -57,3 +57,7 @@ class ConcurrencyOptions:
     manually = False
     enabled = True
     base = None
+    check_fields = None
+    ignore_fields = None
+    skip = False
+    increment = True

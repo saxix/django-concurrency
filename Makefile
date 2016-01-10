@@ -12,14 +12,14 @@ develop:
 	@pip install -U pip setuptools
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then pip install  MySQL-python; fi"
 	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2; fi"
-	@sh -c "if [ '${DJANGO}' = '1.4.x' ]; then pip install 'django>=1.4,<1.5'; fi"
-	@sh -c "if [ '${DJANGO}' = '1.5.x' ]; then pip install 'django>=1.5,<1.6'; fi"
-	@sh -c "if [ '${DJANGO}' = '1.6.x' ]; then pip install 'django>=1.6,<1.7'; fi"
-	@sh -c "if [ '${DJANGO}' = '1.7.x' ]; then pip install 'django>=1.7,<1.8'; fi"
-	@sh -c "if [ '${DJANGO}' = '1.8.x' ]; then pip install 'django>=1.8,<1.9'; fi"
-	@sh -c "if [ '${DJANGO}' = '1.9.x' ]; then pip install 'django>=1.9,<1.10'; fi"
-	@sh -c "if [ '${DJANGO}' = 'last' ]; then pip install django; fi"
-	@sh -c "if [ '${DJANGO}' = 'dev' ]; then pip install git+git://github.com/django/django.git; fi"
+#	@sh -c "if [ '${DJANGO}' = '1.4.x' ]; then pip install 'django>=1.4,<1.5'; fi"
+#	@sh -c "if [ '${DJANGO}' = '1.5.x' ]; then pip install 'django>=1.5,<1.6'; fi"
+#	@sh -c "if [ '${DJANGO}' = '1.6.x' ]; then pip install 'django>=1.6,<1.7'; fi"
+#	@sh -c "if [ '${DJANGO}' = '1.7.x' ]; then pip install 'django>=1.7,<1.8'; fi"
+#	@sh -c "if [ '${DJANGO}' = '1.8.x' ]; then pip install 'django>=1.8,<1.9'; fi"
+#	@sh -c "if [ '${DJANGO}' = '1.9.x' ]; then pip install 'django>=1.9,<1.10'; fi"
+#	@sh -c "if [ '${DJANGO}' = 'last' ]; then pip install django; fi"
+#	@sh -c "if [ '${DJANGO}' = 'dev' ]; then pip install git+git://github.com/django/django.git; fi"
 	@pip install -e .[dev]
 	$(MAKE) .init-db
 
@@ -34,9 +34,16 @@ develop:
 test:
 	py.test -v
 
+qa:
+	flake8 src/ tests/
+	isort -rc src/ --check-only
+	check-manifest
+
+
 clean:
 	rm -fr ${BUILDDIR} dist *.egg-info .coverage coverage.xml
 	find src -name __pycache__ -o -name "*.py?" -o -name "*.orig" -prune | xargs rm -rf
+	find tests -name __pycache__ -o -name "*.py?" -o -name "*.orig" -prune | xargs rm -rf
 	find src/concurrency/locale -name django.mo | xargs rm -f
 
 fullclean:

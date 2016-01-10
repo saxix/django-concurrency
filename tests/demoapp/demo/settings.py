@@ -1,5 +1,10 @@
 import os
 from tempfile import mktemp
+try:
+    from psycopg2cffi import compat
+    compat.register()
+except ImportError:
+    pass
 
 import django
 
