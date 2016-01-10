@@ -46,6 +46,8 @@ Other projects that handle concurrent editing are `django-optimistic-lock`_ and 
  * manage concurrency conflicts in admin's actions
  * can intercept changes performend out of the django app (ie using pgAdmin, phpMyAdmin, Toads) (using `TriggerVersionField`_)
  * can be disabled if needed (see `disable_concurrency`_)
+ * `ConditionalVersionField`_ to handle complex business rules
+
 
 Links
 ~~~~~
@@ -89,6 +91,8 @@ _list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#
 .. _django-optimistic-lock: https://github.com/gavinwahl/django-optimistic-lock
 
 .. _TriggerVersionField: https://django-concurrency.readthedocs.org/en/latest/fields.html#triggerversionfield
+
+.. _ConditionalVersionField: https://django-concurrency.readthedocs.org/en/latest/fields.html#conditionalversionfield
 
 .. _disable_concurrency: https://django-concurrency.readthedocs.org/en/latest/api.html?#disable-concurrency
 
