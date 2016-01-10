@@ -1,0 +1,8 @@
+autopep8
+coverage
+django_extensions
+flake8
+ipython
+pdbpp
+psycopg2
+sphinx

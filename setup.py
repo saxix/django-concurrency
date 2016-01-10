@@ -15,25 +15,22 @@ app = imp.load_source('concurrency', init)
 
 reqs = 'install.py%d.pip' % sys.version_info[0]
 
-# if sys.version_info[0] == 2:
-#     reqs = 'install.py2.pip'
-    # app = imp.load_source('concurrency', init)
-# elif sys.version_info[0] == 3:
-#     reqs = 'install.py3.pip'
-    # if sys.version_info[1] in [3,4]:
-    #     from importlib.machinery import SourceFileLoader
-    #     app = SourceFileLoader("adminactions", init).load_module()
-    # elif sys.version_info[1] in [5]:
-    #     import importlib.util
-    #     spec = importlib.util.spec_from_file_location("concurrency", init)
-    #     app = importlib.util.module_from_spec(spec)
-    #     spec.loader.exec_module(app)
+rel = lambda fname: os.path.join(os.path.dirname(__file__),
+                                 'src',
+                                 'requirements', fname)
+
+
+def fread(fname):
+    return open(rel(fname)).read()
+
+install_requires = fread('install.pip')
+test_requires = fread('testing.pip')
+dev_requires = fread('develop.pip')
 
 base_url = 'https://github.com/saxix/django-concurrency/'
 
 
 class PyTest(TestCommand):
-
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_args = ['tests']
@@ -43,6 +40,7 @@ class PyTest(TestCommand):
         # import here, cause outside the eggs aren't loaded
         import pytest
         import sys
+
         sys.path.insert(0, os.path.join(ROOT, 'tests', 'demoapp'))
         errno = pytest.main(self.test_args)
         sys.exit(errno)
@@ -74,27 +72,6 @@ class Clean(CleanCommand):
             remove_tree(self.build_help, dry_run=self.dry_run)
         CleanCommand.run(self)
 
-install_requires = []
-test_requires = ["django-webtest>=1.7.5",
-                 "mock>=1.0.1",
-                 "check-manifest==0.30",
-                 "pytest-cache>=1.0",
-                 "pytest-cov>=1.6",
-                 "pytest-django>=2.8",
-                 "pytest-echo>=1.3",
-                 "pytest-pythonpath",
-                 "pytest>=2.8",
-                 "tox>=2.3",
-                 "WebTest>=2.0.11"]
-
-dev_requires = ["autopep8",
-                "coverage",
-                "django_extensions",
-                "flake8",
-                "ipython",
-                "pdbpp",
-                "psycopg2",
-                "sphinx"]
 
 setup(
     name=app.NAME,
