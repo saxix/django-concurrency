@@ -45,34 +45,6 @@ class PyTest(TestCommand):
         errno = pytest.main(self.test_args)
         sys.exit(errno)
 
-
-class Clean(CleanCommand):
-    user_options = CleanCommand.user_options + [
-        ('build-coverage=', 'c',
-         "build directory for coverage output (default: 'build.build-coverage')"),
-    ]
-
-    def initialize_options(self):
-        self.build_coverage = None
-        self.build_help = None
-        CleanCommand.initialize_options(self)
-
-    def run(self):
-        if self.all:
-            for directory in (os.path.join(self.build_base, 'coverage'),
-                              os.path.join(self.build_base, 'help')):
-                if os.path.exists(directory):
-                    remove_tree(directory, dry_run=self.dry_run)
-                else:
-                    log.warn("'%s' does not exist -- can't clean it",
-                             directory)
-        if self.build_coverage:
-            remove_tree(self.build_coverage, dry_run=self.dry_run)
-        if self.build_help:
-            remove_tree(self.build_help, dry_run=self.dry_run)
-        CleanCommand.run(self)
-
-
 setup(
     name=app.NAME,
     version=app.get_version(),
@@ -86,11 +58,12 @@ setup(
     long_description=open('README.rst').read(),
     license='MIT License',
     keywords='django',
+    setup_requires=['pytest-runner',],
     install_requires=install_requires,
-    tests_require=test_requires,
+    tests_require='django\n' + test_requires,
     extras_require={'test': test_requires,
                     'dev': test_requires + dev_requires},
-    cmdclass={'test': PyTest},
+    # cmdclass={'test': PyTest},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',

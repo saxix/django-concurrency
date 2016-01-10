@@ -7,12 +7,6 @@ cache:
   directories:
     - $HOME/.cache/pip
 
-branches:
-  only:
-    - develop
-    - master
-    - feature/travis
-
 services:
   - MySQL
   - PostgreSQL
