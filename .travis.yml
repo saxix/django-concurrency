@@ -45,7 +45,7 @@ env:
 
 
 install:
-  - pip install tox coverage python-coveralls>=2.5 coveralls>=0.5 codecov
+  - pip install tox "coverage<=4.0" python-coveralls>=2.5 coveralls>=0.5 codecov
 
 script:
   - tox -e $TOXENV -- py.test tests -v --capture=no --cov=concurrency \
