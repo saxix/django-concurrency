@@ -12,6 +12,7 @@ docs/build/
 /dist
 /build
 /MANIFEST
+/.eggs
 *.egg-info
 *.pyc
 *.log
