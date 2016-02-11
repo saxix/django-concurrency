@@ -33,6 +33,26 @@ class TestAdminActions(AdminTestCase):
         self.assertIn('**concurrent_update**', res)
         self.assertNotIn('**action_update**', res)
 
+    def test_dummy_action_select_across(self):
+        id = next(unique_id)
+        SimpleConcurrentModel.objects.get_or_create(pk=id)
+        res = self.app.get('/admin/', user='sax')
+
+        res = res.click('^SimpleConcurrentModels')
+        assert 'SimpleConcurrentModel #%s' % id in res  # sanity check
+
+        self._create_conflict(id)
+
+        form = res.forms['changelist-form']
+        form['action'].value = 'dummy_action'
+        form['select_across'] = 'True'
+        sel = form.get('_selected_action', index=0)  # needed
+        sel.checked = True  # needed
+        res = form.submit()
+        res = res.follow()
+
+        self.assertIn('Selecting all records, you will avoid the concurrency check', res)
+
     @pytest.mark.skipif(django.VERSION[:2] >= (1, 7), reason="Skip django>=1.9")
     def test_delete_allowed_if_no_updates(self):
         id = next(unique_id)
