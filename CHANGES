@@ -1,5 +1,5 @@
-Release 1.1 (dev)
------------------
+Release 1.1 (13 Feb 2016)
+-------------------------
 * drop support for django<1.7
 * add support for pypy
 * new :class:`concurrency.fields.ConditionalVersionField`
