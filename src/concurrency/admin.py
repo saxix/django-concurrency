@@ -85,7 +85,7 @@ class ConcurrencyActionMixin(object):
 
             # Get the list of selected PKs. If nothing's selected, we can't
             # perform an action on it, so bail.
-            if int(request.POST.get('select_across', 0)):
+            if action_form.cleaned_data['select_across']:
                 selected = ALL
             else:
                 selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
