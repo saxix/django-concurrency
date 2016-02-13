@@ -183,6 +183,10 @@ concurrency on any Model.
 This features has been developed to be used in django commands
 
 
+.. versionchanged:: 1.1
+
+Does not raise an exception if a model not under concurrency management is passed as argument.
+
 examples
 ~~~~~~~~
 

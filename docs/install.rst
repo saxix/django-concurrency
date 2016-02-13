@@ -39,6 +39,6 @@ How to run the tests
 
 .. code-block:: bash
 
-        $ pip tox
+        $ pip install tox
         $ tox
 

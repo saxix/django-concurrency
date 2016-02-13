@@ -114,8 +114,11 @@ class disable_concurrency(object):
     def __init__(self, model=None):
         self.model = model
         self.old_value = conf.ENABLED
+        self.concurrency_managed = (model is None) or hasattr(model, '_concurrencymeta')
 
     def __enter__(self):
+        if not self.concurrency_managed:
+            return
         if self.model is None:
             self.old_value, conf.ENABLED = conf.ENABLED, False
         elif isinstance(self.model, Model):
@@ -125,6 +128,8 @@ class disable_concurrency(object):
             self.old_value, self.model._concurrencymeta.enabled = self.model._concurrencymeta.enabled, False
 
     def __exit__(self, *args, **kwds):
+        if not self.concurrency_managed:
+            return
         if self.model is None:
             conf.ENABLED = self.old_value
         elif isinstance(self.model, Model):
