@@ -84,3 +84,28 @@ example
     sax@: (concurrency) django-concurrency [feature/triggers*] $ ./demo/manage.py triggers create
     DATABASE             TRIGGERS
     default              concurrency_concurrency_triggerconcurrentmodel_u
+
+
+.. _concurrency.fields.ConditionalVersionField:
+
+
+ConditionalVersionField
+-----------------------
+
+.. versionadded:: 1.1
+
+
+This field allow to configure which fields trigger the version increment so to limit
+the scope of the concurrency checks.
+
+.. code-block:: python
+
+    class User(models.Model):
+        version = ConditionalVersionField()
+        username = models.CharField(...)
+        password = models.PasswordField(...)
+
+        class ConcurrencyMeta:
+            check_fields = ('username',)
+
+

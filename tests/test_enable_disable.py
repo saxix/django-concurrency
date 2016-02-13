@@ -5,7 +5,7 @@ from django.test.utils import override_settings
 from demo.models import AutoIncConcurrentModel, SimpleConcurrentModel
 from demo.util import nextname
 
-from concurrency.api import disable_concurrency
+from concurrency.api import disable_concurrency, concurrency_disable_increment
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
 
@@ -62,3 +62,17 @@ def test_disable_concurrency_instance(model_class=SimpleConcurrentModel):
         instance1.save()
         with pytest.raises(RecordModifiedError):
             instance2.save()
+
+
+@pytest.mark.django_db(transaction=False)
+def test_disable_increment():
+    instance1 = AutoIncConcurrentModel(username=next(nextname))
+    assert instance1.version == 0
+    instance1.save()
+    assert instance1.version == 1
+    with concurrency_disable_increment(instance1):
+        instance1.save()
+        instance1.save()
+        assert instance1.version == 1
+    instance1.save()
+    assert instance1.version == 2

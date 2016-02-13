@@ -183,6 +183,10 @@ concurrency on any Model.
 This features has been developed to be used in django commands
 
 
+.. versionchanged:: 1.1
+
+Does not raise an exception if a model not under concurrency management is passed as argument.
+
 examples
 ~~~~~~~~
 
@@ -203,6 +207,19 @@ examples
 
         with disable_concurrency(ReversionConcurrentModel):
             deleted_version.revert()
+
+
+`concurrency_disable_increment()`
+---------------------------------
+
+.. versionadded:: 1.1
+
+
+Context manager to temporary disable version increment.
+Concurrent save is still checked but no version increment is triggered,
+this creates 'shadow saves',
+
+It accepts both a Model or an instance as target.
 
 
 

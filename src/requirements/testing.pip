@@ -1,0 +1,11 @@
+django-webtest>=1.7.5
+mock>=1.0.1
+check-manifest==0.30
+pytest-cache>=1.0
+pytest-cov>=1.6
+pytest-django>=2.8
+pytest-echo>=1.3
+pytest-pythonpath
+pytest>=2.8
+tox>=2.3
+WebTest>=2.0.11

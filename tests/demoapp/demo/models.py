@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.db import models
 
-from concurrency.fields import (
-    AutoIncVersionField, IntegerVersionField, TriggerVersionField
-)
+from concurrency.fields import (AutoIncVersionField, IntegerVersionField,
+                                TriggerVersionField,
+                                ConditionalVersionField)
 
 __all__ = ['SimpleConcurrentModel', 'AutoIncConcurrentModel',
            'ProxyModel', 'InheritedModel', 'CustomSaveModel',
@@ -196,3 +196,17 @@ class ConcurrencyDisabledModel(SimpleConcurrentModel):
 
     class ConcurrencyMeta:
         enabled = False
+
+
+class ConditionalVersionModel(models.Model):
+    version = ConditionalVersionField()
+    field1 = models.CharField(max_length=30, blank=True, null=True, unique=True)
+    field2 = models.CharField(max_length=30, blank=True, null=True, unique=True)
+    field3 = models.CharField(max_length=30, blank=True, null=True, unique=True)
+    user = models.ForeignKey(User, null=True)
+
+    class Meta:
+        app_label = 'demo'
+
+    class ConcurrencyMeta:
+        check_fields = ['field1', 'field2', 'user']

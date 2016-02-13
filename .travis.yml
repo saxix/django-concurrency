@@ -1,52 +1,49 @@
 language: python
 sudo: false
+python:
+  - 3.5
 
 cache:
   directories:
     - $HOME/.cache/pip
-
-branches:
-  only:
-    - develop
-    - master
-    - feature/travis
 
 services:
   - MySQL
   - PostgreSQL
 
 env:
-#  Travis give a TemplateDoesNotExist exception with django==1.6.x
-#  - TOXENV=py27-d16-pg
-#  - TOXENV=py27-d16-sqlite
-#  - TOXENV=py27-d16-mysql
-  - TOXENV=py27-d17-pg
-  - TOXENV=py27-d17-sqlite
-  - TOXENV=py27-d17-mysql
-  - TOXENV=py27-d18-pg
-  - TOXENV=py27-d18-sqlite
-  - TOXENV=py27-d18-mysql
-  - TOXENV=py27-d19-pg
-  - TOXENV=py27-d19-sqlite
-  - TOXENV=py27-d19-mysql
-  - TOXENV=py33-d17-pg
-  - TOXENV=py33-d17-sqlite
-  - TOXENV=py33-d18-pg
-  - TOXENV=py33-d18-sqlite
-  - TOXENV=py34-d17-pg
-  - TOXENV=py34-d17-sqlite
-  - TOXENV=py34-d18-pg
-  - TOXENV=py34-d18-sqlite
-  - TOXENV=py34-d19-pg
-  - TOXENV=py34-d19-sqlite
-#  - TOXENV=py35-d19-pg
-#  - TOXENV=py35-d19-sqlite
+   - TOXENV=py27-d18-pg
+   - TOXENV=py27-d18-sqlite
+   - TOXENV=py27-d18-mysql
+   - TOXENV=py27-d19-pg
+   - TOXENV=py27-d19-sqlite
+   - TOXENV=py27-d19-mysql
+
+   - TOXENV=py33-d18-pg
+   - TOXENV=py33-d18-sqlite
+
+   - TOXENV=py34-d18-pg
+   - TOXENV=py34-d18-sqlite
+   - TOXENV=py34-d19-pg
+   - TOXENV=py34-d19-sqlite
+
+   - TOXENV=py35-d18-pg
+   - TOXENV=py35-d18-sqlite
+   - TOXENV=py35-d19-pg
+   - TOXENV=py35-d19-sqlite
+
+   - TOXENV=pypy-d18-pg
+   - TOXENV=pypy-d18-sqlite
+   - TOXENV=pypy-d19-pg
+   - TOXENV=pypy-d19-sqlite
+
 
 install:
-  - pip install tox coverage python-coveralls>=2.5 coveralls>=0.5 codecov
+  - pip install tox "coverage<=4.0" python-coveralls>=2.5 coveralls>=0.5 codecov
 
 script:
-  - tox -e $TOXENV -- tests -vv --capture=no --cov=concurrency --cov-report=xml --cov-config=tests/.coveragerc
+  - tox -e $TOXENV -- py.test tests -v --capture=no --cov=concurrency \
+    --cov-report=xml --cov-config=tests/.coveragerc
 
 before_success:
   - coverage erase
@@ -55,3 +52,12 @@ after_success:
   - coverage combine
   - coveralls
   - codecov
+
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/bf3806c14c6efcff7da1
+    on_success: always  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: never     # options: [always|never|change] default: always

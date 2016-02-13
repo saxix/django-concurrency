@@ -12,8 +12,8 @@ Overview
     :target: http://travis-ci.org/saxix/django-concurrency/
     :alt: Test status
 
-.. image:: https://img.shields.io/coveralls/saxix/django-concurrency/master.svg
-    :target: https://coveralls.io/r/saxix/django-concurrency
+.. image:: https://codecov.io/github/saxix/django-concurrency/coverage.svg?branch=master
+    :target: https://codecov.io/github/saxix/django-concurrency?branch=master
     :alt: Coverage
 
 
@@ -79,4 +79,3 @@ Links
 
 
 .. [1] http://en.wikipedia.org/wiki/Optimistic_concurrency_control
-

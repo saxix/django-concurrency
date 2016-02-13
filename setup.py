@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
+import imp
 from distutils import log
 from distutils.command.clean import clean as CleanCommand
 from distutils.dir_util import remove_tree
@@ -9,15 +10,27 @@ from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
-sys.path.insert(0, os.path.join(ROOT, 'src'))
+init = os.path.join(ROOT, 'src', 'concurrency', '__init__.py')
+app = imp.load_source('concurrency', init)
 
-app = __import__('concurrency')
+reqs = 'install.py%d.pip' % sys.version_info[0]
+
+rel = lambda fname: os.path.join(os.path.dirname(__file__),
+                                 'src',
+                                 'requirements', fname)
+
+
+def fread(fname):
+    return open(rel(fname)).read()
+
+install_requires = fread('install.pip')
+test_requires = fread('testing.pip')
+dev_requires = fread('develop.pip')
+
 base_url = 'https://github.com/saxix/django-concurrency/'
-install_requires = []
 
 
 class PyTest(TestCommand):
-
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_args = ['tests']
@@ -27,57 +40,10 @@ class PyTest(TestCommand):
         # import here, cause outside the eggs aren't loaded
         import pytest
         import sys
+
         sys.path.insert(0, os.path.join(ROOT, 'tests', 'demoapp'))
         errno = pytest.main(self.test_args)
         sys.exit(errno)
-
-
-class Clean(CleanCommand):
-    user_options = CleanCommand.user_options + [
-        ('build-coverage=', 'c',
-         "build directory for coverage output (default: 'build.build-coverage')"),
-    ]
-
-    def initialize_options(self):
-        self.build_coverage = None
-        self.build_help = None
-        CleanCommand.initialize_options(self)
-
-    def run(self):
-        if self.all:
-            for directory in (os.path.join(self.build_base, 'coverage'),
-                              os.path.join(self.build_base, 'help')):
-                if os.path.exists(directory):
-                    remove_tree(directory, dry_run=self.dry_run)
-                else:
-                    log.warn("'%s' does not exist -- can't clean it",
-                             directory)
-        if self.build_coverage:
-            remove_tree(self.build_coverage, dry_run=self.dry_run)
-        if self.build_help:
-            remove_tree(self.build_help, dry_run=self.dry_run)
-        CleanCommand.run(self)
-
-install_requires = ["django"]
-test_requires = ["django-webtest>=1.7.5",
-                 "mock>=1.0.1",
-                 "pytest-cache>=1.0",
-                 "pytest-cov>=1.6",
-                 "pytest-django>=2.8",
-                 "pytest-echo>=1.3",
-                 "pytest-pythonpath",
-                 "pytest>=2.8",
-                 "tox>=2.3",
-                 "WebTest>=2.0.11"]
-
-dev_requires = ["autopep8",
-                "coverage",
-                "django_extensions",
-                "flake8",
-                "ipython",
-                "pdbpp",
-                "psycopg2",
-                "sphinx"]
 
 setup(
     name=app.NAME,
@@ -92,11 +58,12 @@ setup(
     long_description=open('README.rst').read(),
     license='MIT License',
     keywords='django',
+    setup_requires=['pytest-runner',],
     install_requires=install_requires,
-    tests_require=test_requires,
+    tests_require='django\n' + test_requires,
     extras_require={'test': test_requires,
                     'dev': test_requires + dev_requires},
-    cmdclass={'test': PyTest},
+    # cmdclass={'test': PyTest},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
@@ -104,9 +71,8 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Framework :: Django :: 1.6',
-        'Framework :: Django :: 1.7',
         'Framework :: Django :: 1.8',
+        'Framework :: Django :: 1.9',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',

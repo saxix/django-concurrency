@@ -1,5 +1,5 @@
 [run]
-branch = 1
+branch = True
 source = concurrency
 
 omit = src/concurrency/__init__.py
@@ -25,4 +25,4 @@ exclude_lines =
 ignore_errors = True
 
 [html]
-directory = ~build/coverage
+directory = build/coverage
