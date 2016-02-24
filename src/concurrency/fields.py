@@ -333,7 +333,9 @@ class ConditionalVersionField(AutoIncVersionField):
         check_fields = instance._concurrencymeta.check_fields
         ignore_fields = instance._concurrencymeta.ignore_fields
 
-        if check_fields is None:
+        if check_fields is None and ignore_fields is None:
+            fields = sorted([f.name for f in instance._meta.get_fields()])
+        elif check_fields is None:
             fields = sorted([f.name for f in instance._meta.get_fields()
                              if f.name not in ignore_fields])
         else:
