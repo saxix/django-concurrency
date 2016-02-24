@@ -88,3 +88,21 @@ class TestAdminActions(AdminTestCase):
         sel.checked = True
         res = form.submit().follow()
         self.assertIn('One or more record were updated', res)
+
+
+    @pytest.mark.django_db
+    def test_deleteaction(self):
+        id = next(unique_id)
+
+        SimpleConcurrentModel.objects.get_or_create(pk=id)
+        response = self.app.get(django.core.urlresolvers.reverse('admin:demo_simpleconcurrentmodel_changelist'),
+                                user='sax')
+        form = response.forms['changelist-form']
+        form.get('_selected_action', index=0).checked = True
+        form['action'] = 'delete_selected'
+        response = form.submit()
+        expected = 'All of the following objects and their related items will be deleted'
+        assert expected in response
+        response = response.form.submit().follow()
+        assert response.status_code == 200
+
