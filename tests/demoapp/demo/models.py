@@ -11,6 +11,7 @@ from concurrency.fields import (AutoIncVersionField, IntegerVersionField,
 __all__ = ['SimpleConcurrentModel', 'AutoIncConcurrentModel',
            'ProxyModel', 'InheritedModel', 'CustomSaveModel',
            'ConcreteModel', 'TriggerConcurrentModel',
+           'ConditionalVersionModelWithoutMeta',
            ]
 
 
@@ -210,3 +211,17 @@ class ConditionalVersionModel(models.Model):
 
     class ConcurrencyMeta:
         check_fields = ['field1', 'field2', 'user']
+
+
+class ConditionalVersionModelWithoutMeta(models.Model):
+    """
+    This model doesn't have ConcurrencyMeta defined.
+    """
+    version = ConditionalVersionField()
+    field1 = models.CharField(max_length=30, blank=True, null=True, unique=True)
+    field2 = models.CharField(max_length=30, blank=True, null=True, unique=True)
+    field3 = models.CharField(max_length=30, blank=True, null=True, unique=True)
+    user = models.ForeignKey(User, null=True)
+
+    class Meta:
+        app_label = 'demo'
