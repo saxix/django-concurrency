@@ -12,6 +12,7 @@ __all__ = ['SimpleConcurrentModel', 'AutoIncConcurrentModel',
            'ProxyModel', 'InheritedModel', 'CustomSaveModel',
            'ConcreteModel', 'TriggerConcurrentModel',
            'ConditionalVersionModelWithoutMeta',
+           'Anything',
            ]
 
 
@@ -213,6 +214,15 @@ class ConditionalVersionModel(models.Model):
         check_fields = ['field1', 'field2', 'user']
 
 
+class Anything(models.Model):
+    """
+    Will create a ManyToOneRel automatic field on
+    ConditionalVersionModelWithoutMeta instances.
+    """
+    name = models.CharField(max_length=10)
+    a_relation = models.ForeignKey('demo.ConditionalVersionModelWithoutMeta')
+
+
 class ConditionalVersionModelWithoutMeta(models.Model):
     """
     This model doesn't have ConcurrencyMeta defined.
@@ -222,6 +232,7 @@ class ConditionalVersionModelWithoutMeta(models.Model):
     field2 = models.CharField(max_length=30, blank=True, null=True, unique=True)
     field3 = models.CharField(max_length=30, blank=True, null=True, unique=True)
     user = models.ForeignKey(User, null=True)
+    anythings = models.ManyToManyField(Anything)
 
     class Meta:
         app_label = 'demo'
