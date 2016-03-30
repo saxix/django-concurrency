@@ -116,8 +116,7 @@ class TestListEditable(AdminTestCase):
 
         messages = list(map(str, list(res.context['messages'])))
 
-        self.assertIn('No %s were changed due conflict errors' % force_text(self.TARGET._meta.verbose_name),
-                      messages)
+        self.assertIn('Record with pk `%s` has been modified and was not updated' % id, messages)
         self.assertEqual(len(messages), 1)
 
     def test_log_change(self):
