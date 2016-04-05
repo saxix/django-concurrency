@@ -224,18 +224,19 @@ class ConcurrencyListEditableMixin(object):
             concurrency_errros = len(conflicts)
             if m:
                 updated_record = int(m.group('num')) - concurrency_errros
-                if updated_record == 0:
-                    message = _("No %(name)s were changed due conflict errors") % {'name': names[0]}
+
+                ids = ",".join(map(str, conflicts))
+                messages.error(request,
+                               ungettext("Record with pk `{0}` has been modified and was not updated",
+                                         "Records `{0}` have been modified and were not updated",
+                                         concurrency_errros).format(ids))
+                if updated_record == 1:
+                    name = force_text(opts.verbose_name)
                 else:
-                    ids = ",".join(map(str, conflicts))
-                    messages.error(request,
-                                   ungettext("Record with pk `{0}` has been modified and was not updated",
-                                             "Records `{0}` have been modified and were not updated",
-                                             concurrency_errros).format(ids))
-                    if updated_record == 1:
-                        name = force_text(opts.verbose_name)
-                    else:
-                        name = force_text(opts.verbose_name_plural)
+                    name = force_text(opts.verbose_name_plural)
+
+                message = None
+                if updated_record > 0:
                     message = ungettext("%(count)s %(name)s was changed successfully.",
                                         "%(count)s %(name)s were changed successfully.",
                                         updated_record) % {'count': updated_record,

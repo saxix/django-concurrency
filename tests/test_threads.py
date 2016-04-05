@@ -11,7 +11,7 @@ from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
 
 
-@pytest.mark.skypIf(hasattr(sys, "pypy_translation_info"), reason="skip if pypy")
+@pytest.mark.skypif(hasattr(sys, "pypy_translation_info"), reason="skip if pypy")
 @pytest.mark.django_db(transaction=True)
 def test_threads():
     if db.connection.vendor == 'sqlite':

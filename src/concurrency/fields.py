@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import copy
+import functools
 import hashlib
 import logging
 import time
@@ -44,8 +45,8 @@ def class_prepared_concurrency_handler(sender, **kwargs):
 
         if hasattr(sender, 'ConcurrencyMeta'):
             sender._concurrencymeta.enabled = getattr(sender.ConcurrencyMeta, 'enabled', True)
-            check_fields = getattr(sender.ConcurrencyMeta, 'check_fields', [])
-            ignore_fields = getattr(sender.ConcurrencyMeta, 'ignore_fields', [])
+            check_fields = getattr(sender.ConcurrencyMeta, 'check_fields', None)
+            ignore_fields = getattr(sender.ConcurrencyMeta, 'ignore_fields', None)
             if check_fields and ignore_fields:
                 raise ValueError("Cannot set both 'check_fields' and 'ignore_fields'")
 
@@ -310,6 +311,19 @@ class TriggerVersionField(VersionField):
         return update_wrapper(inner, func)
 
 
+def filter_fields(instance, field):
+    if not field.concrete:
+        # reverse relation
+        return False
+    if field.is_relation and field.related_model is None:
+        # generic foreignkeys
+        return False
+    if field.many_to_many and instance.pk is None:
+        # can't load remote object yet
+        return False
+    return True
+
+
 class ConditionalVersionField(AutoIncVersionField):
     def contribute_to_class(self, cls, name, virtual_only=False):
         super(ConditionalVersionField, self).contribute_to_class(cls, name, virtual_only)
@@ -333,8 +347,11 @@ class ConditionalVersionField(AutoIncVersionField):
         check_fields = instance._concurrencymeta.check_fields
         ignore_fields = instance._concurrencymeta.ignore_fields
 
-        if check_fields is None:
-            fields = sorted([f.name for f in instance._meta.get_fields()
+        filter_ = functools.partial(filter_fields, instance)
+        if check_fields is None and ignore_fields is None:
+            fields = sorted([f.name for f in filter(filter_, instance._meta.get_fields())])
+        elif check_fields is None:
+            fields = sorted([f.name for f in filter(filter_, instance._meta.get_fields())
                              if f.name not in ignore_fields])
         else:
             fields = instance._concurrencymeta.check_fields
