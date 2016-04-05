@@ -1,6 +1,9 @@
 Release 1.2 (dev)
 -----------------
 * better support for django 1.9 ( ``TemplateDoesNotExist`` is now in ``django.template.exceptions``
+* improved eror message in ``ConcurrencyListEditableMixin`` :issue:`63` :issue:`64`
+* fixes :issue:`61`. Error in ``ConditionalVersionField`` (thanks ticosax)
+* fixes ``skipif`` test in pypy
 
 
 Release 1.1 (13 Feb 2016)
