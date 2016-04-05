@@ -1,3 +1,8 @@
+Release 1.2 (dev)
+-----------------
+* better support for django 1.9 ( ``TemplateDoesNotExist`` is now in ``django.template.exceptions``
+
+
 Release 1.1 (13 Feb 2016)
 -------------------------
 * drop support for django<1.7
@@ -9,14 +14,14 @@ Release 1.1 (13 Feb 2016)
 
 Release 1.0.1
 -------------
-* fixes :issue:`56` (thanks oppianmatt).
+* fixes :issue:`56` "Can't upgrade django-concurrency to 1.0" (thanks oppianmatt).
 
 
 Release 1.0
 -----------
 * **BACKWARD INCOMPATIBLE**:: dropped support for Django prior 1.6
 * code clean
-* fixes :issue:`54` (thanks vmspike).
+* fixes :issue:`54` "Incorrect default for IntegerVersionField" (thanks vmspike).
 * fixes :issue:`53`. updates Documentation
 * :ref:`disable_concurrency` can now disable concurrency in any model
 * :ref:`disable_concurrency` is now also a decorator
