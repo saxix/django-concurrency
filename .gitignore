@@ -9,6 +9,7 @@ coverage.xml
 .cache
 notes.txt
 docs/build/
+__pycache__
 /dist
 /build
 /MANIFEST

@@ -4,9 +4,10 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import Group, User
 from django.db import models
 
-from concurrency.fields import (AutoIncVersionField, IntegerVersionField,
-                                TriggerVersionField,
-                                ConditionalVersionField)
+from concurrency.fields import (
+    AutoIncVersionField, ConditionalVersionField, IntegerVersionField,
+    TriggerVersionField
+)
 
 __all__ = ['SimpleConcurrentModel', 'AutoIncConcurrentModel',
            'ProxyModel', 'InheritedModel', 'CustomSaveModel',
@@ -26,8 +27,11 @@ class SimpleConcurrentModel(models.Model):
         verbose_name = "SimpleConcurrentModel"
         verbose_name_plural = "SimpleConcurrentModels"
 
+    def __str__(self):
+        return "{0} #{1}".format(self.__class__.__name__, self.pk)
+
     def __unicode__(self):
-        return "{0.__class__.__name__} #{0.pk}".format(self)
+        return "{0} #{1}".format(self.__class__.__name__, self.pk)
 
 
 class AutoIncConcurrentModel(models.Model):

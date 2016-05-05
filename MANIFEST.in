@@ -10,8 +10,11 @@ include *.py
 exclude Makefile
 exclude .editorconfig
 exclude .tx
+exclude .pyc
 
 recursive-exclude .tx *
+recursive-exclude __pycache__ *
+recursive-exclude . *.pyc
 
 recursive-include docs *
 recursive-include src *

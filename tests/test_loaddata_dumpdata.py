@@ -5,10 +5,10 @@ import json
 import logging
 import os
 
-import pytest
 from django.core.management import call_command
 from six import StringIO
 
+import pytest
 from demo.models import SimpleConcurrentModel
 
 from concurrency.api import disable_concurrency

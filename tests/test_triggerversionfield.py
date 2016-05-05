@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-import mock
-import pytest
 from django.core.signals import request_started
 from django.db import IntegrityError, connections
 
+import mock
+import pytest
 from demo.models import TriggerConcurrentModel
 # Register an event to reset saved queries when a Django request is started.
 from demo.util import nextname

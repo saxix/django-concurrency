@@ -16,7 +16,7 @@ from django.forms.models import BaseModelFormSet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _, ungettext
+from django.utils.translation import ungettext
 
 from concurrency import core, forms
 from concurrency.api import get_revision_of_object

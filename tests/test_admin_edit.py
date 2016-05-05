@@ -1,7 +1,7 @@
-import pytest
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
+import pytest
 from demo.base import SENTINEL, AdminTestCase
 from demo.models import SimpleConcurrentModel
 from demo.util import nextname

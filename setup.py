@@ -1,10 +1,7 @@
 #!/usr/bin/env python
+import imp
 import os
 import sys
-import imp
-from distutils import log
-from distutils.command.clean import clean as CleanCommand
-from distutils.dir_util import remove_tree
 
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
@@ -58,7 +55,7 @@ setup(
     long_description=open('README.rst').read(),
     license='MIT License',
     keywords='django',
-    setup_requires=['pytest-runner',],
+    setup_requires=['pytest-runner', ],
     install_requires=install_requires,
     tests_require='django\n' + test_requires,
     extras_require={'test': test_requires,

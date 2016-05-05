@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-import mock
 from django.conf import settings
 from django.contrib.admin.sites import site
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 from django.test.utils import override_settings
 
+import mock
+import pytest
 from demo.base import AdminTestCase
 from demo.models import SimpleConcurrentModel
 from demo.util import DELETE_ATTRIBUTE, attributes, unique_id
@@ -59,6 +60,7 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
         r = ConcurrencyMiddleware().process_exception(request, RecordModifiedError(target=m))
         self.assertEqual(r.status_code, 409)
 
+    @pytest.mark.xfail("django.VERSION[:2] == (1, 10)", strict=True)
     def test_in_admin(self):
         id = next(unique_id)
 

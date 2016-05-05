@@ -1,5 +1,4 @@
 import pytest
-
 from demo.util import concurrent_model, unique_id, with_all_models, with_std_models
 
 from concurrency.core import _set_version

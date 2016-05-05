@@ -1,3 +1,10 @@
+Release 1.3 (dev)
+-----------------
+* drop support for Python < 3.3
+* add support Django>1.10
+* change license
+
+
 Release 1.2 (05 Apr 2016)
 -------------------------
 * better support for django 1.9 ( ``TemplateDoesNotExist`` is now in ``django.template.exceptions``

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals, print_function
+from __future__ import absolute_import, print_function, unicode_literals
+
 import logging
 
 import pytest
-
-from concurrency.templatetags.concurrency import identity, version, is_version
 from demo.models import SimpleConcurrentModel
+
+from concurrency.templatetags.concurrency import identity, is_version, version
 
 logger = logging.getLogger(__name__)
 

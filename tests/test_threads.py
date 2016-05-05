@@ -1,17 +1,18 @@
 import sys
 
-import pytest
 from django import db
 from django.db import transaction
 
+import pytest
 from demo.models import TriggerConcurrentModel
 from demo.util import concurrently
 
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
+from conftest import skippypy
 
 
-@pytest.mark.skypif(hasattr(sys, "pypy_translation_info"), reason="skip if pypy")
+@skippypy
 @pytest.mark.django_db(transaction=True)
 def test_threads():
     if db.connection.vendor == 'sqlite':
