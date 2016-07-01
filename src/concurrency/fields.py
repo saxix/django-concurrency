@@ -184,11 +184,23 @@ class VersionField(Field):
                     # else:
                     #     new_version = old_version
                     break
-            if values:
+
+            # This provides a default if either (1) no values were provided or (2) we reached this code as part of a
+            # create.  We don't need to worry about a race condition because a competing create should produce an
+            # error anyway.
+            updated = base_qs.filter(pk=pk_val).exists()
+
+            # This second situation can occur because `Model.save_base` calls `Model._save_parent` without relaying
+            # the `force_insert` flag that marks the process as a create.  Eventually, `Model._save_table` will call
+            # this function as-if it were in the middle of an update.  The update is expected to fail because there
+            # is no object to update and the caller will fall back on the create logic instead.  We need to ensure
+            # the update fails (but does not raise an exception) under this circumstance by skipping the concurrency
+            # logic.
+            if values and updated:
                 if (model_instance._concurrencymeta.enabled and
                         conf.ENABLED and
                         not getattr(model_instance, '_concurrency_disabled', False) and
-                        old_version):
+                        (old_version or not conf.IGNORE_DEFAULT)):
                     filter_kwargs = {'pk': pk_val, version_field.attname: old_version}
                     updated = base_qs.filter(**filter_kwargs)._update(values) >= 1
                     if not updated:
@@ -197,8 +209,6 @@ class VersionField(Field):
                 else:
                     filter_kwargs = {'pk': pk_val}
                     updated = base_qs.filter(**filter_kwargs)._update(values) >= 1
-            else:
-                updated = base_qs.filter(pk=pk_val).exists()
 
             return updated
 
