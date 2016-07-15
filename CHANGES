@@ -1,8 +1,10 @@
 Release 1.3 (dev)
 -----------------
 * drop support for Python < 3.3
-* add support Django>1.10
+* add support Django>=1.10
 * change license
+* fixes :issue:`36`. (thanks claytondaley)
+* new :setting:`IGNORE_DEFAULT` to ignore default version number
 
 
 Release 1.2 (05 Apr 2016)
