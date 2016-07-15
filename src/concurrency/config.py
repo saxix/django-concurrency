@@ -50,7 +50,9 @@ class AppSettings(object):
         'FIELD_SIGNER': 'concurrency.forms.VersionFieldSigner',
         'POLICY': CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
         'CALLBACK': 'concurrency.views.callback',
-        'HANDLER409': 'concurrency.views.conflict'}
+        'HANDLER409': 'concurrency.views.conflict',
+        'IGNORE_DEFAULT': True,
+    }
 
     def __init__(self, prefix):
         """
