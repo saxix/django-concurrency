@@ -1,12 +1,15 @@
 import os
 from tempfile import mktemp
+
+import django
+
 try:
     from psycopg2cffi import compat
+
     compat.register()
 except ImportError:
     pass
 
-import django
 
 DEBUG = True
 STATIC_URL = '/static/'
@@ -25,11 +28,8 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.staticfiles',
                   'django.contrib.admin',
                   'concurrency',
-                  # 'reversion',
+                  'reversion',
                   'demo']
-
-if django.VERSION[:2] != (1, 9):
-    INSTALLED_APPS += ['reversion']
 
 
 MIGRATION_MODULES = {
@@ -44,11 +44,22 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
 ]
-if django.VERSION[1] >= 7:
-    MIDDLEWARE_CLASSES += ['django.contrib.auth.middleware.SessionAuthenticationMiddleware', ]
 
-TEMPLATE_DIRS = ['demo/templates']
+if django.VERSION[1] >= 10:
+    TEMPLATES = [
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': [],
+            'APP_DIRS': True,
+            'OPTIONS': {
+                # ... some options here ...
+            },
+        },
+    ]
+else:
+    TEMPLATE_DIRS = ['demo/templates']
 
 LOGGING = {
     'version': 1,

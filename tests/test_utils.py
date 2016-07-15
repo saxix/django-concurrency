@@ -3,9 +3,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import logging
 
-import pytest
 from django.test import TestCase
 
+import pytest
 from demo.models import SimpleConcurrentModel
 
 from concurrency.utils import ConcurrencyTestMixin

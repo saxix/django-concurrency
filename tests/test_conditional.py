@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals, print_function
+from __future__ import absolute_import, print_function, unicode_literals
 
-import pytest
 import logging
 
 from django.contrib.auth.models import User
 
+import pytest
+from demo.models import ConditionalVersionModel, ConditionalVersionModelWithoutMeta
+
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
-from demo.models import (
-    ConditionalVersionModel,
-    ConditionalVersionModelWithoutMeta,
-)
 
 logger = logging.getLogger(__name__)
 

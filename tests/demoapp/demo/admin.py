@@ -3,13 +3,13 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
 
-from concurrency.admin import ConcurrentModelAdmin
-from concurrency.api import disable_concurrency
-
 from demo.models import *  # noqa
 from demo.models import (
     ListEditableConcurrentModel, NoActionsConcurrentModel, ReversionConcurrentModel
 )
+
+from concurrency.admin import ConcurrentModelAdmin
+from concurrency.api import disable_concurrency
 
 try:
     from reversion import VersionAdmin

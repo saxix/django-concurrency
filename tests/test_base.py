@@ -1,4 +1,5 @@
 import pytest
+from django.test import override_settings
 
 from demo.util import concurrent_model, unique_id, with_all_models, with_std_models
 
@@ -53,6 +54,22 @@ def test_do_not_check_if_no_version(model_class):
     instance.save()
     assert instance.get_concurrency_version() > 0
     assert instance.get_concurrency_version() != copy.get_concurrency_version()
+
+
+@pytest.mark.django_db(transaction=True)
+@with_std_models
+def test_conflict_no_version_and_no_skip_flag(model_class):
+    """When IGNORE_DEFAULT is disabled, attempting to update a record with a default version number should fail."""
+    with override_settings(CONCURRENCY_IGNORE_DEFAULT=False):
+        id = next(unique_id)
+        instance, __ = model_class.objects.get_or_create(pk=id)
+        instance.save()
+
+        copy = refetch(instance)
+        copy.version = 0
+
+        with pytest.raises(RecordModifiedError):
+            copy.save()
 
 
 @with_std_models

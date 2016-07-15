@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-import pytest
 from django.contrib.admin.models import LogEntry
 from django.contrib.admin.sites import site
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.utils.encoding import force_text
 
+import pytest
 from demo.base import SENTINEL, AdminTestCase
 from demo.models import ListEditableConcurrentModel
 from demo.util import attributes, unique_id
@@ -18,6 +18,7 @@ from concurrency.config import (
 from concurrency.exceptions import RecordModifiedError
 
 
+@pytest.mark.xfail("django.VERSION[:2] == (1, 10)", strict=True)
 class TestListEditable(AdminTestCase):
     TARGET = ListEditableConcurrentModel
 
@@ -50,7 +51,6 @@ class TestListEditable(AdminTestCase):
         self.TARGET.objects.get_or_create(pk=id)
         model_admin = site._registry[self.TARGET]
         with attributes((model_admin.__class__, 'list_editable_policy', CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL)):
-
             res = self.app.get('/admin/', user='sax')
             res = res.click(self.TARGET._meta.verbose_name_plural)
             self._create_conflict(id)
@@ -138,7 +138,6 @@ class TestListEditable(AdminTestCase):
         new_logs = LogEntry.objects.filter(**log_filter).exclude(id__in=logs).exists()
         self.assertFalse(new_logs, "LogEntry created even if conflict error")
         transaction.rollback()
-
 
 # class TestListEditableWithNoActions(TestListEditable):
 #     TARGET = NoActionsConcurrentModel

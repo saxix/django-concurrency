@@ -92,6 +92,21 @@ Default: ``CONCURRENCY_LIST_EDITABLE_POLICY_SILENT``
 
 .. _list_editable_policies:
 
+.. setting:: CONCURRENCY_IGNORE_DEFAULT
+
+IGNORE_DEFAULT
+--------------
+.. versionadded:: >1.2
+
+Default: ``True``
+
+Determines whether a default version number is ignored or used in a concurrency check.  While this
+configuration defaults to True for backwards compatibility, this setting can cause omitted version
+numbers to pass concurrency checks. New implementations are recommended to set this to ``False``.
+
+.. note:: For security reasons, starting from version 1.5, default value will be ``False``.
+
+
 ``CONCURRENCY_LIST_EDITABLE_POLICY_SILENT``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Used by admin's integrations to handle ``list_editable`` conflicts.

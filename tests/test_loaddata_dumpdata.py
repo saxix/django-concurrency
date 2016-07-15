@@ -5,10 +5,10 @@ import json
 import logging
 import os
 
-import pytest
 from django.core.management import call_command
 from six import StringIO
 
+import pytest
 from demo.models import SimpleConcurrentModel
 
 from concurrency.api import disable_concurrency
@@ -32,22 +32,6 @@ def test_loaddata_fail():
     data = json.load(open(datafile, 'r'))
     pk = data[0]['pk']
 
-    with pytest.raises(RecordModifiedError):
-        call_command('loaddata', datafile, stdout=StringIO())
-
-    assert not SimpleConcurrentModel.objects.filter(id=pk).exists()
-
-
-@pytest.mark.django_db(transaction=False)
-def test_loaddata():
-    datafile = os.path.join(os.path.dirname(__file__), 'dumpdata.json')
-    data = json.load(open(datafile, 'r'))
-    pk = data[0]['pk']
-
-    # with pytest.raises(RecordModifiedError):
-    #     call_command('loaddata', datafile, stdout=StringIO())
-
-    with disable_concurrency():
-        call_command('loaddata', datafile, stdout=StringIO())
+    call_command('loaddata', datafile, stdout=StringIO())
 
     assert SimpleConcurrentModel.objects.get(id=pk).username == 'loaded'

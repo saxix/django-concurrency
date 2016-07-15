@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-import pytest
 from django.test.utils import override_settings
 
+import pytest
 from demo.models import AutoIncConcurrentModel, SimpleConcurrentModel
 from demo.util import nextname
 
-from concurrency.api import disable_concurrency, concurrency_disable_increment
+from concurrency.api import concurrency_disable_increment, disable_concurrency
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
 

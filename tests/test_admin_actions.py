@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import django
-import pytest
 
+import pytest
 from demo.base import SENTINEL, AdminTestCase
 from demo.models import SimpleConcurrentModel
 from demo.util import unique_id
 
 
+@pytest.mark.xfail("django.VERSION[:2] == (1, 10)", strict=True)
 class TestAdminActions(AdminTestCase):
     def _create_conflict(self, pk):
         u = SimpleConcurrentModel.objects.get(pk=pk)
@@ -53,7 +54,7 @@ class TestAdminActions(AdminTestCase):
 
         self.assertIn('Selecting all records, you will avoid the concurrency check', res)
 
-    @pytest.mark.skipif(django.VERSION[:2] >= (1, 7), reason="Skip django>=1.9")
+    # @pytest.mark.skipif(django.VERSION[:2] >= (1, 7), reason="Skip django>=1.9")
     def test_delete_allowed_if_no_updates(self):
         id = next(unique_id)
         SimpleConcurrentModel.objects.get_or_create(pk=id)
@@ -67,16 +68,19 @@ class TestAdminActions(AdminTestCase):
         sel.checked = True
 
         res = form.submit()
+
         assert 'Are you sure?' in res
         assert 'SimpleConcurrentModel #%s' % id in res
         res = res.form.submit()
         assert 'SimpleConcurrentModel #%s' % id not in res
 
+    # @pytest.mark.skipif(django.VERSION[:2] >= (1, 10), reason="Skip django>=1.10")
     def test_delete_not_allowed_if_updates(self):
         id = next(unique_id)
 
         SimpleConcurrentModel.objects.get_or_create(pk=id)
         res = self.app.get('/admin/', user='sax')
+
         res = res.click('^SimpleConcurrentModels')
         assert 'SimpleConcurrentModel #%s' % id in res  # sanity check
 
@@ -88,7 +92,6 @@ class TestAdminActions(AdminTestCase):
         sel.checked = True
         res = form.submit().follow()
         self.assertIn('One or more record were updated', res)
-
 
     @pytest.mark.django_db
     def test_deleteaction(self):
@@ -105,4 +108,3 @@ class TestAdminActions(AdminTestCase):
         assert expected in response
         response = response.form.submit().follow()
         assert response.status_code == 200
-

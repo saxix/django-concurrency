@@ -1,4 +1,4 @@
-from django.conf.urls import include, patterns, url
+from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic.edit import UpdateView
 
@@ -13,10 +13,9 @@ from demo.models import SimpleConcurrentModel
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
-                       url('cm/(?P<pk>\d+)/',
-                           UpdateView.as_view(model=SimpleConcurrentModel),
-                           name='concurrent-edit'),
-                       url(r'^admin/',
-                           include(admin.site.urls))
-                       )
+urlpatterns = (url('cm/(?P<pk>\d+)/',
+                   UpdateView.as_view(model=SimpleConcurrentModel),
+                   name='concurrent-edit'),
+               url(r'^admin/',
+                   include(admin.site.urls))
+               )

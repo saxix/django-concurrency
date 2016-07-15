@@ -2,14 +2,15 @@
 import re
 
 import django
-import pytest
 from django.contrib.admin.sites import site
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.http import QueryDict
 from django.test.client import RequestFactory
 from django.test.testcases import SimpleTestCase
 from django.utils.encoding import force_text
 
+import pytest
 from demo.admin import ActionsModelAdmin, admin_register
 from demo.base import AdminTestCase
 from demo.models import ListEditableConcurrentModel, ReversionConcurrentModel
@@ -67,7 +68,7 @@ class TestIssue18(SimpleTestCase):
         self.assertEqual(identity(g), force_text(g.pk))
 
 
-@pytest.mark.skipif(django.VERSION[:2] >= (1, 9), reason="Skip django>=1.9 as reversion is not compatible")
+@pytest.mark.skipif(django.VERSION[:2] >= (1, 9), reason="Skip django>=1.9")
 @pytest.mark.django_db()
 def test_issue_53(admin_client):
     pytest.importorskip("reversion")
