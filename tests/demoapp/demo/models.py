@@ -226,6 +226,9 @@ class Anything(models.Model):
     name = models.CharField(max_length=10)
     a_relation = models.ForeignKey('demo.ConditionalVersionModelWithoutMeta')
 
+    class Meta:
+        app_label = 'demo'
+
 
 class ConditionalVersionModelWithoutMeta(models.Model):
     """
@@ -237,6 +240,32 @@ class ConditionalVersionModelWithoutMeta(models.Model):
     field3 = models.CharField(max_length=30, blank=True, null=True, unique=True)
     user = models.ForeignKey(User, null=True)
     anythings = models.ManyToManyField(Anything)
+
+    class Meta:
+        app_label = 'demo'
+
+
+class ThroughRelation(models.Model):
+    version = ConditionalVersionField()
+    left = models.ForeignKey('demo.ConditionalVersionModelSelfRelation',
+                             related_name='+')
+    right = models.ForeignKey('demo.ConditionalVersionModelSelfRelation',
+                              related_name='+')
+
+    class Meta:
+        app_label = 'demo'
+
+
+class ConditionalVersionModelSelfRelation(models.Model):
+    """
+    This model doesn't have ConcurrencyMeta defined.
+    """
+    version = ConditionalVersionField()
+    name = models.CharField(max_length=10)
+    relations = models.ManyToManyField('self',
+                                       through='demo.ThroughRelation',
+                                       symmetrical=False,
+                                       blank=True)
 
     class Meta:
         app_label = 'demo'

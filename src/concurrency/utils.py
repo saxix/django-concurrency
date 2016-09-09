@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import inspect
 import logging
 import warnings
 
@@ -121,3 +122,63 @@ def refetch(model_instance):
     Reload model instance from the database
     """
     return model_instance.__class__.objects.get(pk=model_instance.pk)
+
+
+def get_classname(o):
+    """ Returns the classname of an object r a class
+
+    :param o:
+    :return:
+    """
+    if inspect.isclass(o):
+        target = o
+    elif callable(o):
+        target = o
+    else:
+        target = o.__class__
+    try:
+        return target.__qualname__
+    except AttributeError:
+        return target.__name__
+
+
+def fqn(o):
+    """Returns the fully qualified class name of an object or a class
+
+    :param o: object or class
+    :return: class name
+
+    >>> fqn('str')
+    Traceback (most recent call last):
+    ...
+    ValueError: Invalid argument `str`
+    >>> class A(object): pass
+    >>> fqn(A)
+    'wfp_commonlib.python.reflect.A'
+
+    >>> fqn(A())
+    'wfp_commonlib.python.reflect.A'
+
+    >>> from wfp_commonlib.python import RexList
+    >>> fqn(RexList.append)
+    'wfp_commonlib.python.structure.RexList.append'
+    """
+    parts = []
+
+    if inspect.ismethod(o):
+        try:
+            cls = o.im_class
+        except AttributeError:
+            # Python 3 eliminates im_class, substitutes __module__ and
+            # __qualname__ to provide similar information.
+            parts = (o.__module__, o.__qualname__)
+        else:
+            parts = (fqn(cls), get_classname(o))
+    elif hasattr(o, '__module__'):
+        parts.append(o.__module__)
+        parts.append(get_classname(o))
+    elif inspect.ismodule(o):
+        return o.__name__
+    if not parts:
+        raise ValueError("Invalid argument `%s`" % o)
+    return ".".join(parts)

@@ -8,6 +8,7 @@ import time
 from collections import OrderedDict
 from functools import update_wrapper
 
+from django.db import models
 from django.db.models import signals
 from django.db.models.fields import Field
 from django.utils.encoding import force_text
@@ -17,7 +18,7 @@ from concurrency import forms
 from concurrency.api import get_revision_of_object
 from concurrency.config import conf
 from concurrency.core import ConcurrencyOptions
-from concurrency.utils import refetch
+from concurrency.utils import refetch, fqn
 
 try:
     from django.apps import apps
@@ -338,10 +339,12 @@ class ConditionalVersionField(AutoIncVersionField):
     def contribute_to_class(self, cls, name, virtual_only=False):
         super(ConditionalVersionField, self).contribute_to_class(cls, name, virtual_only)
         signals.post_init.connect(self._load_model,
-                                  sender=cls, weak=False)
+                                  sender=cls,
+                                  dispatch_uid=fqn(cls))
 
         signals.post_save.connect(self._save_model,
-                                  sender=cls, weak=False)
+                                  sender=cls,
+                                  dispatch_uid=fqn(cls))
 
     def _load_model(self, *args, **kwargs):
         instance = kwargs['instance']
@@ -365,11 +368,14 @@ class ConditionalVersionField(AutoIncVersionField):
                              if f.name not in ignore_fields])
         else:
             fields = instance._concurrencymeta.check_fields
-
         for field_name in fields:
             # do not use getattr here. we do not need extra sql to retrieve
             # FK. the raw value of the FK is enough
-            values[field_name] = opts.get_field(field_name).value_from_object(instance)
+            field = opts.get_field(field_name)
+            if isinstance(field, models.ManyToManyField):
+                values[field_name] = getattr(instance, field_name).values_list('pk', flat=True)
+            else:
+                values[field_name] = field.value_from_object(instance)
         return hashlib.sha1(force_text(values).encode('utf-8')).hexdigest()
 
     def _get_next_version(self, model_instance):
