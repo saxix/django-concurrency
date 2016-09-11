@@ -1,5 +1,5 @@
-Release 1.4 (dev)
------------------
+Release 1.3.2 (10 Sep 2016)
+-------------------------
 * fixes bug in ConditionalVersionField that produced 'maximum recursion error' when a model had a ManyToManyField with a field to same model (self-relation)
 
 
