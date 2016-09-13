@@ -29,7 +29,8 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'django.contrib.admin',
                   'concurrency',
                   'reversion',
-                  'demo']
+                  'demo'
+                  ]
 
 
 MIGRATION_MODULES = {

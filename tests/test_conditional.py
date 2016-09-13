@@ -6,7 +6,9 @@ import logging
 from django.contrib.auth.models import User
 
 import pytest
-from demo.models import ConditionalVersionModel, ConditionalVersionModelWithoutMeta
+from demo.models import ConditionalVersionModel, ConditionalVersionModelWithoutMeta, \
+    ConditionalVersionModelSelfRelation, \
+    ThroughRelation
 
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
@@ -33,6 +35,14 @@ def instance_no_meta(user):
         user=user,
         field2='1', field3='1'
     )
+
+
+@pytest.fixture
+def instance_self_relation():
+    a = ConditionalVersionModelSelfRelation.objects.create()
+    b = ConditionalVersionModelSelfRelation.objects.create()
+    b.relations.add(a)
+    return b
 
 
 @pytest.mark.django_db
@@ -98,3 +108,17 @@ def test_conflict_no_meta(instance_no_meta):
 
     with pytest.raises(RecordModifiedError):
         instance_no_meta.save()
+
+
+@pytest.mark.django_db()
+def test_self_relations():
+    a = ConditionalVersionModelSelfRelation.objects.create(name='a')
+    b = ConditionalVersionModelSelfRelation.objects.create(name='b')
+
+    r = ThroughRelation.objects.create(left=a,
+                                       right=a)
+    r.save()
+
+    a1 = ConditionalVersionModelSelfRelation.objects.get(pk=a.pk)
+    a1.name='a'
+    a1.save()
