@@ -5,7 +5,7 @@ import os
 __author__ = 'sax'
 default_app_config = 'concurrency.apps.ConcurrencyConfig'
 
-VERSION = __version__ = (1, 4, 0, 'alpha', 0)
+VERSION = __version__ = (1, 3, 2, 'final', 0)
 NAME = 'django-concurrency'
 
 
