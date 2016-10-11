@@ -18,6 +18,9 @@ env:
    - TOXENV=py27-d19-pg
    - TOXENV=py27-d19-sqlite
    - TOXENV=py27-d19-mysql
+   - TOXENV=py27-d110-pg
+   - TOXENV=py27-d110-sqlite
+   - TOXENV=py27-d110-mysql
 
    - TOXENV=py33-d18-pg
    - TOXENV=py33-d18-sqlite
@@ -31,11 +34,16 @@ env:
    - TOXENV=py35-d18-sqlite
    - TOXENV=py35-d19-pg
    - TOXENV=py35-d19-sqlite
+   - TOXENV=py35-d110-pg
+   - TOXENV=py35-d110-sqlite
 
    - TOXENV=pypy-d18-pg
    - TOXENV=pypy-d18-sqlite
    - TOXENV=pypy-d19-pg
    - TOXENV=pypy-d19-sqlite
+   - TOXENV=pypy-d110-pg
+   - TOXENV=pypy-d110-sqlite
+
 
 
 install:
