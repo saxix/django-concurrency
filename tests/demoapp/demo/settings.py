@@ -10,7 +10,6 @@ try:
 except ImportError:
     pass
 
-
 DEBUG = True
 STATIC_URL = '/static/'
 
@@ -32,35 +31,54 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'demo'
                   ]
 
-
 MIGRATION_MODULES = {
     'demo': 'demo.migrations',
     'auth': 'demo.auth_migrations',
 }
 
-MIDDLEWARE_CLASSES = [
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-]
-
 if django.VERSION[1] >= 10:
+    MIDDLEWARE_CLASSES = []
+    MIDDLEWARE = [
+        # 'concurrency.middleware.ConcurrencyMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    ]
+
     TEMPLATES = [
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
             'DIRS': [],
             'APP_DIRS': True,
             'OPTIONS': {
+                'context_processors': [
+                    'django.contrib.auth.context_processors.auth',
+                    'django.template.context_processors.debug',
+                    'django.template.context_processors.i18n',
+                    'django.template.context_processors.media',
+                    'django.template.context_processors.static',
+                    'django.template.context_processors.tz',
+                    'django.contrib.messages.context_processors.messages',
+                ],
                 # ... some options here ...
             },
         },
     ]
 else:
     TEMPLATE_DIRS = ['demo/templates']
+    MIDDLEWARE_CLASSES = [
+        # 'concurrency.middleware.ConcurrencyMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    ]
 
 LOGGING = {
     'version': 1,

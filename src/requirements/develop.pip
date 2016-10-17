@@ -1,4 +1,3 @@
-autopep8
 coverage
 django_extensions
 flake8

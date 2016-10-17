@@ -7,7 +7,6 @@ from demo.models import SimpleConcurrentModel
 from demo.util import unique_id
 
 
-@pytest.mark.xfail("django.VERSION[:2] == (1, 10)", strict=True)
 class TestAdminActions(AdminTestCase):
     def _create_conflict(self, pk):
         u = SimpleConcurrentModel.objects.get(pk=pk)

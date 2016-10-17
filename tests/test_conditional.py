@@ -113,12 +113,12 @@ def test_conflict_no_meta(instance_no_meta):
 @pytest.mark.django_db()
 def test_self_relations():
     a = ConditionalVersionModelSelfRelation.objects.create(name='a')
-    b = ConditionalVersionModelSelfRelation.objects.create(name='b')
+    ConditionalVersionModelSelfRelation.objects.create(name='b')
 
     r = ThroughRelation.objects.create(left=a,
                                        right=a)
     r.save()
 
     a1 = ConditionalVersionModelSelfRelation.objects.get(pk=a.pk)
-    a1.name='a'
+    a1.name = 'a'
     a1.save()

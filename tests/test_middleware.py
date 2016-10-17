@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+import django
 from django.conf import settings
 from django.contrib.admin.sites import site
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
-from django.test.utils import override_settings
+from django.test.utils import override_settings, modify_settings
 
 import mock
 import pytest
@@ -37,7 +38,7 @@ def test_middleware():
     assert r.status_code == 409
 
 
-class ConcurrencyMiddlewareTest(AdminTestCase):
+class ConcurrencyMiddlewareTest1(AdminTestCase):
     def _get_request(self, path):
         request = HttpRequest()
         request.META = {
@@ -60,37 +61,43 @@ class ConcurrencyMiddlewareTest(AdminTestCase):
         r = ConcurrencyMiddleware().process_exception(request, RecordModifiedError(target=m))
         self.assertEqual(r.status_code, 409)
 
-    @pytest.mark.xfail("django.VERSION[:2] == (1, 10)", strict=True)
+
+class ConcurrencyMiddlewareTest2(AdminTestCase):
+
+    @property
+    def settings_middleware(self):
+        return getattr(settings, self.middleware_setting_name) + ['concurrency.middleware.ConcurrencyMiddleware']
+
+    @settings_middleware.setter
+    def settings_middleware(self, value):
+        setattr(settings, self.middleware_setting_name, value)
+
     def test_in_admin(self):
         id = next(unique_id)
-
-        middlewares = list(settings.MIDDLEWARE_CLASSES) + ['concurrency.middleware.ConcurrencyMiddleware']
         model_admin = site._registry[SimpleConcurrentModel]
 
         with attributes((model_admin.__class__, 'list_editable_policy', CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL),
                         (ConcurrentModelAdmin, 'form', DELETE_ATTRIBUTE)):
 
-            with self.settings(MIDDLEWARE_CLASSES=middlewares):
+            saved, __ = SimpleConcurrentModel.objects.get_or_create(pk=id)
 
-                saved, __ = SimpleConcurrentModel.objects.get_or_create(pk=id)
+            url = reverse('admin:demo_simpleconcurrentmodel_change', args=[saved.pk])
+            res = self.app.get(url, user=self.user.username)
+            form = res.form
 
-                url = reverse('admin:demo_simpleconcurrentmodel_change', args=[saved.pk])
-                res = self.app.get(url, user='sax')
-                form = res.form
+            saved.save()  # create conflict here
 
-                saved.save()  # create conflict here
+            res = form.submit(expect_errors=True)
 
-                res = form.submit(expect_errors=True)
+            self.assertEqual(res.status_code, 409)
 
-                self.assertEqual(res.status_code, 409)
+            target = res.context['target']
+            self.assertIn('target', res.context)
+            self.assertIn('saved', res.context)
 
-                target = res.context['target']
-                self.assertIn('target', res.context)
-                self.assertIn('saved', res.context)
-
-                self.assertEqual(res.context['target'].version, target.version)
-                self.assertEqual(res.context['saved'].version, saved.version)
-                self.assertEqual(res.context['request_path'], url)
+            self.assertEqual(res.context['target'].version, target.version)
+            self.assertEqual(res.context['saved'].version, saved.version)
+            self.assertEqual(res.context['request_path'], url)
 
 #
 # class TestFullStack(DjangoAdminTestCase):
