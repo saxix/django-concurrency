@@ -9,7 +9,22 @@ FAQ
 .. contents::
    :local:
 
+.. _south:
+
+South support ?
+---------------
+South support has been removed after version 1.0
+when Django <1.6 support has been removed as well.
+
+If needed add these lines to your ``models.py``::
+
+
+   from south.modelsinspector import add_introspection_rules
+   add_introspection_rules([], ["^concurrency\.fields\.IntegerVersionField"])
+
+
 .. _update_fields:
+
 
 How is managed `update_fields`
 ------------------------------
