@@ -21,6 +21,9 @@ env:
    - TOXENV=py27-d110-pg
    - TOXENV=py27-d110-sqlite
    - TOXENV=py27-d110-mysql
+   - TOXENV=py27-d111-pg
+   - TOXENV=py27-d111-sqlite
+   - TOXENV=py27-d111-mysql
 
    - TOXENV=py33-d18-pg
    - TOXENV=py33-d18-sqlite
@@ -36,11 +39,14 @@ env:
    - TOXENV=py35-d19-sqlite
    - TOXENV=py35-d110-pg
    - TOXENV=py35-d110-sqlite
+   - TOXENV=py35-d111-pg
+   - TOXENV=py35-d111-sqlite
 
    - TOXENV=pypy-d18-pg
    - TOXENV=pypy-d18-sqlite
    - TOXENV=pypy-d19-pg
    - TOXENV=pypy-d19-sqlite
+
    - TOXENV=pypy-d110-pg
    - TOXENV=pypy-d110-sqlite
 
@@ -50,8 +56,7 @@ install:
   - pip install tox "coverage<=4.0" python-coveralls>=2.5 coveralls>=0.5 codecov
 
 script:
-  - tox -e $TOXENV -- py.test tests -v --capture=no --cov=concurrency \
-    --cov-report=xml --cov-config=tests/.coveragerc
+  - tox -e $TOXENV -- py.test tests -v --capture=no --cov=concurrency --cov-report=xml --cov-config=tests/.coveragerc
 
 before_success:
   - coverage erase
