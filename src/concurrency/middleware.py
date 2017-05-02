@@ -2,10 +2,15 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.core.signals import got_request_exception
-from django.core.urlresolvers import get_callable
 
 from concurrency.config import conf
 from concurrency.exceptions import RecordModifiedError
+
+try:
+    from django.core.urlresolvers import get_callable
+except ImportError:
+    from django.urls.utils import get_callable
+
 
 
 class ConcurrencyMiddleware(object):
@@ -13,6 +18,13 @@ class ConcurrencyMiddleware(object):
     :setting:`CONCURRECY_HANDLER409` passing the request and the object.
 
     """
+
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        return response
 
     def process_exception(self, request, exception):
         if isinstance(exception, RecordModifiedError):

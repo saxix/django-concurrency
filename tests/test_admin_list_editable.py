@@ -5,6 +5,7 @@ from django.contrib.admin.models import LogEntry
 from django.contrib.admin.sites import site
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
+from django.test import modify_settings
 from django.utils.encoding import force_text
 
 import pytest
@@ -18,7 +19,7 @@ from concurrency.config import (
 from concurrency.exceptions import RecordModifiedError
 
 
-@pytest.mark.xfail("django.VERSION[:2] == (1, 10)", strict=True)
+# @pytest.mark.xfail(django.VERSION[:2] == (1, 10), reason="Django 1.10")
 class TestListEditable(AdminTestCase):
     TARGET = ListEditableConcurrentModel
 

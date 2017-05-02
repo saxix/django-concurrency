@@ -4,7 +4,6 @@ from __future__ import absolute_import, unicode_literals
 from django.http import HttpResponse
 from django.template import loader
 from django.template.base import Template
-from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 
 from concurrency.compat import TemplateDoesNotExist
@@ -40,7 +39,8 @@ def conflict(request, target=None, template_name='409.html'):
         saved = target.__class__._default_manager.get(pk=target.pk)
     except target.__class__.DoesNotExist:
         saved = None
-    ctx = RequestContext(request, {'target': target,
-                                   'saved': saved,
-                                   'request_path': request.path})
+    ctx = {'target': target,
+           'saved': saved,
+           'request_path': request.path}
+
     return ConflictResponse(template.render(ctx))

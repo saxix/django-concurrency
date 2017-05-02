@@ -31,6 +31,8 @@ class AdminTestCase(WebTestMixin, TransactionTestCase):
                                                    last_login=timezone.now(),
                                                    email='sax@example.com',
                                                    username='sax')
+        # self.user.set_password('123')
+        # self.user.save()
         admin_register_models()
 
 

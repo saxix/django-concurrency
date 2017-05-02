@@ -1,12 +1,16 @@
-from django.core.urlresolvers import reverse
+import pytest
 from django.utils.translation import ugettext as _
 
-import pytest
 from demo.base import SENTINEL, AdminTestCase
 from demo.models import SimpleConcurrentModel
 from demo.util import nextname
 
 from concurrency.forms import VersionFieldSigner
+
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    from django.urls import reverse
 
 
 @pytest.mark.django_db
