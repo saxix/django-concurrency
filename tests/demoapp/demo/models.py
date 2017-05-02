@@ -209,7 +209,7 @@ class ConditionalVersionModel(models.Model):
     field1 = models.CharField(max_length=30, blank=True, null=True, unique=True)
     field2 = models.CharField(max_length=30, blank=True, null=True, unique=True)
     field3 = models.CharField(max_length=30, blank=True, null=True, unique=True)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'demo'
@@ -224,7 +224,8 @@ class Anything(models.Model):
     ConditionalVersionModelWithoutMeta instances.
     """
     name = models.CharField(max_length=10)
-    a_relation = models.ForeignKey('demo.ConditionalVersionModelWithoutMeta')
+    a_relation = models.ForeignKey('demo.ConditionalVersionModelWithoutMeta',
+                                   on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'demo'
@@ -238,7 +239,7 @@ class ConditionalVersionModelWithoutMeta(models.Model):
     field1 = models.CharField(max_length=30, blank=True, null=True, unique=True)
     field2 = models.CharField(max_length=30, blank=True, null=True, unique=True)
     field3 = models.CharField(max_length=30, blank=True, null=True, unique=True)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     anythings = models.ManyToManyField(Anything)
 
     class Meta:
@@ -248,8 +249,10 @@ class ConditionalVersionModelWithoutMeta(models.Model):
 class ThroughRelation(models.Model):
     version = ConditionalVersionField()
     left = models.ForeignKey('demo.ConditionalVersionModelSelfRelation',
+                             on_delete=models.CASCADE,
                              related_name='+')
     right = models.ForeignKey('demo.ConditionalVersionModelSelfRelation',
+                              on_delete=models.CASCADE,
                               related_name='+')
 
     class Meta:

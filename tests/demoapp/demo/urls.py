@@ -17,5 +17,5 @@ urlpatterns = (url('cm/(?P<pk>\d+)/',
                    UpdateView.as_view(model=SimpleConcurrentModel),
                    name='concurrent-edit'),
                url(r'^admin/',
-                   include(admin.site.urls))
+                   admin.site.urls)
                )

@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
-import django
 from django.conf import settings
 from django.contrib.admin.sites import site
-from django.core.urlresolvers import reverse
 from django.http import HttpRequest
-from django.test.utils import override_settings, modify_settings
+from django.test.utils import override_settings
 
 import mock
-import pytest
 from demo.base import AdminTestCase
 from demo.models import SimpleConcurrentModel
 from demo.util import DELETE_ATTRIBUTE, attributes, unique_id
@@ -17,6 +14,10 @@ from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
 from concurrency.exceptions import RecordModifiedError
 from concurrency.middleware import ConcurrencyMiddleware
 
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    from django.urls import reverse
 
 def _get_request(path):
     request = HttpRequest()

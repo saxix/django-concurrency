@@ -1,7 +1,7 @@
 coverage
 django_extensions
 flake8
-ipython
+ipython<6.0
 pdbpp
 psycopg2
 sphinx
