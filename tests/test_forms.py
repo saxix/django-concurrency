@@ -1,3 +1,4 @@
+import pytest
 from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation
 from django.forms.models import modelform_factory
 from django.forms.widgets import HiddenInput, TextInput
@@ -6,7 +7,6 @@ from django.test.testcases import SimpleTestCase
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
-import pytest
 from demo.models import Issue3TestModel, SimpleConcurrentModel
 
 from concurrency.exceptions import VersionError

@@ -36,7 +36,7 @@ MIGRATION_MODULES = {
     'auth': 'demo.auth_migrations',
 }
 
-if django.VERSION[0] == 2 or  django.VERSION[1] >= 10:
+if django.VERSION[0] == 2 or django.VERSION[1] >= 10:
     MIDDLEWARE_CLASSES = []
     MIDDLEWARE = [
         # 'concurrency.middleware.ConcurrencyMiddleware',

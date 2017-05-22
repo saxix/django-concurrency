@@ -42,6 +42,15 @@ env:
    - TOXENV=py35-d111-pg
    - TOXENV=py35-d111-sqlite
 
+   - TOXENV=py36-d18-pg
+   - TOXENV=py36-d18-sqlite
+   - TOXENV=py36-d19-pg
+   - TOXENV=py36-d19-sqlite
+   - TOXENV=py36-d110-pg
+   - TOXENV=py36-d110-sqlite
+   - TOXENV=py36-d111-pg
+   - TOXENV=py36-d111-sqlite
+
    - TOXENV=pypy-d18-pg
    - TOXENV=pypy-d18-sqlite
    - TOXENV=pypy-d19-pg

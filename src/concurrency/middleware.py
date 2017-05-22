@@ -12,7 +12,6 @@ except ImportError:
     from django.urls.utils import get_callable
 
 
-
 class ConcurrencyMiddleware(object):
     """ Intercept :ref:`RecordModifiedError` and invoke a callable defined in
     :setting:`CONCURRECY_HANDLER409` passing the request and the object.

@@ -2,15 +2,14 @@
 import re
 
 import django
+import pytest
 from django.contrib.admin.sites import site
 from django.contrib.auth.models import User
-from django.core.management import call_command
 from django.http import QueryDict
 from django.test.client import RequestFactory
 from django.test.testcases import SimpleTestCase
 from django.utils.encoding import force_text
 
-import pytest
 from demo.admin import ActionsModelAdmin, admin_register
 from demo.base import AdminTestCase
 from demo.models import ListEditableConcurrentModel, ReversionConcurrentModel

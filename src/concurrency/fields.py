@@ -18,7 +18,7 @@ from concurrency import forms
 from concurrency.api import get_revision_of_object
 from concurrency.config import conf
 from concurrency.core import ConcurrencyOptions
-from concurrency.utils import refetch, fqn
+from concurrency.utils import fqn, refetch
 
 try:
     from django.apps import apps

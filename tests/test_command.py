@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 
+import pytest
 import six
 from django.core.management import call_command
-
-import pytest
 from mock import Mock
 
 import concurrency.management.commands.triggers as command

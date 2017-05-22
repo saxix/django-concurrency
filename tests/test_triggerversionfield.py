@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.core.signals import request_started
-from django.db import IntegrityError, connections, connection
-
 import mock
 import pytest
+from django.core.signals import request_started
+from django.db import IntegrityError, connection, connections
+
 from demo.models import TriggerConcurrentModel
 # Register an event to reset saved queries when a Django request is started.
 from demo.util import nextname
@@ -54,7 +54,6 @@ class CaptureQueriesContext(object):
         self.final_queries = len(self.connection.queries)
 
 
-
 @pytest.mark.django_db
 def test_trigger_external_update():
     instance = TriggerConcurrentModel()
@@ -77,7 +76,6 @@ def test_trigger_external_create():
     instance = TriggerConcurrentModel.objects.get(username='abc')
     obj = refetch(instance)
     assert obj.version == -1
-
 
 
 @pytest.mark.django_db

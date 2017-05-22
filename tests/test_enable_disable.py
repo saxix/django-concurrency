@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
+import pytest
 from django.test.utils import override_settings
 
-import pytest
 from demo.models import AutoIncConcurrentModel, SimpleConcurrentModel
 from demo.util import nextname
 
