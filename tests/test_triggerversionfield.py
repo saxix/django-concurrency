@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.signals import request_started
-from django.db import IntegrityError, connections
+from django.db import IntegrityError, connections, connection
 
 import mock
 import pytest
@@ -52,6 +52,30 @@ class CaptureQueriesContext(object):
         if exc_type is not None:
             return
         self.final_queries = len(self.connection.queries)
+
+
+@pytest.mark.django_db
+def test_trigger_external_update():
+    instance = TriggerConcurrentModel()
+    assert instance.pk is None
+    assert instance.version == 0
+
+    instance.save()
+    assert instance.version == 1
+    with connection.cursor() as c:
+        c.execute("UPDATE {} SET username='aaa' WHERE id='{}'".format(instance._meta.db_table, instance.pk))
+    obj = refetch(instance)
+    assert obj.version == 2
+
+
+@pytest.mark.django_db
+def test_trigger_external_create():
+    with connection.cursor() as c:
+        c.execute("INSERT INTO {} (username, count, cm_version_id) VALUES ('abc', 1, -1)".format(
+            TriggerConcurrentModel._meta.db_table))
+    instance = TriggerConcurrentModel.objects.get(username='abc')
+    obj = refetch(instance)
+    assert obj.version == -1
 
 
 @pytest.mark.django_db
