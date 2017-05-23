@@ -1,6 +1,5 @@
 check-manifest==0.30
 django-webtest>=1.9.1
-django-reversion
 mock>=1.0.1
 pytest-cache>=1.0
 pytest-cov>=1.6
