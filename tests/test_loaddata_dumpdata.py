@@ -26,7 +26,8 @@ def test_dumpdata():
 @pytest.mark.django_db(transaction=True)
 def test_loaddata_fail():
     datafile = os.path.join(os.path.dirname(__file__), 'dumpdata.json')
-    data = json.load(open(datafile, 'r'))
+    with open(datafile, 'r') as f:
+        data = json.load(f)
     pk = data[0]['pk']
 
     call_command('loaddata', datafile, stdout=StringIO())
