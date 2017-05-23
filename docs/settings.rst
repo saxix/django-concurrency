@@ -116,10 +116,7 @@ show a message to the user
 ``CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Used by admin's integations to handle ``list_editable``.
-Stop at the first conflict and raise
-:class:`RecordModifiedError <concurrency.exceptions.RecordModifiedError>`.
-Note that if you want to use
-:class:`ConcurrencyMiddleware <concurrency.middleware.ConcurrencyMiddleware>`
-based conflict management you must set this flag.
+Stop at the first conflict and raise :class:`RecordModifiedError <concurrency.exceptions.RecordModifiedError>`.
+Note that if you want to use :class:`ConcurrencyMiddleware <concurrency.middleware.ConcurrencyMiddleware>` based conflict management you must set this flag.
 
 .. seealso:: :ref:`list_editable`, :ref:`middleware`

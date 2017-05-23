@@ -9,7 +9,7 @@ FAQ
 .. contents::
    :local:
 
-.. _south:
+.. _south_support:
 
 South support ?
 ---------------
