@@ -11,9 +11,6 @@ from six import StringIO
 import pytest
 from demo.models import SimpleConcurrentModel
 
-from concurrency.api import disable_concurrency
-from concurrency.exceptions import RecordModifiedError
-
 logger = logging.getLogger(__name__)
 
 
@@ -29,7 +26,8 @@ def test_dumpdata():
 @pytest.mark.django_db(transaction=True)
 def test_loaddata_fail():
     datafile = os.path.join(os.path.dirname(__file__), 'dumpdata.json')
-    data = json.load(open(datafile, 'r'))
+    with open(datafile, 'r') as f:
+        data = json.load(f)
     pk = data[0]['pk']
 
     call_command('loaddata', datafile, stdout=StringIO())
