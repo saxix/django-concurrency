@@ -41,10 +41,12 @@ class VersionWidget(HiddenInput):
     any value, you should use this widget to display the current revision number
     """
 
-    def _format_value(self, value):
+    def format_value(self, value):
         if value:
             value = str(value)
         return value
+
+    _format_value = format_value
 
     def render(self, name, value, attrs=None):
         ret = super(VersionWidget, self).render(name, value, attrs)
