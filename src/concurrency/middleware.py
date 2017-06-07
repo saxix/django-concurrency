@@ -7,9 +7,9 @@ from concurrency.config import conf
 from concurrency.exceptions import RecordModifiedError
 
 try:
-    from django.core.urlresolvers import get_callable
-except ImportError:
     from django.urls.utils import get_callable
+except ImportError:
+    from django.core.urlresolvers import get_callable
 
 
 class ConcurrencyMiddleware(object):
