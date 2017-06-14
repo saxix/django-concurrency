@@ -74,18 +74,13 @@ class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_p
 
 
 class TriggerRegistry(object):
-    # FIXME: this is very bad. it seems required only by tests
-    # see
-    # https://github.com/pytest-dev/pytest-django/issues/75
-    # https://code.djangoproject.com/ticket/22280#comment:20
-
     _fields = []
 
     def append(self, field):
         self._fields.append([field.model._meta.app_label, field.model.__name__])
 
     def __iter__(self):
-        return iter([get_model(*i)._concurrencymeta.field for i in self._fields])
+        return iter(self._fields)
 
     def __contains__(self, field):
         target = [field.model._meta.app_label, field.model.__name__]
@@ -143,6 +138,7 @@ class VersionField(Field):
         setattr(cls, '_concurrencymeta', ConcurrencyOptions())
         cls._concurrencymeta.field = self
         cls._concurrencymeta.base = cls
+        cls._concurrencymeta.triggers = []
 
     def _set_version_value(self, model_instance, value):
         setattr(model_instance, self.attname, int(value))

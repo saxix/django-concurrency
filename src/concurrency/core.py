@@ -62,3 +62,4 @@ class ConcurrencyOptions:
     skip = False
     increment = True
     initial = None
+    triggers = []

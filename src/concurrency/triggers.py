@@ -6,7 +6,7 @@ from collections import defaultdict
 from django.db import connections, router
 from django.db.utils import DatabaseError
 
-from concurrency.fields import _TRIGGERS  # noqa
+from concurrency.fields import _TRIGGERS, get_model  # noqa
 
 
 def get_trigger_name(field):
@@ -38,8 +38,9 @@ def get_triggers(databases=None):
 def drop_triggers(*databases):
     global _TRIGGERS
     ret = defaultdict(lambda: [])
-    for field in set(_TRIGGERS):
-        model = field.model
+    for app_label, model_name in _TRIGGERS:
+        model = get_model(app_label, model_name)
+        field = model._concurrencymeta.field
         alias = router.db_for_write(model)
         if alias in databases:
             connection = connections[alias]
@@ -54,12 +55,14 @@ def create_triggers(databases):
     global _TRIGGERS
     ret = defaultdict(lambda: [])
 
-    for field in set(_TRIGGERS):
-        model = field.model
+    for app_label, model_name in _TRIGGERS:
+        model = get_model(app_label, model_name)
+        field = model._concurrencymeta.field
+        storage = model._concurrencymeta.triggers
         alias = router.db_for_write(model)
         if alias in databases:
-            if not field._trigger_exists:
-                field._trigger_exists = True
+            if field not in storage:
+                storage.append(field)
                 connection = connections[alias]
                 f = factory(connection)
                 f.create(field)
