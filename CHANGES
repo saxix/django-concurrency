@@ -1,7 +1,9 @@
 Release 1.4 (dev)
 -----------------
+* fixes :issue:`80`. (thanks Naddiseo for the useful support)
 * Django 1.11 compatibility
 * some minor support for Django 2.0
+
 
 Release 1.3.2 (10 Sep 2016)
 ---------------------------
