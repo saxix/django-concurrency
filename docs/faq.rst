@@ -14,7 +14,7 @@ FAQ
 I use Django-Rest-Framework and |concurrency| seems do not work
 ---------------------------------------------------------------
 Use :setting:`CONCURRENCY_IGNORE_DEFAULT` accordingly or be sure
-that serializer does not set `0` as default value
+that serializer does not set `0` as initial value
 
 
 
