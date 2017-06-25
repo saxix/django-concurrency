@@ -9,6 +9,22 @@ FAQ
 .. contents::
    :local:
 
+
+
+I use Django-Rest-Framework and |concurrency| seems do not work
+---------------------------------------------------------------
+Use :setting:`CONCURRENCY_IGNORE_DEFAULT` accordingly or be sure
+that serializer does not set `0` as default value
+
+
+
+Just added |concurrency| to existing project and it does not work
+-----------------------------------------------------------------
+
+Check that your records do not have `0` as version number
+and use :setting:`CONCURRENCY_IGNORE_DEFAULT` accordingly
+
+
 .. _south_support:
 
 South support ?
