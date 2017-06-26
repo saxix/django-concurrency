@@ -99,6 +99,8 @@ class TriggerFactory(object):
                 raise DatabaseError("""Error executing:
 {1}
 {0}""".format(exc, stm))
+        else:  # pragma: no cover
+            pass
         field._trigger_exists = True
 
     def drop(self, field):

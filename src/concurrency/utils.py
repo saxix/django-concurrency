@@ -114,7 +114,7 @@ class ConcurrencyAdminTestMixin(object):
 def refetch(model_instance):
     """
     Reload model instance from the database
-    """
+    # """
     return model_instance.__class__.objects.get(pk=model_instance.pk)
 
 
@@ -166,16 +166,16 @@ def fqn(o):
     """
     parts = []
 
-    if inspect.ismethod(o):
-        try:
-            cls = o.im_class
-        except AttributeError:
-            # Python 3 eliminates im_class, substitutes __module__ and
-            # __qualname__ to provide similar information.
-            parts = (o.__module__, o.__qualname__)
-        else:
-            parts = (fqn(cls), get_classname(o))
-    elif hasattr(o, '__module__'):
+    # if inspect.ismethod(o):
+    #     try:
+    #         cls = o.im_class
+    #     except AttributeError:
+    #         # Python 3 eliminates im_class, substitutes __module__ and
+    #         # __qualname__ to provide similar information.
+    #         parts = (o.__module__, o.__qualname__)
+    #     else:
+    #         parts = (fqn(cls), get_classname(o))
+    if hasattr(o, '__module__'):
         parts.append(o.__module__)
         parts.append(get_classname(o))
     elif inspect.ismodule(o):

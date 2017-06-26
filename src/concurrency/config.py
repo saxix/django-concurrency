@@ -20,34 +20,6 @@ LIST_EDITABLE_POLICIES = [CONCURRENCY_LIST_EDITABLE_POLICY_SILENT, CONCURRENCY_L
 
 
 class AppSettings(object):
-    """
-    Class to manage application related settings
-    How to use:
-    >>> import pytest
-    >>> from django.conf import settings
-    >>> from concurrency.utils import fqn
-    >>> settings.APP_OVERRIDE = 'overridden'
-    >>> class MySettings(AppSettings):
-    ...     defaults = {'ENTRY1': 'abc', 'ENTRY2': 123, 'OVERRIDE': None, 'CALLBACK': fqn(fqn)}
-
-    >>> conf = MySettings("APP")
-    >>> str(conf.ENTRY1), str(settings.APP_ENTRY1)
-    ('abc', 'abc')
-    >>> str(conf.OVERRIDE), str(settings.APP_OVERRIDE)
-    ('overridden', 'overridden')
-
-    >>> conf = MySettings("MYAPP")
-    >>> conf.ENTRY2, settings.MYAPP_ENTRY2
-    (123, 123)
-    >>> settings.MYAPP_CALLBACK = fqn
-    >>> conf = MySettings("MYAPP")
-    >>> conf.CALLBACK == fqn
-    True
-    >>> with pytest.raises(ImproperlyConfigured):
-    ...     settings.OTHER_CALLBACK = 222
-    ...     conf = MySettings("OTHER")
-
-    """
     defaults = {
         'ENABLED': True,
         'MANUAL_TRIGGERS': False,

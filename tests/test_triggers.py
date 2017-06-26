@@ -6,7 +6,7 @@ from django.db import connections
 
 from demo.models import DropTriggerConcurrentModel, TriggerConcurrentModel  # noqa
 
-from concurrency.triggers import drop_triggers, factory
+from concurrency.triggers import drop_triggers, factory, get_triggers
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +18,14 @@ def test_list_triggers():
     assert factory(conn).get_list() == [
         u'concurrency_demo_droptriggerconcurrentmodel_version',
         u'concurrency_demo_triggerconcurrentmodel_version']
+
+
+@pytest.mark.django_db
+def test_get_triggers():
+    assert get_triggers(['default']) == {'default': [u'concurrency_demo_droptriggerconcurrentmodel_version',
+                                                     u'concurrency_demo_triggerconcurrentmodel_version']}
+    assert get_triggers() == {'default': [u'concurrency_demo_droptriggerconcurrentmodel_version',
+                                                     u'concurrency_demo_triggerconcurrentmodel_version']}
 
 
 @pytest.mark.django_db

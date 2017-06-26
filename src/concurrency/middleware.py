@@ -30,3 +30,5 @@ class ConcurrencyMiddleware(object):
             got_request_exception.send(sender=self, request=request)
             callback = get_callable(conf.HANDLER409)
             return callback(request, target=exception.target)
+        else:  # pragma: no cover
+            pass

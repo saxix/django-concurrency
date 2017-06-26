@@ -74,7 +74,7 @@ class Command(BaseCommand):
                         for trigger in triggers:
                             self.stdout.write("    Dropped   {0[2]}".format(trigger))
                     self.stdout.write('')
-                else:
+                else:  # pragma: no cover
                     raise Exception()
             except ImproperlyConfigured as e:  # pragma: no cover
                 self.stdout.write(self.style.ERROR(e))

@@ -27,6 +27,21 @@ def test_command_create(monkeypatch):
 
 
 @pytest.mark.django_db
+def test_command_create_db(monkeypatch):
+    out = six.StringIO()
+    mock_create = Mock()
+    mock_create.return_value = {'default': [['model', 'field', 'trigger']]}
+
+    monkeypatch.setattr(command, 'create_triggers', mock_create)
+    call_command('triggers', 'create', database='default', stdout=out)
+
+    out.seek(0)
+    output = out.read()
+    assert output.find('Created trigger  for field') > 0
+    assert mock_create.call_count == 1
+
+
+@pytest.mark.django_db
 def test_command_list():
     out = six.StringIO()
     call_command('triggers', 'list', stdout=out)
