@@ -14,32 +14,26 @@ def deprecated(replacement=None, version=None):
     """A decorator which can be used to mark functions as deprecated.
     replacement is a callable that will be called with the same args
     as the decorated function.
-
+    >>> import pytest
     >>> @deprecated()
-    ... def foo(x):
+    ... def foo1(x):
     ...     return x
     ...
-    >>> ret = foo(1)
-    DeprecationWarning: foo is deprecated
-    >>> ret
+    >>> pytest.warns(DeprecationWarning, foo1, 1)
     1
-    >>>
-    >>>
     >>> def newfun(x):
     ...     return 0
     ...
-    >>> @deprecated(newfun)
-    ... def foo(x):
+    >>> @deprecated(newfun, '1.1')
+    ... def foo2(x):
     ...     return x
     ...
-    >>> ret = foo(1)
-    DeprecationWarning: foo is deprecated; use newfun instead
-    >>> ret
+    >>> pytest.warns(DeprecationWarning, foo2, 1)
     0
     >>>
     """
 
-    def outer(oldfun):  # pragma: no cover
+    def outer(oldfun):
         def inner(*args, **kwargs):
             msg = "%s is deprecated" % oldfun.__name__
             if version is not None:
@@ -148,20 +142,27 @@ def fqn(o):
     :param o: object or class
     :return: class name
 
+    >>> import concurrency.fields
     >>> fqn('str')
     Traceback (most recent call last):
     ...
     ValueError: Invalid argument `str`
-    >>> class A(object): pass
-    >>> fqn(A)
-    'wfp_commonlib.python.reflect.A'
+    >>> class A(object):
+    ...     def method(self):
+    ...         pass
+    >>> str(fqn(A))
+    'concurrency.utils.A'
 
-    >>> fqn(A())
-    'wfp_commonlib.python.reflect.A'
+    >>> str(fqn(A()))
+    'concurrency.utils.A'
 
-    >>> from wfp_commonlib.python import RexList
-    >>> fqn(RexList.append)
-    'wfp_commonlib.python.structure.RexList.append'
+    >>> str(fqn(concurrency.fields))
+    'concurrency.fields'
+
+    >>> str(fqn(A.method))
+    'concurrency.utils.A.method'
+
+
     """
     parts = []
 

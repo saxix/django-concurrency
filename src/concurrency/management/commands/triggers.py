@@ -76,5 +76,5 @@ class Command(BaseCommand):
                     self.stdout.write('')
                 else:
                     raise Exception()
-            except ImproperlyConfigured as e:
+            except ImproperlyConfigured as e:  # pragma: no cover
                 self.stdout.write(self.style.ERROR(e))

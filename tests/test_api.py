@@ -51,3 +51,9 @@ def test_apply_concurrency_check():
 
     with pytest.raises(RecordModifiedError):
         instance.save()
+
+
+@pytest.mark.django_db(transaction=False)
+def test_apply_concurrency_check_ignore_multiple_call():
+    apply_concurrency_check(Group, 'version', IntegerVersionField)
+    apply_concurrency_check(Group, 'version', IntegerVersionField)

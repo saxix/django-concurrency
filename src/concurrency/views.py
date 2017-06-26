@@ -30,14 +30,14 @@ def conflict(request, target=None, template_name='409.html'):
     """
     try:
         template = loader.get_template(template_name)
-    except TemplateDoesNotExist:
+    except TemplateDoesNotExist:  # pragma: no cover
         template = Template(
             '<h1>Conflict</h1>'
             '<p>The request was unsuccessful due to a conflict. '
             'The object changed during the transaction.</p>')
     try:
         saved = target.__class__._default_manager.get(pk=target.pk)
-    except target.__class__.DoesNotExist:
+    except target.__class__.DoesNotExist:  # pragma: no cover
         saved = None
     ctx = {'target': target,
            'saved': saved,

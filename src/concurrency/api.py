@@ -8,6 +8,7 @@ from django.db.models import Model
 from concurrency.config import conf
 from concurrency.core import _select_lock, get_version_fieldname  # _wrap_model_save
 from concurrency.exceptions import RecordModifiedError
+from concurrency.utils import deprecated
 
 __all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_object',
            'RecordModifiedError', 'disable_concurrency',
@@ -66,10 +67,11 @@ def apply_concurrency_check(model, fieldname, versionclass):
 
     class_prepared_concurrency_handler(model)
 
-    if not model._concurrencymeta.versioned_save:
-        versionclass._wrap_model_save(model)
+    # if not model._concurrencymeta.versioned_save:
+    #     versionclass._wrap_model_save(model)
 
 
+@deprecated(version="1.5")
 def concurrency_check(model_instance, force_insert=False, force_update=False, using=None, **kwargs):
     if not force_insert:
         _select_lock(model_instance)

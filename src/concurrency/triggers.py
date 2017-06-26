@@ -9,6 +9,7 @@ from django.db.utils import DatabaseError
 
 from .fields import _TRIGGERS  # noqa
 
+
 def get_trigger_name(field):
     """
 
@@ -48,6 +49,8 @@ def drop_triggers(*databases):
             f.drop(field)
             field._trigger_exists = False
             ret[alias].append([model, field, field.trigger_name])
+        else:  # pragma: no cover
+            pass
     return ret
 
 
@@ -60,14 +63,15 @@ def create_triggers(databases):
         field = model._concurrencymeta.field
         storage = model._concurrencymeta.triggers
         alias = router.db_for_write(model)
-        if alias in databases:
-            if field not in storage:
-                storage.append(field)
-                connection = connections[alias]
-                f = factory(connection)
-                f.create(field)
-                ret[alias].append([model, field, field.trigger_name])
-    # _TRIGGERS = []
+        if (alias in databases) and field not in storage:
+            storage.append(field)
+            connection = connections[alias]
+            f = factory(connection)
+            f.create(field)
+            ret[alias].append([model, field, field.trigger_name])
+        else:  # pragma: no cover
+            pass
+
     return ret
 
 
@@ -168,5 +172,5 @@ def factory(conn):
                 'sqlite3': Sqlite3,
                 'sqlite': Sqlite3,
                 }[conn.vendor](conn)
-    except KeyError:
+    except KeyError:  # pragma: no cover
         raise ValueError('{} is not supported by TriggerVersionField'.format(conn))

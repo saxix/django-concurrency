@@ -23,27 +23,29 @@ class AppSettings(object):
     """
     Class to manage application related settings
     How to use:
-
+    >>> import pytest
     >>> from django.conf import settings
+    >>> from concurrency.utils import fqn
     >>> settings.APP_OVERRIDE = 'overridden'
-    >>> settings.MYAPP_CALLBACK = 100
     >>> class MySettings(AppSettings):
-    ...     defaults = {'ENTRY1': 'abc', 'ENTRY2': 123, 'OVERRIDE': None, 'CALLBACK':10}
-    ...     def set_CALLBACK(self, value):
-    ...         setattr(self, 'CALLBACK', value*2)
+    ...     defaults = {'ENTRY1': 'abc', 'ENTRY2': 123, 'OVERRIDE': None, 'CALLBACK': fqn(fqn)}
 
     >>> conf = MySettings("APP")
-    >>> conf.ENTRY1, settings.APP_ENTRY1
+    >>> str(conf.ENTRY1), str(settings.APP_ENTRY1)
     ('abc', 'abc')
-    >>> conf.OVERRIDE, settings.APP_OVERRIDE
+    >>> str(conf.OVERRIDE), str(settings.APP_OVERRIDE)
     ('overridden', 'overridden')
 
     >>> conf = MySettings("MYAPP")
     >>> conf.ENTRY2, settings.MYAPP_ENTRY2
     (123, 123)
+    >>> settings.MYAPP_CALLBACK = fqn
     >>> conf = MySettings("MYAPP")
-    >>> conf.CALLBACK
-    200
+    >>> conf.CALLBACK == fqn
+    True
+    >>> with pytest.raises(ImproperlyConfigured):
+    ...     settings.OTHER_CALLBACK = 222
+    ...     conf = MySettings("OTHER")
 
     """
     defaults = {
@@ -81,7 +83,7 @@ class AppSettings(object):
             elif callable(value):
                 func = value
             else:
-                raise ImproperlyConfigured("`CALLBACK` must be a callable or a fullpath to callable")
+                raise ImproperlyConfigured("{} is not a valid value for `CALLBACK`. It must be a callable or a fullpath to callable. ".format(value))
             self._callback = func
 
         setattr(self, name, value)

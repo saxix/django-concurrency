@@ -15,4 +15,4 @@ except ImportError:
 try:
     from django.urls.utils import get_callable
 except ImportError:
-    from django.core.urlresolvers import get_callable
+    from django.core.urlresolvers import get_callable  # noqa

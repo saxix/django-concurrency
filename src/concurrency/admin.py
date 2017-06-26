@@ -38,7 +38,7 @@ class ConcurrencyActionMixin(object):
             return helpers.checkbox.render(helpers.ACTION_CHECKBOX_NAME,
                                            force_text("%s,%s" % (obj.pk,
                                                                  get_revision_of_object(obj))))
-        else:
+        else:  # pragma: no cover
             return super(ConcurrencyActionMixin, self).action_checkbox(obj)
 
     action_checkbox.short_description = mark_safe('<input type="checkbox" id="action-toggle" />')
@@ -69,7 +69,7 @@ class ConcurrencyActionMixin(object):
         # Use the action whose button was pushed
         try:
             data.update({'action': data.getlist('action')[action_index]})
-        except IndexError:
+        except IndexError:  # pragma: no cover
             # If we didn't get an action from the chosen form that's invalid
             # POST data, so by deleting action it'll fail the validation check
             # below. So no need to do anything here
@@ -90,9 +90,10 @@ class ConcurrencyActionMixin(object):
             else:
                 selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
 
-            revision_field = self.model._concurrencymeta.field
             if not selected:
                 return None
+
+            revision_field = self.model._concurrencymeta.field
 
             if self.check_concurrent_action:
                 self.delete_selected_confirmation_template = self.get_confirmation_template()
