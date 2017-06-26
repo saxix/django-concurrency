@@ -7,6 +7,7 @@ from django.apps import apps
 from django.db import connections, router
 from django.db.utils import DatabaseError
 
+from .fields import _TRIGGERS  # noqa
 
 def get_trigger_name(field):
     """
