@@ -1,13 +1,10 @@
+# coding=utf-8
 from __future__ import absolute_import, unicode_literals
 
 from django.core.exceptions import ImproperlyConfigured
 from django.test.signals import setting_changed
+from django.urls import get_callable
 from django.utils import six
-
-try:
-    from django.urls.utils import get_callable
-except ImportError:
-    from django.core.urlresolvers import get_callable
 
 # List Editable Policy
 # 0 do not save updated records, save others, show message to the user

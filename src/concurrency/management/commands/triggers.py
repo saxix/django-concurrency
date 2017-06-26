@@ -2,8 +2,8 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management.base import BaseCommand
 from django.db import connections
+from django.db.transaction import atomic
 
-from concurrency.compat import atomic
 from concurrency.triggers import create_triggers, drop_triggers, get_triggers
 
 

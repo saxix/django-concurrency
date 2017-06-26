@@ -3,10 +3,9 @@ from __future__ import absolute_import, unicode_literals
 
 from collections import defaultdict
 
+from django.apps import apps
 from django.db import connections, router
 from django.db.utils import DatabaseError
-
-from concurrency.fields import _TRIGGERS, get_model  # noqa
 
 
 def get_trigger_name(field):
@@ -39,7 +38,7 @@ def drop_triggers(*databases):
     global _TRIGGERS
     ret = defaultdict(lambda: [])
     for app_label, model_name in _TRIGGERS:
-        model = get_model(app_label, model_name)
+        model = apps.get_model(app_label, model_name)
         field = model._concurrencymeta.field
         alias = router.db_for_write(model)
         if alias in databases:
@@ -56,7 +55,7 @@ def create_triggers(databases):
     ret = defaultdict(lambda: [])
 
     for app_label, model_name in _TRIGGERS:
-        model = get_model(app_label, model_name)
+        model = apps.get_model(app_label, model_name)
         field = model._concurrencymeta.field
         storage = model._concurrencymeta.triggers
         alias = router.db_for_write(model)

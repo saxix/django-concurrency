@@ -1,3 +1,4 @@
+# coding=utf-8
 from __future__ import absolute_import, unicode_literals
 
 import copy
@@ -11,6 +12,7 @@ from functools import update_wrapper
 from django.db import models
 from django.db.models import signals
 from django.db.models.fields import Field
+from django.db.models.signals import class_prepared, post_migrate
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
@@ -19,18 +21,6 @@ from concurrency.api import get_revision_of_object
 from concurrency.config import conf
 from concurrency.core import ConcurrencyOptions
 from concurrency.utils import fqn, refetch
-
-try:
-    from django.apps import apps
-
-    get_model = apps.get_model
-except ImportError:
-    from django.db.models.loading import get_model
-
-try:
-    from django.db.models.signals import class_prepared, post_migrate
-except:
-    from django.db.models.signals import class_prepared, post_syncdb as post_migrate
 
 logger = logging.getLogger(__name__)
 
@@ -109,14 +99,6 @@ class VersionField(Field):
                                            db_tablespace=db_tablespace,
                                            db_column=db_column)
 
-    def deconstruct(self):
-        name, path, args, kwargs = super(VersionField, self).deconstruct()
-        kwargs['default'] = 1
-        return name, path, args, kwargs
-
-    def get_default(self):
-        return 0
-
     def get_internal_type(self):
         return "BigIntegerField"
 
@@ -131,8 +113,8 @@ class VersionField(Field):
         kwargs['widget'] = forms.VersionField.widget
         return super(VersionField, self).formfield(**kwargs)
 
-    def contribute_to_class(self, cls, name, virtual_only=False):
-        super(VersionField, self).contribute_to_class(cls, name, virtual_only)
+    def contribute_to_class(self, cls, *args, **kwargs):
+        super(VersionField, self).contribute_to_class(cls, *args, **kwargs)
         if hasattr(cls, '_concurrencymeta') or cls._meta.abstract:
             return
         setattr(cls, '_concurrencymeta', ConcurrencyOptions())
@@ -250,8 +232,8 @@ class TriggerVersionField(VersionField):
         self._trigger_exists = False
         super(TriggerVersionField, self).__init__(*args, **kwargs)
 
-    def contribute_to_class(self, cls, name, virtual_only=False):
-        super(TriggerVersionField, self).contribute_to_class(cls, name)
+    def contribute_to_class(self, cls, *args, **kwargs):
+        super(TriggerVersionField, self).contribute_to_class(cls, *args, **kwargs)
         if not cls._meta.abstract or cls._meta.proxy:
             if self not in _TRIGGERS:
                 _TRIGGERS.append(self)
@@ -332,8 +314,8 @@ def filter_fields(instance, field):
 
 
 class ConditionalVersionField(AutoIncVersionField):
-    def contribute_to_class(self, cls, name, virtual_only=False):
-        super(ConditionalVersionField, self).contribute_to_class(cls, name, virtual_only)
+    def contribute_to_class(self, cls, *args, **kwargs):
+        super(ConditionalVersionField, self).contribute_to_class(cls, *args, **kwargs)
         signals.post_init.connect(self._load_model,
                                   sender=cls,
                                   dispatch_uid=fqn(cls))
