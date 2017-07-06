@@ -1,5 +1,6 @@
 Release 1.4 (dev)
 -----------------
+* closes :issue:`81`. Add docs and check.
 * fixes :issue:`80`. (thanks Naddiseo for the useful support)
 * Django 1.11 compatibility
 * some minor support for Django 2.0

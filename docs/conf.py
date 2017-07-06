@@ -58,6 +58,8 @@ extlinks = {'issue': ('https://github.com/saxix/django-concurrency/issues/%s', '
 
             }
 
+github_project_url = 'https://github.com/saxix/django-concurrency'
+
 todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.

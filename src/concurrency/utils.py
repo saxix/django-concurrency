@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-
+import six
 import inspect
 import logging
 import warnings
@@ -183,3 +183,32 @@ def fqn(o):
     if not parts:
         raise ValueError("Invalid argument `%s`" % o)
     return ".".join(parts)
+
+
+def flatten(iterable):
+    """
+    flatten(sequence) -> list
+
+    Returns a single, flat list which contains all elements retrieved
+    from the sequence and all recursively contained sub-sequences
+    (iterables).
+
+    :param sequence: any object that implements iterable protocol (see: :ref:`typeiter`)
+    :return: list
+
+    Examples:
+
+    >>> from adminactions.utils import flatten
+    >>> [1, 2, [3,4], (5,6)]
+    [1, 2, [3, 4], (5, 6)]
+
+    >>> flatten([[[1,2,3], (42,None)], [4,5], [6], 7, (8,9,10)])
+    [1, 2, 3, 42, None, 4, 5, 6, 7, 8, 9, 10]"""
+
+    result = list()
+    for el in iterable:
+        if hasattr(el, "__iter__") and not isinstance(el, six.string_types):
+            result.extend(flatten(el))
+        else:
+            result.append(el)
+    return list(result)

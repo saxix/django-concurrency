@@ -5,6 +5,8 @@ import django
 import pytest
 from django.contrib.admin.sites import site
 from django.contrib.auth.models import User
+from django.core.management import call_command
+from django.core.management.base import SystemCheckError
 from django.http import QueryDict
 from django.test import override_settings
 from django.test.client import RequestFactory
@@ -111,3 +113,24 @@ def test_issue_54():
 
         with pytest.raises(RecordModifiedError):
             m2.save()
+
+
+@pytest.mark.django_db()
+def test_issue_81a(monkeypatch):
+    monkeypatch.setattr('demo.admin.ActionsModelAdmin.fields', ('id',))
+    with pytest.raises(SystemCheckError) as e:
+        call_command('check')
+    assert 'concurrency.A001' in e.value.message
+
+
+@pytest.mark.django_db()
+def test_issue_81b(monkeypatch):
+    fieldsets = (
+        ('Standard info', {
+            'fields': ('id',)
+        }),
+    )
+    monkeypatch.setattr('demo.admin.ActionsModelAdmin.fieldsets', fieldsets)
+    with pytest.raises(SystemCheckError) as e:
+        call_command('check')
+    assert 'concurrency.A002' in e.value.message

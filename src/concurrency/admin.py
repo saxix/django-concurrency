@@ -7,6 +7,7 @@ from functools import reduce
 
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
+from django.core.checks import Error
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db.models import Q
 from django.forms.formsets import (
@@ -23,6 +24,7 @@ from concurrency.api import get_revision_of_object
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, conf
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
+from concurrency.utils import flatten
 
 ALL = object()
 
@@ -251,3 +253,31 @@ class ConcurrentModelAdmin(ConcurrencyActionMixin,
                            admin.ModelAdmin):
     form = ConcurrentForm
     formfield_overrides = {forms.VersionField: {'widget': VersionWidget}}
+
+    def check(self, **kwargs):
+        errors = []
+        if self.fields:
+            version_field = self.model._concurrencymeta.field
+            if version_field.name not in self.fields:
+                errors.append(
+                    Error(
+                        'Missed version field in {} fields definition'.format(self),
+                        hint="Please add '{}' to the 'fields' attribute".format(version_field.name),
+                        obj=None,
+                        id='concurrency.A001',
+                    )
+                )
+        if self.fieldsets:
+            version_field = self.model._concurrencymeta.field
+            fields = flatten([v['fields'] for k, v in self.fieldsets])
+
+            if version_field.name not in fields:
+                errors.append(
+                    Error(
+                        'Missed version field in {} fieldsets definition'.format(self),
+                        hint="Please add '{}' to the 'fieldsets' attribute".format(version_field.name),
+                        obj=None,
+                        id='concurrency.A002',
+                    )
+                )
+        return errors

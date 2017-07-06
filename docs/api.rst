@@ -75,6 +75,10 @@ ConcurrentModelAdmin
 --------------------
 .. autoclass:: concurrency.admin.ConcurrentModelAdmin
 
+.. warning:: If you customize ``fields`` or ``fieldsets`` remember to add version field to the list. (See issue :ghissue:`81`)
+
+
+
 .. _ConcurrencyActionMixin:
 
 ConcurrencyActionMixin
