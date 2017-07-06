@@ -14,6 +14,7 @@ from django.test.testcases import SimpleTestCase
 from django.utils.encoding import force_text
 
 from concurrency.exceptions import RecordModifiedError
+from conftest import skipIfDjangoVersion
 from demo.admin import ActionsModelAdmin, admin_register
 from demo.base import AdminTestCase
 from demo.models import ListEditableConcurrentModel, ReversionConcurrentModel, SimpleConcurrentModel
@@ -115,6 +116,7 @@ def test_issue_54():
             m2.save()
 
 
+@skipIfDjangoVersion("<(1,11)")
 @pytest.mark.django_db()
 def test_issue_81a(monkeypatch):
     monkeypatch.setattr('demo.admin.ActionsModelAdmin.fields', ('id',))
@@ -123,6 +125,7 @@ def test_issue_81a(monkeypatch):
     assert 'concurrency.A001' in e.value.message
 
 
+@skipIfDjangoVersion("<(1,11)")
 @pytest.mark.django_db()
 def test_issue_81b(monkeypatch):
     fieldsets = (
