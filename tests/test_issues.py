@@ -122,7 +122,7 @@ def test_issue_81a(monkeypatch):
     monkeypatch.setattr('demo.admin.ActionsModelAdmin.fields', ('id',))
     with pytest.raises(SystemCheckError) as e:
         call_command('check')
-    assert 'concurrency.A001' in e.value.message
+    assert 'concurrency.A001' in str(e.value)
 
 
 @skipIfDjangoVersion("<(1,11)")
@@ -136,4 +136,4 @@ def test_issue_81b(monkeypatch):
     monkeypatch.setattr('demo.admin.ActionsModelAdmin.fieldsets', fieldsets)
     with pytest.raises(SystemCheckError) as e:
         call_command('check')
-    assert 'concurrency.A002' in e.value.message
+    assert 'concurrency.A002' in str(e.value)
