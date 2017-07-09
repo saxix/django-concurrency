@@ -75,6 +75,10 @@ ConcurrentModelAdmin
 --------------------
 .. autoclass:: concurrency.admin.ConcurrentModelAdmin
 
+.. warning:: If you customize ``fields`` or ``fieldsets`` remember to add version field to the list. (See issue :ghissue:`81`)
+
+
+
 .. _ConcurrencyActionMixin:
 
 ConcurrencyActionMixin
@@ -115,7 +119,6 @@ concurrency.views.conflict
 Helpers
 -------
 
-
 .. _apply_concurrency_check:
 
 `apply_concurrency_check()`
@@ -132,8 +135,7 @@ Add concurrency check to existing classes.
   you need to use a migration to add a `VersionField` to the desired Model.
 
 
-.. note:: See ``demo.auth_migrations`` for a example how to add
-:class:`IntegerVersionField <concurrency.fields.IntegerVersionField>` to :class:`auth.Group` )
+.. note:: See ``demo.auth_migrations`` for a example how to add :class:`IntegerVersionField <concurrency.fields.IntegerVersionField>` to :class:`auth.Group` )
 
 .. code-block:: python
 

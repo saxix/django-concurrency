@@ -1,12 +1,11 @@
+# coding=utf-8
 from __future__ import absolute_import, unicode_literals
 
 from django.core.exceptions import ImproperlyConfigured
-try:
-    from django.core.urlresolvers import get_callable
-except ImportError:
-    from django.urls.utils import get_callable
 from django.test.signals import setting_changed
 from django.utils import six
+
+from .compat import get_callable
 
 # List Editable Policy
 # 0 do not save updated records, save others, show message to the user
@@ -21,32 +20,6 @@ LIST_EDITABLE_POLICIES = [CONCURRENCY_LIST_EDITABLE_POLICY_SILENT, CONCURRENCY_L
 
 
 class AppSettings(object):
-    """
-    Class to manage application related settings
-    How to use:
-
-    >>> from django.conf import settings
-    >>> settings.APP_OVERRIDE = 'overridden'
-    >>> settings.MYAPP_CALLBACK = 100
-    >>> class MySettings(AppSettings):
-    ...     defaults = {'ENTRY1': 'abc', 'ENTRY2': 123, 'OVERRIDE': None, 'CALLBACK':10}
-    ...     def set_CALLBACK(self, value):
-    ...         setattr(self, 'CALLBACK', value*2)
-
-    >>> conf = MySettings("APP")
-    >>> conf.ENTRY1, settings.APP_ENTRY1
-    ('abc', 'abc')
-    >>> conf.OVERRIDE, settings.APP_OVERRIDE
-    ('overridden', 'overridden')
-
-    >>> conf = MySettings("MYAPP")
-    >>> conf.ENTRY2, settings.MYAPP_ENTRY2
-    (123, 123)
-    >>> conf = MySettings("MYAPP")
-    >>> conf.CALLBACK
-    200
-
-    """
     defaults = {
         'ENABLED': True,
         'MANUAL_TRIGGERS': False,
@@ -82,7 +55,7 @@ class AppSettings(object):
             elif callable(value):
                 func = value
             else:
-                raise ImproperlyConfigured("`CALLBACK` must be a callable or a fullpath to callable")
+                raise ImproperlyConfigured("{} is not a valid value for `CALLBACK`. It must be a callable or a fullpath to callable. ".format(value))
             self._callback = func
 
         setattr(self, name, value)

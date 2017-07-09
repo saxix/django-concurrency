@@ -1,12 +1,12 @@
+import pytest
 from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation
 from django.forms.models import modelform_factory
 from django.forms.widgets import HiddenInput, TextInput
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.testcases import SimpleTestCase
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
-import pytest
 from demo.models import Issue3TestModel, SimpleConcurrentModel
 
 from concurrency.exceptions import VersionError
@@ -152,3 +152,17 @@ class ConcurrentFormTest(TestCase):
         form = Form(data, instance=obj)
         obj.save()  # save again simulate concurrent editing
         self.assertRaises(ValueError, form.save)
+
+
+def test_disabled(db, settings):
+    obj, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
+    Form = modelform_factory(SimpleConcurrentModel, ConcurrentForm,
+                             fields=('username', 'id', 'version'))
+    data = {'username': 'aaa',
+            'id': 1,
+            'version': VersionFieldSigner().sign(obj.version)}
+    form = Form(data, instance=obj)
+    obj.save()  # save again simulate concurrent editing
+    with override_settings(CONCURRENCY_ENABLED=False):
+        obj2 = form.save()
+        assert obj2.version == obj.version

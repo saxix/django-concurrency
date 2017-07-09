@@ -3,9 +3,9 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
 
-from demo.models import *  # noqa
 from demo.models import (
-    ListEditableConcurrentModel, NoActionsConcurrentModel, ReversionConcurrentModel
+    InheritedModel, ListEditableConcurrentModel, NoActionsConcurrentModel, ProxyModel,
+    ReversionConcurrentModel, SimpleConcurrentModel
 )
 
 from concurrency.admin import ConcurrentModelAdmin

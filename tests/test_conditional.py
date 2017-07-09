@@ -3,12 +3,13 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import logging
 
+import pytest
 from django.contrib.auth.models import User
 
-import pytest
-from demo.models import ConditionalVersionModel, ConditionalVersionModelWithoutMeta, \
-    ConditionalVersionModelSelfRelation, \
-    ThroughRelation
+from demo.models import (
+    ConditionalVersionModel, ConditionalVersionModelSelfRelation,
+    ConditionalVersionModelWithoutMeta, ThroughRelation
+)
 
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch

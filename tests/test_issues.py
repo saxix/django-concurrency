@@ -2,18 +2,22 @@
 import re
 
 import django
+import pytest
 from django.contrib.admin.sites import site
 from django.contrib.auth.models import User
 from django.core.management import call_command
+from django.core.management.base import SystemCheckError
 from django.http import QueryDict
+from django.test import override_settings
 from django.test.client import RequestFactory
 from django.test.testcases import SimpleTestCase
 from django.utils.encoding import force_text
 
-import pytest
+from concurrency.exceptions import RecordModifiedError
+from conftest import skipIfDjangoVersion
 from demo.admin import ActionsModelAdmin, admin_register
 from demo.base import AdminTestCase
-from demo.models import ListEditableConcurrentModel, ReversionConcurrentModel
+from demo.models import ListEditableConcurrentModel, ReversionConcurrentModel, SimpleConcurrentModel
 from demo.util import attributes, unique_id
 
 from concurrency.admin import ConcurrentModelAdmin
@@ -86,3 +90,50 @@ def test_issue_53(admin_client):
     admin_client.post('/admin/demo/reversionconcurrentmodel/recover/{}/'.format(deleted_pk),
                       {'username': 'aaaa'})
     assert ReversionConcurrentModel.objects.filter(id=pk).exists()
+
+
+@pytest.mark.django_db()
+def test_issue_54():
+    m = SimpleConcurrentModel(version=0)
+    m.save()
+    SimpleConcurrentModel.objects.update(version=0)
+    m1 = SimpleConcurrentModel.objects.get(pk=m.pk)
+    m2 = SimpleConcurrentModel.objects.get(pk=m.pk)
+    assert m1.version == m2.version == 0
+    m1.save()
+    m2.save()
+
+    with override_settings(CONCURRENCY_IGNORE_DEFAULT=False):
+        m = SimpleConcurrentModel(version=0)
+        m.save()
+        SimpleConcurrentModel.objects.update(version=0)
+        m1 = SimpleConcurrentModel.objects.get(pk=m.pk)
+        m2 = SimpleConcurrentModel.objects.get(pk=m.pk)
+        assert m1.version == m2.version == 0
+        m1.save()
+
+        with pytest.raises(RecordModifiedError):
+            m2.save()
+
+
+@skipIfDjangoVersion("<(1,11)")
+@pytest.mark.django_db()
+def test_issue_81a(monkeypatch):
+    monkeypatch.setattr('demo.admin.ActionsModelAdmin.fields', ('id',))
+    with pytest.raises(SystemCheckError) as e:
+        call_command('check')
+    assert 'concurrency.A001' in str(e.value)
+
+
+@skipIfDjangoVersion("<(1,11)")
+@pytest.mark.django_db()
+def test_issue_81b(monkeypatch):
+    fieldsets = (
+        ('Standard info', {
+            'fields': ('id',)
+        }),
+    )
+    monkeypatch.setattr('demo.admin.ActionsModelAdmin.fieldsets', fieldsets)
+    with pytest.raises(SystemCheckError) as e:
+        call_command('check')
+    assert 'concurrency.A002' in str(e.value)

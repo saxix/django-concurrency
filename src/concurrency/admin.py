@@ -7,6 +7,7 @@ from functools import reduce
 
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
+from django.core.checks import Error
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db.models import Q
 from django.forms.formsets import (
@@ -20,9 +21,11 @@ from django.utils.translation import ungettext
 
 from concurrency import core, forms
 from concurrency.api import get_revision_of_object
+from concurrency.compat import DJANGO_11
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, conf
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
+from concurrency.utils import flatten
 
 ALL = object()
 
@@ -38,7 +41,7 @@ class ConcurrencyActionMixin(object):
             return helpers.checkbox.render(helpers.ACTION_CHECKBOX_NAME,
                                            force_text("%s,%s" % (obj.pk,
                                                                  get_revision_of_object(obj))))
-        else:
+        else:  # pragma: no cover
             return super(ConcurrencyActionMixin, self).action_checkbox(obj)
 
     action_checkbox.short_description = mark_safe('<input type="checkbox" id="action-toggle" />')
@@ -69,7 +72,7 @@ class ConcurrencyActionMixin(object):
         # Use the action whose button was pushed
         try:
             data.update({'action': data.getlist('action')[action_index]})
-        except IndexError:
+        except IndexError:  # pragma: no cover
             # If we didn't get an action from the chosen form that's invalid
             # POST data, so by deleting action it'll fail the validation check
             # below. So no need to do anything here
@@ -90,9 +93,10 @@ class ConcurrencyActionMixin(object):
             else:
                 selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
 
-            revision_field = self.model._concurrencymeta.field
             if not selected:
                 return None
+
+            revision_field = self.model._concurrencymeta.field
 
             if self.check_concurrent_action:
                 self.delete_selected_confirmation_template = self.get_confirmation_template()
@@ -250,3 +254,32 @@ class ConcurrentModelAdmin(ConcurrencyActionMixin,
                            admin.ModelAdmin):
     form = ConcurrentForm
     formfield_overrides = {forms.VersionField: {'widget': VersionWidget}}
+
+    if DJANGO_11:
+        def check(self, **kwargs):
+            errors = []
+            if self.fields:
+                version_field = self.model._concurrencymeta.field
+                if version_field.name not in self.fields:
+                    errors.append(
+                        Error(
+                            'Missed version field in {} fields definition'.format(self),
+                            hint="Please add '{}' to the 'fields' attribute".format(version_field.name),
+                            obj=None,
+                            id='concurrency.A001',
+                        )
+                    )
+            if self.fieldsets:
+                version_field = self.model._concurrencymeta.field
+                fields = flatten([v['fields'] for k, v in self.fieldsets])
+
+                if version_field.name not in fields:
+                    errors.append(
+                        Error(
+                            'Missed version field in {} fieldsets definition'.format(self),
+                            hint="Please add '{}' to the 'fieldsets' attribute".format(version_field.name),
+                            obj=None,
+                            id='concurrency.A002',
+                        )
+                    )
+            return errors

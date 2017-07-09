@@ -36,13 +36,11 @@ TriggerVersionField
 This field use a database trigger to update the version field.
 Using this you can control external updates (ie using tools like phpMyAdmin, pgAdmin, SQLDeveloper).
 The trigger is automatically created during ``syncdb()``
-or you can use the :ref:`triggers` management command.
+or you can use the `triggers`_ management command.
 
 .. versionchanged:: 1.0
 
-.. warning:: Before |concurrency| 1.0 two triggers per field were created,
-if you are upgrading you must manually remove old triggers and recreate them
-using :ref:`triggers`_ management command
+.. warning:: Before |concurrency| 1.0 two triggers per field were created, if you are upgrading you must manually remove old triggers and recreate them using `triggers`_ management command
 
 `trigger_name`
 ~~~~~~~~~~~~~~
@@ -66,8 +64,6 @@ Otherwise for each `TriggerVersionField` will be created two triggers named:
 
 `triggers` management command
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. command:: triggers
 
 Helper command to work with triggers:
 

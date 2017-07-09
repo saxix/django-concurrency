@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 
+import pytest
 import six
 from django.core.management import call_command
-
-import pytest
 from mock import Mock
 
 import concurrency.management.commands.triggers as command
@@ -20,6 +19,21 @@ def test_command_create(monkeypatch):
 
     monkeypatch.setattr(command, 'create_triggers', mock_create)
     call_command('triggers', 'create', stdout=out)
+
+    out.seek(0)
+    output = out.read()
+    assert output.find('Created trigger  for field') > 0
+    assert mock_create.call_count == 1
+
+
+@pytest.mark.django_db
+def test_command_create_db(monkeypatch):
+    out = six.StringIO()
+    mock_create = Mock()
+    mock_create.return_value = {'default': [['model', 'field', 'trigger']]}
+
+    monkeypatch.setattr(command, 'create_triggers', mock_create)
+    call_command('triggers', 'create', database='default', stdout=out)
 
     out.seek(0)
     output = out.read()

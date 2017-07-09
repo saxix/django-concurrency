@@ -1,3 +1,4 @@
+# coding=utf-8
 from __future__ import absolute_import, unicode_literals
 
 import copy
@@ -11,6 +12,7 @@ from functools import update_wrapper
 from django.db import models
 from django.db.models import signals
 from django.db.models.fields import Field
+from django.db.models.signals import class_prepared, post_migrate
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
@@ -18,19 +20,7 @@ from concurrency import forms
 from concurrency.api import get_revision_of_object
 from concurrency.config import conf
 from concurrency.core import ConcurrencyOptions
-from concurrency.utils import refetch, fqn
-
-try:
-    from django.apps import apps
-
-    get_model = apps.get_model
-except ImportError:
-    from django.db.models.loading import get_model
-
-try:
-    from django.db.models.signals import class_prepared, post_migrate
-except:
-    from django.db.models.signals import class_prepared, post_syncdb as post_migrate
+from concurrency.utils import fqn, refetch
 
 logger = logging.getLogger(__name__)
 
@@ -74,18 +64,13 @@ class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_p
 
 
 class TriggerRegistry(object):
-    # FIXME: this is very bad. it seems required only by tests
-    # see
-    # https://github.com/pytest-dev/pytest-django/issues/75
-    # https://code.djangoproject.com/ticket/22280#comment:20
-
     _fields = []
 
     def append(self, field):
         self._fields.append([field.model._meta.app_label, field.model.__name__])
 
     def __iter__(self):
-        return iter([get_model(*i)._concurrencymeta.field for i in self._fields])
+        return iter(self._fields)
 
     def __contains__(self, field):
         target = [field.model._meta.app_label, field.model.__name__]
@@ -114,14 +99,6 @@ class VersionField(Field):
                                            db_tablespace=db_tablespace,
                                            db_column=db_column)
 
-    def deconstruct(self):
-        name, path, args, kwargs = super(VersionField, self).deconstruct()
-        kwargs['default'] = 1
-        return name, path, args, kwargs
-
-    def get_default(self):
-        return 0
-
     def get_internal_type(self):
         return "BigIntegerField"
 
@@ -136,13 +113,14 @@ class VersionField(Field):
         kwargs['widget'] = forms.VersionField.widget
         return super(VersionField, self).formfield(**kwargs)
 
-    def contribute_to_class(self, cls, name, virtual_only=False):
-        super(VersionField, self).contribute_to_class(cls, name, virtual_only)
+    def contribute_to_class(self, cls, *args, **kwargs):
+        super(VersionField, self).contribute_to_class(cls, *args, **kwargs)
         if hasattr(cls, '_concurrencymeta') or cls._meta.abstract:
             return
         setattr(cls, '_concurrencymeta', ConcurrencyOptions())
         cls._concurrencymeta.field = self
         cls._concurrencymeta.base = cls
+        cls._concurrencymeta.triggers = []
 
     def _set_version_value(self, model_instance, value):
         setattr(model_instance, self.attname, int(value))
@@ -254,8 +232,8 @@ class TriggerVersionField(VersionField):
         self._trigger_exists = False
         super(TriggerVersionField, self).__init__(*args, **kwargs)
 
-    def contribute_to_class(self, cls, name, virtual_only=False):
-        super(TriggerVersionField, self).contribute_to_class(cls, name)
+    def contribute_to_class(self, cls, *args, **kwargs):
+        super(TriggerVersionField, self).contribute_to_class(cls, *args, **kwargs)
         if not cls._meta.abstract or cls._meta.proxy:
             if self not in _TRIGGERS:
                 _TRIGGERS.append(self)
@@ -336,8 +314,8 @@ def filter_fields(instance, field):
 
 
 class ConditionalVersionField(AutoIncVersionField):
-    def contribute_to_class(self, cls, name, virtual_only=False):
-        super(ConditionalVersionField, self).contribute_to_class(cls, name, virtual_only)
+    def contribute_to_class(self, cls, *args, **kwargs):
+        super(ConditionalVersionField, self).contribute_to_class(cls, *args, **kwargs)
         signals.post_init.connect(self._load_model,
                                   sender=cls,
                                   dispatch_uid=fqn(cls))

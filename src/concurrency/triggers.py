@@ -3,10 +3,11 @@ from __future__ import absolute_import, unicode_literals
 
 from collections import defaultdict
 
+from django.apps import apps
 from django.db import connections, router
 from django.db.utils import DatabaseError
 
-from concurrency.fields import _TRIGGERS  # noqa
+from .fields import _TRIGGERS  # noqa
 
 
 def get_trigger_name(field):
@@ -38,8 +39,9 @@ def get_triggers(databases=None):
 def drop_triggers(*databases):
     global _TRIGGERS
     ret = defaultdict(lambda: [])
-    for field in set(_TRIGGERS):
-        model = field.model
+    for app_label, model_name in _TRIGGERS:
+        model = apps.get_model(app_label, model_name)
+        field = model._concurrencymeta.field
         alias = router.db_for_write(model)
         if alias in databases:
             connection = connections[alias]
@@ -47,6 +49,8 @@ def drop_triggers(*databases):
             f.drop(field)
             field._trigger_exists = False
             ret[alias].append([model, field, field.trigger_name])
+        else:  # pragma: no cover
+            pass
     return ret
 
 
@@ -54,17 +58,20 @@ def create_triggers(databases):
     global _TRIGGERS
     ret = defaultdict(lambda: [])
 
-    for field in set(_TRIGGERS):
-        model = field.model
+    for app_label, model_name in _TRIGGERS:
+        model = apps.get_model(app_label, model_name)
+        field = model._concurrencymeta.field
+        storage = model._concurrencymeta.triggers
         alias = router.db_for_write(model)
-        if alias in databases:
-            if not field._trigger_exists:
-                field._trigger_exists = True
-                connection = connections[alias]
-                f = factory(connection)
-                f.create(field)
-                ret[alias].append([model, field, field.trigger_name])
-    # _TRIGGERS = []
+        if (alias in databases) and field not in storage:
+            storage.append(field)
+            connection = connections[alias]
+            f = factory(connection)
+            f.create(field)
+            ret[alias].append([model, field, field.trigger_name])
+        else:  # pragma: no cover
+            pass
+
     return ret
 
 
@@ -92,6 +99,8 @@ class TriggerFactory(object):
                 raise DatabaseError("""Error executing:
 {1}
 {0}""".format(exc, stm))
+        else:  # pragma: no cover
+            pass
         field._trigger_exists = True
 
     def drop(self, field):
@@ -165,5 +174,5 @@ def factory(conn):
                 'sqlite3': Sqlite3,
                 'sqlite': Sqlite3,
                 }[conn.vendor](conn)
-    except KeyError:
+    except KeyError:  # pragma: no cover
         raise ValueError('{} is not supported by TriggerVersionField'.format(conn))

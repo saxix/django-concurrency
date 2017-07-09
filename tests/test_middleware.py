@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
+import mock
 from django.conf import settings
 from django.contrib.admin.sites import site
 from django.http import HttpRequest
 from django.test.utils import override_settings
 
-import mock
 from demo.base import AdminTestCase
 from demo.models import SimpleConcurrentModel
 from demo.util import DELETE_ATTRIBUTE, attributes, unique_id
@@ -18,6 +18,7 @@ try:
     from django.core.urlresolvers import reverse
 except ImportError:
     from django.urls import reverse
+
 
 def _get_request(path):
     request = HttpRequest()
@@ -64,7 +65,6 @@ class ConcurrencyMiddlewareTest1(AdminTestCase):
 
 
 class ConcurrencyMiddlewareTest2(AdminTestCase):
-
     @property
     def settings_middleware(self):
         return getattr(settings, self.middleware_setting_name) + ['concurrency.middleware.ConcurrencyMiddleware']
@@ -79,7 +79,6 @@ class ConcurrencyMiddlewareTest2(AdminTestCase):
 
         with attributes((model_admin.__class__, 'list_editable_policy', CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL),
                         (ConcurrentModelAdmin, 'form', DELETE_ATTRIBUTE)):
-
             saved, __ = SimpleConcurrentModel.objects.get_or_create(pk=id)
 
             url = reverse('admin:demo_simpleconcurrentmodel_change', args=[saved.pk])

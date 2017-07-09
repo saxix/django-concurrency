@@ -1,9 +1,9 @@
 .. include:: globals.txt
 .. _admin:
 
-==================
+=================
 Admin Integration
-==================
+=================
 
 .. contents::
    :local:

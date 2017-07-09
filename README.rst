@@ -69,15 +69,15 @@ Links
 .. |master-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
                     :target: http://travis-ci.org/saxix/django-concurrency/
 
-.. |master-cov| image:: https://coveralls.io/repos/saxix/django-concurrency/badge.svg?branch=master&service=github
-            :target: https://coveralls.io/github/saxix/django-concurrency?branch=master
-
+.. |master-cov| image:: https://codecov.io/gh/saxix/django-concurrency/branch/master/graph/badge.svg
+                    :target: https://codecov.io/gh/saxix/django-concurrency
 
 .. |dev-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=develop
                   :target: http://travis-ci.org/saxix/django-concurrency/
 
-.. |dev-cov| image:: https://coveralls.io/repos/saxix/django-concurrency/badge.svg?branch=develop&service=github
-        :target: https://coveralls.io/github/saxix/django-concurrency?branch=develop
+.. |dev-cov| image:: https://codecov.io/gh/saxix/django-concurrency/branch/develop/graph/badge.svg
+                    :target: https://codecov.io/gh/saxix/django-concurrency
+
 
 
 .. |wheel| image:: https://pypip.in/wheel/blackhole/badge.png

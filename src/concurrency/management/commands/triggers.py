@@ -2,8 +2,8 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management.base import BaseCommand
 from django.db import connections
+from django.db.transaction import atomic
 
-from concurrency.compat import atomic
 from concurrency.triggers import create_triggers, drop_triggers, get_triggers
 
 
@@ -74,7 +74,7 @@ class Command(BaseCommand):
                         for trigger in triggers:
                             self.stdout.write("    Dropped   {0[2]}".format(trigger))
                     self.stdout.write('')
-                else:
+                else:  # pragma: no cover
                     raise Exception()
-            except ImproperlyConfigured as e:
+            except ImproperlyConfigured as e:  # pragma: no cover
                 self.stdout.write(self.style.ERROR(e))
