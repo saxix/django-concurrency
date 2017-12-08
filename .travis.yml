@@ -16,15 +16,15 @@ services:
   - PostgreSQL
 
 env:
-  - DJANGO=1.8 DB=pg
   - DJANGO=1.9 DB=pg
   - DJANGO=1.10 DB=pg
   - DJANGO=1.11 DB=pg
+  - DJANGO=2.0 DB=pg
 
-  - DJANGO=1.8 DB=mysql
   - DJANGO=1.9 DB=mysql
   - DJANGO=1.10 DB=mysql
   - DJANGO=1.11 DB=mysql
+  - DJANGO=2.0 DB=mysql
 
 
 matrix:
