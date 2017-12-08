@@ -10,7 +10,7 @@ from concurrency.core import _select_lock, get_version_fieldname  # _wrap_model_
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import deprecated
 
-__all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_object',
+__all__ = ['apply_concurrency_check', 'get_revision_of_object',
            'RecordModifiedError', 'disable_concurrency',
            'get_version', 'is_changed', 'get_version_fieldname']
 
@@ -69,12 +69,6 @@ def apply_concurrency_check(model, fieldname, versionclass):
 
     # if not model._concurrencymeta.versioned_save:
     #     versionclass._wrap_model_save(model)
-
-
-@deprecated(version="1.5")
-def concurrency_check(model_instance, force_insert=False, force_update=False, using=None, **kwargs):
-    if not force_insert:
-        _select_lock(model_instance)
 
 
 class concurrency_disable_increment(object):

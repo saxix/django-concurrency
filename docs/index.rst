@@ -75,7 +75,3 @@ Links
    * Issue tracker: https://github.com/saxix/django-concurrency/issues?sort
    * Download: http://pypi.python.org/pypi/django-concurrency/
    * Docs: http://readthedocs.org/docs/django-concurrency/en/latest/
-
-
-
-.. [1] http://en.wikipedia.org/wiki/Optimistic_concurrency_control

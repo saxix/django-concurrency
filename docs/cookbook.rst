@@ -69,29 +69,8 @@ an existing database remember to edit the database's tables:
     apply_concurrency_check(User, 'version', IntegerVersionField)
 
 
-If used with Django>=1.7 remebber to create a custom migration.
+If used with Django>=1.7 remember to create a custom migration.
 
-
-Manually handle concurrency
----------------------------
-.. versionchanged:: 0.4
-
-Use :ref:`concurrency_check`
-
-
-.. code-block:: python
-
-    from concurrency.api import concurrency_check
-
-
-    class AbstractModelWithCustomSave(models.Model):
-        version = IntegerVersionField(db_column='cm_version_id', manually=True)
-
-
-    def save(self, *args, **kwargs):
-        concurrency_check(self, *args, **kwargs)
-        logger.debug(u'Saving %s "%s".' % (self._meta.verbose_name, self))
-        super(SecurityConcurrencyBaseModel, self).save(*args, **kwargs)
 
 
 Test Utilities

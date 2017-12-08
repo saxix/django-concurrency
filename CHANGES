@@ -2,10 +2,10 @@ Release 1.5
 -----------
 * drop support Django <= 1.8
 * add support Django 2.0
+* removed deprecated api `concurrency_check`
 
-
-Release 1.4
------------
+Release 1.4 (13 Sep 2016)
+-------------------------
 * closes :issue:`81`. Add docs and check.
 * fixes :issue:`80`. (thanks Naddiseo for the useful support)
 * Django 1.11 compatibility
@@ -64,7 +64,7 @@ Release 1.0
 * **BACKWARD INCOMPATIBLE**:: removed custom backends. ``TriggerVerionField`` can be used with standard Django
 * new way to create triggers (thanks Naddiseo)
 * new trigger code
-* new :method:`TriggerVersionField.check`.
+* new :attr:`TriggerVersionField.check`.
 * new :attr:`TriggerVersionField.trigger_name`.
 * new :setting:`CONCURRECY_ENABLED` to fully disable concurrency
 * new :setting:`CONCURRECY_MANUAL_TRIGGERS` to disable triggers auto creation fixes :issue:`41` (thanks Naddiseo)
@@ -74,7 +74,7 @@ Release 0.9
 -----------
 * Django 1.8 compatibility
 * python 3.4 compatibility
-* **BACKWARD INCOMPATIBLE** :function:`disable_concurrency` works differently if used with classes or instances
+* **BACKWARD INCOMPATIBLE** :func:`disable_concurrency` works differently if used with classes or instances
 * better support for external Models (models that are part of plugged-in applications)
 * fixes issue with TriggerVersionField and Proxy Models (thanx Richard Eames)
 

@@ -58,9 +58,10 @@ HANDLER409
 
 Default: ``concurrency.views.conflict``
 
+
 Handler to intercept :class:`RecordModifiedError <concurrency.exceptions.RecordModifiedError>`
 into :class:`ConcurrencyMiddleware <concurrency.middleware.ConcurrencyMiddleware>`.
-The default implementation (:ref:`concurrency.views.conflict`) renders ``409.html``
+The default implementation (:ref:`handler409`) renders ``409.html``
 while passing into the context the object that is going to be saved (``target``)
 
 .. seealso:: :ref:`middleware`
@@ -100,15 +101,14 @@ If false do not automatically create triggers, you can create them using :ref:`t
 
 .. setting:: CONCURRENCY_POLICY
 
+.. _list_editable_policies:
+
 POLICY
 ------
 .. versionchanged:: 0.7
 
 Default: ``CONCURRENCY_LIST_EDITABLE_POLICY_SILENT``
 
-.. _list_editable_policies:
-
-.. setting:: CONCURRENCY_IGNORE_DEFAULT
 
 
 ``CONCURRENCY_LIST_EDITABLE_POLICY_SILENT``

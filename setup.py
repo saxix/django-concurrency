@@ -80,5 +80,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    platforms=['any'],
+    # platforms=['any']
 )

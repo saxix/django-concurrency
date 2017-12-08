@@ -38,9 +38,9 @@ VersionChangedError
 
 
 
-.. _RecordModifiedError:
-
 .. class:: concurrency.exceptions.RecordModifiedError
+
+.. _RecordModifiedError:
 
 RecordModifiedError
 -------------------
