@@ -7,6 +7,7 @@ from concurrency.utils import fqn
 
 def test_config(settings):
     settings.APP_OVERRIDE = 'overridden'
+
     class MySettings(AppSettings):
         defaults = {'ENTRY1': 'abc',
                     'ENTRY2': 123,

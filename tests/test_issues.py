@@ -116,7 +116,7 @@ def test_issue_54():
             m2.save()
 
 
-@skipIfDjangoVersion("<(1,11)")
+@skipIfDjangoVersion("!=(1,11)")
 @pytest.mark.django_db()
 def test_issue_81a(monkeypatch):
     monkeypatch.setattr('demo.admin.ActionsModelAdmin.fields', ('id',))

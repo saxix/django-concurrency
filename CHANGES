@@ -1,3 +1,9 @@
+Release 1.5
+-----------
+* drop support Django <= 1.8
+* add support Django 2.0
+
+
 Release 1.4
 -----------
 * closes :issue:`81`. Add docs and check.

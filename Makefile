@@ -17,11 +17,11 @@ develop:
 
 
 .init-db:
-	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -u root -e 'DROP DATABASE IF EXISTS concurrency;'; fi"
-	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -u root -e 'CREATE DATABASE IF NOT EXISTS concurrency;'; fi"
+	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -h 127.0.0.1 -u root -e 'DROP DATABASE IF EXISTS concurrency;'; fi"
+	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -h 127.0.0.1 -u root -e 'CREATE DATABASE IF NOT EXISTS concurrency;'; fi"
 
-	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -c 'DROP DATABASE IF EXISTS concurrency;' -U postgres; fi"
-	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -c 'CREATE DATABASE concurrency;' -U postgres; fi"
+	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -h localhost -c 'DROP DATABASE IF EXISTS concurrency;' -U postgres; fi"
+	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -h localhost -c 'CREATE DATABASE concurrency;' -U postgres; fi"
 
 test:
 	py.test -v --create-db

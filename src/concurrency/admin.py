@@ -5,6 +5,7 @@ import operator
 import re
 from functools import reduce
 
+import django
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.core.checks import Error
@@ -21,7 +22,6 @@ from django.utils.translation import ungettext
 
 from concurrency import core, forms
 from concurrency.api import get_revision_of_object
-from concurrency.compat import DJANGO_11
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, conf
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
@@ -255,7 +255,7 @@ class ConcurrentModelAdmin(ConcurrencyActionMixin,
     form = ConcurrentForm
     formfield_overrides = {forms.VersionField: {'widget': VersionWidget}}
 
-    if DJANGO_11:
+    if django.VERSION[:2] >= (1, 11):
         def check(self, **kwargs):
             errors = []
             if self.fields:

@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
-import django
 import pytest
 
 from demo.base import SENTINEL, AdminTestCase
 from demo.models import SimpleConcurrentModel
 from demo.util import unique_id
+
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    from django.urls import reverse
 
 
 class TestAdminActions(AdminTestCase):
@@ -97,7 +101,7 @@ class TestAdminActions(AdminTestCase):
         id = next(unique_id)
 
         SimpleConcurrentModel.objects.get_or_create(pk=id)
-        response = self.app.get(django.core.urlresolvers.reverse('admin:demo_simpleconcurrentmodel_changelist'),
+        response = self.app.get(reverse('admin:demo_simpleconcurrentmodel_changelist'),
                                 user='sax')
         form = response.forms['changelist-form']
         form.get('_selected_action', index=0).checked = True
