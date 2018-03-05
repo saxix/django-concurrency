@@ -80,7 +80,7 @@ Links
 
 
 
-.. |wheel| image:: https://pypip.in/wheel/blackhole/badge.png
+.. |wheel| image:: https://img.shields.io/pypi/wheel/blackhole.svg
 
 _list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#list-editable
 
