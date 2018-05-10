@@ -12,7 +12,7 @@ py==1.5.2                 # via pytest, tox
 pygments==2.2.0           # via pdbpp
 pyrepl==0.8.4             # via fancycompleter
 pytest-cov==2.5.1
-pytest-django==3.1.2
+pytest-django==3.2.1
 pytest-echo==1.4
 pytest-pythonpath==0.7.1
 pytest==3.1.0
