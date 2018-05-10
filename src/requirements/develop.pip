@@ -3,5 +3,5 @@ django_extensions
 flake8
 ipython<6.0
 pdbpp
-psycopg2
+psycopg2==2.7.4
 sphinx
