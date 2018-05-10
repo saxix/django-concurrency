@@ -21,6 +21,6 @@ six==1.11.0               # via mock, tox, webtest
 tox==2.9.1
 virtualenv==15.1.0        # via tox
 waitress==1.1.0           # via webtest
-webob==1.7.4              # via webtest
+webob==1.8.1              # via webtest
 webtest==2.0.29
 wmctrl==0.3               # via pdbpp
