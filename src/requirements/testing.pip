@@ -1,6 +1,6 @@
 beautifulsoup4==4.6.0     # via webtest
 check-manifest==0.30
-coverage==4.4.2           # via pytest-cov
+coverage==4.5.1           # via pytest-cov
 django-webtest==1.9.2
 fancycompleter==0.8       # via pdbpp
 funcsigs==1.0.2           # via mock
