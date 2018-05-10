@@ -1,2 +1,2 @@
-django
+django==2.0.5
 sphinx
