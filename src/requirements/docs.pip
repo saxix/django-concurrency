@@ -1,2 +1,2 @@
 django
-sphinx
+sphinx==1.7.5
