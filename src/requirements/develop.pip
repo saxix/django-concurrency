@@ -4,4 +4,4 @@ flake8
 ipython<6.0
 pdbpp
 psycopg2
-sphinx
+sphinx==1.7.5
