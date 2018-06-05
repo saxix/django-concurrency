@@ -15,7 +15,7 @@ pytest-cov==2.5.1
 pytest-django==3.1.2
 pytest-echo==1.4
 pytest-pythonpath==0.7.1
-pytest==3.1.0
+pytest==3.6.1
 readline==6.2.4.1
 six==1.11.0               # via mock, tox, webtest
 tox==2.9.1
