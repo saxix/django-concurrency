@@ -66,13 +66,13 @@ Links
 | Documentation:     |https://django-concurrency.readthedocs.org/en/latest/   |
 +--------------------+---------------+--------------+-------------------------+
 
-.. |master-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
+.. |master-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.svg?branch=master
                     :target: http://travis-ci.org/saxix/django-concurrency/
 
 .. |master-cov| image:: https://codecov.io/gh/saxix/django-concurrency/branch/master/graph/badge.svg
                     :target: https://codecov.io/gh/saxix/django-concurrency
 
-.. |dev-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=develop
+.. |dev-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.svg?branch=develop
                   :target: http://travis-ci.org/saxix/django-concurrency/
 
 .. |dev-cov| image:: https://codecov.io/gh/saxix/django-concurrency/branch/develop/graph/badge.svg
@@ -81,8 +81,6 @@ Links
 
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/blackhole.svg
-
-_list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#list-editable
 
 .. _list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#list-editable
 
