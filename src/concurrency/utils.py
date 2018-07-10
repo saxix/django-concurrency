@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-import six
+
 import inspect
 import logging
+import six
 import warnings
 
 from concurrency.exceptions import RecordModifiedError

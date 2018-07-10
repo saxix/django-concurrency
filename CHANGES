@@ -1,9 +1,9 @@
 Release 1.5 (dev)
 -----------------
 * drop support Django < 1.11
-* add support Django 2.0
+* add support Django 2.0, 2.1
 * removed deprecated api `concurrency_check`
-
+* IGNORE_DEFAULT is now False
 
 Release 1.4 (13 Sep 2016)
 -------------------------

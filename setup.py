@@ -1,28 +1,20 @@
 #!/usr/bin/env python
-import imp
+import ast
 import os
-import sys
-
+import re
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 init = os.path.join(ROOT, 'src', 'concurrency', '__init__.py')
-app = imp.load_source('concurrency', init)
 
-reqs = 'install.py%d.pip' % sys.version_info[0]
+_version_re = re.compile(r'__version__\s+=\s+(.*)')
+_name_re = re.compile(r'NAME\s+=\s+(.*)')
 
-rel = lambda fname: os.path.join(os.path.dirname(__file__),
-                                 'src',
-                                 'requirements', fname)
-
-
-def fread(fname):
-    return open(rel(fname)).read()
-
-install_requires = fread('install.pip')
-test_requires = fread('testing.pip')
-dev_requires = fread('develop.pip')
+with open(init, 'rb') as f:
+    content = f.read().decode('utf-8')
+    VERSION = str(ast.literal_eval(_version_re.search(content).group(1)))
+    NAME = str(ast.literal_eval(_name_re.search(content).group(1)))
 
 base_url = 'https://github.com/saxix/django-concurrency/'
 
@@ -42,9 +34,10 @@ class PyTest(TestCommand):
         errno = pytest.main(self.test_args)
         sys.exit(errno)
 
+
 setup(
-    name=app.NAME,
-    version=app.get_version(),
+    name=NAME,
+    version=VERSION,
     url='https://github.com/saxix/django-concurrency',
     author='Stefano Apostolico',
     author_email='s.apostolico@gmail.com',
@@ -56,11 +49,6 @@ setup(
     license='MIT License',
     keywords='django',
     setup_requires=['pytest-runner', ],
-    install_requires=install_requires,
-    tests_require='django\n' + test_requires,
-    extras_require={'test': test_requires,
-                    'dev': test_requires + dev_requires},
-    # cmdclass={'test': PyTest},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',

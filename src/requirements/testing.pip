@@ -1,8 +1,0 @@
-django-reversion
-django-webtest
-mock
-pytest
-pytest-cov
-pytest-django
-pytest-echo
-pytest-pythonpath

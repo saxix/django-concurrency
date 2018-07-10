@@ -1,9 +1,9 @@
 # coding=utf-8
 from __future__ import absolute_import, unicode_literals
 
+import six
 from importlib import import_module
 
-import six
 from django import forms
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured, ValidationError
 from django.core.signing import BadSignature, Signer

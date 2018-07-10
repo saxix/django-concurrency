@@ -9,11 +9,11 @@ DJANGO?='last'
 	mkdir -p ${BUILDDIR}
 
 develop:
-	@pip install -U pip setuptools
+	@pip install pipenv
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then pip install  MySQL-python; fi"
 	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2; fi"
-	@pip install -e .[dev]
 	$(MAKE) .init-db
+	@pipenv install -d --skip-lock
 
 
 .init-db:
@@ -26,10 +26,10 @@ develop:
 test:
 	py.test -v --create-db
 
-qa:
-	flake8 src/ tests/
-	isort -rc src/ --check-only
-	check-manifest
+lint:
+	pipenv run flake8 src/ tests/
+	pipenv run isort -rc src/ --check-only
+	pipenv run check-manifest
 
 
 clean:
@@ -45,7 +45,7 @@ fullclean:
 
 docs: .mkbuilddir
 	mkdir -p ${BUILDDIR}/docs
-	sphinx-build -aE docs/ ${BUILDDIR}/docs
+	pipenv run sphinx-build -aE docs/ ${BUILDDIR}/docs
 ifdef BROWSE
 	firefox ${BUILDDIR}/docs/index.html
 endif

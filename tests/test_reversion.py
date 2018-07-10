@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals
 import pytest
 from reversion.models import Version
 
-from demo.models import ReversionConcurrentModel, SimpleConcurrentModel
+from demo.models import ReversionConcurrentModel
 from reversion import revisions, add_to_revision, set_comment
 
 try:

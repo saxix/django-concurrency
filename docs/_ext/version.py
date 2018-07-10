@@ -1,7 +1,7 @@
 import re
 from sphinx import addnodes, roles
 from sphinx.util.console import bold
-from sphinx.util.compat import Directive
+from docutils.parsers.rst import Directive, directives
 
 # RE for option descriptions without a '--' prefix
 from sphinx.writers.html import HTMLTranslator
