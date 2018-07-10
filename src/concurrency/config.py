@@ -27,7 +27,7 @@ class AppSettings(object):
         'POLICY': CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
         'CALLBACK': 'concurrency.views.callback',
         'HANDLER409': 'concurrency.views.conflict',
-        'IGNORE_DEFAULT': True,
+        'VERSION_FIELD_REQUIRED': True,
     }
 
     def __init__(self, prefix):
@@ -49,7 +49,10 @@ class AppSettings(object):
 
     def _set_attr(self, prefix_name, value):
         name = prefix_name[len(self.prefix) + 1:]
-        if name == 'CALLBACK':
+        if name == 'IGNORE_DEFAULT':
+            raise ImproperlyConfigured('IGNORE_DEFAULT has been removed in django-concurrency 1.5. '
+                                                    'Use VERSION_FIELD_REQUIRED instead')
+        elif name == 'CALLBACK':
             if isinstance(value, six.string_types):
                 func = get_callable(value)
             elif callable(value):

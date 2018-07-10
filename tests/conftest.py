@@ -24,6 +24,7 @@ def pytest_configure():
     from django.conf import settings
 
     settings.SILENCED_SYSTEM_CHECKS = ['concurrency.W001']
+    settings.CONCURRENCY_VERSION_FIELD_REQUIRED = False
     if django.VERSION[:2] == (1.6):
         from concurrency.api import apply_concurrency_check
         from concurrency.fields import IntegerVersionField

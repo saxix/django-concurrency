@@ -3,7 +3,8 @@ Release 1.5 (dev)
 * drop support Django < 1.11
 * add support Django 2.0, 2.1
 * removed deprecated api `concurrency_check`
-* IGNORE_DEFAULT is now False
+* BACKWARD INCOMOPATIBLE: version field is now mandatory in any save operation. Use ``VERSION_FIELD_REQUIRED=False`` to have the old behaviour.
+
 
 Release 1.4 (13 Sep 2016)
 -------------------------

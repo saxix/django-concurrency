@@ -179,7 +179,7 @@ class VersionField(Field):
                 if (model_instance._concurrencymeta.enabled and
                         conf.ENABLED and
                         not getattr(model_instance, '_concurrency_disabled', False) and
-                        (old_version or not conf.IGNORE_DEFAULT)):
+                        (old_version or conf.VERSION_FIELD_REQUIRED)):
                     filter_kwargs = {'pk': pk_val, version_field.attname: old_version}
                     updated = base_qs.filter(**filter_kwargs)._update(values) >= 1
                     if not updated:

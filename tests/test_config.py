@@ -29,3 +29,11 @@ def test_config(settings):
     with pytest.raises(ImproperlyConfigured):
         settings.OTHER_CALLBACK = 222
         conf = MySettings("OTHER")
+
+
+def test_IGNORE_DEFAULT(settings):
+    with pytest.raises(ImproperlyConfigured) as excinfo:
+        settings.CONCURRENCY_IGNORE_DEFAULT = False
+        AppSettings("")
+    assert str(
+        excinfo.value) == "IGNORE_DEFAULT has been removed in django-concurrency 1.5. Use VERSION_FIELD_REQUIRED instead"

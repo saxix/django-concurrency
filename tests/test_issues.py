@@ -103,7 +103,7 @@ def test_issue_54():
     m1.save()
     m2.save()
 
-    with override_settings(CONCURRENCY_IGNORE_DEFAULT=False):
+    with override_settings(CONCURRENCY_VERSION_FIELD_REQUIRED=True):
         m = SimpleConcurrentModel(version=0)
         m.save()
         SimpleConcurrentModel.objects.update(version=0)
