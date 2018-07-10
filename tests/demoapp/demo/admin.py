@@ -12,7 +12,7 @@ from concurrency.admin import ConcurrentModelAdmin
 from concurrency.api import disable_concurrency
 
 try:
-    from reversion import VersionAdmin
+    from reversion.admin import VersionAdmin
 except ImportError:
     class VersionAdmin(object):
         pass

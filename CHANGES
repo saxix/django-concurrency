@@ -1,8 +1,9 @@
-Release 1.5
------------
-* drop support Django <= 1.8
+Release 1.5 (dev)
+-----------------
+* drop support Django < 1.11
 * add support Django 2.0
 * removed deprecated api `concurrency_check`
+
 
 Release 1.4 (13 Sep 2016)
 -------------------------

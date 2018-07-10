@@ -6,9 +6,8 @@ import logging
 from django.db.models import Model
 
 from concurrency.config import conf
-from concurrency.core import _select_lock, get_version_fieldname  # _wrap_model_save
+from concurrency.core import get_version_fieldname  # _wrap_model_save
 from concurrency.exceptions import RecordModifiedError
-from concurrency.utils import deprecated
 
 __all__ = ['apply_concurrency_check', 'get_revision_of_object',
            'RecordModifiedError', 'disable_concurrency',

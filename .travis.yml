@@ -16,12 +16,10 @@ services:
   - PostgreSQL
 
 env:
-  - DJANGO=1.9 DB=pg
   - DJANGO=1.10 DB=pg
   - DJANGO=1.11 DB=pg
   - DJANGO=2.0 DB=pg
 
-  - DJANGO=1.9 DB=mysql
   - DJANGO=1.10 DB=mysql
   - DJANGO=1.11 DB=mysql
   - DJANGO=2.0 DB=mysql
@@ -36,7 +34,7 @@ matrix:
       env: DJANGO=2.0 DB=mysql
 
 install:
-  - pip install tox "coverage<=4.0" python-coveralls>=2.5 coveralls>=0.5 codecov
+  - pip install tox "coverage<=4.0" codecov
 
 script:
   - tox -e "py${TRAVIS_PYTHON_VERSION//.}-d${DJANGO//.}-${DB}" -- py.test tests -v
