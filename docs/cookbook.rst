@@ -91,26 +91,18 @@ Test Utilities
 Recover deleted record with django-reversion
 --------------------------------------------
 
-Recovering delete record with `diango-reversion`_ produce a ``RecordModifeidError``.
-As both pk and version are present in the object, |concurrency| try to load the record (that does not exists)
-and this raises ``RecordModifedError``. To avoid this simply:
+Recovering deleted records with `diango-reversion`_ produces a
+``RecordModifiedError``, because both `pk` and `version` are present in the
+object, and |concurrency| tries to load the record (that does not exist),
+which raises ``RecordModifiedError`` then.
+
+To avoid this simply disable concurrency, by using a mixin:
 
 .. code-block:: python
 
-    class ConcurrencyVersionAdmin(reversionlib.VersionAdmin):
-        def render_revision_form(self, request, obj, version, context, revert=False, recover=False):
-            with disable_concurrency(obj):
-                return super(ConcurrencyVersionAdmin, self).render_revision_form(request, obj, version, context, revert, recover)
-
-
-or for (depending on django-reversion version)
-
-.. code-block:: python
-
-    class ConcurrencyVersionAdmin(reversionlib.VersionAdmin):
+    class ConcurrencyVersionAdmin(reversion.admin.VersionAdmin):
 
        @disable_concurrency()
        def recover_view(self, request, version_id, extra_context=None):
-            return super(ReversionConcurrentModelAdmin, self).recover_view(request,
-                                                                version_id,
-                                                                extra_context)
+            return super(ReversionConcurrentModelAdmin, self).recover_view(
+                request, version_id, extra_context)
