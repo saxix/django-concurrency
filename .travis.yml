@@ -7,7 +7,7 @@ python:
 
 addons:
   postgresql: "9.4"
-  
+
 cache:
   directories:
     - $HOME/.cache/pip

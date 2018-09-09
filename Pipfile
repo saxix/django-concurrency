@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+django = "==2.1"
 
 [dev-packages]
 django-reversion = "*"
