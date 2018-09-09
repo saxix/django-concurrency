@@ -18,7 +18,8 @@ services:
 
 jobs:
   include:
-    - python: '3.6'
+    - env: TRAVIS_PYTHON_VERSION=3.7
+      python: 3.7
       sudo: required
       dist: xenial
 
