@@ -8,9 +8,11 @@ include tox.ini
 include *.py
 
 exclude Makefile
+exclude Pipfile
 exclude .editorconfig
 exclude .tx
 exclude .pyc
+exclude .pre-commit-config.yaml
 
 recursive-exclude .tx *
 recursive-exclude __pycache__ *

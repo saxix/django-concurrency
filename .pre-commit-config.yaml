@@ -1,0 +1,43 @@
+exclude: '^$'
+fail_fast: false
+repos:
+-   repo: local
+    hooks:
+      - id: isort
+        args:
+            - -rc
+            - src/
+            - tests/
+        name: isort
+        entry: isort
+        language: system
+        types: [python]
+      - id: check-manifest
+        name: check-manifest
+        entry: check-manifest
+        language: system
+        types: [python]
+        files: '^$'
+        always_run: true
+
+-   repo: git://github.com/pre-commit/pre-commit-hooks
+    rev: v1.4.0
+    hooks:
+    -   id: debug-statements
+        exclude: manage.py
+    -   id: end-of-file-fixer
+    -   id: flake8
+        exclude: docs/
+        args:
+        - src/
+        - tests/
+    -   id: check-merge-conflict
+    -   id: check-case-conflict
+#    -   id: name-tests-test
+#    -   id: trailing-whitespace
+#    -   id: requirements-txt-fixer
+#        files: requirements-dev.txt
+#-   repo: git://github.com/asottile/reorder_python_imports
+#    rev: v1.0.1
+#    hooks:
+#    -   id: reorder-python-imports

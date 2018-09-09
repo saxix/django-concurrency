@@ -1,8 +1,8 @@
 import re
+
+from docutils.parsers.rst import Directive, directives
 from sphinx import addnodes, roles
 from sphinx.util.console import bold
-from docutils.parsers.rst import Directive, directives
-
 # RE for option descriptions without a '--' prefix
 from sphinx.writers.html import HTMLTranslator
 

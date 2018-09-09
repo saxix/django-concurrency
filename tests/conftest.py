@@ -3,6 +3,7 @@ import platform
 import sys
 
 import django
+
 import pytest
 
 py_impl = getattr(platform, 'python_implementation', lambda: None)

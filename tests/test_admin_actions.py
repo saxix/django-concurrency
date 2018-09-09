@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import pytest
-
 from demo.base import SENTINEL, AdminTestCase
 from demo.models import SimpleConcurrentModel
 from demo.util import unique_id

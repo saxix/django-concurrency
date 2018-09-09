@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
-import sys, os
-src = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, 'src'))
-sys.path.insert(0, src)
+import os
+import sys
 
 from django.conf import settings
 
+import concurrency
+
+src = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, 'src'))
+sys.path.insert(0, src)
+
+
 settings.configure()
 
-import concurrency
 
 # os.environ['DJANGO_SETTINGS_MODULE']= 'django.conf.global_settings'
 

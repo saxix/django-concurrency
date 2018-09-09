@@ -51,14 +51,16 @@ class AppSettings(object):
         name = prefix_name[len(self.prefix) + 1:]
         if name == 'IGNORE_DEFAULT':
             raise ImproperlyConfigured('IGNORE_DEFAULT has been removed in django-concurrency 1.5. '
-                                                    'Use VERSION_FIELD_REQUIRED instead')
+                                       'Use VERSION_FIELD_REQUIRED instead')
         elif name == 'CALLBACK':
             if isinstance(value, six.string_types):
                 func = get_callable(value)
             elif callable(value):
                 func = value
             else:
-                raise ImproperlyConfigured("{} is not a valid value for `CALLBACK`. It must be a callable or a fullpath to callable. ".format(value))
+                raise ImproperlyConfigured(
+                    "{} is not a valid value for `CALLBACK`. It must be a callable or a fullpath to callable. ".format(
+                        value))
             self._callback = func
 
         setattr(self, name, value)

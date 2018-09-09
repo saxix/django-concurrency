@@ -4,11 +4,11 @@ from __future__ import absolute_import, print_function, unicode_literals
 import json
 import logging
 import os
-
-import pytest
-from django.core.management import call_command
 from six import StringIO
 
+from django.core.management import call_command
+
+import pytest
 from demo.models import SimpleConcurrentModel
 
 logger = logging.getLogger(__name__)

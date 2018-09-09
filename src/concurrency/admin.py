@@ -5,7 +5,6 @@ import operator
 import re
 from functools import reduce
 
-import django
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.core.checks import Error

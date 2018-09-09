@@ -291,4 +291,3 @@ extends :class:`django.core.signing.Signer`. If you want change your Signer you 
     :file:`settings.py` ::
 
         CONCURRENCY_FIELD_SIGNER = "myapp.mysigner.DummySigner"
-

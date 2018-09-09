@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 
-import pytest
 from django.db import connections
 
+import pytest
 from demo.models import DropTriggerConcurrentModel, TriggerConcurrentModel  # noqa
 
 from concurrency.triggers import drop_triggers, factory, get_triggers

@@ -10,4 +10,3 @@
 .. |concurrency| replace:: **django-concurrency**
 .. |pkg| replace:: dja
 .. |version| replace:: 0.1
-

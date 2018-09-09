@@ -2,10 +2,9 @@
 from __future__ import absolute_import, unicode_literals
 
 import pytest
-from reversion.models import Version
-
 from demo.models import ReversionConcurrentModel
-from reversion import revisions, add_to_revision, set_comment
+from reversion import add_to_revision, revisions, set_comment
+from reversion.models import Version
 
 try:
     from django.core.urlresolvers import reverse
