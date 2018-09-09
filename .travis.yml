@@ -3,7 +3,6 @@ sudo: true
 python:
   - 3.5
   - 3.6
-  - 3.7
 
 addons:
   postgresql: "9.4"
@@ -18,8 +17,8 @@ services:
 
 jobs:
   include:
-    - env: TRAVIS_PYTHON_VERSION=3.7
-      python: 3.7
+    - python: 3.7
+      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.1 DB=mysql
       sudo: required
       dist: xenial
 
