@@ -15,7 +15,7 @@ def _add_subparser(subparsers, parser, name, help):
         subparsers.add_parser(name,
                               help=help)
     else:
-        subparsers.add_parser('list',
+        subparsers.add_parser(name,
                               cmd=parser,
                               help=help)
 
