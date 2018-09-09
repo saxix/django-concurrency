@@ -133,7 +133,7 @@ def get_classname(o):
         target = o.__class__
     try:
         return target.__qualname__
-    except AttributeError:
+    except AttributeError:  # pragma: no cover
         return target.__name__
 
 

@@ -78,7 +78,7 @@ def get_signer():
         raise ImproperlyConfigured('Error loading concurrency signer %s: "%s"' % (module, e))
     try:
         signer_class = getattr(mod, attr)
-    except AttributeError:
+    except AttributeError:  # pragma: no cover
         raise ImproperlyConfigured('Module "%s" does not define a valid signer named "%s"' % (module, attr))
     return signer_class()
 
