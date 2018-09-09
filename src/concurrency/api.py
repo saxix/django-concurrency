@@ -111,7 +111,7 @@ class disable_concurrency(object):
         self.old_value = conf.ENABLED
         self.concurrency_managed = (model is None) or hasattr(model, '_concurrencymeta')
 
-    def __enter__(self):
+    def start(self):
         if not self.concurrency_managed:
             return
         if self.model is None:
@@ -122,7 +122,7 @@ class disable_concurrency(object):
         else:
             self.old_value, self.model._concurrencymeta.enabled = self.model._concurrencymeta.enabled, False
 
-    def __exit__(self, *args, **kwds):
+    def finish(self):
         if not self.concurrency_managed:
             return
         if self.model is None:
@@ -131,6 +131,12 @@ class disable_concurrency(object):
             self.model._concurrency_disabled = self.old_value
         else:
             self.model._concurrencymeta.enabled = self.old_value
+
+    def __enter__(self):
+        self.start()
+
+    def __exit__(self, *args, **kwds):
+        self.finish()
 
     def __call__(self, func):
         def wrapper(*args, **kwds):
