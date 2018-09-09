@@ -16,6 +16,12 @@ services:
   - MySQL
   - PostgreSQL
 
+jobs:
+  include:
+    - python: '3.6'
+      sudo: required
+      dist: xenial
+
 env:
   - DJANGO=2.0 DB=pg
   - DJANGO=2.1 DB=pg
