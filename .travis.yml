@@ -1,11 +1,9 @@
 language: python
 sudo: false
 python:
-  - 2.7
-  - 3.4
   - 3.5
   - 3.6
-
+  - 3.7
 
 cache:
   directories:
@@ -16,13 +14,9 @@ services:
   - PostgreSQL
 
 env:
-  - DJANGO=1.10 DB=pg
-  - DJANGO=1.11 DB=pg
   - DJANGO=2.0 DB=pg
   - DJANGO=2.1 DB=pg
 
-  - DJANGO=1.10 DB=mysql
-  - DJANGO=1.11 DB=mysql
   - DJANGO=2.0 DB=mysql
   - DJANGO=2.1 DB=mysql
 
