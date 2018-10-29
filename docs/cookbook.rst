@@ -101,8 +101,13 @@ To avoid this simply disable concurrency, by using a mixin:
 .. code-block:: python
 
     class ConcurrencyVersionAdmin(reversion.admin.VersionAdmin):
+    
+        @disable_concurrency()
+        def revision_view(self, request, object_id, version_id, extra_context=None):
+            return super(ConcurrencyVersionAdmin, self).revision_view(
+                request, object_id, version_id, extra_context=None)
 
-       @disable_concurrency()
-       def recover_view(self, request, version_id, extra_context=None):
-            return super(ReversionConcurrentModelAdmin, self).recover_view(
+        @disable_concurrency()
+        def recover_view(self, request, version_id, extra_context=None):
+            return super(ConcurrencyVersionAdmin, self).recover_view(
                 request, version_id, extra_context)
