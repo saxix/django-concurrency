@@ -95,7 +95,6 @@ Links
 
 _list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#list-editable
 
-.. _list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#list-editable
 
 .. _django-locking: https://github.com/stdbrouw/django-locking
 
@@ -106,8 +105,6 @@ _list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#
 .. _ConditionalVersionField: https://django-concurrency.readthedocs.org/en/latest/fields.html#conditionalversionfield
 
 .. _disable_concurrency: https://django-concurrency.readthedocs.org/en/latest/api.html?#disable-concurrency
-
-.. [1] http://en.wikipedia.org/wiki/Optimistic_concurrency_control
 
 
 
