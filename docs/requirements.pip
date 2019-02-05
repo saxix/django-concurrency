@@ -1,2 +1,2 @@
-sphinx
+sphinx==1.8.4
 django
