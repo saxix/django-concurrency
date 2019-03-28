@@ -56,6 +56,12 @@ matrix:
     - python: 2.7
       env: DJANGO=2.0 DB=mysql
 
+    - python: 2.7
+      env: DJANGO=2.1 DB=pg
+
+    - python: 2.7
+      env: DJANGO=2.1 DB=mysql
+
 install:
   - pip install tox "coverage<=4.0" codecov
 
