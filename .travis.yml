@@ -16,27 +16,27 @@ services:
   - MySQL
   - PostgreSQL
 
-#jobs:
-#  include:
-#    - python: 3.7
-#      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.0 DB=mysql
-#      sudo: required
-#      dist: xenial
-#
-#    - python: 3.7
-#      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.1 DB=pg
-#      sudo: required
-#      dist: xenial
-#
-#    - python: 3.7
-#      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.0 DB=mysql
-#      sudo: required
-#      dist: xenial
-#
-#    - python: 3.7
-#      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.1 DB=pg
-#      sudo: required
-#      dist: xenial
+jobs:
+  include:
+    - python: 3.7
+      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.0 DB=mysql
+      sudo: required
+      dist: xenial
+
+    - python: 3.7
+      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.1 DB=pg
+      sudo: required
+      dist: xenial
+
+    - python: 3.7
+      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.0 DB=mysql
+      sudo: required
+      dist: xenial
+
+    - python: 3.7
+      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.1 DB=pg
+      sudo: required
+      dist: xenial
 
 
 env:
