@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-import os, sys
+import os
+import sys
+
 here = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 rel = lambda *args: os.path.join(here, *args)
 

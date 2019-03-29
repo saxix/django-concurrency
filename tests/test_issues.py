@@ -2,7 +2,6 @@
 import re
 
 import django
-import pytest
 from django.contrib.admin.sites import site
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -13,15 +12,18 @@ from django.test.client import RequestFactory
 from django.test.testcases import SimpleTestCase
 from django.utils.encoding import force_text
 
-from concurrency.exceptions import RecordModifiedError
+import pytest
 from conftest import skipIfDjangoVersion
 from demo.admin import ActionsModelAdmin, admin_register
 from demo.base import AdminTestCase
-from demo.models import ListEditableConcurrentModel, ReversionConcurrentModel, SimpleConcurrentModel
+from demo.models import (
+    ListEditableConcurrentModel, ReversionConcurrentModel, SimpleConcurrentModel
+)
 from demo.util import attributes, unique_id
 
 from concurrency.admin import ConcurrentModelAdmin
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
+from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm
 from concurrency.templatetags.concurrency import identity
 from concurrency.utils import refetch
@@ -103,7 +105,7 @@ def test_issue_54():
     m1.save()
     m2.save()
 
-    with override_settings(CONCURRENCY_IGNORE_DEFAULT=False):
+    with override_settings(CONCURRENCY_VERSION_FIELD_REQUIRED=True):
         m = SimpleConcurrentModel(version=0)
         m.save()
         SimpleConcurrentModel.objects.update(version=0)
@@ -116,7 +118,7 @@ def test_issue_54():
             m2.save()
 
 
-@skipIfDjangoVersion("<(1,11)")
+@skipIfDjangoVersion("!=(1,11)")
 @pytest.mark.django_db()
 def test_issue_81a(monkeypatch):
     monkeypatch.setattr('demo.admin.ActionsModelAdmin.fields', ('id',))

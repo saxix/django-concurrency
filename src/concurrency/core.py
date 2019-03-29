@@ -55,6 +55,7 @@ def _select_lock(model_instance, version_value=None):
     else:  # pragma: no cover
         pass
 
+
 class ConcurrencyOptions:
     field = None
     versioned_save = False

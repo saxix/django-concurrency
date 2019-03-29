@@ -1,10 +1,11 @@
 import re
+
+from docutils.parsers.rst import Directive, directives
 from sphinx import addnodes, roles
 from sphinx.util.console import bold
-from sphinx.util.compat import Directive
-from sphinx.writers.html import SmartyPantsHTMLTranslator
-
 # RE for option descriptions without a '--' prefix
+from sphinx.writers.html import HTMLTranslator
+
 simple_option_desc_re = re.compile(
     r'([-_a-zA-Z0-9]+)(\s*.*?)(?=,\s+(?:/|-|--)|$)')
 
@@ -39,7 +40,7 @@ def setup(app):
         indextemplate="pair: %s; release",
     )
 
-class DjangoHTMLTranslator(SmartyPantsHTMLTranslator):
+class DjangoHTMLTranslator(HTMLTranslator):
     """
     Django-specific reST to HTML tweaks.
     """
@@ -93,7 +94,7 @@ class DjangoHTMLTranslator(SmartyPantsHTMLTranslator):
         old_ids = node.get('ids', [])
         node['ids'] = ['s-' + i for i in old_ids]
         node['ids'].extend(old_ids)
-        SmartyPantsHTMLTranslator.visit_section(self, node)
+        HTMLTranslator.visit_section(self, node)
         node['ids'] = old_ids
 
 

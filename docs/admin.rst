@@ -19,6 +19,7 @@ Handle ``list_editable``
 :attr:`ModelAdmin.list_editable` is enabled. To enable this feature simply extend your ModelAdmin from
 :ref:`ConcurrentModelAdmin` or use :ref:`ConcurrencyListEditableMixin`
 
+
 .. seealso:: :ref:`list_editable_policies`
 
 

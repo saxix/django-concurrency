@@ -3,9 +3,14 @@ Django Concurrency
 ==================
 
 
+.. image:: https://badge.fury.io/py/django-concurrency.svg
+   :target: http://badge.fury.io/py/django-concurrency
+   :alt: PyPI package
+
+
 django-concurrency is an optimistic lock [1]_ implementation for Django.
 
-Supported Django versions: 1.8.x, 1.9.x, 1.10.x., 1.11.x
+Supported Django versions: 1.8.x, 1.9.x, 1.10.x., 1.11.x, 2.x
 
 It prevents users from doing concurrent editing in Django both from UI and from a
 django command.
@@ -66,25 +71,30 @@ Links
 | Documentation:     |https://django-concurrency.readthedocs.org/en/latest/   |
 +--------------------+---------------+--------------+-------------------------+
 
-.. |master-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=master
+.. |master-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.svg?branch=master
                     :target: http://travis-ci.org/saxix/django-concurrency/
 
 .. |master-cov| image:: https://codecov.io/gh/saxix/django-concurrency/branch/master/graph/badge.svg
                     :target: https://codecov.io/gh/saxix/django-concurrency
 
-.. |dev-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.png?branch=develop
+.. |master-doc| image:: https://readthedocs.org/projects/django-concurrency/badge/?version=stable
+                    :target: http://django-concurrency.readthedocs.io/en/stable/
+
+.. |dev-build| image:: https://secure.travis-ci.org/saxix/django-concurrency.svg?branch=develop
                   :target: http://travis-ci.org/saxix/django-concurrency/
 
 .. |dev-cov| image:: https://codecov.io/gh/saxix/django-concurrency/branch/develop/graph/badge.svg
                     :target: https://codecov.io/gh/saxix/django-concurrency
 
+.. |dev-doc| image:: https://readthedocs.org/projects/django-concurrency/badge/?version=stable
+                    :target: http://django-concurrency.readthedocs.io/en/stable/
 
 
-.. |wheel| image:: https://pypip.in/wheel/blackhole/badge.png
+
+.. |wheel| image:: https://img.shields.io/pypi/wheel/django-concurrency.svg
 
 _list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#list-editable
 
-.. _list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#list-editable
 
 .. _django-locking: https://github.com/stdbrouw/django-locking
 
@@ -95,8 +105,6 @@ _list-editable: https://django-concurrency.readthedocs.org/en/latest/admin.html#
 .. _ConditionalVersionField: https://django-concurrency.readthedocs.org/en/latest/fields.html#conditionalversionfield
 
 .. _disable_concurrency: https://django-concurrency.readthedocs.org/en/latest/api.html?#disable-concurrency
-
-.. [1] http://en.wikipedia.org/wiki/Optimistic_concurrency_control
 
 
 

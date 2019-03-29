@@ -12,7 +12,7 @@ Using ``pip``::
 Go to https://github.com/saxix/django-concurrency if you need to download a package or clone the repo.
 
 
-|concurrency| does not need to be added into ``INSTALLED_APPS`
+|concurrency| does not need to be added into ``INSTALLED_APPS``
 unless you want to run the tests or use the templatetags and/or admin integration
 
 
@@ -41,4 +41,3 @@ How to run the tests
 
         $ pip install tox
         $ tox
-

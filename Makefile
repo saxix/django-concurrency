@@ -9,27 +9,30 @@ DJANGO?='last'
 	mkdir -p ${BUILDDIR}
 
 develop:
-	@pip install -U pip setuptools
+	@pip install pipenv
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then pip install  MySQL-python; fi"
 	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2; fi"
-	@pip install -e .[dev]
 	$(MAKE) .init-db
+	@pipenv install -d --skip-lock
 
 
 .init-db:
-	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -u root -e 'DROP DATABASE IF EXISTS concurrency;'; fi"
-	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -u root -e 'CREATE DATABASE IF NOT EXISTS concurrency;'; fi"
+	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -h 127.0.0.1 -u root -e 'DROP DATABASE IF EXISTS concurrency;'; fi"
+	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then mysql -h 127.0.0.1 -u root -e 'CREATE DATABASE IF NOT EXISTS concurrency;'; fi"
 
-	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -c 'DROP DATABASE IF EXISTS concurrency;' -U postgres; fi"
-	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -c 'CREATE DATABASE concurrency;' -U postgres; fi"
+	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -h localhost -c 'DROP DATABASE IF EXISTS concurrency;' -U postgres; fi"
+	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then psql -h localhost -c 'CREATE DATABASE concurrency;' -U postgres; fi"
 
 test:
 	py.test -v --create-db
 
-qa:
-	flake8 src/ tests/
-	isort -rc src/ --check-only
-	check-manifest
+lint:
+	pre-commit run --all-files
+	pipenv run isort -rc src/ --check-only
+	pipenv run check-manifest
+
+travis:
+	docker run --privileged --name travis-debug -it -u travis travisci/ci-amethyst:packer-1512508255-986baf0 /bin/bash -l
 
 
 clean:
@@ -45,7 +48,7 @@ fullclean:
 
 docs: .mkbuilddir
 	mkdir -p ${BUILDDIR}/docs
-	sphinx-build -aE docs/ ${BUILDDIR}/docs
+	pipenv run sphinx-build -aE docs/ ${BUILDDIR}/docs
 ifdef BROWSE
 	firefox ${BUILDDIR}/docs/index.html
 endif

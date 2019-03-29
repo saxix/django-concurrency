@@ -120,4 +120,3 @@ use :class:`concurrency.forms.ConcurrentForm`
 
     class MyModelAdmin(ConcurrentModelAdmin):
         form = forms.ModelForm  # overrides default ConcurrentForm
-

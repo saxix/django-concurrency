@@ -1,6 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import, unicode_literals
 
+import six
 from importlib import import_module
 
 from django import forms
@@ -77,7 +78,7 @@ def get_signer():
         raise ImproperlyConfigured('Error loading concurrency signer %s: "%s"' % (module, e))
     try:
         signer_class = getattr(mod, attr)
-    except AttributeError:
+    except AttributeError:  # pragma: no cover
         raise ImproperlyConfigured('Module "%s" does not define a valid signer named "%s"' % (module, attr))
     return signer_class()
 
@@ -119,7 +120,7 @@ class VersionField(forms.IntegerField):
     def to_python(self, value):
         try:
             if value not in (None, '', 'None'):
-                return int(self._signer.unsign(value))
+                return int(self._signer.unsign(six.text_type(value)))
             return 0
         except (BadSignature, ValueError):
             raise VersionError(value)

@@ -68,5 +68,3 @@ anyway this will NOT raise any error
 
 
 .. note:: `TriggerVersionField` will be always updated
-
-

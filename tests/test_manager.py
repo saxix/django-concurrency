@@ -1,5 +1,4 @@
 import pytest
-
 from demo.models import (
     AutoIncConcurrentModel, ConcreteModel, CustomSaveModel, InheritedModel, ProxyModel,
     SimpleConcurrentModel

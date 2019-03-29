@@ -6,11 +6,10 @@ import logging
 from django.db.models import Model
 
 from concurrency.config import conf
-from concurrency.core import _select_lock, get_version_fieldname  # _wrap_model_save
+from concurrency.core import get_version_fieldname  # _wrap_model_save
 from concurrency.exceptions import RecordModifiedError
-from concurrency.utils import deprecated
 
-__all__ = ['apply_concurrency_check', 'concurrency_check', 'get_revision_of_object',
+__all__ = ['apply_concurrency_check', 'get_revision_of_object',
            'RecordModifiedError', 'disable_concurrency',
            'get_version', 'is_changed', 'get_version_fieldname']
 
@@ -71,12 +70,6 @@ def apply_concurrency_check(model, fieldname, versionclass):
     #     versionclass._wrap_model_save(model)
 
 
-@deprecated(version="1.5")
-def concurrency_check(model_instance, force_insert=False, force_update=False, using=None, **kwargs):
-    if not force_insert:
-        _select_lock(model_instance)
-
-
 class concurrency_disable_increment(object):
     def __init__(self, model):
         self.model = model
@@ -118,7 +111,7 @@ class disable_concurrency(object):
         self.old_value = conf.ENABLED
         self.concurrency_managed = (model is None) or hasattr(model, '_concurrencymeta')
 
-    def __enter__(self):
+    def start(self):
         if not self.concurrency_managed:
             return
         if self.model is None:
@@ -129,7 +122,7 @@ class disable_concurrency(object):
         else:
             self.old_value, self.model._concurrencymeta.enabled = self.model._concurrencymeta.enabled, False
 
-    def __exit__(self, *args, **kwds):
+    def finish(self):
         if not self.concurrency_managed:
             return
         if self.model is None:
@@ -138,6 +131,12 @@ class disable_concurrency(object):
             self.model._concurrency_disabled = self.old_value
         else:
             self.model._concurrencymeta.enabled = self.old_value
+
+    def __enter__(self):
+        self.start()
+
+    def __exit__(self, *args, **kwds):
+        self.finish()
 
     def __call__(self, func):
         def wrapper(*args, **kwds):

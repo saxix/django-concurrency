@@ -69,29 +69,8 @@ an existing database remember to edit the database's tables:
     apply_concurrency_check(User, 'version', IntegerVersionField)
 
 
-If used with Django>=1.7 remebber to create a custom migration.
+If used with Django>=1.7 remember to create a custom migration.
 
-
-Manually handle concurrency
----------------------------
-.. versionchanged:: 0.4
-
-Use :ref:`concurrency_check`
-
-
-.. code-block:: python
-
-    from concurrency.api import concurrency_check
-
-
-    class AbstractModelWithCustomSave(models.Model):
-        version = IntegerVersionField(db_column='cm_version_id', manually=True)
-
-
-    def save(self, *args, **kwargs):
-        concurrency_check(self, *args, **kwargs)
-        logger.debug(u'Saving %s "%s".' % (self._meta.verbose_name, self))
-        super(SecurityConcurrencyBaseModel, self).save(*args, **kwargs)
 
 
 Test Utilities
@@ -112,26 +91,23 @@ Test Utilities
 Recover deleted record with django-reversion
 --------------------------------------------
 
-Recovering delete record with `diango-reversion`_ produce a ``RecordModifeidError``.
-As both pk and version are present in the object, |concurrency| try to load the record (that does not exists)
-and this raises ``RecordModifedError``. To avoid this simply:
+Recovering deleted records with `diango-reversion`_ produces a
+``RecordModifiedError``, because both `pk` and `version` are present in the
+object, and |concurrency| tries to load the record (that does not exist),
+which raises ``RecordModifiedError`` then.
+
+To avoid this simply disable concurrency, by using a mixin:
 
 .. code-block:: python
 
-    class ConcurrencyVersionAdmin(reversionlib.VersionAdmin):
-        def render_revision_form(self, request, obj, version, context, revert=False, recover=False):
-            with disable_concurrency(obj):
-                return super(ConcurrencyVersionAdmin, self).render_revision_form(request, obj, version, context, revert, recover)
+    class ConcurrencyVersionAdmin(reversion.admin.VersionAdmin):
+    
+        @disable_concurrency()
+        def revision_view(self, request, object_id, version_id, extra_context=None):
+            return super(ConcurrencyVersionAdmin, self).revision_view(
+                request, object_id, version_id, extra_context=None)
 
-
-or for (depending on django-reversion version)
-
-.. code-block:: python
-
-    class ConcurrencyVersionAdmin(reversionlib.VersionAdmin):
-
-       @disable_concurrency()
-       def recover_view(self, request, version_id, extra_context=None):
-            return super(ReversionConcurrentModelAdmin, self).recover_view(request,
-                                                                version_id,
-                                                                extra_context)
+        @disable_concurrency()
+        def recover_view(self, request, version_id, extra_context=None):
+            return super(ConcurrencyVersionAdmin, self).recover_view(
+                request, version_id, extra_context)

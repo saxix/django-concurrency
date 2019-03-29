@@ -1,10 +1,23 @@
 # -*- coding: utf-8 -*-
+from functools import partial
+
+import django
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management.base import BaseCommand
 from django.db import connections
 from django.db.transaction import atomic
 
 from concurrency.triggers import create_triggers, drop_triggers, get_triggers
+
+
+def _add_subparser(subparsers, parser, name, help):
+    if django.VERSION >= (2, 1):
+        subparsers.add_parser(name,
+                              help=help)
+    else:
+        subparsers.add_parser(name,
+                              cmd=parser,
+                              help=help)
 
 
 class Command(BaseCommand):
@@ -20,15 +33,11 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(help='sub-command help',
                                            dest='command')
 
-        subparsers.add_parser('list',
-                              cmd=parser,
-                              help="command_a help")
-        subparsers.add_parser('drop',
-                              cmd=parser,
-                              help="command_a help")
-        subparsers.add_parser('create',
-                              cmd=parser,
-                              help="command_a help")
+        add_parser = partial(_add_subparser, subparsers, parser)
+
+        add_parser('list', help="list concurrency triggers")
+        add_parser('drop', help="drop  concurrency triggers")
+        add_parser('create', help="create concurrency triggers")
 
         parser.add_argument('-d', '--database',
                             action='store',

@@ -1,6 +1,6 @@
-import pytest
 from django.contrib.auth.models import Group
 
+import pytest
 from demo.models import SimpleConcurrentModel
 from demo.util import nextgroup, nextname
 

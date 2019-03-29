@@ -1,11 +1,11 @@
 language: python
-sudo: false
+sudo: true
 python:
-  - 2.7
-  - 3.4
   - 3.5
   - 3.6
 
+addons:
+  postgresql: "9.4"
 
 cache:
   directories:
@@ -15,35 +15,55 @@ services:
   - MySQL
   - PostgreSQL
 
-env:
-  - DJANGO=1.8 DB=pg
-  - DJANGO=1.9 DB=pg
-  - DJANGO=1.10 DB=pg
-  - DJANGO=1.11 DB=pg
+jobs:
+  include:
+    - python: 3.7
+      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.0 DB=mysql
+      sudo: required
+      dist: xenial
 
-  - DJANGO=1.8 DB=mysql
-  - DJANGO=1.9 DB=mysql
-  - DJANGO=1.10 DB=mysql
+    - python: 3.7
+      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.1 DB=pg
+      sudo: required
+      dist: xenial
+
+    - python: 3.7
+      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.0 DB=mysql
+      sudo: required
+      dist: xenial
+
+    - python: 3.7
+      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.1 DB=pg
+      sudo: required
+      dist: xenial
+
+
+env:
+  - DJANGO=1.11 DB=pg
+  - DJANGO=2.0 DB=pg
+  - DJANGO=2.1 DB=pg
+
   - DJANGO=1.11 DB=mysql
+  - DJANGO=2.0 DB=mysql
+  - DJANGO=2.1 DB=mysql
 
 
 matrix:
   exclude:
     - python: 2.7
-      env: DJANGO=2.0
+      env: DJANGO=2.0 DB=pg
 
-    - python: 3.4
-      env: DJANGO=2.0
+    - python: 2.7
+      env: DJANGO=2.0 DB=mysql
 
-    - python: 3.6
-      env: DJANGO=1.8
-    - python: 3.6
-      env: DJANGO=1.9
-    - python: 3.6
-      env: DJANGO=1.10
+    - python: 2.7
+      env: DJANGO=2.1 DB=pg
+
+    - python: 2.7
+      env: DJANGO=2.1 DB=mysql
 
 install:
-  - pip install tox "coverage<=4.0" python-coveralls>=2.5 coveralls>=0.5 codecov
+  - pip install tox "coverage<=4.0" codecov
 
 script:
   - tox -e "py${TRAVIS_PYTHON_VERSION//.}-d${DJANGO//.}-${DB}" -- py.test tests -v

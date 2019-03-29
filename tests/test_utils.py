@@ -3,13 +3,13 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import logging
 
-import pytest
 from django.test import TestCase
 
+import pytest
 from demo.models import SimpleConcurrentModel
 
 import concurrency.fields
-from concurrency.utils import ConcurrencyTestMixin, fqn, deprecated
+from concurrency.utils import ConcurrencyTestMixin, deprecated, fqn
 
 logger = logging.getLogger(__name__)
 

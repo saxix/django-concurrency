@@ -21,7 +21,6 @@ from django.utils.translation import ungettext
 
 from concurrency import core, forms
 from concurrency.api import get_revision_of_object
-from concurrency.compat import DJANGO_11
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, conf
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
@@ -107,7 +106,7 @@ class ConcurrencyActionMixin(object):
                     for x in selected:
                         try:
                             pk, version = x.split(",")
-                        except ValueError:
+                        except ValueError:  # pragma: no cover
                             raise ImproperlyConfigured('`ConcurrencyActionMixin` error.'
                                                        'A tuple with `primary_key, version_number` '
                                                        'expected:  `%s` found' % x)
@@ -255,31 +254,30 @@ class ConcurrentModelAdmin(ConcurrencyActionMixin,
     form = ConcurrentForm
     formfield_overrides = {forms.VersionField: {'widget': VersionWidget}}
 
-    if DJANGO_11:
-        def check(self, **kwargs):
-            errors = []
-            if self.fields:
-                version_field = self.model._concurrencymeta.field
-                if version_field.name not in self.fields:
-                    errors.append(
-                        Error(
-                            'Missed version field in {} fields definition'.format(self),
-                            hint="Please add '{}' to the 'fields' attribute".format(version_field.name),
-                            obj=None,
-                            id='concurrency.A001',
-                        )
+    def check(self, **kwargs):
+        errors = []
+        if self.fields:
+            version_field = self.model._concurrencymeta.field
+            if version_field.name not in self.fields:
+                errors.append(
+                    Error(
+                        'Missed version field in {} fields definition'.format(self),
+                        hint="Please add '{}' to the 'fields' attribute".format(version_field.name),
+                        obj=None,
+                        id='concurrency.A001',
                     )
-            if self.fieldsets:
-                version_field = self.model._concurrencymeta.field
-                fields = flatten([v['fields'] for k, v in self.fieldsets])
+                )
+        if self.fieldsets:
+            version_field = self.model._concurrencymeta.field
+            fields = flatten([v['fields'] for k, v in self.fieldsets])
 
-                if version_field.name not in fields:
-                    errors.append(
-                        Error(
-                            'Missed version field in {} fieldsets definition'.format(self),
-                            hint="Please add '{}' to the 'fieldsets' attribute".format(version_field.name),
-                            obj=None,
-                            id='concurrency.A002',
-                        )
+            if version_field.name not in fields:
+                errors.append(
+                    Error(
+                        'Missed version field in {} fieldsets definition'.format(self),
+                        hint="Please add '{}' to the 'fieldsets' attribute".format(version_field.name),
+                        obj=None,
+                        id='concurrency.A002',
                     )
-            return errors
+                )
+        return errors

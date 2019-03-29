@@ -103,5 +103,3 @@ the scope of the concurrency checks.
 
         class ConcurrencyMeta:
             check_fields = ('username',)
-
-

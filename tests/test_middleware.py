@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-import mock
 from django.conf import settings
 from django.contrib.admin.sites import site
 from django.http import HttpRequest
 from django.test.utils import override_settings
 
+import mock
 from demo.base import AdminTestCase
 from demo.models import SimpleConcurrentModel
 from demo.util import DELETE_ATTRIBUTE, attributes, unique_id

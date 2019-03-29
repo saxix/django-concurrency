@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.signals import request_started
-from django.db import IntegrityError, connections, connection
+from django.db import IntegrityError, connection, connections
 
 import mock
 import pytest

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 
-import pytest
 from django.db import connections
 
+import pytest
 from demo.models import DropTriggerConcurrentModel, TriggerConcurrentModel  # noqa
 
 from concurrency.triggers import drop_triggers, factory, get_triggers
@@ -25,7 +25,7 @@ def test_get_triggers():
     assert get_triggers(['default']) == {'default': [u'concurrency_demo_droptriggerconcurrentmodel_version',
                                                      u'concurrency_demo_triggerconcurrentmodel_version']}
     assert get_triggers() == {'default': [u'concurrency_demo_droptriggerconcurrentmodel_version',
-                                                     u'concurrency_demo_triggerconcurrentmodel_version']}
+                                          u'concurrency_demo_triggerconcurrentmodel_version']}
 
 
 @pytest.mark.django_db

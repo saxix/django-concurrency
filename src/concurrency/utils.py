@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-import six
+
 import inspect
 import logging
+import six
 import warnings
 
 from concurrency.exceptions import RecordModifiedError
@@ -132,7 +133,7 @@ def get_classname(o):
         target = o.__class__
     try:
         return target.__qualname__
-    except AttributeError:
+    except AttributeError:  # pragma: no cover
         return target.__name__
 
 
