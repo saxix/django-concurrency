@@ -1,7 +1,6 @@
 # coding=utf-8
 from __future__ import absolute_import, unicode_literals
 
-import six
 from importlib import import_module
 
 from django import forms
@@ -120,7 +119,7 @@ class VersionField(forms.IntegerField):
     def to_python(self, value):
         try:
             if value not in (None, '', 'None'):
-                return int(self._signer.unsign(six.text_type(value)))
+                return int(self._signer.unsign(str(value)))
             return 0
         except (BadSignature, ValueError):
             raise VersionError(value)

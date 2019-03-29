@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 
 import inspect
 import logging
-import six
 import warnings
 
 from concurrency.exceptions import RecordModifiedError
@@ -208,7 +207,7 @@ def flatten(iterable):
 
     result = list()
     for el in iterable:
-        if hasattr(el, "__iter__") and not isinstance(el, six.string_types):
+        if hasattr(el, "__iter__") and not isinstance(el, str):
             result.extend(flatten(el))
         else:
             result.append(el)
