@@ -39,13 +39,11 @@ jobs:
 
 
 env:
-  - DJANGO=1.10 DB=pg
   - DJANGO=1.11 DB=pg
   - DJANGO=2.0 DB=pg
   - DJANGO=2.1 DB=pg
 
-  - DJANGO=1.10 DB=mysql
-  - DJANGO=1.10 DB=mysql
+  - DJANGO=1.11 DB=mysql
   - DJANGO=2.0 DB=mysql
   - DJANGO=2.1 DB=mysql
 
@@ -57,6 +55,12 @@ matrix:
 
     - python: 2.7
       env: DJANGO=2.0 DB=mysql
+
+    - python: 2.7
+      env: DJANGO=2.1 DB=pg
+
+    - python: 2.7
+      env: DJANGO=2.1 DB=mysql
 
 install:
   - pip install tox "coverage<=4.0" codecov
