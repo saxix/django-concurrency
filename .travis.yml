@@ -3,7 +3,8 @@ sudo: true
 python:
   - 3.5
   - 3.6
-
+  - 3.7
+  -
 addons:
   postgresql: "9.4"
 
@@ -42,25 +43,13 @@ env:
   - DJANGO=1.11 DB=pg
   - DJANGO=2.0 DB=pg
   - DJANGO=2.1 DB=pg
+  - DJANGO=2.2 DB=pg
 
   - DJANGO=1.11 DB=mysql
   - DJANGO=2.0 DB=mysql
   - DJANGO=2.1 DB=mysql
+  - DJANGO=2.2 DB=mysql
 
-
-matrix:
-  exclude:
-    - python: 2.7
-      env: DJANGO=2.0 DB=pg
-
-    - python: 2.7
-      env: DJANGO=2.0 DB=mysql
-
-    - python: 2.7
-      env: DJANGO=2.1 DB=pg
-
-    - python: 2.7
-      env: DJANGO=2.1 DB=mysql
 
 install:
   - pip install tox "coverage<=4.0" codecov
