@@ -56,7 +56,7 @@ def _select_lock(model_instance, version_value=None):
         pass
 
 
-class ConcurrencyOptions:
+class ConcurrencyOptions(object):
     field = None
     versioned_save = False
     manually = False
