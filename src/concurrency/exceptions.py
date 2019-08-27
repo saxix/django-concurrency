@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 from django.core.exceptions import SuspiciousOperation, ValidationError
 from django.db import DatabaseError
 from django.utils.translation import ugettext as _

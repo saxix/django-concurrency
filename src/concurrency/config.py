@@ -1,6 +1,3 @@
-# coding=utf-8
-from __future__ import absolute_import, unicode_literals
-
 from django.core.exceptions import ImproperlyConfigured
 from django.test.signals import setting_changed
 
