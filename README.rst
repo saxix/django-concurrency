@@ -10,7 +10,7 @@ Django Concurrency
 
 django-concurrency is an optimistic lock [1]_ implementation for Django.
 
-Supported Django versions: 1.8.x, 1.9.x, 1.10.x., 1.11.x, 2.x
+Supported Django versions: 1.11.x, 2.x
 
 It prevents users from doing concurrent editing in Django both from UI and from a
 django command.
