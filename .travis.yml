@@ -4,6 +4,7 @@ python:
   - 3.5
   - 3.6
   - 3.7
+  - 3.8
 
 addons:
   postgresql: "9.4"
@@ -16,39 +17,20 @@ services:
   - MySQL
   - PostgreSQL
 
-#jobs:
-#  include:
-#    - python: 3.7
-#      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.0 DB=mysql
-#      sudo: required
-#      dist: xenial
-#
-#    - python: 3.7
-#      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.1 DB=pg
-#      sudo: required
-#      dist: xenial
-#
-#    - python: 3.7
-#      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.0 DB=mysql
-#      sudo: required
-#      dist: xenial
-#
-#    - python: 3.7
-#      env: TRAVIS_PYTHON_VERSION=3.7 DJANGO=2.1 DB=pg
-#      sudo: required
-#      dist: xenial
-
 
 env:
   - DJANGO=1.11 DB=pg
   - DJANGO=2.0 DB=pg
   - DJANGO=2.1 DB=pg
   - DJANGO=2.2 DB=pg
+  - DJANGO=2.4 DB=pg
+  - DJANGO=3.0 DB=pg
 
   - DJANGO=1.11 DB=mysql
   - DJANGO=2.0 DB=mysql
   - DJANGO=2.1 DB=mysql
   - DJANGO=2.2 DB=mysql
+  - DJANGO=3.0 DB=mysql
 
 
 install:
