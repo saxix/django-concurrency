@@ -1,7 +1,7 @@
-Release 2.1
+Release 2.1 (dev)
 -----------
 * drop support Python 2.x
-* add support Django 2.2
+* add support Django 2.2 / 3.0
 * drop support Django < 1.11
 
 

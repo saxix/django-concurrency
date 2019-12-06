@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-import six
+import io
 
 from django.core.management import call_command
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.django_db
 def test_command_create(monkeypatch):
-    out = six.StringIO()
+    out = io.StringIO()
     mock_create = Mock()
     mock_create.return_value = {'default': [['model', 'field', 'trigger']]}
 
@@ -29,7 +29,7 @@ def test_command_create(monkeypatch):
 
 @pytest.mark.django_db
 def test_command_create_db(monkeypatch):
-    out = six.StringIO()
+    out = io.StringIO()
     mock_create = Mock()
     mock_create.return_value = {'default': [['model', 'field', 'trigger']]}
 
@@ -44,7 +44,7 @@ def test_command_create_db(monkeypatch):
 
 @pytest.mark.django_db
 def test_command_list():
-    out = six.StringIO()
+    out = io.StringIO()
     call_command('triggers', 'list', stdout=out)
     out.seek(0)
     output = out.read()
@@ -54,7 +54,7 @@ def test_command_list():
 
 @pytest.mark.django_db
 def test_command_drop(monkeypatch):
-    out = six.StringIO()
+    out = io.StringIO()
     mock_drop = Mock()
     mock_drop.return_value = {'default': [['model', 'field', 'trigger']]}
 

@@ -74,36 +74,17 @@ class TestIssue18(SimpleTestCase):
         self.assertEqual(identity(g), force_text(g.pk))
 
 
-@pytest.mark.skipif(django.VERSION[:2] >= (1, 9), reason="Skip django>=1.9")
-@pytest.mark.django_db()
-def test_issue_53(admin_client):
-    pytest.importorskip("reversion")
-    import reversion as revisions
-
-    with revisions.create_revision():
-        instance = ReversionConcurrentModel.objects.create()
-    pk = instance.pk
-
-    with revisions.create_revision():
-        instance.delete()
-
-    version_list = revisions.get_deleted(ReversionConcurrentModel)
-    deleted_pk = version_list[0].pk
-    admin_client.post('/admin/demo/reversionconcurrentmodel/recover/{}/'.format(deleted_pk),
-                      {'username': 'aaaa'})
-    assert ReversionConcurrentModel.objects.filter(id=pk).exists()
-
-
 @pytest.mark.django_db()
 def test_issue_54():
-    m = SimpleConcurrentModel(version=0)
-    m.save()
-    SimpleConcurrentModel.objects.update(version=0)
-    m1 = SimpleConcurrentModel.objects.get(pk=m.pk)
-    m2 = SimpleConcurrentModel.objects.get(pk=m.pk)
-    assert m1.version == m2.version == 0
-    m1.save()
-    m2.save()
+    with override_settings(CONCURRENCY_VERSION_FIELD_REQUIRED=False):
+        m = SimpleConcurrentModel(version=0)
+        m.save()
+        SimpleConcurrentModel.objects.update(version=0)
+        m1 = SimpleConcurrentModel.objects.get(pk=m.pk)
+        m2 = SimpleConcurrentModel.objects.get(pk=m.pk)
+        assert m1.version == m2.version == 0
+        m1.save()
+        m2.save()
 
     with override_settings(CONCURRENCY_VERSION_FIELD_REQUIRED=True):
         m = SimpleConcurrentModel(version=0)
