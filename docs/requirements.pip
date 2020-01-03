@@ -1,2 +1,2 @@
 sphinx
-django
+django==3.0.2
