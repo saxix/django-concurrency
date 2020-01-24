@@ -24,3 +24,4 @@ __pycache__
 *.sqlite
 .testmondata
 Pipfile.lock
+poetry.lock
