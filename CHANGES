@@ -1,5 +1,9 @@
-Release 2.1
------------
+Release 2.1.1
+-------------
+* fixes packaging
+
+Release 2.1 ( not released on pypi)
+-----------------------------------
 * drop support Python < 3.5
 * add support Django 2.2 / 3.0
 * drop support Django < 1.11
