@@ -1,4 +1,4 @@
-Release 2.1 (dev)
+Release 2.1
 -----------
 * drop support Python < 3.5
 * add support Django 2.2 / 3.0
