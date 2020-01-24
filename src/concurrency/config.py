@@ -1,9 +1,5 @@
-# coding=utf-8
-from __future__ import absolute_import, unicode_literals
-
 from django.core.exceptions import ImproperlyConfigured
 from django.test.signals import setting_changed
-from django.utils import six
 
 from .compat import get_callable
 
@@ -53,7 +49,7 @@ class AppSettings(object):
             raise ImproperlyConfigured('IGNORE_DEFAULT has been removed in django-concurrency 1.5. '
                                        'Use VERSION_FIELD_REQUIRED instead')
         elif name == 'CALLBACK':
-            if isinstance(value, six.string_types):
+            if isinstance(value, str):
                 func = get_callable(value)
             elif callable(value):
                 func = value

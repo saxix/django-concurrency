@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-
 from django.core.signals import got_request_exception
 
 from concurrency.config import conf

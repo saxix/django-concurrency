@@ -4,10 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "==2.1"
-pre-commit = "*"
 
 [dev-packages]
+django = "*"
+pre-commit = "*"
 django-reversion = "*"
 django-webtest = "*"
 mock = "*"
@@ -20,6 +20,7 @@ tox = "*"
 "psycopg2-binary" = "*"
 check-manifest = "*"
 sphinx = "*"
+twine="*"
 
 [requires]
 python_version = "3.6"

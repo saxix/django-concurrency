@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-
 import operator
 import re
 from functools import reduce
@@ -207,12 +204,12 @@ class ConcurrencyListEditableMixin(object):
     def log_change(self, request, object, message):
         if object.pk in self._get_conflicts(request):
             return
-        super(ConcurrencyListEditableMixin, self).log_change(request, object, message)
+        return super(ConcurrencyListEditableMixin, self).log_change(request, object, message)
 
     def log_deletion(self, request, object, object_repr):
         if object.pk in self._get_conflicts(request):
             return
-        super(ConcurrencyListEditableMixin, self).log_deletion(request, object, object_repr)
+        return super(ConcurrencyListEditableMixin, self).log_deletion(request, object, object_repr)
 
     def message_user(self, request, message, *args, **kwargs):
         # This is ugly but we do not want to touch the changelist_view() code.

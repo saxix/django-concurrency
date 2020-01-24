@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 from django.template import Library
 from django.templatetags.l10n import unlocalize
 from django.utils.safestring import mark_safe

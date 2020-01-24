@@ -71,7 +71,7 @@ html_translator_class = "version.DjangoHTMLTranslator"
 
 # General information about the project.
 project = u'Django Concurrency'
-copyright = u'2012-2015, Stefano Apostolico'
+copyright = u'2012-2019, Stefano Apostolico'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
