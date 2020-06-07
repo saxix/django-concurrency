@@ -25,3 +25,4 @@ __pycache__
 .testmondata
 Pipfile.lock
 poetry.lock
+pyproject.toml
