@@ -1,3 +1,5 @@
+import warnings
+
 from django.core.exceptions import ImproperlyConfigured
 from django.test.signals import setting_changed
 
@@ -18,7 +20,8 @@ LIST_EDITABLE_POLICIES = [CONCURRENCY_LIST_EDITABLE_POLICY_SILENT, CONCURRENCY_L
 class AppSettings(object):
     defaults = {
         'ENABLED': True,
-        'MANUAL_TRIGGERS': False,
+        'AUTO_CREATE_TRIGGERS': True,
+        'MANUAL_TRIGGERS': False,  # deprecated: use AUTO_CREATE_TRIGGERS
         'FIELD_SIGNER': 'concurrency.forms.VersionFieldSigner',
         'POLICY': CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
         'CALLBACK': 'concurrency.views.callback',
@@ -58,6 +61,10 @@ class AppSettings(object):
                     "{} is not a valid value for `CALLBACK`. It must be a callable or a fullpath to callable. ".format(
                         value))
             self._callback = func
+        elif name == "MANUAL_TRIGGERS":
+            warnings.warn("MANUAL_TRIGGERS is deprecated and will be removed in 2.5. Use AUTO_CREATE_TRIGGERS",
+                          category=DeprecationWarning)
+            self.AUTO_CREATE_TRIGGERS = not value
 
         setattr(self, name, value)
 

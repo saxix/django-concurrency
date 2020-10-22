@@ -26,6 +26,8 @@ def pytest_configure():
 
     settings.SILENCED_SYSTEM_CHECKS = ['concurrency.W001']
     settings.CONCURRENCY_VERSION_FIELD_REQUIRED = False
+    settings.CONCURRENCY_MANUAL_TRIGGERS = False
+    settings.CONCURRENCY_AUTO_CREATE_TRIGGERS = True
 
 
 @pytest.fixture(scope='session')
