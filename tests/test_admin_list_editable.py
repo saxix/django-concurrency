@@ -31,7 +31,7 @@ class TestListEditable(AdminTestCase):
         res = self.app.get('/admin/', user='sax')
         # file:///admin/demo/listeditableconcurrentmodel/add/
         res = res.click(self.TARGET._meta.verbose_name_plural)
-        res = res.click('Add', href=f'/admin/demo/{self.TARGET._meta.model_name}/add/')
+        res = res.click('Add', href=f'/admin/demo/{self.TARGET._meta.model_name}/add/', index=0)
         form = res.form
         form['username'] = 'CHAR'
         res = form.submit().follow()
