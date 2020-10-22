@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.template.base import Template
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from concurrency.compat import TemplateDoesNotExist
 from concurrency.exceptions import RecordModifiedError

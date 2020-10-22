@@ -4,7 +4,7 @@ from django.forms.widgets import HiddenInput, TextInput
 from django.test import TestCase, override_settings
 from django.test.testcases import SimpleTestCase
 from django.utils.encoding import smart_str
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import pytest
 from demo.models import Issue3TestModel, SimpleConcurrentModel
