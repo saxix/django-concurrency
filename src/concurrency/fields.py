@@ -11,7 +11,7 @@ from django.db.models import signals
 from django.db.models.fields import Field
 from django.db.models.signals import class_prepared, post_migrate
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from concurrency import forms
 from concurrency.api import get_revision_of_object

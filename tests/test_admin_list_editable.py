@@ -32,7 +32,7 @@ class TestListEditable(AdminTestCase):
 
         res = res.click(self.TARGET._meta.verbose_name_plural)
 
-        res = res.click('Add')
+        res = res.click('Add', href='/admin/auth/user/add/')
         form = res.form
         form['username'] = 'CHAR'
         res = form.submit().follow()

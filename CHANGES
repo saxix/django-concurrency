@@ -1,3 +1,7 @@
+Release 2.x (dev)
+-------------
+* Removes code producing DeprecationError
+
 Release 2.2
 -------------
 * drop suppot django<3.0
