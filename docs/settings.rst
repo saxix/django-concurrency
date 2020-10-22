@@ -11,6 +11,21 @@ default values.
 .. note:: Each entry **MUST** have the prefix ``CONCURRENCY_`` when used in your settings.py
 
 
+.. setting:: CONCURRENCY_AUTO_CREATE_TRIGGERS
+
+AUTO_CREATE_TRIGGERS
+--------------------
+.. versionadded:: 2.3
+
+Default: ``True``
+
+If true automatically create triggers.
+To manually create triggers set `CONCURRENCY_AUTO_CREATE_TRIGGERS=False` and use :ref:`triggers`
+ management command or create them manually using your DB client.
+
+Note:: This flag deprecate :ref:`MANUAL_TRIGGERS`
+
+
 .. setting:: CONCURRENCY_ENABLED
 
 ENABLED
@@ -102,6 +117,7 @@ numbers to pass concurrency checks.
 MANUAL_TRIGGERS
 ---------------
 .. versionadded:: 1.0
+.. deprecated:: 2.3
 
 Default: ``False``
 

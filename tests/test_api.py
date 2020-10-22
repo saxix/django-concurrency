@@ -13,7 +13,7 @@ from concurrency.utils import refetch
 
 
 @pytest.mark.django_db(transaction=False)
-@pytest.mark.skipIf('os.environ["DBENGINE"]=="pg"')
+@pytest.mark.skipif('os.environ.get("DBENGINE", "")=="pg"')
 def test_get_revision_of_object(model_class=SimpleConcurrentModel):
     instance = model_class(username=next(nextname))
     instance.save()
