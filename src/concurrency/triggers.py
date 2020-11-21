@@ -142,6 +142,7 @@ class PostgreSQL(TriggerFactory):
     END;
     ' language 'plpgsql';
 
+DROP TRIGGER IF EXISTS {trigger_name} ON {opts.db_table};
 CREATE TRIGGER {trigger_name} BEFORE UPDATE
     ON {opts.db_table} FOR EACH ROW
     EXECUTE PROCEDURE func_{trigger_name}();
