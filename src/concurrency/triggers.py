@@ -147,10 +147,7 @@ CREATE TRIGGER {trigger_name} BEFORE UPDATE
     EXECUTE PROCEDURE func_{trigger_name}();
     """
 
-    list_clause = "select * from pg_trigger where tgname LIKE 'concurrency_%%'; "
-
-    def get_list(self):
-        return sorted([m[1] for m in self._list()])
+    list_clause = "select tgname from pg_trigger where tgname LIKE 'concurrency_%%'; "
 
 
 class MySQL(TriggerFactory):
