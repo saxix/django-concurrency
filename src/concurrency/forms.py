@@ -5,7 +5,7 @@ from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured, Valid
 from django.core.signing import BadSignature, Signer
 from django.forms import HiddenInput, ModelForm
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from concurrency.config import conf
 from concurrency.core import _select_lock

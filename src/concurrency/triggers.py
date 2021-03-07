@@ -4,8 +4,24 @@ from django.apps import apps
 from django.db import connections, router
 from django.db.utils import DatabaseError
 
-from .fields import _TRIGGERS  # noqa
+# from .fields import _TRIGGERS  # noqa
 
+
+class TriggerRegistry:
+    _fields = []
+
+    def append(self, field):
+        self._fields.append([field.model._meta.app_label, field.model.__name__])
+
+    def __iter__(self):
+        return iter(self._fields)
+
+    def __contains__(self, field):
+        target = [field.model._meta.app_label, field.model.__name__]
+        return target in self._fields
+
+
+_TRIGGERS = TriggerRegistry()
 
 def get_trigger_name(field):
     """
@@ -72,7 +88,29 @@ def create_triggers(databases):
     return ret
 
 
-class TriggerFactory(object):
+class TriggerFactory:
+    """
+    Abstract Factory class to create triggers.
+    Implemementations need to set the following attributes
+
+    `update_clause`, `drop_clause` and `list_clause`
+
+    Those will be formatted using standard python `format()` as::
+
+         self.update_clause.format(trigger_name=field.trigger_name,
+                                            opts=field.model._meta,
+                                            field=field)
+    So as example::
+
+        update_clause =  \"\"\"CREATE TRIGGER {trigger_name}
+                    AFTER UPDATE ON {opts.db_table}
+                    BEGIN UPDATE {opts.db_table}
+                    SET {field.column} = {field.column}+1
+                    WHERE {opts.pk.column} = NEW.{opts.pk.column};
+                    END;
+                    \"\"\"
+
+    """
     update_clause = ""
     drop_clause = ""
     list_clause = ""
@@ -147,10 +185,7 @@ CREATE TRIGGER {trigger_name} BEFORE UPDATE
     EXECUTE PROCEDURE func_{trigger_name}();
     """
 
-    list_clause = "select * from pg_trigger where tgname LIKE 'concurrency_%%'; "
-
-    def get_list(self):
-        return sorted([m[1] for m in self._list()])
+    list_clause = "select tgname from pg_trigger where tgname LIKE 'concurrency_%%'; "
 
 
 class MySQL(TriggerFactory):
@@ -165,11 +200,10 @@ FOR EACH ROW SET NEW.{field.column} = OLD.{field.column}+1;
 
 
 def factory(conn):
+    from concurrency.config import conf
+    mapping = conf.TRIGGERS_FACTORY
     try:
-        return {'postgresql': PostgreSQL,
-                'mysql': MySQL,
-                'sqlite3': Sqlite3,
-                'sqlite': Sqlite3,
-                }[conn.vendor](conn)
+        return mapping[conn.vendor](conn)
     except KeyError:  # pragma: no cover
         raise ValueError('{} is not supported by TriggerVersionField'.format(conn))
+

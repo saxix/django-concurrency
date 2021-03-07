@@ -11,7 +11,7 @@ from django.db.models import signals
 from django.db.models.fields import Field
 from django.db.models.signals import class_prepared, post_migrate
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from concurrency import forms
 from concurrency.api import get_revision_of_object
@@ -57,27 +57,13 @@ def post_syncdb_concurrency_handler(sender, **kwargs):
     create_triggers(databases)
 
 
-class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_prepared_concurrency_handler')
+class_prepared.connect(class_prepared_concurrency_handler,
+                       dispatch_uid='class_prepared_concurrency_handler')
 
 
-class TriggerRegistry(object):
-    _fields = []
-
-    def append(self, field):
-        self._fields.append([field.model._meta.app_label, field.model.__name__])
-
-    def __iter__(self):
-        return iter(self._fields)
-
-    def __contains__(self, field):
-        target = [field.model._meta.app_label, field.model.__name__]
-        return target in self._fields
-
-
-_TRIGGERS = TriggerRegistry()
-
-if not conf.MANUAL_TRIGGERS:
-    post_migrate.connect(post_syncdb_concurrency_handler, dispatch_uid='post_syncdb_concurrency_handler')
+if conf.AUTO_CREATE_TRIGGERS:
+    post_migrate.connect(post_syncdb_concurrency_handler,
+                         dispatch_uid='post_syncdb_concurrency_handler')
 
 
 class VersionField(Field):
@@ -216,6 +202,7 @@ class AutoIncVersionField(VersionField):
     def _get_next_version(self, model_instance):
         return int(getattr(model_instance, self.attname, 0)) + 1
 
+from .triggers import _TRIGGERS
 
 class TriggerVersionField(VersionField):
     """

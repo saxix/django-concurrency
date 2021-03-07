@@ -1,6 +1,6 @@
 from django.core.exceptions import SuspiciousOperation, ValidationError
 from django.db import DatabaseError
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 class VersionChangedError(ValidationError):

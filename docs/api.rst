@@ -75,7 +75,7 @@ ConcurrentModelAdmin
 --------------------
 .. autoclass:: concurrency.admin.ConcurrentModelAdmin
 
-.. warning:: If you customize ``fields`` or ``fieldsets`` remember to add version field to the list. (See issue :ghissue:`81`)
+.. warning:: If you customize ``fields`` or ``fieldsets`` remember to add version field to the list. (See issue :issue:`81`)
 
 
 
@@ -250,6 +250,22 @@ Templatetags
 `is_version`
 ------------
 .. autofunction:: concurrency.templatetags.concurrency.is_version
+
+
+--------
+Triggers
+--------
+
+.. _triggerfactory:
+
+TriggerFactory
+--------------
+
+.. versionadded:: 2.3
+
+.. autoclass:: concurrency.triggers.TriggerFactory
+
+.. seealso:: :setting:`TRIGGERS_FACTORY`
 
 
 

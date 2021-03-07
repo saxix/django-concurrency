@@ -1,3 +1,10 @@
+Release 2.3
+-----------
+* Removes code producing DeprecationError
+* add :setting:`AUTO_CREATE_TRIGGERS`  and deprecate :setting:`MANUAL_TRIGGERS`
+* add support for Postgres 13
+* add ability to customise SQL to create triggers :setting:`TRIGGERS_FACTORY`
+
 Release 2.2
 -------------
 * drop suppot django<3.0

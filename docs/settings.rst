@@ -11,6 +11,21 @@ default values.
 .. note:: Each entry **MUST** have the prefix ``CONCURRENCY_`` when used in your settings.py
 
 
+.. setting:: CONCURRENCY_AUTO_CREATE_TRIGGERS
+
+AUTO_CREATE_TRIGGERS
+--------------------
+.. versionadded:: 2.3
+
+Default: ``True``
+
+If true automatically create triggers.
+To manually create triggers set `CONCURRENCY_AUTO_CREATE_TRIGGERS=False` and use :ref:`triggers`
+management command or create them manually using your DB client.
+
+Note:: This flag deprecates :setting:`MANUAL_TRIGGERS`
+
+
 .. setting:: CONCURRENCY_ENABLED
 
 ENABLED
@@ -98,10 +113,12 @@ numbers to pass concurrency checks.
 
 
 .. setting:: CONCURRECY_MANUAL_TRIGGERS
+.. setting:: MANUAL_TRIGGERS
 
 MANUAL_TRIGGERS
 ---------------
 .. versionadded:: 1.0
+.. deprecated:: 2.3
 
 Default: ``False``
 
@@ -122,7 +139,6 @@ POLICY
 Default: ``CONCURRENCY_LIST_EDITABLE_POLICY_SILENT``
 
 
-
 ``CONCURRENCY_LIST_EDITABLE_POLICY_SILENT``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Used by admin's integrations to handle ``list_editable`` conflicts.
@@ -137,3 +153,26 @@ Stop at the first conflict and raise :class:`RecordModifiedError <concurrency.ex
 Note that if you want to use :class:`ConcurrencyMiddleware <concurrency.middleware.ConcurrencyMiddleware>` based conflict management you must set this flag.
 
 .. seealso:: :ref:`list_editable`, :ref:`middleware`
+
+
+
+.. setting:: CONCURRENCY_TRIGGERS_FACTORY
+.. setting:: TRIGGERS_FACTORY
+
+TRIGGERS_FACTORY
+-----------------
+.. versionadded:: 2.3
+
+Default::
+
+    {'postgresql': "concurrency.triggers.PostgreSQL",
+     'mysql': "concurrency.triggers.MySQL",
+     'sqlite3': "concurrency.triggers.Sqlite3",
+     'sqlite': "concurrency.triggers.Sqlite3",
+     }
+
+
+dict to customise :ref:`TriggerFactory`. Use this to customise the SQL clause to create triggers.
+
+
+
