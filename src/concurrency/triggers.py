@@ -4,6 +4,7 @@ from django.apps import apps
 from django.db import connections, router
 from django.db.utils import DatabaseError
 
+from .config import conf
 from .fields import _TRIGGERS  # noqa
 
 
@@ -163,10 +164,7 @@ FOR EACH ROW SET NEW.{field.column} = OLD.{field.column}+1;
 
 def factory(conn):
     try:
-        return {'postgresql': PostgreSQL,
-                'mysql': MySQL,
-                'sqlite3': Sqlite3,
-                'sqlite': Sqlite3,
-                }[conn.vendor](conn)
+        mapping = conf.TRIGGER_FACTORIES
+        return mapping[conn.vendor](conn)
     except KeyError:  # pragma: no cover
         raise ValueError('{} is not supported by TriggerVersionField'.format(conn))

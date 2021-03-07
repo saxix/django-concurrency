@@ -76,7 +76,7 @@ class TriggerRegistry(object):
 
 _TRIGGERS = TriggerRegistry()
 
-if not conf.MANUAL_TRIGGERS:
+if conf.AUTO_CREATE_TRIGGERS:
     post_migrate.connect(post_syncdb_concurrency_handler, dispatch_uid='post_syncdb_concurrency_handler')
 
 

@@ -2,12 +2,15 @@ import warnings
 
 from django.core.exceptions import ImproperlyConfigured
 from django.test.signals import setting_changed
+from django.utils.module_loading import import_string
 
 from .compat import get_callable
 
 # List Editable Policy
 # 0 do not save updated records, save others, show message to the user
 # 1 abort whole transaction
+from . import triggers
+from .utils import fqn
 
 CONCURRENCY_LIST_EDITABLE_POLICY_SILENT = 1
 CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL = 2
@@ -27,6 +30,11 @@ class AppSettings(object):
         'CALLBACK': 'concurrency.views.callback',
         'HANDLER409': 'concurrency.views.conflict',
         'VERSION_FIELD_REQUIRED': True,
+        'TRIGGER_FACTORIES': {'postgresql': fqn(triggers.PostgreSQL),
+                              'mysql': fqn(triggers.MySQL),
+                              'sqlite3': fqn(triggers.Sqlite3),
+                              'sqlite': fqn(triggers.Sqlite3),
+                              }
     }
 
     def __init__(self, prefix):
@@ -65,6 +73,13 @@ class AppSettings(object):
             warnings.warn("MANUAL_TRIGGERS is deprecated and will be removed in 2.5. Use AUTO_CREATE_TRIGGERS",
                           category=DeprecationWarning)
             self.AUTO_CREATE_TRIGGERS = not value
+        elif name == "TRIGGER_FACTORIES":
+            self.TRIGGER_FACTORIES = {}
+            for k, v in value.items():
+                try:
+                    self.TRIGGER_FACTORIES[k] = import_string(v)
+                except ImportError:
+                    raise ImproperlyConfigured(f"Unable to load {k} TriggerFactory. Invalid fqn {v}")
 
         setattr(self, name, value)
 
