@@ -70,11 +70,11 @@ class AppSettings(object):
             warnings.warn("MANUAL_TRIGGERS is deprecated and will be removed in 2.5. Use AUTO_CREATE_TRIGGERS",
                           category=DeprecationWarning)
             self.AUTO_CREATE_TRIGGERS = not value
-        elif name == "TRIGGER_FACTORIES":
-            self.TRIGGERS_FACTORY = {}
-            for k, v in value.items():
+        elif name == "TRIGGERS_FACTORY":
+            original = dict(value)
+            for k, v in original.items():
                 try:
-                    self.TRIGGERS_FACTORY[k] = import_string(v)
+                    value[k] = import_string(v)
                 except ImportError as e:
                     raise ImproperlyConfigured(f"Unable to load {k} TriggerFactory. Invalid fqn '{v}': {e}")
 
