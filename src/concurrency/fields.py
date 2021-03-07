@@ -57,27 +57,13 @@ def post_syncdb_concurrency_handler(sender, **kwargs):
     create_triggers(databases)
 
 
-class_prepared.connect(class_prepared_concurrency_handler, dispatch_uid='class_prepared_concurrency_handler')
+class_prepared.connect(class_prepared_concurrency_handler,
+                       dispatch_uid='class_prepared_concurrency_handler')
 
-
-class TriggerRegistry(object):
-    _fields = []
-
-    def append(self, field):
-        self._fields.append([field.model._meta.app_label, field.model.__name__])
-
-    def __iter__(self):
-        return iter(self._fields)
-
-    def __contains__(self, field):
-        target = [field.model._meta.app_label, field.model.__name__]
-        return target in self._fields
-
-
-_TRIGGERS = TriggerRegistry()
 
 if conf.AUTO_CREATE_TRIGGERS:
-    post_migrate.connect(post_syncdb_concurrency_handler, dispatch_uid='post_syncdb_concurrency_handler')
+    post_migrate.connect(post_syncdb_concurrency_handler,
+                         dispatch_uid='post_syncdb_concurrency_handler')
 
 
 class VersionField(Field):
@@ -216,6 +202,7 @@ class AutoIncVersionField(VersionField):
     def _get_next_version(self, model_instance):
         return int(getattr(model_instance, self.attname, 0)) + 1
 
+from .triggers import _TRIGGERS
 
 class TriggerVersionField(VersionField):
     """

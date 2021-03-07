@@ -9,9 +9,6 @@ from .compat import get_callable
 # List Editable Policy
 # 0 do not save updated records, save others, show message to the user
 # 1 abort whole transaction
-from . import triggers
-from .utils import fqn
-
 CONCURRENCY_LIST_EDITABLE_POLICY_SILENT = 1
 CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL = 2
 CONCURRENCY_POLICY_RAISE = 4
@@ -30,10 +27,10 @@ class AppSettings(object):
         'CALLBACK': 'concurrency.views.callback',
         'HANDLER409': 'concurrency.views.conflict',
         'VERSION_FIELD_REQUIRED': True,
-        'TRIGGER_FACTORIES': {'postgresql': fqn(triggers.PostgreSQL),
-                              'mysql': fqn(triggers.MySQL),
-                              'sqlite3': fqn(triggers.Sqlite3),
-                              'sqlite': fqn(triggers.Sqlite3),
+        'TRIGGERS_FACTORY': {'postgresql': "concurrency.triggers.PostgreSQL",
+                              'mysql': "concurrency.triggers.MySQL",
+                              'sqlite3': "concurrency.triggers.Sqlite3",
+                              'sqlite': "concurrency.triggers.Sqlite3",
                               }
     }
 
@@ -74,12 +71,12 @@ class AppSettings(object):
                           category=DeprecationWarning)
             self.AUTO_CREATE_TRIGGERS = not value
         elif name == "TRIGGER_FACTORIES":
-            self.TRIGGER_FACTORIES = {}
+            self.TRIGGERS_FACTORY = {}
             for k, v in value.items():
                 try:
-                    self.TRIGGER_FACTORIES[k] = import_string(v)
-                except ImportError:
-                    raise ImproperlyConfigured(f"Unable to load {k} TriggerFactory. Invalid fqn {v}")
+                    self.TRIGGERS_FACTORY[k] = import_string(v)
+                except ImportError as e:
+                    raise ImproperlyConfigured(f"Unable to load {k} TriggerFactory. Invalid fqn '{v}': {e}")
 
         setattr(self, name, value)
 

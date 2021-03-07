@@ -37,8 +37,9 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosummary',
               'sphinx.ext.coverage',
               'sphinx.ext.viewcode',
-              'version',
-              'github']
+              'sphinx_issues',
+              'version'
+              ]
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/2.7/', None),

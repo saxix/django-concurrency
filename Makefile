@@ -11,7 +11,7 @@ DJANGO?='last'
 develop:
 	@pip install pipenv
 	@sh -c "if [ '${DBENGINE}' = 'mysql' ]; then pip install  MySQL-python; fi"
-	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2; fi"
+	@sh -c "if [ '${DBENGINE}' = 'pg' ]; then pip install -q psycopg2-binary; fi"
 	$(MAKE) .init-db
 	@pipenv install -d --skip-lock
 
@@ -48,7 +48,7 @@ fullclean:
 
 docs: .mkbuilddir
 	mkdir -p ${BUILDDIR}/docs
-	pipenv run sphinx-build -aE docs/ ${BUILDDIR}/docs
+	sphinx-build -aE docs/ ${BUILDDIR}/docs
 ifdef BROWSE
 	firefox ${BUILDDIR}/docs/index.html
 endif

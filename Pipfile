@@ -20,6 +20,7 @@ tox = "*"
 "psycopg2-binary" = "*"
 check-manifest = "*"
 sphinx = "*"
+sphinx-issues = "*"
 twine="*"
 
 [requires]

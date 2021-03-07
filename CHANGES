@@ -1,9 +1,9 @@
-Release 2.x (dev)
--------------
+Release 2.3
+-----------
 * Removes code producing DeprecationError
-* add `AUTO_CREATE_TRIGGERS`  and deprecate `MANUAL_TRIGGERS`
+* add :setting:`AUTO_CREATE_TRIGGERS`  and deprecate :setting:`MANUAL_TRIGGERS`
 * add support for Postgres 13
-
+* add ability to customise SQL to create triggers :setting:`TRIGGERS_FACTORY`
 
 Release 2.2
 -------------
