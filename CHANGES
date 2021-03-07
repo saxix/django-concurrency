@@ -1,6 +1,7 @@
 Release 2.x (dev)
 -------------
 * Removes code producing DeprecationError
+* add `AUTO_CREATE_TRIGGERS`  and deprecate `MANUAL_TRIGGERS`
 
 Release 2.2
 -------------
