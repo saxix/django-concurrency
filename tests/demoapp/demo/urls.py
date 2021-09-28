@@ -13,7 +13,7 @@ from demo.models import SimpleConcurrentModel
 
 admin.autodiscover()
 
-urlpatterns = (url('cm/(?P<pk>\d+)/',
+urlpatterns = (url(r'cm/(?P<pk>\d+)/',
                    UpdateView.as_view(model=SimpleConcurrentModel),
                    name='concurrent-edit'),
                url(r'^admin/',

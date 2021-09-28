@@ -1,8 +1,6 @@
 import os
 from tempfile import mktemp
 
-import django
-
 try:
     from psycopg2cffi import compat
 

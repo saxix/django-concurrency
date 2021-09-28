@@ -1,7 +1,3 @@
-import operator
-import re
-from functools import reduce
-
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.core.checks import Error
@@ -15,6 +11,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ungettext
+
+import operator
+import re
+from functools import reduce
 
 from concurrency import core, forms
 from concurrency.api import get_revision_of_object

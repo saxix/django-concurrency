@@ -1,3 +1,10 @@
+from django.db import models
+from django.db.models import signals
+from django.db.models.fields import Field
+from django.db.models.signals import class_prepared, post_migrate
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
+
 import copy
 import functools
 import hashlib
@@ -6,18 +13,13 @@ import time
 from collections import OrderedDict
 from functools import update_wrapper
 
-from django.db import models
-from django.db.models import signals
-from django.db.models.fields import Field
-from django.db.models.signals import class_prepared, post_migrate
-from django.utils.encoding import force_text
-from django.utils.translation import gettext_lazy as _
-
 from concurrency import forms
 from concurrency.api import get_revision_of_object
 from concurrency.config import conf
 from concurrency.core import ConcurrencyOptions
 from concurrency.utils import fqn, refetch
+
+from .triggers import _TRIGGERS
 
 logger = logging.getLogger(__name__)
 
@@ -50,8 +52,9 @@ def class_prepared_concurrency_handler(sender, **kwargs):
 
 
 def post_syncdb_concurrency_handler(sender, **kwargs):
-    from concurrency.triggers import create_triggers
     from django.db import connections
+
+    from concurrency.triggers import create_triggers
 
     databases = [alias for alias in connections]
     create_triggers(databases)
@@ -202,7 +205,6 @@ class AutoIncVersionField(VersionField):
     def _get_next_version(self, model_instance):
         return int(getattr(model_instance, self.attname, 0)) + 1
 
-from .triggers import _TRIGGERS
 
 class TriggerVersionField(VersionField):
     """
@@ -225,9 +227,10 @@ class TriggerVersionField(VersionField):
     def check(self, **kwargs):
         errors = []
         model = self.model
-        from django.db import router, connections
-        from concurrency.triggers import factory
         from django.core.checks import Warning
+        from django.db import connections, router
+
+        from concurrency.triggers import factory
 
         alias = router.db_for_write(model)
         connection = connections[alias]
@@ -338,7 +341,7 @@ class ConditionalVersionField(AutoIncVersionField):
                 values[field_name] = getattr(instance, field_name).values_list('pk', flat=True)
             else:
                 values[field_name] = field.value_from_object(instance)
-        return hashlib.sha1(force_text(values).encode('utf-8')).hexdigest()
+        return hashlib.sha1(force_str(values).encode('utf-8')).hexdigest()
 
     def _get_next_version(self, model_instance):
         if not model_instance.pk:
