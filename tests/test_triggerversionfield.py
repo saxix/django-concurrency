@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.core.signals import request_started
 from django.db import IntegrityError, connection, connections
 

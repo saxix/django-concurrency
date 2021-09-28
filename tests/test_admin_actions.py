@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import pytest
 from demo.base import SENTINEL, AdminTestCase
 from demo.models import SimpleConcurrentModel
@@ -56,7 +55,6 @@ class TestAdminActions(AdminTestCase):
 
         self.assertIn('Selecting all records, you will avoid the concurrency check', res)
 
-    # @pytest.mark.skipif(django.VERSION[:2] >= (1, 7), reason="Skip django>=1.9")
     def test_delete_allowed_if_no_updates(self):
         id = next(unique_id)
         SimpleConcurrentModel.objects.get_or_create(pk=id)
@@ -76,7 +74,6 @@ class TestAdminActions(AdminTestCase):
         res = res.form.submit()
         assert 'SimpleConcurrentModel #%s' % id not in res
 
-    # @pytest.mark.skipif(django.VERSION[:2] >= (1, 10), reason="Skip django>=1.10")
     def test_delete_not_allowed_if_updates(self):
         id = next(unique_id)
 

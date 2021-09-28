@@ -1,11 +1,11 @@
-from importlib import import_module
-
 from django import forms
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured, ValidationError
 from django.core.signing import BadSignature, Signer
 from django.forms import HiddenInput, ModelForm
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
+
+from importlib import import_module
 
 from concurrency.config import conf
 from concurrency.core import _select_lock
@@ -25,7 +25,7 @@ class ConcurrentForm(ModelForm):
                 _select_lock(self.instance, self.cleaned_data[self.instance._concurrencymeta.field.name])
 
         except RecordModifiedError:
-                self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])}))
+            self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])}))
 
         return super(ConcurrentForm, self).clean()
 
