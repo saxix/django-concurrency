@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-import re
-
-import django
 from django.contrib.admin.sites import site
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -10,15 +6,13 @@ from django.http import QueryDict
 from django.test import override_settings
 from django.test.client import RequestFactory
 from django.test.testcases import SimpleTestCase
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 import pytest
-from conftest import skipIfDjangoVersion
+import re
 from demo.admin import ActionsModelAdmin, admin_register
 from demo.base import AdminTestCase
-from demo.models import (
-    ListEditableConcurrentModel, ReversionConcurrentModel, SimpleConcurrentModel
-)
+from demo.models import ListEditableConcurrentModel, SimpleConcurrentModel
 from demo.util import attributes, unique_id
 
 from concurrency.admin import ConcurrentModelAdmin
@@ -71,7 +65,7 @@ class TestIssue18(SimpleTestCase):
         self.assertTrue(re.match(r"^%s,\d+$" % id, identity(obj)))
 
         g = User(username='UserTest', pk=3)
-        self.assertEqual(identity(g), force_text(g.pk))
+        self.assertEqual(identity(g), force_str(g.pk))
 
 
 @pytest.mark.django_db()
@@ -99,7 +93,6 @@ def test_issue_54():
             m2.save()
 
 
-@skipIfDjangoVersion("!=(1,11)")
 @pytest.mark.django_db()
 def test_issue_81a(monkeypatch):
     monkeypatch.setattr('demo.admin.ActionsModelAdmin.fields', ('id',))
@@ -108,7 +101,6 @@ def test_issue_81a(monkeypatch):
     assert 'concurrency.A001' in str(e.value)
 
 
-@skipIfDjangoVersion("<(1,11)")
 @pytest.mark.django_db()
 def test_issue_81b(monkeypatch):
     fieldsets = (

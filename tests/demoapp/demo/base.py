@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import django
 from django.contrib.auth.models import Group, User
 from django.test import TransactionTestCase
@@ -23,7 +21,7 @@ class AdminTestCase(WebTestMixin, TransactionTestCase):
     urls = 'demo.urls'
 
     def setUp(self):
-        super(AdminTestCase, self).setUp()
+        super().setUp()
 
         self.user, __ = User.objects.get_or_create(is_superuser=True,
                                                    is_staff=True,
@@ -42,7 +40,7 @@ class AdminTestCase(WebTestMixin, TransactionTestCase):
 #     AUTHENTICATION_BACKENDS = global_settings.AUTHENTICATION_BACKENDS
 #
 #     def setUp(self):
-#         super(DjangoAdminTestCase, self).setUp()
+#         super().setUp()
 #         self.sett = self.settings(
 #             #INSTALLED_APPS=INSTALLED_APPS,
 #             MIDDLEWARE_CLASSES=self.MIDDLEWARE_CLASSES,
@@ -69,6 +67,6 @@ class AdminTestCase(WebTestMixin, TransactionTestCase):
 #         # self.target1, __ = TestModel1.objects.get_or_create(username='bbb')
 #
 #     def tearDown(self):
-#         super(DjangoAdminTestCase, self).tearDown()
+#         super().tearDown()
 #         self.sett.disable()
 #         # admin_unregister(TestModel0, TestModel1)

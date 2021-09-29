@@ -26,3 +26,4 @@ __pycache__
 Pipfile.lock
 poetry.lock
 pyproject.toml
+.venv/
