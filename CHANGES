@@ -1,3 +1,9 @@
+Release 2.4
+-----------
+* add support Django 4
+* add support Python 3.10
+
+
 Release 2.3
 -----------
 * Removes code producing DeprecationError
