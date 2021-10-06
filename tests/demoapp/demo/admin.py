@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
 
@@ -39,9 +37,7 @@ class ReversionConcurrentModelAdmin(VersionAdmin, ConcurrentModelAdmin):
 
     @disable_concurrency()
     def recover_view(self, request, version_id, extra_context=None):
-        return super(ReversionConcurrentModelAdmin, self).recover_view(request,
-                                                                       version_id,
-                                                                       extra_context)
+        return super().recover_view(request, version_id, extra_context)
 
 
 class ActionsModelAdmin(ConcurrentModelAdmin):

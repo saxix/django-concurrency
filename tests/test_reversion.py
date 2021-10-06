@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-
 import pytest
 from demo.models import ReversionConcurrentModel
 from reversion import add_to_revision, revisions, set_comment
