@@ -128,7 +128,7 @@ elif db == 'mysql':
             'HOST': '127.0.0.1',
             'PORT': '',
             'USER': 'root',
-            'PASSWORD': '',
+            'PASSWORD': 'root',
             'CHARSET': 'utf8',
             'COLLATION': 'utf8_general_ci'}}
 else:
