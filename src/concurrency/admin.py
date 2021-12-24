@@ -135,8 +135,7 @@ class ConcurrentManagementForm(ManagementForm):
         super().__init__(*args, **kwargs)
 
     def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
-        ret = super(ConcurrentManagementForm, self)._html_output(normal_row, error_row, row_ender, help_text_html,
-                                                                 errors_on_separate_row)
+        ret = super()._html_output(normal_row, error_row, row_ender, help_text_html, errors_on_separate_row)
         v = []
         for pk, version in self._versions:
             v.append('<input type="hidden" name="_concurrency_version_{0}" value="{1}">'.format(pk, version))
