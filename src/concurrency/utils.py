@@ -48,7 +48,7 @@ def deprecated(replacement=None, version=None):
     return outer
 
 
-class ConcurrencyTestMixin(object):
+class ConcurrencyTestMixin:
     """
     Mixin class to test Models that use `VersionField`
 
@@ -104,7 +104,7 @@ class ConcurrencyTestMixin(object):
                         "%s: version field not in meta.fields" % self.concurrency_model)
 
 
-class ConcurrencyAdminTestMixin(object):
+class ConcurrencyAdminTestMixin:
     pass
 
 
@@ -144,7 +144,7 @@ def fqn(o):
     Traceback (most recent call last):
     ...
     ValueError: Invalid argument `str`
-    >>> class A(object):
+    >>> class A:
     ...     def method(self):
     ...         pass
     >>> str(fqn(A))

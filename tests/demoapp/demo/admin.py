@@ -12,7 +12,7 @@ from concurrency.api import disable_concurrency
 try:
     from reversion.admin import VersionAdmin
 except ImportError:
-    class VersionAdmin(object):
+    class VersionAdmin:
         pass
 
 

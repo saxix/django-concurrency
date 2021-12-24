@@ -16,7 +16,7 @@ def reset_queries(**kwargs):
         conn.queries = []
 
 
-class CaptureQueriesContext(object):
+class CaptureQueriesContext:
     """
     Context manager that captures queries executed by the specified connection.
     """

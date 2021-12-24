@@ -79,7 +79,7 @@ def get_signer():
     return signer_class()
 
 
-class SignedValue(object):
+class SignedValue:
     def __init__(self, value):
         self.value = value
 

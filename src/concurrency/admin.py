@@ -26,7 +26,7 @@ from concurrency.utils import flatten
 ALL = object()
 
 
-class ConcurrencyActionMixin(object):
+class ConcurrencyActionMixin:
     check_concurrent_action = True
 
     def action_checkbox(self, obj):
@@ -163,7 +163,7 @@ class ConcurrentBaseModelFormSet(BaseModelFormSet):
     management_form = property(_management_form)
 
 
-class ConcurrencyListEditableMixin(object):
+class ConcurrencyListEditableMixin:
     list_editable_policy = conf.POLICY
 
     def get_changelist_formset(self, request, **kwargs):
