@@ -1,10 +1,10 @@
-from django.contrib.auth.models import User
-
 import logging
+
 import pytest
-from demo.models import (
-    ConditionalVersionModel, ConditionalVersionModelSelfRelation, ConditionalVersionModelWithoutMeta, ThroughRelation
-)
+from demo.models import (ConditionalVersionModel,
+                         ConditionalVersionModelSelfRelation,
+                         ConditionalVersionModelWithoutMeta, ThroughRelation,)
+from django.contrib.auth.models import User
 
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch

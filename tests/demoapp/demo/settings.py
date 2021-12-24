@@ -116,8 +116,8 @@ if db == 'pg':
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': dbname,
-            'HOST': '127.0.0.1',
-            'PORT': '5432',
+            'HOST': os.environ.get('PGHOST', '127.0.0.1'),
+            'PORT': os.environ.get('PGPORT', '5432'),
             'USER': 'postgres',
             'PASSWORD': 'postgres'}}
 elif db == 'mysql':
