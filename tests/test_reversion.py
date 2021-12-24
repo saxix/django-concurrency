@@ -1,12 +1,9 @@
+from django.urls import reverse
+
 import pytest
 from demo.models import ReversionConcurrentModel
 from reversion import add_to_revision, revisions, set_comment
 from reversion.models import Version
-
-try:
-    from django.core.urlresolvers import reverse
-except ImportError:
-    from django.urls import reverse
 
 
 @pytest.mark.django_db

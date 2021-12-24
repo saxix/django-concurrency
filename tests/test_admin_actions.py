@@ -1,12 +1,9 @@
+from django.urls import reverse
+
 import pytest
 from demo.base import SENTINEL, AdminTestCase
 from demo.models import SimpleConcurrentModel
 from demo.util import unique_id
-
-try:
-    from django.core.urlresolvers import reverse
-except ImportError:
-    from django.urls import reverse
 
 
 class TestAdminActions(AdminTestCase):

@@ -1,3 +1,4 @@
+from django.urls import reverse
 from django.utils.translation import gettext as _
 
 import pytest
@@ -6,11 +7,6 @@ from demo.models import SimpleConcurrentModel
 from demo.util import nextname
 
 from concurrency.forms import VersionFieldSigner
-
-try:
-    from django.core.urlresolvers import reverse
-except ImportError:
-    from django.urls import reverse
 
 
 @pytest.mark.django_db

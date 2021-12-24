@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.admin.sites import site
 from django.http import HttpRequest
 from django.test.utils import override_settings
+from django.urls import reverse
 
 import mock
 from demo.base import AdminTestCase
@@ -12,11 +13,6 @@ from concurrency.admin import ConcurrentModelAdmin
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL
 from concurrency.exceptions import RecordModifiedError
 from concurrency.middleware import ConcurrencyMiddleware
-
-try:
-    from django.core.urlresolvers import reverse
-except ImportError:
-    from django.urls import reverse
 
 
 def _get_request(path):
