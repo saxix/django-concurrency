@@ -1,3 +1,4 @@
+import django
 from django.contrib.admin.sites import site
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -45,14 +46,17 @@ class TestIssue16(AdminTestCase):
         with attributes((ConcurrentModelAdmin, 'list_editable_policy', CONCURRENCY_LIST_EDITABLE_POLICY_SILENT),
                         (ConcurrentModelAdmin, 'form', ConcurrentForm), ):
             obj, __ = ListEditableConcurrentModel.objects.get_or_create(pk=id)
-            request1 = get_fake_request('pk=%s&_concurrency_version_1=2' % id)
+
+            post_param = 'form-_concurrency_version' if django.VERSION[:2] >= (4, 0) else '_concurrency_version'
+
+            request1 = get_fake_request('pk={}&{}_1=2'.format(id, post_param))
 
             model_admin.save_model(request1, obj, None, True)
 
             self.assertIn(obj.pk, model_admin._get_conflicts(request1))
 
             obj = refetch(obj)
-            request2 = get_fake_request('pk=%s&_concurrency_version_1=%s' % (id, obj.version))
+            request2 = get_fake_request('pk={}&{}_1={}'.format(id, post_param, obj.version))
             model_admin.save_model(request2, obj, None, True)
             self.assertNotIn(obj.pk, model_admin._get_conflicts(request2))
 

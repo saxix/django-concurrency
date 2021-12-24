@@ -28,7 +28,7 @@ class TestListEditable(AdminTestCase):
         res = res.click('Add', href=f'/admin/demo/{self.TARGET._meta.model_name}/add/', index=0)
         form = res.form
         form['username'] = 'CHAR'
-        res = form.submit().follow()
+        form.submit().follow()
 
     def test_normal_update(self):
         self.TARGET.objects.get_or_create(pk=next(unique_id))
@@ -36,7 +36,7 @@ class TestListEditable(AdminTestCase):
         res = res.click(self.TARGET._meta.verbose_name_plural)
         form = res.forms['changelist-form']
         form['form-0-username'] = 'CHAR'
-        res = form.submit('_save').follow()
+        form.submit('_save').follow()
         self.assertTrue(self.TARGET.objects.filter(username='CHAR').exists())
 
     def test_concurrency_policy_abort(self):
@@ -109,8 +109,8 @@ class TestListEditable(AdminTestCase):
 
         messages = list(map(str, list(res.context['messages'])))
 
-        self.assertIn('Record with pk `%s` has been modified and was not updated' % id, messages)
-        self.assertEqual(len(messages), 1)
+        self.assertIn('Record with pk `%s` has been modified and was not updated' % id, set(messages))
+        self.assertEqual(len(set(messages)), 1)
 
     def test_log_change(self):
         id = next(unique_id)

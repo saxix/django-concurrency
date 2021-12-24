@@ -1,10 +1,13 @@
+import django
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.core.checks import Error
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db.models import Q
+from django.forms.fields import IntegerField
 from django.forms.formsets import INITIAL_FORM_COUNT, MAX_NUM_FORM_COUNT, TOTAL_FORM_COUNT, ManagementForm
 from django.forms.models import BaseModelFormSet
+from django.forms.widgets import HiddenInput
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
@@ -130,14 +133,9 @@ class ConcurrencyActionMixin:
 class ConcurrentManagementForm(ManagementForm):
     def __init__(self, *args, **kwargs):
         self._versions = kwargs.pop('versions', [])
-        super().__init__(*args, **kwargs)
-
-    def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
-        ret = super()._html_output(normal_row, error_row, row_ender, help_text_html, errors_on_separate_row)
-        v = []
         for pk, version in self._versions:
-            v.append('<input type="hidden" name="_concurrency_version_{0}" value="{1}">'.format(pk, version))
-        return mark_safe("{0}{1}".format(ret, "".join(v)))
+            self.base_fields[f"_concurrency_version_{pk}"] = IntegerField(widget=HiddenInput)
+        super().__init__(*args, **kwargs)
 
 
 class ConcurrentBaseModelFormSet(BaseModelFormSet):
@@ -149,13 +147,19 @@ class ConcurrentBaseModelFormSet(BaseModelFormSet):
             if not form.is_valid():
                 raise ValidationError('ManagementForm data is missing or has been tampered with')
         else:
+            versions = [(form.instance.pk, get_revision_of_object(form.instance)) for form in self.initial_forms]
+            initial = {
+                TOTAL_FORM_COUNT: self.total_form_count(),
+                INITIAL_FORM_COUNT: self.initial_form_count(),
+                MAX_NUM_FORM_COUNT: self.max_num
+            }
+            for pk, version in versions:
+                initial[f"_concurrency_version_{pk}"] = version
+
             form = ConcurrentManagementForm(auto_id=self.auto_id,
                                             prefix=self.prefix,
-                                            initial={TOTAL_FORM_COUNT: self.total_form_count(),
-                                                     INITIAL_FORM_COUNT: self.initial_form_count(),
-                                                     MAX_NUM_FORM_COUNT: self.max_num},
-                                            versions=[(form.instance.pk, get_revision_of_object(form.instance)) for form
-                                                      in self.initial_forms])
+                                            initial=initial,
+                                            versions=versions)
         return form
 
     management_form = property(_management_form)
@@ -183,7 +187,8 @@ class ConcurrencyListEditableMixin:
     def save_model(self, request, obj, form, change):
         try:
             if change:
-                version = request.POST.get('_concurrency_version_{0.pk}'.format(obj), None)
+                basename = 'form-_concurrency_version' if django.VERSION[:2] >= (4, 0) else '_concurrency_version'
+                version = request.POST.get('{}_{}'.format(basename, obj.pk), None)
                 if version:
                     core._set_version(obj, version)
             super().save_model(request, obj, form, change)
