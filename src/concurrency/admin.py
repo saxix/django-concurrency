@@ -3,9 +3,7 @@ from django.contrib.admin import helpers
 from django.core.checks import Error
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db.models import Q
-from django.forms.formsets import (
-    INITIAL_FORM_COUNT, MAX_NUM_FORM_COUNT, TOTAL_FORM_COUNT, ManagementForm
-)
+from django.forms.formsets import INITIAL_FORM_COUNT, MAX_NUM_FORM_COUNT, TOTAL_FORM_COUNT, ManagementForm
 from django.forms.models import BaseModelFormSet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_str

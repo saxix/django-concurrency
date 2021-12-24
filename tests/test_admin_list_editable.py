@@ -9,9 +9,7 @@ from demo.base import SENTINEL, AdminTestCase
 from demo.models import ListEditableConcurrentModel
 from demo.util import attributes, unique_id
 
-from concurrency.config import (
-    CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
-)
+from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
 from concurrency.exceptions import RecordModifiedError
 
 

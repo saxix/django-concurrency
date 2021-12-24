@@ -1,7 +1,6 @@
 import pytest
 from demo.models import (
-    AutoIncConcurrentModel, ConcreteModel, CustomSaveModel, InheritedModel, ProxyModel,
-    SimpleConcurrentModel
+    AutoIncConcurrentModel, ConcreteModel, CustomSaveModel, InheritedModel, ProxyModel, SimpleConcurrentModel
 )
 from demo.util import nextname, unique_id, with_models, with_std_models
 

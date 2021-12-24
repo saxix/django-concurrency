@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
 
 from demo.models import (
-    InheritedModel, ListEditableConcurrentModel, NoActionsConcurrentModel, ProxyModel,
-    ReversionConcurrentModel, SimpleConcurrentModel
+    InheritedModel, ListEditableConcurrentModel, NoActionsConcurrentModel, ProxyModel, ReversionConcurrentModel,
+    SimpleConcurrentModel
 )
 
 from concurrency.admin import ConcurrentModelAdmin

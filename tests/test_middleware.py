@@ -97,38 +97,3 @@ class ConcurrencyMiddlewareTest2(AdminTestCase):
             self.assertEqual(res.context['target'].version, target.version)
             self.assertEqual(res.context['saved'].version, saved.version)
             self.assertEqual(res.context['request_path'], url)
-
-#
-# class TestFullStack(DjangoAdminTestCase):
-#     MIDDLEWARE_CLASSES = ('django.middleware.common.CommonMiddleware',
-#                           'django.contrib.sessions.middleware.SessionMiddleware',
-#                           'django.contrib.auth.middleware.AuthenticationMiddleware',
-#                           'django.contrib.messages.middleware.MessageMiddleware',
-#                           'concurrency.middleware.ConcurrencyMiddleware',)
-#
-#     @mock.patch('django.core.signals.got_request_exception.send', mock.Mock())
-#     def test_stack(self):
-#         admin_register(TestModel0, ModelAdmin)
-#
-#         with self.settings(MIDDLEWARE_CLASSES=self.MIDDLEWARE_CLASSES):
-#             m, __ = TestModel0.objects.get_or_create(username="New", last_name="1")
-#             copy = TestModel0.objects.get(pk=m.pk)
-#             assert copy.version == m.version
-#             print 111111111111, m.version
-#             url = reverse('admin:concurrency_testmodel0_change', args=[m.pk])
-#             data = {'username': 'new_username',
-#                     'last_name': None,
-#                     'version': VersionFieldSigner().sign(m.version),
-#                     'char_field': None,
-#                     '_continue': 1,
-#                     'date_field': '2010-09-01'}
-#             copy.save()
-#             assert copy.version > m.version
-#
-#             r = self.client.post(url, data, follow=True)
-#             self.assertEqual(r.status_code, 409)
-#             self.assertIn('target', r.context)
-#             self.assertIn('saved', r.context)
-#             self.assertEqual(r.context['saved'].version, copy.version)
-#             self.assertEqual(r.context['target'].version, m.version)
-#             self.assertEqual(r.context['request_path'], url)
