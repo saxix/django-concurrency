@@ -15,7 +15,6 @@ from concurrency.config import (
 from concurrency.exceptions import RecordModifiedError
 
 
-# @pytest.mark.xfail(django.VERSION[:2] == (1, 10), reason="Django 1.10")
 class TestListEditable(AdminTestCase):
     TARGET = ListEditableConcurrentModel
 
@@ -134,6 +133,3 @@ class TestListEditable(AdminTestCase):
         new_logs = LogEntry.objects.filter(**log_filter).exclude(id__in=logs).exists()
         self.assertFalse(new_logs, "LogEntry created even if conflict error")
         transaction.rollback()
-
-# class TestListEditableWithNoActions(TestListEditable):
-#     TARGET = NoActionsConcurrentModel

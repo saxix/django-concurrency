@@ -1,21 +1,12 @@
-from django.conf.urls import url
 from django.contrib import admin
+from django.urls import re_path
 from django.views.generic.edit import UpdateView
 
 from demo.models import SimpleConcurrentModel
 
-# try:
-# from django.apps import AppConfig  # noqa
-#     import django
-#     django.setup()
-# except ImportError:
-#     pass
-
 admin.autodiscover()
 
-urlpatterns = (url(r'cm/(?P<pk>\d+)/',
+urlpatterns = (re_path(r'cm/(?P<pk>\d+)/',
                    UpdateView.as_view(model=SimpleConcurrentModel),
                    name='concurrent-edit'),
-               url(r'^admin/',
-                   admin.site.urls)
-               )
+               re_path(r'^admin/', admin.site.urls))

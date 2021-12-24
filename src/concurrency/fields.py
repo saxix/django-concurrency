@@ -79,11 +79,11 @@ class VersionField(Field):
         db_column = kwargs.get('db_column', None)
         help_text = kwargs.get('help_text', _('record revision number'))
 
-        super(VersionField, self).__init__(verbose_name, name,
-                                           help_text=help_text,
-                                           default=0,
-                                           db_tablespace=db_tablespace,
-                                           db_column=db_column)
+        super().__init__(verbose_name, name,
+                         help_text=help_text,
+                         default=0,
+                         db_tablespace=db_tablespace,
+                         db_column=db_column)
 
     def get_internal_type(self):
         return "BigIntegerField"
@@ -97,10 +97,10 @@ class VersionField(Field):
     def formfield(self, **kwargs):
         kwargs['form_class'] = self.form_class
         kwargs['widget'] = forms.VersionField.widget
-        return super(VersionField, self).formfield(**kwargs)
+        return super().formfield(**kwargs)
 
     def contribute_to_class(self, cls, *args, **kwargs):
-        super(VersionField, self).contribute_to_class(cls, *args, **kwargs)
+        super().contribute_to_class(cls, *args, **kwargs)
         if hasattr(cls, '_concurrencymeta') or cls._meta.abstract:
             return
         setattr(cls, '_concurrencymeta', ConcurrencyOptions())
@@ -216,10 +216,10 @@ class TriggerVersionField(VersionField):
     def __init__(self, *args, **kwargs):
         self._trigger_name = kwargs.pop('trigger_name', None)
         self._trigger_exists = False
-        super(TriggerVersionField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def contribute_to_class(self, cls, *args, **kwargs):
-        super(TriggerVersionField, self).contribute_to_class(cls, *args, **kwargs)
+        super().contribute_to_class(cls, *args, **kwargs)
         if not cls._meta.abstract or cls._meta.proxy:
             if self not in _TRIGGERS:
                 _TRIGGERS.append(self)
@@ -302,7 +302,7 @@ def filter_fields(instance, field):
 
 class ConditionalVersionField(AutoIncVersionField):
     def contribute_to_class(self, cls, *args, **kwargs):
-        super(ConditionalVersionField, self).contribute_to_class(cls, *args, **kwargs)
+        super().contribute_to_class(cls, *args, **kwargs)
         signals.post_init.connect(self._load_model,
                                   sender=cls,
                                   dispatch_uid=fqn(cls))
