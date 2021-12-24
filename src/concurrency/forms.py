@@ -27,7 +27,7 @@ class ConcurrentForm(ModelForm):
         except RecordModifiedError:
             self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])}))
 
-        return super(ConcurrentForm, self).clean()
+        return super().clean()
 
 
 class VersionWidget(HiddenInput):
@@ -47,7 +47,7 @@ class VersionWidget(HiddenInput):
     _format_value = format_value
 
     def render(self, name, value, attrs=None):
-        ret = super(VersionWidget, self).render(name, value, attrs)
+        ret = super().render(name, value, attrs)
         label = ''
         if isinstance(value, SignedValue):
             label = str(value).split(':')[0]
@@ -61,7 +61,7 @@ class VersionFieldSigner(Signer):
     def sign(self, value):
         if not value:
             return None
-        return super(VersionFieldSigner, self).sign(value)
+        return super().sign(value)
 
 
 def get_signer():
@@ -101,7 +101,7 @@ class VersionField(forms.IntegerField):
         kwargs['required'] = True
         kwargs['initial'] = None
         kwargs.setdefault('widget', HiddenInput)
-        super(VersionField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def bound_data(self, data, initial):
         return SignedValue(data)
