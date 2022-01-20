@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.core.signals import request_started
 from django.db import IntegrityError, connection, connections
 
@@ -17,7 +16,7 @@ def reset_queries(**kwargs):
         conn.queries = []
 
 
-class CaptureQueriesContext(object):
+class CaptureQueriesContext:
     """
     Context manager that captures queries executed by the specified connection.
     """

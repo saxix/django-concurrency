@@ -1,11 +1,9 @@
-from __future__ import unicode_literals
-
 from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
 
 from demo.models import (
-    InheritedModel, ListEditableConcurrentModel, NoActionsConcurrentModel, ProxyModel,
-    ReversionConcurrentModel, SimpleConcurrentModel
+    InheritedModel, ListEditableConcurrentModel, NoActionsConcurrentModel, ProxyModel, ReversionConcurrentModel,
+    SimpleConcurrentModel
 )
 
 from concurrency.admin import ConcurrentModelAdmin
@@ -14,7 +12,7 @@ from concurrency.api import disable_concurrency
 try:
     from reversion.admin import VersionAdmin
 except ImportError:
-    class VersionAdmin(object):
+    class VersionAdmin:
         pass
 
 
@@ -39,9 +37,7 @@ class ReversionConcurrentModelAdmin(VersionAdmin, ConcurrentModelAdmin):
 
     @disable_concurrency()
     def recover_view(self, request, version_id, extra_context=None):
-        return super(ReversionConcurrentModelAdmin, self).recover_view(request,
-                                                                       version_id,
-                                                                       extra_context)
+        return super().recover_view(request, version_id, extra_context)
 
 
 class ActionsModelAdmin(ConcurrentModelAdmin):

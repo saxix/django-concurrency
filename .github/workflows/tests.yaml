@@ -1,0 +1,83 @@
+name: Test
+
+on:
+    push:
+        branches:
+            - master
+            - develop
+    pull_request:
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v2
+            -   uses: actions/setup-python@v2
+
+            -   name: Install dependencies
+                run: |
+                    python -m pip install --upgrade pip tox
+            -   name: Lint with flake8
+                run: |
+                    tox -e lint
+
+    test:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                python-version: [ "3.8", "3.9", "3.10"]
+                django-version: [ "2.2", "3.2", ]
+                db-engine: ["pg", "mysql"]
+        env:
+            PY_VER: ${{ matrix.python-version}}
+            DJ_VER: ${{ matrix.django-version}}
+            DBENGINE: ${{ matrix.db-engine}}
+            MYSQL_USER: 'root'
+            MYSQL_PASSWORD: 'root'
+
+        services:
+          postgres:
+            image: postgres
+            env:
+              POSTGRES_USER: postgres
+              POSTGRES_PASSWORD: postgres
+              POSTGRES_DB: concurrency
+            ports:
+              - 5432:5432
+            options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+#          mysql:
+#            image: mysql:5.7
+#            env:
+#              MYSQL_DATABASE: test_db
+#              MYSQL_USER: user
+#              MYSQL_PASSWORD: password
+#              MYSQL_ROOT_PASSWORD: rootpassword
+#            ports:
+#              - 33306:3306
+#            options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
+        steps:
+            - uses: actions/checkout@v2
+
+            -   name: Setup MySQL
+                run: |
+                  sudo /etc/init.d/mysql start
+                  mysql -e 'CREATE DATABASE concurrency;' -uroot -proot
+                  mysql -e 'SHOW DATABASES;' -uroot -proot
+
+            -   name: Set up Python ${{ matrix.python-version }}
+                uses: actions/setup-python@v2
+                with:
+                    python-version: ${{ matrix.python-version }}
+
+            -   name: Install dependencies
+                run: python -m pip install --upgrade pip tox
+
+            -   name: Test with
+                run: tox -e d${DJ_VER//.}-py${PY_VER//.}-${DBENGINE}
+
+            -   uses: codecov/codecov-action@v1
+                with:
+                    verbose: true

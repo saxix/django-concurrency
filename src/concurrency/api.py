@@ -1,6 +1,6 @@
-import logging
-
 from django.db.models import Model
+
+import logging
 
 from concurrency.config import conf
 from concurrency.core import get_version_fieldname  # _wrap_model_save
@@ -67,7 +67,7 @@ def apply_concurrency_check(model, fieldname, versionclass):
     #     versionclass._wrap_model_save(model)
 
 
-class concurrency_disable_increment(object):
+class concurrency_disable_increment:
     def __init__(self, model):
         self.model = model
         self.old_value = model._concurrencymeta.increment
@@ -93,7 +93,7 @@ class concurrency_disable_increment(object):
         return wrapper
 
 
-class disable_concurrency(object):
+class disable_concurrency:
     """
         temporary disable concurrency
 

@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
-import logging
-import io
-
 from django.core.management import call_command
 
+import io
+import logging
 import pytest
 from mock import Mock
 

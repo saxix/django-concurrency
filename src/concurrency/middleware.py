@@ -1,15 +1,11 @@
 from django.core.signals import got_request_exception
+from django.urls.utils import get_callable
 
 from concurrency.config import conf
 from concurrency.exceptions import RecordModifiedError
 
-try:
-    from django.urls.utils import get_callable
-except ImportError:
-    from django.core.urlresolvers import get_callable
 
-
-class ConcurrencyMiddleware(object):
+class ConcurrencyMiddleware:
     """ Intercept :ref:`RecordModifiedError` and invoke a callable defined in
     :setting:`CONCURRECY_HANDLER409` passing the request and the object.
 

@@ -10,9 +10,7 @@ import pytest
 from demo.models import Issue3TestModel, SimpleConcurrentModel
 
 from concurrency.exceptions import VersionError
-from concurrency.forms import (
-    ConcurrentForm, VersionField, VersionFieldSigner, VersionWidget
-)
+from concurrency.forms import ConcurrentForm, VersionField, VersionFieldSigner, VersionWidget
 
 __all__ = ['WidgetTest', 'FormFieldTest', 'ConcurrentFormTest']
 

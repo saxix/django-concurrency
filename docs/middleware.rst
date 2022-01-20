@@ -110,7 +110,7 @@ Each time a :class:`RecordModifiedError <concurrency.exceptions.RecordModifiedEr
         </tr>
     </table>
 
-If you want to use ConcurrentMiddleware in the admin and you are using
+If you want to use ConcurrencyMiddleware in the admin and you are using
 :class:`concurrency.admin.ConcurrentModelAdmin` remember to set your ModelAdmin to NOT
 use :class:`concurrency.forms.ConcurrentForm`
 

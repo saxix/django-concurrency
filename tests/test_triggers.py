@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-import logging
-
 from django.db import connections
 
+import logging
 import pytest
 from demo.models import DropTriggerConcurrentModel, TriggerConcurrentModel  # noqa
 

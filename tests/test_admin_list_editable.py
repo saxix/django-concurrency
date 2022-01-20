@@ -1,24 +1,18 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-
 from django.contrib.admin.models import LogEntry
 from django.contrib.admin.sites import site
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 import pytest
 from demo.base import SENTINEL, AdminTestCase
 from demo.models import ListEditableConcurrentModel
 from demo.util import attributes, unique_id
 
-from concurrency.config import (
-    CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
-)
+from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
 from concurrency.exceptions import RecordModifiedError
 
 
-# @pytest.mark.xfail(django.VERSION[:2] == (1, 10), reason="Django 1.10")
 class TestListEditable(AdminTestCase):
     TARGET = ListEditableConcurrentModel
 
@@ -97,7 +91,7 @@ class TestListEditable(AdminTestCase):
 
         self.assertIn('Record with pk `%s` has been modified and was not updated' % id1,
                       messages)
-        self.assertIn('1 %s was changed successfully.' % force_text(self.TARGET._meta.verbose_name),
+        self.assertIn('1 %s was changed successfully.' % force_str(self.TARGET._meta.verbose_name),
                       messages)
 
     def test_message_user_no_changes(self):
@@ -137,6 +131,3 @@ class TestListEditable(AdminTestCase):
         new_logs = LogEntry.objects.filter(**log_filter).exclude(id__in=logs).exists()
         self.assertFalse(new_logs, "LogEntry created even if conflict error")
         transaction.rollback()
-
-# class TestListEditableWithNoActions(TestListEditable):
-#     TARGET = NoActionsConcurrentModel

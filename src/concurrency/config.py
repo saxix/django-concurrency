@@ -1,8 +1,8 @@
-import warnings
-
 from django.core.exceptions import ImproperlyConfigured
 from django.test.signals import setting_changed
 from django.utils.module_loading import import_string
+
+import warnings
 
 from .compat import get_callable
 
@@ -17,7 +17,7 @@ CONCURRENCY_POLICY_CALLBACK = 8
 LIST_EDITABLE_POLICIES = [CONCURRENCY_LIST_EDITABLE_POLICY_SILENT, CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL]
 
 
-class AppSettings(object):
+class AppSettings:
     defaults = {
         'ENABLED': True,
         'AUTO_CREATE_TRIGGERS': True,
@@ -27,11 +27,12 @@ class AppSettings(object):
         'CALLBACK': 'concurrency.views.callback',
         'HANDLER409': 'concurrency.views.conflict',
         'VERSION_FIELD_REQUIRED': True,
-        'TRIGGERS_FACTORY': {'postgresql': "concurrency.triggers.PostgreSQL",
-                              'mysql': "concurrency.triggers.MySQL",
-                              'sqlite3': "concurrency.triggers.Sqlite3",
-                              'sqlite': "concurrency.triggers.Sqlite3",
-                              }
+        'TRIGGERS_FACTORY': {
+            'postgresql': "concurrency.triggers.PostgreSQL",
+            'mysql': "concurrency.triggers.MySQL",
+            'sqlite3': "concurrency.triggers.Sqlite3",
+            'sqlite': "concurrency.triggers.Sqlite3",
+        }
     }
 
     def __init__(self, prefix):
