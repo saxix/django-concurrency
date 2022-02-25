@@ -11,6 +11,8 @@ from django.utils.encoding import force_str
 
 import pytest
 import re
+
+from concurrency.compat import concurrency_param_name
 from demo.admin import ActionsModelAdmin, admin_register
 from demo.base import AdminTestCase
 from demo.models import ListEditableConcurrentModel, SimpleConcurrentModel
