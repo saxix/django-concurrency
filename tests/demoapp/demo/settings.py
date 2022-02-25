@@ -1,8 +1,6 @@
 import os
 from tempfile import mktemp
 
-import django
-
 try:
     from psycopg2cffi import compat
 
@@ -118,10 +116,10 @@ if db == 'pg':
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': dbname,
-            'HOST': '127.0.0.1',
-            'PORT': '',
+            'HOST': os.environ.get('PGHOST', '127.0.0.1'),
+            'PORT': os.environ.get('PGPORT', '5432'),
             'USER': 'postgres',
-            'PASSWORD': ''}}
+            'PASSWORD': 'postgres'}}
 elif db == 'mysql':
     DATABASES = {
         'default': {
@@ -130,7 +128,7 @@ elif db == 'mysql':
             'HOST': '127.0.0.1',
             'PORT': '',
             'USER': 'root',
-            'PASSWORD': '',
+            'PASSWORD': 'root',
             'CHARSET': 'utf8',
             'COLLATION': 'utf8_general_ci'}}
 else:

@@ -10,7 +10,7 @@ from django.db import models
 from django.db.models import signals
 from django.db.models.fields import Field
 from django.db.models.signals import class_prepared, post_migrate
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
 from concurrency import forms
@@ -18,6 +18,8 @@ from concurrency.api import get_revision_of_object
 from concurrency.config import conf
 from concurrency.core import ConcurrencyOptions
 from concurrency.utils import fqn, refetch
+
+from .triggers import _TRIGGERS
 
 logger = logging.getLogger(__name__)
 
@@ -50,8 +52,9 @@ def class_prepared_concurrency_handler(sender, **kwargs):
 
 
 def post_syncdb_concurrency_handler(sender, **kwargs):
-    from concurrency.triggers import create_triggers
     from django.db import connections
+
+    from concurrency.triggers import create_triggers
 
     databases = [alias for alias in connections]
     create_triggers(databases)
@@ -76,11 +79,11 @@ class VersionField(Field):
         db_column = kwargs.get('db_column', None)
         help_text = kwargs.get('help_text', _('record revision number'))
 
-        super(VersionField, self).__init__(verbose_name, name,
-                                           help_text=help_text,
-                                           default=0,
-                                           db_tablespace=db_tablespace,
-                                           db_column=db_column)
+        super().__init__(verbose_name, name,
+                         help_text=help_text,
+                         default=0,
+                         db_tablespace=db_tablespace,
+                         db_column=db_column)
 
     def get_internal_type(self):
         return "BigIntegerField"
@@ -94,10 +97,10 @@ class VersionField(Field):
     def formfield(self, **kwargs):
         kwargs['form_class'] = self.form_class
         kwargs['widget'] = forms.VersionField.widget
-        return super(VersionField, self).formfield(**kwargs)
+        return super().formfield(**kwargs)
 
     def contribute_to_class(self, cls, *args, **kwargs):
-        super(VersionField, self).contribute_to_class(cls, *args, **kwargs)
+        super().contribute_to_class(cls, *args, **kwargs)
         if hasattr(cls, '_concurrencymeta') or cls._meta.abstract:
             return
         setattr(cls, '_concurrencymeta', ConcurrencyOptions())
@@ -131,7 +134,6 @@ class VersionField(Field):
         def _do_update(model_instance, base_qs, using, pk_val, values, update_fields, forced_update):
             version_field = model_instance._concurrencymeta.field
             old_version = get_revision_of_object(model_instance)
-
             if not version_field.model._meta.abstract:
                 if version_field.model is not base_qs.model:
                     return func(model_instance, base_qs, using, pk_val, values, update_fields, forced_update)
@@ -202,7 +204,6 @@ class AutoIncVersionField(VersionField):
     def _get_next_version(self, model_instance):
         return int(getattr(model_instance, self.attname, 0)) + 1
 
-from .triggers import _TRIGGERS
 
 class TriggerVersionField(VersionField):
     """
@@ -214,10 +215,10 @@ class TriggerVersionField(VersionField):
     def __init__(self, *args, **kwargs):
         self._trigger_name = kwargs.pop('trigger_name', None)
         self._trigger_exists = False
-        super(TriggerVersionField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def contribute_to_class(self, cls, *args, **kwargs):
-        super(TriggerVersionField, self).contribute_to_class(cls, *args, **kwargs)
+        super().contribute_to_class(cls, *args, **kwargs)
         if not cls._meta.abstract or cls._meta.proxy:
             if self not in _TRIGGERS:
                 _TRIGGERS.append(self)
@@ -225,9 +226,10 @@ class TriggerVersionField(VersionField):
     def check(self, **kwargs):
         errors = []
         model = self.model
-        from django.db import router, connections
-        from concurrency.triggers import factory
         from django.core.checks import Warning
+        from django.db import connections, router
+
+        from concurrency.triggers import factory
 
         alias = router.db_for_write(model)
         connection = connections[alias]
@@ -299,7 +301,7 @@ def filter_fields(instance, field):
 
 class ConditionalVersionField(AutoIncVersionField):
     def contribute_to_class(self, cls, *args, **kwargs):
-        super(ConditionalVersionField, self).contribute_to_class(cls, *args, **kwargs)
+        super().contribute_to_class(cls, *args, **kwargs)
         signals.post_init.connect(self._load_model,
                                   sender=cls,
                                   dispatch_uid=fqn(cls))
@@ -338,7 +340,7 @@ class ConditionalVersionField(AutoIncVersionField):
                 values[field_name] = getattr(instance, field_name).values_list('pk', flat=True)
             else:
                 values[field_name] = field.value_from_object(instance)
-        return hashlib.sha1(force_text(values).encode('utf-8')).hexdigest()
+        return hashlib.sha1(force_str(values).encode('utf-8')).hexdigest()
 
     def _get_next_version(self, model_instance):
         if not model_instance.pk:

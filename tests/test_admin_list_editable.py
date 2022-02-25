@@ -1,24 +1,19 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-
-from django.contrib.admin.models import LogEntry
-from django.contrib.admin.sites import site
-from django.contrib.contenttypes.models import ContentType
-from django.db import transaction
-from django.utils.encoding import force_text
-
 import pytest
 from demo.base import SENTINEL, AdminTestCase
 from demo.models import ListEditableConcurrentModel
 from demo.util import attributes, unique_id
+from django.contrib.admin.models import LogEntry
+from django.contrib.admin.sites import site
+from django.contrib.contenttypes.models import ContentType
+from django.db import transaction
+from django.utils.encoding import force_str
 
-from concurrency.config import (
-    CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
-)
+from concurrency.compat import concurrency_param_name
+from concurrency.config import (CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL,
+                                CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,)
 from concurrency.exceptions import RecordModifiedError
 
 
-# @pytest.mark.xfail(django.VERSION[:2] == (1, 10), reason="Django 1.10")
 class TestListEditable(AdminTestCase):
     TARGET = ListEditableConcurrentModel
 
@@ -34,7 +29,7 @@ class TestListEditable(AdminTestCase):
         res = res.click('Add', href=f'/admin/demo/{self.TARGET._meta.model_name}/add/', index=0)
         form = res.form
         form['username'] = 'CHAR'
-        res = form.submit().follow()
+        form.submit().follow()
 
     def test_normal_update(self):
         self.TARGET.objects.get_or_create(pk=next(unique_id))
@@ -42,7 +37,7 @@ class TestListEditable(AdminTestCase):
         res = res.click(self.TARGET._meta.verbose_name_plural)
         form = res.forms['changelist-form']
         form['form-0-username'] = 'CHAR'
-        res = form.submit('_save').follow()
+        form.submit('_save').follow()
         self.assertTrue(self.TARGET.objects.filter(username='CHAR').exists())
 
     def test_concurrency_policy_abort(self):
@@ -53,7 +48,6 @@ class TestListEditable(AdminTestCase):
             res = self.app.get('/admin/', user='sax')
             res = res.click(self.TARGET._meta.verbose_name_plural)
             self._create_conflict(id)
-
             form = res.forms['changelist-form']
             form['form-0-username'] = 'CHAR'
 
@@ -71,12 +65,13 @@ class TestListEditable(AdminTestCase):
             res = self.app.get('/admin/', user='sax')
             res = res.click(self.TARGET._meta.verbose_name_plural)
             self._create_conflict(id)
-
             form = res.forms['changelist-form']
             form['form-0-username'] = 'CHAR'
+            version = int(form[f'{concurrency_param_name}_{id}'].value)
             res = form.submit('_save').follow()
-            self.assertTrue(self.TARGET.objects.filter(username=SENTINEL).exists())
-            self.assertFalse(self.TARGET.objects.filter(username='CHAR').exists())
+            changed = self.TARGET.objects.filter(username=SENTINEL).first()
+            self.assertTrue(changed)
+            self.assertGreater(changed.version, version)
 
     def test_message_user(self):
         id1 = next(unique_id)
@@ -97,7 +92,7 @@ class TestListEditable(AdminTestCase):
 
         self.assertIn('Record with pk `%s` has been modified and was not updated' % id1,
                       messages)
-        self.assertIn('1 %s was changed successfully.' % force_text(self.TARGET._meta.verbose_name),
+        self.assertIn('1 %s was changed successfully.' % force_str(self.TARGET._meta.verbose_name),
                       messages)
 
     def test_message_user_no_changes(self):
@@ -115,8 +110,8 @@ class TestListEditable(AdminTestCase):
 
         messages = list(map(str, list(res.context['messages'])))
 
-        self.assertIn('Record with pk `%s` has been modified and was not updated' % id, messages)
-        self.assertEqual(len(messages), 1)
+        self.assertIn('Record with pk `%s` has been modified and was not updated' % id, set(messages))
+        self.assertEqual(len(set(messages)), 1)
 
     def test_log_change(self):
         id = next(unique_id)
@@ -137,6 +132,3 @@ class TestListEditable(AdminTestCase):
         new_logs = LogEntry.objects.filter(**log_filter).exclude(id__in=logs).exists()
         self.assertFalse(new_logs, "LogEntry created even if conflict error")
         transaction.rollback()
-
-# class TestListEditableWithNoActions(TestListEditable):
-#     TARGET = NoActionsConcurrentModel

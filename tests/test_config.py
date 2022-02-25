@@ -1,6 +1,5 @@
-from django.core.exceptions import ImproperlyConfigured
-
 import pytest
+from django.core.exceptions import ImproperlyConfigured
 
 from concurrency.config import AppSettings
 from concurrency.utils import fqn

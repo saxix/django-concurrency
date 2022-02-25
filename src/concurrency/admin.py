@@ -2,22 +2,23 @@ import operator
 import re
 from functools import reduce
 
+import django
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.core.checks import Error
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db.models import Q
-from django.forms.formsets import (
-    INITIAL_FORM_COUNT, MAX_NUM_FORM_COUNT, TOTAL_FORM_COUNT, ManagementForm
-)
+from django.forms.formsets import (INITIAL_FORM_COUNT, MAX_NUM_FORM_COUNT,
+                                   TOTAL_FORM_COUNT, ManagementForm,)
 from django.forms.models import BaseModelFormSet
 from django.http import HttpResponse, HttpResponseRedirect
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
-from django.utils.translation import ungettext
+from django.utils.translation import ngettext
 
 from concurrency import core, forms
 from concurrency.api import get_revision_of_object
+from concurrency.compat import concurrency_param_name
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, conf
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
@@ -26,7 +27,7 @@ from concurrency.utils import flatten
 ALL = object()
 
 
-class ConcurrencyActionMixin(object):
+class ConcurrencyActionMixin:
     check_concurrent_action = True
 
     def action_checkbox(self, obj):
@@ -35,10 +36,9 @@ class ConcurrencyActionMixin(object):
         """
         if self.check_concurrent_action:
             return helpers.checkbox.render(helpers.ACTION_CHECKBOX_NAME,
-                                           force_text("%s,%s" % (obj.pk,
-                                                                 get_revision_of_object(obj))))
+                                           force_str("%s,%s" % (obj.pk, get_revision_of_object(obj))))
         else:  # pragma: no cover
-            return super(ConcurrencyActionMixin, self).action_checkbox(obj)
+            return super().action_checkbox(obj)
 
     action_checkbox.short_description = mark_safe('<input type="checkbox" id="action-toggle" />')
     action_checkbox.allow_tags = True
@@ -133,15 +133,29 @@ class ConcurrencyActionMixin(object):
 class ConcurrentManagementForm(ManagementForm):
     def __init__(self, *args, **kwargs):
         self._versions = kwargs.pop('versions', [])
-        super(ConcurrentManagementForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-    def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
-        ret = super(ConcurrentManagementForm, self)._html_output(normal_row, error_row, row_ender, help_text_html,
-                                                                 errors_on_separate_row)
+    def _get_concurrency_fields(self):
         v = []
         for pk, version in self._versions:
-            v.append('<input type="hidden" name="_concurrency_version_{0}" value="{1}">'.format(pk, version))
-        return mark_safe("{0}{1}".format(ret, "".join(v)))
+            v.append(f'<input type="hidden" name="{concurrency_param_name}_{pk}" value="{version}">')
+        return mark_safe("".join(v))
+
+    def render(self, template_name=None, context=None, renderer=None):
+        out = super().render(template_name, context, renderer)
+        return out + self._get_concurrency_fields()
+
+    def __str__(self):
+        if django.VERSION[:2] >= (4, 0):
+            return self.render()
+        else:
+            return super().__str__()
+
+    __html__ = __str__
+
+    def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
+        ret = super()._html_output(normal_row, error_row, row_ender, help_text_html, errors_on_separate_row)
+        return mark_safe("{0}{1}".format(ret, self._get_concurrency_fields()))
 
 
 class ConcurrentBaseModelFormSet(BaseModelFormSet):
@@ -165,12 +179,12 @@ class ConcurrentBaseModelFormSet(BaseModelFormSet):
     management_form = property(_management_form)
 
 
-class ConcurrencyListEditableMixin(object):
+class ConcurrencyListEditableMixin:
     list_editable_policy = conf.POLICY
 
     def get_changelist_formset(self, request, **kwargs):
         kwargs['formset'] = ConcurrentBaseModelFormSet
-        return super(ConcurrencyListEditableMixin, self).get_changelist_formset(request, **kwargs)
+        return super().get_changelist_formset(request, **kwargs)
 
     def _add_conflict(self, request, obj):
         if hasattr(request, '_concurrency_list_editable_errors'):
@@ -187,10 +201,10 @@ class ConcurrencyListEditableMixin(object):
     def save_model(self, request, obj, form, change):
         try:
             if change:
-                version = request.POST.get('_concurrency_version_{0.pk}'.format(obj), None)
+                version = request.POST.get(f'{concurrency_param_name}_{obj.pk}', None)
                 if version:
                     core._set_version(obj, version)
-            super(ConcurrencyListEditableMixin, self).save_model(request, obj, form, change)
+            super().save_model(request, obj, form, change)
         except RecordModifiedError:
             self._add_conflict(request, obj)
             # If policy is set to 'silent' the user will be informed using message_user
@@ -204,12 +218,12 @@ class ConcurrencyListEditableMixin(object):
     def log_change(self, request, object, message):
         if object.pk in self._get_conflicts(request):
             return
-        return super(ConcurrencyListEditableMixin, self).log_change(request, object, message)
+        return super().log_change(request, object, message)
 
     def log_deletion(self, request, object, object_repr):
         if object.pk in self._get_conflicts(request):
             return
-        return super(ConcurrencyListEditableMixin, self).log_deletion(request, object, object_repr)
+        return super().log_deletion(request, object, object_repr)
 
     def message_user(self, request, message, *args, **kwargs):
         # This is ugly but we do not want to touch the changelist_view() code.
@@ -217,7 +231,7 @@ class ConcurrencyListEditableMixin(object):
         opts = self.model._meta
         conflicts = self._get_conflicts(request)
         if conflicts:
-            names = force_text(opts.verbose_name), force_text(opts.verbose_name_plural)
+            names = force_str(opts.verbose_name), force_str(opts.verbose_name_plural)
             pattern = r"(?P<num>\d+) ({0}|{1})".format(*names)
             rex = re.compile(pattern)
             m = rex.match(message)
@@ -227,22 +241,22 @@ class ConcurrencyListEditableMixin(object):
 
                 ids = ",".join(map(str, conflicts))
                 messages.error(request,
-                               ungettext("Record with pk `{0}` has been modified and was not updated",
-                                         "Records `{0}` have been modified and were not updated",
-                                         concurrency_errros).format(ids))
+                               ngettext("Record with pk `{0}` has been modified and was not updated",
+                                        "Records `{0}` have been modified and were not updated",
+                                        concurrency_errros).format(ids))
                 if updated_record == 1:
-                    name = force_text(opts.verbose_name)
+                    name = force_str(opts.verbose_name)
                 else:
-                    name = force_text(opts.verbose_name_plural)
+                    name = force_str(opts.verbose_name_plural)
 
                 message = None
                 if updated_record > 0:
-                    message = ungettext("%(count)s %(name)s was changed successfully.",
-                                        "%(count)s %(name)s were changed successfully.",
-                                        updated_record) % {'count': updated_record,
-                                                           'name': name}
+                    message = ngettext("%(count)s %(name)s was changed successfully.",
+                                       "%(count)s %(name)s were changed successfully.",
+                                       updated_record) % {'count': updated_record,
+                                                          'name': name}
 
-        return super(ConcurrencyListEditableMixin, self).message_user(request, message, *args, **kwargs)
+        return super().message_user(request, message, *args, **kwargs)
 
 
 class ConcurrentModelAdmin(ConcurrencyActionMixin,

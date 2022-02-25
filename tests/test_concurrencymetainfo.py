@@ -1,6 +1,5 @@
-from django.test import TransactionTestCase
-
 from demo.models import ConcurrencyDisabledModel, SimpleConcurrentModel
+from django.test import TransactionTestCase
 
 from concurrency.exceptions import RecordModifiedError
 
@@ -10,7 +9,7 @@ class TestCustomConcurrencyMeta(TransactionTestCase):
     concurrency_kwargs = {'username': 'test'}
 
     def setUp(self):
-        super(TestCustomConcurrencyMeta, self).setUp()
+        super().setUp()
         self.TARGET = self._get_concurrency_target()
 
     def _get_concurrency_target(self, **kwargs):

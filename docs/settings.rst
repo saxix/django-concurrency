@@ -173,6 +173,3 @@ Default::
 
 
 dict to customise :ref:`TriggerFactory`. Use this to customise the SQL clause to create triggers.
-
-
-

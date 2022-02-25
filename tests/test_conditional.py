@@ -1,15 +1,10 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import logging
 
-from django.contrib.auth.models import User
-
 import pytest
-from demo.models import (
-    ConditionalVersionModel, ConditionalVersionModelSelfRelation,
-    ConditionalVersionModelWithoutMeta, ThroughRelation
-)
+from demo.models import (ConditionalVersionModel,
+                         ConditionalVersionModelSelfRelation,
+                         ConditionalVersionModelWithoutMeta, ThroughRelation,)
+from django.contrib.auth.models import User
 
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch

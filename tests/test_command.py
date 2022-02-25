@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
-import logging
 import io
-
-from django.core.management import call_command
+import logging
 
 import pytest
+from django.core.management import call_command
 from mock import Mock
 
 import concurrency.management.commands.triggers as command

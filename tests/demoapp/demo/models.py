@@ -1,13 +1,8 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.contrib.auth.models import Group, User
 from django.db import models
 
-from concurrency.fields import (
-    AutoIncVersionField, ConditionalVersionField, IntegerVersionField,
-    TriggerVersionField
-)
+from concurrency.fields import (AutoIncVersionField, ConditionalVersionField,
+                                IntegerVersionField, TriggerVersionField,)
 
 __all__ = ['SimpleConcurrentModel', 'AutoIncConcurrentModel',
            'ProxyModel', 'InheritedModel', 'CustomSaveModel',
@@ -91,7 +86,7 @@ class CustomSaveModel(SimpleConcurrentModel):
     extra_field = models.CharField(max_length=30, blank=True, null=True, unique=True)
 
     def save(self, *args, **kwargs):
-        super(CustomSaveModel, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     class Meta:
         app_label = 'demo'
@@ -139,7 +134,7 @@ class GroupTestModel(Group):
 #         app_label = 'demo'
 #
 #     def save(self, *args, **kwargs):
-#         super(TestModelGroupWithCustomSave, self).save(*args, **kwargs)
+#         super().save(*args, **kwargs)
 #         return 222
 
 

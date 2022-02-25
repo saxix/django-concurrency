@@ -23,6 +23,7 @@ class TriggerRegistry:
 
 _TRIGGERS = TriggerRegistry()
 
+
 def get_trigger_name(field):
     """
 
@@ -206,4 +207,3 @@ def factory(conn):
         return mapping[conn.vendor](conn)
     except KeyError:  # pragma: no cover
         raise ValueError('{} is not supported by TriggerVersionField'.format(conn))
-

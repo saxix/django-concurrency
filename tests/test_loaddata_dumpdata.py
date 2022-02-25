@@ -1,15 +1,11 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import json
 import logging
 import os
-from six import StringIO
-
-from django.core.management import call_command
+from io import StringIO
 
 import pytest
 from demo.models import SimpleConcurrentModel
+from django.core.management import call_command
 
 logger = logging.getLogger(__name__)
 

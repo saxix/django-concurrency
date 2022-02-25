@@ -196,7 +196,7 @@ examples
 
     @disable_concurrency()
     def recover_view(self, request, version_id, extra_context=None):
-        return super(ReversionConcurrentModelAdmin, self).recover_view(request,
+        return super().recover_view(request,
                                                             version_id,
                                                             extra_context)
 

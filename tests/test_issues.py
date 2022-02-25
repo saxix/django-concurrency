@@ -1,7 +1,10 @@
-# -*- coding: utf-8 -*-
 import re
 
-import django
+import pytest
+from demo.admin import ActionsModelAdmin, admin_register
+from demo.base import AdminTestCase
+from demo.models import ListEditableConcurrentModel, SimpleConcurrentModel
+from demo.util import attributes, unique_id
 from django.contrib.admin.sites import site
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -10,18 +13,10 @@ from django.http import QueryDict
 from django.test import override_settings
 from django.test.client import RequestFactory
 from django.test.testcases import SimpleTestCase
-from django.utils.encoding import force_text
-
-import pytest
-from conftest import skipIfDjangoVersion
-from demo.admin import ActionsModelAdmin, admin_register
-from demo.base import AdminTestCase
-from demo.models import (
-    ListEditableConcurrentModel, ReversionConcurrentModel, SimpleConcurrentModel
-)
-from demo.util import attributes, unique_id
+from django.utils.encoding import force_str
 
 from concurrency.admin import ConcurrentModelAdmin
+from concurrency.compat import concurrency_param_name
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm
@@ -51,14 +46,18 @@ class TestIssue16(AdminTestCase):
         with attributes((ConcurrentModelAdmin, 'list_editable_policy', CONCURRENCY_LIST_EDITABLE_POLICY_SILENT),
                         (ConcurrentModelAdmin, 'form', ConcurrentForm), ):
             obj, __ = ListEditableConcurrentModel.objects.get_or_create(pk=id)
-            request1 = get_fake_request('pk=%s&_concurrency_version_1=2' % id)
+
+            # post_param = 'form-_concurrency_version' if django.VERSION[:2] >= (4, 0) else '_concurrency_version'
+
+            # request1 = get_fake_request('pk={}&{}_1=2'.format(id, post_param))
+            request1 = get_fake_request(f'pk={id}&{concurrency_param_name}_1=2')
 
             model_admin.save_model(request1, obj, None, True)
 
             self.assertIn(obj.pk, model_admin._get_conflicts(request1))
 
             obj = refetch(obj)
-            request2 = get_fake_request('pk=%s&_concurrency_version_1=%s' % (id, obj.version))
+            request2 = get_fake_request(f'pk={id}&{concurrency_param_name}_1={obj.version}')
             model_admin.save_model(request2, obj, None, True)
             self.assertNotIn(obj.pk, model_admin._get_conflicts(request2))
 
@@ -71,7 +70,7 @@ class TestIssue18(SimpleTestCase):
         self.assertTrue(re.match(r"^%s,\d+$" % id, identity(obj)))
 
         g = User(username='UserTest', pk=3)
-        self.assertEqual(identity(g), force_text(g.pk))
+        self.assertEqual(identity(g), force_str(g.pk))
 
 
 @pytest.mark.django_db()
@@ -99,7 +98,6 @@ def test_issue_54():
             m2.save()
 
 
-@skipIfDjangoVersion("!=(1,11)")
 @pytest.mark.django_db()
 def test_issue_81a(monkeypatch):
     monkeypatch.setattr('demo.admin.ActionsModelAdmin.fields', ('id',))
@@ -108,7 +106,6 @@ def test_issue_81a(monkeypatch):
     assert 'concurrency.A001' in str(e.value)
 
 
-@skipIfDjangoVersion("<(1,11)")
 @pytest.mark.django_db()
 def test_issue_81b(monkeypatch):
     fieldsets = (
