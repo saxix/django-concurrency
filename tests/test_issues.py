@@ -2,6 +2,8 @@ import re
 
 import django
 import pytest
+
+from concurrency.compat import concurrency_param_name
 from demo.admin import ActionsModelAdmin, admin_register
 from demo.base import AdminTestCase
 from demo.models import ListEditableConcurrentModel, SimpleConcurrentModel
@@ -47,16 +49,17 @@ class TestIssue16(AdminTestCase):
                         (ConcurrentModelAdmin, 'form', ConcurrentForm), ):
             obj, __ = ListEditableConcurrentModel.objects.get_or_create(pk=id)
 
-            post_param = 'form-_concurrency_version' if django.VERSION[:2] >= (4, 0) else '_concurrency_version'
+            # post_param = 'form-_concurrency_version' if django.VERSION[:2] >= (4, 0) else '_concurrency_version'
 
-            request1 = get_fake_request('pk={}&{}_1=2'.format(id, post_param))
+            # request1 = get_fake_request('pk={}&{}_1=2'.format(id, post_param))
+            request1 = get_fake_request(f'pk={id}&{concurrency_param_name}_1=2')
 
             model_admin.save_model(request1, obj, None, True)
 
             self.assertIn(obj.pk, model_admin._get_conflicts(request1))
 
             obj = refetch(obj)
-            request2 = get_fake_request('pk={}&{}_1={}'.format(id, post_param, obj.version))
+            request2 = get_fake_request(f'pk={id}&{concurrency_param_name}_1={obj.version}')
             model_admin.save_model(request2, obj, None, True)
             self.assertNotIn(obj.pk, model_admin._get_conflicts(request2))
 

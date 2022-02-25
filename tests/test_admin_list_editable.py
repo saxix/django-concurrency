@@ -1,4 +1,6 @@
 import pytest
+
+from concurrency.compat import concurrency_param_name
 from demo.base import SENTINEL, AdminTestCase
 from demo.models import ListEditableConcurrentModel
 from demo.util import attributes, unique_id
@@ -66,7 +68,7 @@ class TestListEditable(AdminTestCase):
             self._create_conflict(id)
             form = res.forms['changelist-form']
             form['form-0-username'] = 'CHAR'
-            version = int(form[f'form-_concurrency_version_{id}'].value)
+            version = int(form[f'{concurrency_param_name}_{id}'].value)
             res = form.submit('_save').follow()
             changed = self.TARGET.objects.filter(username=SENTINEL).first()
             self.assertTrue(changed)
