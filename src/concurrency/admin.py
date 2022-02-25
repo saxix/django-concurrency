@@ -1,6 +1,8 @@
-import django
 import operator
 import re
+from functools import reduce
+
+import django
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.core.checks import Error
@@ -13,7 +15,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import ngettext
-from functools import reduce
 
 from concurrency import core, forms
 from concurrency.api import get_revision_of_object
@@ -149,7 +150,7 @@ class ConcurrentManagementForm(ManagementForm):
             return self.render()
         else:
             return super().__str__()
-    
+
     __html__ = __str__
 
     def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):

@@ -28,8 +28,6 @@ test:
 
 lint:
 	pre-commit run --all-files
-	pipenv run isort -rc src/ --check-only
-	pipenv run check-manifest
 
 travis:
 	docker run --privileged --name travis-debug -it -u travis travisci/ci-amethyst:packer-1512508255-986baf0 /bin/bash -l

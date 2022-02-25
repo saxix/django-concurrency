@@ -1,4 +1,11 @@
+import re
+
 import django
+import pytest
+from demo.admin import ActionsModelAdmin, admin_register
+from demo.base import AdminTestCase
+from demo.models import ListEditableConcurrentModel, SimpleConcurrentModel
+from demo.util import attributes, unique_id
 from django.contrib.admin.sites import site
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -8,15 +15,6 @@ from django.test import override_settings
 from django.test.client import RequestFactory
 from django.test.testcases import SimpleTestCase
 from django.utils.encoding import force_str
-
-import pytest
-import re
-
-from concurrency.compat import concurrency_param_name
-from demo.admin import ActionsModelAdmin, admin_register
-from demo.base import AdminTestCase
-from demo.models import ListEditableConcurrentModel, SimpleConcurrentModel
-from demo.util import attributes, unique_id
 
 from concurrency.admin import ConcurrentModelAdmin
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_SILENT

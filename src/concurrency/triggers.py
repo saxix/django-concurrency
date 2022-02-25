@@ -1,8 +1,8 @@
+from collections import defaultdict
+
 from django.apps import apps
 from django.db import connections, router
 from django.db.utils import DatabaseError
-
-from collections import defaultdict
 
 # from .fields import _TRIGGERS  # noqa
 

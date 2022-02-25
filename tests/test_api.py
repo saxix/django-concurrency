@@ -1,10 +1,10 @@
-from django.contrib.auth.models import Group
-
 import pytest
 from demo.models import SimpleConcurrentModel
 from demo.util import nextgroup, nextname
+from django.contrib.auth.models import Group
 
-from concurrency.api import apply_concurrency_check, get_revision_of_object, get_version, is_changed
+from concurrency.api import (apply_concurrency_check, get_revision_of_object,
+                             get_version, is_changed,)
 from concurrency.exceptions import RecordModifiedError
 from concurrency.fields import IntegerVersionField
 from concurrency.utils import refetch
