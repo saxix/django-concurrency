@@ -48,6 +48,7 @@ fullclean:
 
 docs: .mkbuilddir
 	mkdir -p ${BUILDDIR}/docs
+	rm -fr ${BUILDDIR}/docs/*
 	sphinx-build -aE docs/ ${BUILDDIR}/docs
 ifdef BROWSE
 	firefox ${BUILDDIR}/docs/index.html

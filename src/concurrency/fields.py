@@ -134,7 +134,6 @@ class VersionField(Field):
         def _do_update(model_instance, base_qs, using, pk_val, values, update_fields, forced_update):
             version_field = model_instance._concurrencymeta.field
             old_version = get_revision_of_object(model_instance)
-
             if not version_field.model._meta.abstract:
                 if version_field.model is not base_qs.model:
                     return func(model_instance, base_qs, using, pk_val, values, update_fields, forced_update)

@@ -133,6 +133,7 @@ class ConcurrencyActionMixin:
 class ConcurrentManagementForm(ManagementForm):
     def __init__(self, *args, **kwargs):
         self._versions = kwargs.pop('versions', [])
+        self.base_fields = dict(filter(lambda k, v: '_concurrency_version_' in k, self.base_fields.items()))
         for pk, version in self._versions:
             self.base_fields[f"_concurrency_version_{pk}"] = IntegerField(widget=HiddenInput)
         super().__init__(*args, **kwargs)
@@ -155,7 +156,6 @@ class ConcurrentBaseModelFormSet(BaseModelFormSet):
             }
             for pk, version in versions:
                 initial[f"_concurrency_version_{pk}"] = version
-
             form = ConcurrentManagementForm(auto_id=self.auto_id,
                                             prefix=self.prefix,
                                             initial=initial,

@@ -47,7 +47,6 @@ class TestListEditable(AdminTestCase):
             res = self.app.get('/admin/', user='sax')
             res = res.click(self.TARGET._meta.verbose_name_plural)
             self._create_conflict(id)
-
             form = res.forms['changelist-form']
             form['form-0-username'] = 'CHAR'
 
@@ -65,12 +64,13 @@ class TestListEditable(AdminTestCase):
             res = self.app.get('/admin/', user='sax')
             res = res.click(self.TARGET._meta.verbose_name_plural)
             self._create_conflict(id)
-
             form = res.forms['changelist-form']
             form['form-0-username'] = 'CHAR'
+            version = int(form[f'form-_concurrency_version_{id}'].value)
             res = form.submit('_save').follow()
-            self.assertTrue(self.TARGET.objects.filter(username=SENTINEL).exists())
-            self.assertFalse(self.TARGET.objects.filter(username='CHAR').exists())
+            changed = self.TARGET.objects.filter(username=SENTINEL).first()
+            self.assertTrue(changed)
+            self.assertGreater(changed.version, version)
 
     def test_message_user(self):
         id1 = next(unique_id)
