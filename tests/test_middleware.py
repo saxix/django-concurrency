@@ -1,13 +1,12 @@
+import mock
+from demo.base import AdminTestCase
+from demo.models import SimpleConcurrentModel
+from demo.util import DELETE_ATTRIBUTE, attributes, unique_id
 from django.conf import settings
 from django.contrib.admin.sites import site
 from django.http import HttpRequest
 from django.test.utils import override_settings
 from django.urls import reverse
-
-import mock
-from demo.base import AdminTestCase
-from demo.models import SimpleConcurrentModel
-from demo.util import DELETE_ATTRIBUTE, attributes, unique_id
 
 from concurrency.admin import ConcurrentModelAdmin
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL

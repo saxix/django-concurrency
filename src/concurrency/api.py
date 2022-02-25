@@ -1,6 +1,6 @@
-from django.db.models import Model
-
 import logging
+
+from django.db.models import Model
 
 from concurrency.config import conf
 from concurrency.core import get_version_fieldname  # _wrap_model_save

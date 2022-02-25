@@ -1,8 +1,7 @@
+from demo.admin import admin_register_models
 from django.contrib.auth.models import Group, User
 from django.test import TransactionTestCase
 from django.utils import timezone
-
-from demo.admin import admin_register_models
 from django_webtest import WebTestMixin
 
 from concurrency.api import apply_concurrency_check
