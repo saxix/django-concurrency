@@ -1,10 +1,3 @@
-from django.db import models
-from django.db.models import signals
-from django.db.models.fields import Field
-from django.db.models.signals import class_prepared, post_migrate
-from django.utils.encoding import force_str
-from django.utils.translation import gettext_lazy as _
-
 import copy
 import functools
 import hashlib
@@ -12,6 +5,13 @@ import logging
 import time
 from collections import OrderedDict
 from functools import update_wrapper
+
+from django.db import models
+from django.db.models import signals
+from django.db.models.fields import Field
+from django.db.models.signals import class_prepared, post_migrate
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 
 from concurrency import forms
 from concurrency.api import get_revision_of_object
@@ -134,7 +134,6 @@ class VersionField(Field):
         def _do_update(model_instance, base_qs, using, pk_val, values, update_fields, forced_update):
             version_field = model_instance._concurrencymeta.field
             old_version = get_revision_of_object(model_instance)
-
             if not version_field.model._meta.abstract:
                 if version_field.model is not base_qs.model:
                     return func(model_instance, base_qs, using, pk_val, values, update_fields, forced_update)

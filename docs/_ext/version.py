@@ -2,10 +2,10 @@ import re
 
 from docutils.parsers.rst import Directive, directives
 from sphinx import addnodes, roles
+from sphinx.errors import ExtensionError
 from sphinx.util.console import bold
 # RE for option descriptions without a '--' prefix
 from sphinx.writers.html import HTMLTranslator
-from sphinx.errors import ExtensionError
 
 simple_option_desc_re = re.compile(
     r'([-_a-zA-Z0-9]+)(\s*.*?)(?=,\s+(?:/|-|--)|$)')

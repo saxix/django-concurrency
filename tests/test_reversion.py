@@ -1,7 +1,6 @@
-from django.urls import reverse
-
 import pytest
 from demo.models import ReversionConcurrentModel
+from django.urls import reverse
 from reversion import add_to_revision, revisions, set_comment
 from reversion.models import Version
 

@@ -1,7 +1,8 @@
 from django.contrib.auth.models import Group, User
 from django.db import models
 
-from concurrency.fields import AutoIncVersionField, ConditionalVersionField, IntegerVersionField, TriggerVersionField
+from concurrency.fields import (AutoIncVersionField, ConditionalVersionField,
+                                IntegerVersionField, TriggerVersionField,)
 
 __all__ = ['SimpleConcurrentModel', 'AutoIncConcurrentModel',
            'ProxyModel', 'InheritedModel', 'CustomSaveModel',

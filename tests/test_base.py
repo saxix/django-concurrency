@@ -1,7 +1,7 @@
-from django.test import override_settings
-
 import pytest
-from demo.util import concurrent_model, unique_id, with_all_models, with_std_models
+from demo.util import (concurrent_model, unique_id,
+                       with_all_models, with_std_models,)
+from django.test import override_settings
 
 from concurrency.core import _set_version
 from concurrency.exceptions import RecordModifiedError

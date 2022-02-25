@@ -1,8 +1,8 @@
-from django.test import TestCase
-
 import logging
+
 import pytest
 from demo.models import SimpleConcurrentModel
+from django.test import TestCase
 
 import concurrency.fields
 from concurrency.utils import ConcurrencyTestMixin, deprecated, fqn

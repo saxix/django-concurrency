@@ -1,9 +1,8 @@
-from django.urls import reverse
-
 import pytest
 from demo.base import SENTINEL, AdminTestCase
 from demo.models import SimpleConcurrentModel
 from demo.util import unique_id
+from django.urls import reverse
 
 
 class TestAdminActions(AdminTestCase):

@@ -1,9 +1,8 @@
-from django.contrib.auth.models import User
-from django.test.utils import override_settings
-
 import pytest
 from demo.models import AutoIncConcurrentModel, SimpleConcurrentModel
 from demo.util import nextname
+from django.contrib.auth.models import User
+from django.test.utils import override_settings
 
 from concurrency.api import concurrency_disable_increment, disable_concurrency
 from concurrency.exceptions import RecordModifiedError

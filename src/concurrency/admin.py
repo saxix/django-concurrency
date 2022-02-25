@@ -1,21 +1,24 @@
+import operator
+import re
+from functools import reduce
+
+import django
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.core.checks import Error
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db.models import Q
-from django.forms.formsets import INITIAL_FORM_COUNT, MAX_NUM_FORM_COUNT, TOTAL_FORM_COUNT, ManagementForm
+from django.forms.formsets import (INITIAL_FORM_COUNT, MAX_NUM_FORM_COUNT,
+                                   TOTAL_FORM_COUNT, ManagementForm,)
 from django.forms.models import BaseModelFormSet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import ngettext
 
-import operator
-import re
-from functools import reduce
-
 from concurrency import core, forms
 from concurrency.api import get_revision_of_object
+from concurrency.compat import concurrency_param_name
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, conf
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
@@ -132,12 +135,27 @@ class ConcurrentManagementForm(ManagementForm):
         self._versions = kwargs.pop('versions', [])
         super().__init__(*args, **kwargs)
 
-    def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
-        ret = super()._html_output(normal_row, error_row, row_ender, help_text_html, errors_on_separate_row)
+    def _get_concurrency_fields(self):
         v = []
         for pk, version in self._versions:
-            v.append('<input type="hidden" name="_concurrency_version_{0}" value="{1}">'.format(pk, version))
-        return mark_safe("{0}{1}".format(ret, "".join(v)))
+            v.append(f'<input type="hidden" name="{concurrency_param_name}_{pk}" value="{version}">')
+        return mark_safe("".join(v))
+
+    def render(self, template_name=None, context=None, renderer=None):
+        out = super().render(template_name, context, renderer)
+        return out + self._get_concurrency_fields()
+
+    def __str__(self):
+        if django.VERSION[:2] >= (4, 0):
+            return self.render()
+        else:
+            return super().__str__()
+
+    __html__ = __str__
+
+    def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
+        ret = super()._html_output(normal_row, error_row, row_ender, help_text_html, errors_on_separate_row)
+        return mark_safe("{0}{1}".format(ret, self._get_concurrency_fields()))
 
 
 class ConcurrentBaseModelFormSet(BaseModelFormSet):
@@ -183,7 +201,7 @@ class ConcurrencyListEditableMixin:
     def save_model(self, request, obj, form, change):
         try:
             if change:
-                version = request.POST.get('_concurrency_version_{0.pk}'.format(obj), None)
+                version = request.POST.get(f'{concurrency_param_name}_{obj.pk}', None)
                 if version:
                     core._set_version(obj, version)
             super().save_model(request, obj, form, change)

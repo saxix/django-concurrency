@@ -1,7 +1,8 @@
 import os
 import platform
-import pytest
 import sys
+
+import pytest
 
 py_impl = getattr(platform, 'python_implementation', lambda: None)
 PYPY = py_impl() == 'PyPy'

@@ -1,11 +1,11 @@
-from django.core.management import call_command
-
 import json
 import logging
 import os
+from io import StringIO
+
 import pytest
 from demo.models import SimpleConcurrentModel
-from io import StringIO
+from django.core.management import call_command
 
 logger = logging.getLogger(__name__)
 
