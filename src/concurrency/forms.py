@@ -115,12 +115,11 @@ class VersionField(forms.IntegerField):
         return SignedValue(self._signer.sign(value))
 
     def to_python(self, value):
+        value = super().to_python(value)
         try:
-            if value not in (None, '', 'None'):
-                return int(self._signer.unsign(str(value)))
-            return 0
-        except (BadSignature, ValueError):
-            raise VersionError(value)
+            return int(self._signer.unsign(value))
+        except BadSignature:
+            raise VersionError(f'Bad signature: {value}')
 
     def widget_attrs(self, widget):
         return {}
