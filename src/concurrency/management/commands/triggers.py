@@ -23,7 +23,7 @@ class Command(BaseCommand):
     args = ''
     help = 'register Report classes and create one ReportConfiguration per each'
 
-    requires_system_checks = False
+    requires_system_checks = []
 
     def add_arguments(self, parser):
         """

@@ -1,17 +1,18 @@
-import pytest
-from demo.base import SENTINEL, AdminTestCase
-from demo.models import ListEditableConcurrentModel
-from demo.util import attributes, unique_id
 from django.contrib.admin.models import LogEntry
 from django.contrib.admin.sites import site
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.utils.encoding import force_str
 
+import pytest
+
 from concurrency.compat import concurrency_param_name
-from concurrency.config import (CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL,
-                                CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,)
+from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
 from concurrency.exceptions import RecordModifiedError
+
+from demo.base import AdminTestCase, SENTINEL
+from demo.models import ListEditableConcurrentModel
+from demo.util import attributes, unique_id
 
 
 class TestListEditable(AdminTestCase):
@@ -27,7 +28,7 @@ class TestListEditable(AdminTestCase):
         # file:///admin/demo/listeditableconcurrentmodel/add/
         res = res.click(self.TARGET._meta.verbose_name_plural)
         res = res.click('Add', href=f'/admin/demo/{self.TARGET._meta.model_name}/add/', index=0)
-        form = res.form
+        form = res.forms['listeditableconcurrentmodel_form']
         form['username'] = 'CHAR'
         form.submit().follow()
 

@@ -1,10 +1,5 @@
 import re
 
-import pytest
-from demo.admin import ActionsModelAdmin, admin_register
-from demo.base import AdminTestCase
-from demo.models import ListEditableConcurrentModel, SimpleConcurrentModel
-from demo.util import attributes, unique_id
 from django.contrib.admin.sites import site
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -15,6 +10,8 @@ from django.test.client import RequestFactory
 from django.test.testcases import SimpleTestCase
 from django.utils.encoding import force_str
 
+import pytest
+
 from concurrency.admin import ConcurrentModelAdmin
 from concurrency.compat import concurrency_param_name
 from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_SILENT
@@ -22,6 +19,11 @@ from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm
 from concurrency.templatetags.concurrency import identity
 from concurrency.utils import refetch
+
+from demo.admin import ActionsModelAdmin, admin_register
+from demo.base import AdminTestCase
+from demo.models import ListEditableConcurrentModel, SimpleConcurrentModel
+from demo.util import attributes, unique_id
 
 
 def get_fake_request(params):

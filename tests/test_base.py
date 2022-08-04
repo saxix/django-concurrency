@@ -1,11 +1,12 @@
-import pytest
-from demo.util import (concurrent_model, unique_id,
-                       with_all_models, with_std_models,)
 from django.test import override_settings
+
+import pytest
 
 from concurrency.core import _set_version
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
+
+from demo.util import concurrent_model, unique_id, with_all_models, with_std_models
 
 pytest.mark.django_db(transaction=False)
 
