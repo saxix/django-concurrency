@@ -1,9 +1,10 @@
 import logging
 
 import pytest
-from demo.models import SimpleConcurrentModel
 
 from concurrency.templatetags.concurrency import identity, is_version, version
+
+from demo.models import SimpleConcurrentModel
 
 logger = logging.getLogger(__name__)
 

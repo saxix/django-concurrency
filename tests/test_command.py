@@ -1,9 +1,11 @@
 import io
 import logging
 
-import pytest
 from django.core.management import call_command
+
 from mock import Mock
+
+import pytest
 
 import concurrency.management.commands.triggers as command
 

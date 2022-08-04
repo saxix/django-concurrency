@@ -1,12 +1,15 @@
-import pytest
-from conftest import skippypy
-from demo.models import TriggerConcurrentModel
-from demo.util import concurrently
 from django import db
 from django.db import transaction
 
+from conftest import skippypy
+
+import pytest
+
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
+
+from demo.models import TriggerConcurrentModel
+from demo.util import concurrently
 
 
 @skippypy

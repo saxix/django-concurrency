@@ -3,9 +3,11 @@ import logging
 import os
 from io import StringIO
 
-import pytest
-from demo.models import SimpleConcurrentModel
 from django.core.management import call_command
+
+import pytest
+
+from demo.models import SimpleConcurrentModel
 
 logger = logging.getLogger(__name__)
 

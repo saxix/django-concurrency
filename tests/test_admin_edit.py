@@ -1,11 +1,13 @@
-import pytest
-from demo.base import SENTINEL, AdminTestCase
-from demo.models import SimpleConcurrentModel
-from demo.util import nextname
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
+import pytest
+
 from concurrency.forms import VersionFieldSigner
+
+from demo.base import AdminTestCase, SENTINEL
+from demo.models import SimpleConcurrentModel
+from demo.util import nextname
 
 
 @pytest.mark.django_db
@@ -13,8 +15,7 @@ from concurrency.forms import VersionFieldSigner
 def test_creation(admin_user, client):
     url = reverse('admin:demo_simpleconcurrentmodel_add')
     res = client.get(url, user=admin_user.username)
-
-    form = res.form
+    form = res.forms['simpleconcurrentmodel_form']
     form['username'] = 'CHAR'
     res = form.submit().follow()
     assert SimpleConcurrentModel.objects.filter(username='CHAR').exists()
@@ -32,7 +33,7 @@ def test_standard_update(admin_user, client):
     target = res.context['original']
 
     old_version = target.version
-    form = res.form
+    form = res.forms['simpleconcurrentmodel_form']
     form['username'] = 'UPDATED'
     res = form.submit().follow()
     target = SimpleConcurrentModel.objects.get(pk=target.pk)
@@ -48,7 +49,7 @@ def test_conflict(admin_user, client):
     url = reverse('admin:demo_simpleconcurrentmodel_change',
                   args=[concurrentmodel.pk])
     res = client.get(url, user=admin_user.username)
-    form = res.form
+    form = res.forms['simpleconcurrentmodel_form']
     concurrentmodel.save()  # create conflict here
 
     res = form.submit()
@@ -65,7 +66,7 @@ class TestConcurrentModelAdmin(AdminTestCase):
         res = self.app.get(url, user='sax')
         target = res.context['original']
         old_version = target.version
-        form = res.form
+        form = res.forms['simpleconcurrentmodel_form']
         form['username'] = 'UPDATED'
         res = form.submit().follow()
         target = SimpleConcurrentModel.objects.get(pk=target.pk)
@@ -75,7 +76,7 @@ class TestConcurrentModelAdmin(AdminTestCase):
     def test_creation(self):
         url = reverse('admin:demo_simpleconcurrentmodel_add')
         res = self.app.get(url, user='sax')
-        form = res.form
+        form = res.forms['simpleconcurrentmodel_form']
         form['username'] = 'CHAR'
         res = form.submit().follow()
         self.assertTrue(SimpleConcurrentModel.objects.filter(username='CHAR').exists())
@@ -86,7 +87,7 @@ class TestConcurrentModelAdmin(AdminTestCase):
         url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
 
-        form = res.form
+        form = res.forms['simpleconcurrentmodel_form']
         target.save()  # create conflict here
 
         res = form.submit()
@@ -108,7 +109,7 @@ class TestAdminEdit(AdminTestCase):
     def test_creation(self):
         url = reverse('admin:demo_simpleconcurrentmodel_add')
         res = self.app.get(url, user='sax')
-        form = res.form
+        form = res.forms['simpleconcurrentmodel_form']
         form['username'] = 'CHAR'
         res = form.submit().follow()
         self.assertTrue(SimpleConcurrentModel.objects.filter(username='CHAR').exists())
@@ -117,7 +118,7 @@ class TestAdminEdit(AdminTestCase):
     def test_creation_with_customform(self):
         url = reverse('admin:demo_simpleconcurrentmodel_add')
         res = self.app.get(url, user='sax')
-        form = res.form
+        form = res.forms['simpleconcurrentmodel_form']
         username = next(nextname)
         form['username'] = username
         res = form.submit().follow()
@@ -135,7 +136,7 @@ class TestAdminEdit(AdminTestCase):
         res = self.app.get(url, user='sax')
         target = res.context['original']
         old_version = target.version
-        form = res.form
+        form = res.forms['simpleconcurrentmodel_form']
         form['username'] = 'UPDATED'
         res = form.submit().follow()
         target = SimpleConcurrentModel.objects.get(pk=target.pk)
@@ -147,7 +148,7 @@ class TestAdminEdit(AdminTestCase):
         assert target.version
         url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
-        form = res.form
+        form = res.forms['simpleconcurrentmodel_form']
 
         target.save()  # create conflict here
         res = form.submit()
@@ -162,7 +163,7 @@ class TestAdminEdit(AdminTestCase):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
         url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
         res = self.app.get(url, user='sax')
-        form = res.form
+        form = res.forms['simpleconcurrentmodel_form']
         version1 = int(str(form['version'].value).split(":")[0])
         form['version'] = VersionFieldSigner().sign(version1)
         form['date_field'] = 'esss2010-09-01'
