@@ -1,3 +1,9 @@
+Release 2.5
+-----------
+* add support Django 4.2
+* add support Python 3.11
+
+
 Release 2.4
 -----------
 * add support Django 4
