@@ -14,6 +14,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import ngettext
+from django.db import transaction
 
 from concurrency import core, forms
 from concurrency.api import get_revision_of_object
@@ -197,6 +198,7 @@ class ConcurrencyListEditableMixin:
         else:
             return []
 
+    @transaction.atomic()
     def save_model(self, request, obj, form, change):
         try:
             if change:
