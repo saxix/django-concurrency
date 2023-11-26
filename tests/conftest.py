@@ -1,5 +1,7 @@
 import os
 import platform
+from pathlib import Path
+
 import sys
 
 import pytest
@@ -13,6 +15,9 @@ windows = pytest.mark.skipif(sys.platform != 'win32', reason="requires windows")
 win32only = pytest.mark.skipif("sys.platform != 'win32'")
 
 skippypy = pytest.mark.skipif(PYPY, reason='skip on pypy')
+
+here = Path(__file__).parent
+sys.path.insert(0, str(here / 'tests' / "demoapp"))
 
 
 def pytest_configure():

@@ -267,7 +267,7 @@ class ConcurrentModelAdmin(ConcurrencyActionMixin,
     formfield_overrides = {forms.VersionField: {'widget': VersionWidget}}
 
     def check(self, **kwargs):
-        errors = []
+        errors = super().check(**kwargs)
         if self.fields:
             version_field = self.model._concurrencymeta.field
             if version_field.name not in self.fields:
