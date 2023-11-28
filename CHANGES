@@ -1,3 +1,11 @@
+Release 2.5
+-----------
+* BUG FIX: fixes check() implementation
+* removes deprecatd MANUAL_TRIGGERS
+* drop support Django 2.x
+* drop support python 3.8
+
+
 Release 2.4
 -----------
 * add support Django 4

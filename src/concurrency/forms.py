@@ -1,8 +1,7 @@
 from importlib import import_module
 
 from django import forms
-from django.core.exceptions import (NON_FIELD_ERRORS, ImproperlyConfigured,
-                                    ValidationError,)
+from django.core.exceptions import ImproperlyConfigured, NON_FIELD_ERRORS, ValidationError
 from django.core.signing import BadSignature, Signer
 from django.forms import HiddenInput, ModelForm
 from django.utils.safestring import mark_safe

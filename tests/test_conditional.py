@@ -1,13 +1,18 @@
 import logging
 
-import pytest
-from demo.models import (ConditionalVersionModel,
-                         ConditionalVersionModelSelfRelation,
-                         ConditionalVersionModelWithoutMeta, ThroughRelation,)
 from django.contrib.auth.models import User
+
+import pytest
 
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
+
+from demo.models import (
+    ConditionalVersionModel,
+    ConditionalVersionModelSelfRelation,
+    ConditionalVersionModelWithoutMeta,
+    ThroughRelation,
+)
 
 logger = logging.getLogger(__name__)
 

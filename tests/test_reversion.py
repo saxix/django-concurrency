@@ -1,8 +1,11 @@
-import pytest
-from demo.models import ReversionConcurrentModel
 from django.urls import reverse
+
 from reversion import add_to_revision, revisions, set_comment
 from reversion.models import Version
+
+import pytest
+
+from demo.models import ReversionConcurrentModel
 
 
 @pytest.mark.django_db
@@ -17,7 +20,7 @@ def test_recover(admin_user, client):
     url = reverse('admin:demo_reversionconcurrentmodel_recover',
                   args=[concurrentmodel.pk])
     res = client.get(url, user=admin_user.username)
-    res.form.submit().follow()
+    res.forms['reversionconcurrentmodel_form'].submit().follow()
 
     concurrentmodel2 = ReversionConcurrentModel.objects.get(pk=concurrentmodel.pk)
     assert concurrentmodel2.username == ver.field_dict['username']

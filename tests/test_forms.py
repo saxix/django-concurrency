@@ -1,16 +1,17 @@
-import pytest
-from demo.models import Issue3TestModel, SimpleConcurrentModel
 from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation
 from django.forms.models import modelform_factory
 from django.forms.widgets import HiddenInput, TextInput
-from django.test import TestCase, override_settings
+from django.test import override_settings, TestCase
 from django.test.testcases import SimpleTestCase
 from django.utils.encoding import smart_str
 from django.utils.translation import gettext as _
 
+import pytest
+
 from concurrency.exceptions import VersionError
-from concurrency.forms import (ConcurrentForm, VersionField,
-                               VersionFieldSigner, VersionWidget,)
+from concurrency.forms import ConcurrentForm, VersionField, VersionFieldSigner, VersionWidget
+
+from demo.models import Issue3TestModel, SimpleConcurrentModel
 
 __all__ = ['WidgetTest', 'FormFieldTest', 'ConcurrentFormTest']
 

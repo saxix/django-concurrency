@@ -7,9 +7,9 @@ from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.core.checks import Error
 from django.core.exceptions import ImproperlyConfigured, ValidationError
+from django.db import transaction
 from django.db.models import Q
-from django.forms.formsets import (INITIAL_FORM_COUNT, MAX_NUM_FORM_COUNT,
-                                   TOTAL_FORM_COUNT, ManagementForm,)
+from django.forms.formsets import INITIAL_FORM_COUNT, ManagementForm, MAX_NUM_FORM_COUNT, TOTAL_FORM_COUNT
 from django.forms.models import BaseModelFormSet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_str
@@ -198,6 +198,7 @@ class ConcurrencyListEditableMixin:
         else:
             return []
 
+    @transaction.atomic()
     def save_model(self, request, obj, form, change):
         try:
             if change:
@@ -266,7 +267,7 @@ class ConcurrentModelAdmin(ConcurrencyActionMixin,
     formfield_overrides = {forms.VersionField: {'widget': VersionWidget}}
 
     def check(self, **kwargs):
-        errors = []
+        errors = super().check(**kwargs)
         if self.fields:
             version_field = self.model._concurrencymeta.field
             if version_field.name not in self.fields:

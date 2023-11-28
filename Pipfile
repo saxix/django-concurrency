@@ -6,22 +6,21 @@ name = "pypi"
 [packages]
 
 [dev-packages]
+check-manifest = "*"
 django = "*"
-pre-commit = "*"
 django-reversion = "*"
 django-webtest = "*"
 mock = "*"
+pre-commit = "*"
+psycopg2-binary = "*"
 pytest = "*"
 pytest-cov = "*"
 pytest-django = "*"
 pytest-echo = "*"
-pytest-pythonpath = "*"
 tox = "*"
-"psycopg2-binary" = "*"
-check-manifest = "*"
+twine="*"
 sphinx = "*"
 sphinx-issues = "*"
-twine="*"
 
 [requires]
 python_version = "3.8"

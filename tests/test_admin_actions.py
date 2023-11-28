@@ -1,8 +1,10 @@
+from django.urls import reverse
+
 import pytest
-from demo.base import SENTINEL, AdminTestCase
+
+from demo.base import AdminTestCase, SENTINEL
 from demo.models import SimpleConcurrentModel
 from demo.util import unique_id
-from django.urls import reverse
 
 
 class TestAdminActions(AdminTestCase):
@@ -67,7 +69,7 @@ class TestAdminActions(AdminTestCase):
 
         assert 'Are you sure?' in res
         assert 'SimpleConcurrentModel #%s' % id in res
-        res = res.form.submit()
+        res = res.forms[0].submit()
         assert 'SimpleConcurrentModel #%s' % id not in res
 
     def test_delete_not_allowed_if_updates(self):
@@ -101,5 +103,6 @@ class TestAdminActions(AdminTestCase):
         response = form.submit()
         expected = 'All of the following objects and their related items will be deleted'
         assert expected in response
-        response = response.form.submit().follow()
+        form = response.forms[1] if len(response.forms) > 1 else response.form  # dj41
+        response = form.submit().follow()
         assert response.status_code == 200

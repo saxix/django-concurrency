@@ -1,5 +1,3 @@
-import warnings
-
 from django.core.exceptions import ImproperlyConfigured
 from django.test.signals import setting_changed
 from django.utils.module_loading import import_string
@@ -7,8 +5,8 @@ from django.utils.module_loading import import_string
 from .compat import get_callable
 
 # List Editable Policy
-# 0 do not save updated records, save others, show message to the user
-# 1 abort whole transaction
+# 1 do not save updated records, save others, show message to the user
+# 2 abort whole transaction
 CONCURRENCY_LIST_EDITABLE_POLICY_SILENT = 1
 CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL = 2
 CONCURRENCY_POLICY_RAISE = 4
@@ -21,7 +19,6 @@ class AppSettings:
     defaults = {
         'ENABLED': True,
         'AUTO_CREATE_TRIGGERS': True,
-        'MANUAL_TRIGGERS': False,  # deprecated: use AUTO_CREATE_TRIGGERS
         'FIELD_SIGNER': 'concurrency.forms.VersionFieldSigner',
         'POLICY': CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
         'CALLBACK': 'concurrency.views.callback',
@@ -67,10 +64,6 @@ class AppSettings:
                     "{} is not a valid value for `CALLBACK`. It must be a callable or a fullpath to callable. ".format(
                         value))
             self._callback = func
-        elif name == "MANUAL_TRIGGERS":
-            warnings.warn("MANUAL_TRIGGERS is deprecated and will be removed in 2.5. Use AUTO_CREATE_TRIGGERS",
-                          category=DeprecationWarning)
-            self.AUTO_CREATE_TRIGGERS = not value
         elif name == "TRIGGERS_FACTORY":
             original = dict(value)
             for k, v in original.items():

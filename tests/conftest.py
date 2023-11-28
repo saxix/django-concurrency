@@ -1,6 +1,7 @@
 import os
 import platform
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -14,8 +15,8 @@ win32only = pytest.mark.skipif("sys.platform != 'win32'")
 
 skippypy = pytest.mark.skipif(PYPY, reason='skip on pypy')
 
-skipIfDjangoVersion = lambda v: pytest.mark.skipif("django.VERSION[:2]{}".format(v),
-                                                   reason="Skip if django{}".format(v))
+here = Path(__file__).parent
+sys.path.insert(0, str(here / 'tests' / "demoapp"))
 
 
 def pytest_configure():
@@ -23,7 +24,6 @@ def pytest_configure():
 
     settings.SILENCED_SYSTEM_CHECKS = ['concurrency.W001']
     settings.CONCURRENCY_VERSION_FIELD_REQUIRED = False
-    settings.CONCURRENCY_MANUAL_TRIGGERS = False
     settings.CONCURRENCY_AUTO_CREATE_TRIGGERS = True
 
 
