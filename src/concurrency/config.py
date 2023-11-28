@@ -1,5 +1,3 @@
-import warnings
-
 from django.core.exceptions import ImproperlyConfigured
 from django.test.signals import setting_changed
 from django.utils.module_loading import import_string
