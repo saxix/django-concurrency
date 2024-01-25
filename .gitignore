@@ -4,6 +4,7 @@
 !.gitignore
 !.editorconfig
 !.pre-commit-config.yaml
+!.readthedocs.yaml
 coverage.xml
 notes.txt
 build/
