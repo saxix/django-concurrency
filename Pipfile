@@ -7,7 +7,7 @@ name = "pypi"
 
 [dev-packages]
 check-manifest = "*"
-django = "*"
+    django = "*"
 django-reversion = "*"
 django-webtest = "*"
 mock = "*"

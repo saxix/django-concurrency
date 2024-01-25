@@ -23,7 +23,9 @@ from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, conf
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
 from concurrency.utils import flatten
-
+from django.forms import CheckboxInput
+from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 ALL = object()
 
 
@@ -35,8 +37,16 @@ class ConcurrencyActionMixin:
         A list_display column containing a checkbox widget.
         """
         if self.check_concurrent_action:
-            return helpers.checkbox.render(helpers.ACTION_CHECKBOX_NAME,
-                                           force_str("%s,%s" % (obj.pk, get_revision_of_object(obj))))
+            attrs = {
+                "class": "action-select",
+                "aria-label": format_html(_("Select this object for an action - {}"), obj),
+            }
+            checkbox = CheckboxInput(attrs, lambda value: False)
+            pk = force_str("%s,%s" % (obj.pk, get_revision_of_object(obj)))
+            return checkbox.render(helpers.ACTION_CHECKBOX_NAME, pk)
+
+            # return helpers.checkbox.render(helpers.ACTION_CHECKBOX_NAME,
+            #                                force_str("%s,%s" % (obj.pk, get_revision_of_object(obj))))
         else:  # pragma: no cover
             return super().action_checkbox(obj)
 

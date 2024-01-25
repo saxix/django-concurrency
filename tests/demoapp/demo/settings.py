@@ -28,12 +28,19 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'reversion',
                   'demo'
                   ]
+import django
 
-MIGRATION_MODULES = {
-    'demo': 'demo.migrations',
-    'auth': 'demo.auth_migrations',
-}
-
+IS_DJANGO_5 = django.VERSION[0] == 5
+if IS_DJANGO_5:
+    MIGRATION_MODULES = {
+        'demo': 'demo.migrations5',
+        'auth': 'demo.auth_migrations5',
+    }
+else:
+    MIGRATION_MODULES = {
+        'demo': 'demo.migrations',
+        'auth': 'demo.auth_migrations',
+    }
 
 MIDDLEWARE_CLASSES = []
 MIDDLEWARE = [
@@ -60,12 +67,12 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
             ],
             # ... some options here ...
         },
     },
 ]
-
 
 LOGGING = {
     'version': 1,
@@ -137,3 +144,11 @@ else:
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': dbname,
         }}
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTHENTICATION_BACKENDS = (
+    "demo.backends.AnyUserAuthBackend",
+    # os.environ.get("AUTHENTICATION_BACKEND", ""),
+    # "django.contrib.auth.backends.ModelBackend",
+)
