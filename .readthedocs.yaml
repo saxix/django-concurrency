@@ -34,4 +34,4 @@ python:
   install:
     - requirements: src/requirements/develop.pip
     - method: pip
-      path: .
+      path: .[dev]

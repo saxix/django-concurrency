@@ -1,3 +1,9 @@
+(Dev)
+-----------
+* add support do Django 5.x
+* drop support python 3.9
+
+
 Release 2.5
 -----------
 * BUG FIX: fixes check() implementation
