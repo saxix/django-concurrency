@@ -45,8 +45,8 @@ intersphinx_mapping = {
     'django': ('http://django.readthedocs.org/en/latest/', None),
     'sphinx': ('http://sphinx.readthedocs.org/en/latest/', None),
 }
-extlinks = {'issue': ('https://github.com/saxix/django-concurrency/issues/%s', 'issue #'),
-            'django_issue': ('https://code.djangoproject.com/ticket/%s', 'issue #'),
+extlinks = {'issue': ('https://github.com/saxix/django-concurrency/issues/%s', 'issue #%s'),
+            'django_issue': ('https://code.djangoproject.com/ticket/%s', 'issue #%s'),
 
             }
 
@@ -122,7 +122,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "default"
+# html_theme = "default"
 #
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
