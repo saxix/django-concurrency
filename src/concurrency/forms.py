@@ -90,7 +90,7 @@ class SignedValue:
             return ''
 
 
-class VersionField(forms.IntegerField):
+class VersionField(forms.Field):
     widget = HiddenInput  # Default widget to use when rendering this type of Field.
     hidden_widget = HiddenInput  # Default widget to use when rendering this as "hidden".
 
@@ -114,10 +114,11 @@ class VersionField(forms.IntegerField):
         return SignedValue(self._signer.sign(value))
 
     def to_python(self, value):
-        try:
-            if value not in (None, '', 'None'):
-                return int(self._signer.unsign(str(value)))
+        value = super().to_python(value)
+        if value in self.empty_values:
             return 0
+        try:
+            return int(self._signer.unsign(str(value)))
         except (BadSignature, ValueError):
             raise VersionError(value)
 
