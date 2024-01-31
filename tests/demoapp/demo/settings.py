@@ -1,6 +1,8 @@
 import os
 from tempfile import mktemp
 
+import django
+
 try:
     from psycopg2cffi import compat
 
@@ -28,8 +30,6 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'reversion',
                   'demo'
                   ]
-import django
-
 IS_DJANGO_5 = django.VERSION[0] == 5
 if IS_DJANGO_5:
     MIGRATION_MODULES = {

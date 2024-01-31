@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation
 from django.forms.models import modelform_factory
 from django.forms.widgets import HiddenInput, TextInput
@@ -5,7 +6,7 @@ from django.test import override_settings, TestCase
 from django.test.testcases import SimpleTestCase
 from django.utils.encoding import smart_str
 from django.utils.translation import gettext as _
-from django.conf import settings
+
 import pytest
 
 from concurrency.exceptions import VersionError

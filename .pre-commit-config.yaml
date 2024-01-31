@@ -12,15 +12,9 @@ repos:
         entry: isort
         language: system
         types: [python]
-      - id: check-manifest
-        name: check-manifest
-        entry: check-manifest
-        language: system
-        types: [python]
-        files: '^$'
-        always_run: true
 
--   repo: git://github.com/pre-commit/pre-commit-hooks
+
+-   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v1.4.0
     hooks:
     -   id: debug-statements

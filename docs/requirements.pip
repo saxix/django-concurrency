@@ -1,3 +1,3 @@
-sphinx==3.5.2
+sphinx
 django
 sphinx_issues
