@@ -9,12 +9,14 @@ from django.core.checks import Error
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db import transaction
 from django.db.models import Q
+from django.forms import CheckboxInput
 from django.forms.formsets import INITIAL_FORM_COUNT, ManagementForm, MAX_NUM_FORM_COUNT, TOTAL_FORM_COUNT
 from django.forms.models import BaseModelFormSet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_str
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.utils.translation import ngettext
+from django.utils.translation import gettext_lazy as _, ngettext
 
 from concurrency import core, forms
 from concurrency.api import get_revision_of_object
@@ -23,9 +25,7 @@ from concurrency.config import CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL, conf
 from concurrency.exceptions import RecordModifiedError
 from concurrency.forms import ConcurrentForm, VersionWidget
 from concurrency.utils import flatten
-from django.forms import CheckboxInput
-from django.utils.html import format_html
-from django.utils.translation import gettext_lazy as _
+
 ALL = object()
 
 

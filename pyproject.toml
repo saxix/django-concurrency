@@ -1,0 +1,54 @@
+[project]
+name = "django-concurrency"
+version = "2.5"
+description = "Optimistic lock implementation for Django. Prevents users from doing concurrent editing"
+authors = [
+    {name = "sax", email = "s.apostolico@gmail.com"},
+]
+dependencies = []
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
+[tool.pdm]
+[[tool.pdm.source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "black",
+    "bump2version>=1.0.1",
+    "check-manifest",
+    "django",
+    "django-reversion",
+    "django-webtest",
+    "flake8",
+    "isort",
+    "mock",
+    "pre-commit",
+    "psycopg2-binary",
+    "pytest",
+    "pytest-cov",
+    "pytest-django",
+    "pytest-echo",
+    "sphinx",
+    "sphinx-issues",
+    "tox",
+    "twine",
+]
+
+[tool.isort]
+combine_as_imports = true
+default_section = "THIRDPARTY"
+include_trailing_comma = true
+known_tests = "pytest,unittest,factory"
+known_demo = "demo"
+known_django = "django"
+sections = "FUTURE,STDLIB,DJANGO,THIRDPARTY,TESTS,FIRSTPARTY,DEMO,LOCALFOLDER"
+known_first_party = "etools_validator"
+multi_line_output = 3
+line_length = 120
+balanced_wrapping = true
+order_by_type = false
