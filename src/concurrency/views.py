@@ -12,10 +12,10 @@ class ConflictResponse(HttpResponse):
 
 
 def callback(target, *args, **kwargs):
-    raise RecordModifiedError(_('Record has been modified'), target=target)
+    raise RecordModifiedError(_("Record has been modified"), target=target)
 
 
-def conflict(request, target=None, template_name='409.html'):
+def conflict(request, target=None, template_name="409.html"):
     """409 error handler.
 
     :param request: Request
@@ -29,15 +29,14 @@ def conflict(request, target=None, template_name='409.html'):
         template = loader.get_template(template_name)
     except TemplateDoesNotExist:  # pragma: no cover
         template = Template(
-            '<h1>Conflict</h1>'
-            '<p>The request was unsuccessful due to a conflict. '
-            'The object changed during the transaction.</p>')
+            "<h1>Conflict</h1>"
+            "<p>The request was unsuccessful due to a conflict. "
+            "The object changed during the transaction.</p>"
+        )
     try:
         saved = target.__class__._default_manager.get(pk=target.pk)
     except target.__class__.DoesNotExist:  # pragma: no cover
         saved = None
-    ctx = {'target': target,
-           'saved': saved,
-           'request_path': request.path}
+    ctx = {"target": target, "saved": saved, "request_path": request.path}
 
     return ConflictResponse(template.render(ctx))

@@ -6,17 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('demo', '0001_initial'),
+        ("demo", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='conditionalversionmodelselfrelation',
-            name='relations',
+            model_name="conditionalversionmodelselfrelation",
+            name="relations",
         ),
         migrations.AddField(
-            model_name='conditionalversionmodelselfrelation',
-            name='parent',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='demo.ConditionalVersionModelSelfRelation'),
+            model_name="conditionalversionmodelselfrelation",
+            name="parent",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="demo.ConditionalVersionModelSelfRelation",
+            ),
         ),
     ]

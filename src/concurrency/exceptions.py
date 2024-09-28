@@ -9,7 +9,7 @@ class VersionChangedError(ValidationError):
 
 class RecordModifiedError(DatabaseError):
     def __init__(self, *args, **kwargs):
-        self.target = kwargs.pop('target')
+        self.target = kwargs.pop("target")
         super().__init__(*args, **kwargs)
 
 

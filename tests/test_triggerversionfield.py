@@ -1,16 +1,14 @@
-from django.core.signals import request_started
-from django.db import connection, connections, IntegrityError
-
 import mock
-
 import pytest
+from demo.models import TriggerConcurrentModel
+
+# Register an event to reset saved queries when a Django request is started.
+from demo.util import nextname
+from django.core.signals import request_started
+from django.db import IntegrityError, connection, connections
 
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
-
-from demo.models import TriggerConcurrentModel
-# Register an event to reset saved queries when a Django request is started.
-from demo.util import nextname
 
 
 def reset_queries(**kwargs):
@@ -72,9 +70,12 @@ def test_trigger_external_update():
 @pytest.mark.django_db
 def test_trigger_external_create():
     with connection.cursor() as c:
-        c.execute("INSERT INTO {} (username, count, cm_version_id) VALUES ('abc', 1, -1)".format(
-            TriggerConcurrentModel._meta.db_table))
-    instance = TriggerConcurrentModel.objects.get(username='abc')
+        c.execute(
+            "INSERT INTO {} (username, count, cm_version_id) VALUES ('abc', 1, -1)".format(
+                TriggerConcurrentModel._meta.db_table
+            )
+        )
+    instance = TriggerConcurrentModel.objects.get(username="abc")
     obj = refetch(instance)
     assert obj.version == -1
 
@@ -114,7 +115,7 @@ def test_trigger_do_not_increase_version_if_error():
     instance = TriggerConcurrentModel()
     assert instance.pk is None
     assert instance.version == 0
-    with mock.patch('demo.models.TriggerConcurrentModel.save', side_effect=IntegrityError):
+    with mock.patch("demo.models.TriggerConcurrentModel.save", side_effect=IntegrityError):
         with pytest.raises(IntegrityError):
             instance.save()
 

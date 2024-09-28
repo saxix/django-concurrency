@@ -132,9 +132,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "version",
-                    concurrency.fields.ConditionalVersionField(
-                        default=0, help_text="record revision number"
-                    ),
+                    concurrency.fields.ConditionalVersionField(default=0, help_text="record revision number"),
                 ),
                 ("name", models.CharField(max_length=10)),
             ],
@@ -202,9 +200,7 @@ class Migration(migrations.Migration):
                 ("date_field", models.DateField(blank=True, null=True)),
                 (
                     "version",
-                    models.CharField(
-                        blank=True, default="abc", max_length=10, null=True
-                    ),
+                    models.CharField(blank=True, default="abc", max_length=10, null=True),
                 ),
                 (
                     "revision",
@@ -385,9 +381,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "version",
-                    concurrency.fields.ConditionalVersionField(
-                        default=0, help_text="record revision number"
-                    ),
+                    concurrency.fields.ConditionalVersionField(default=0, help_text="record revision number"),
                 ),
                 (
                     "field1",
@@ -425,9 +419,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "version",
-                    concurrency.fields.ConditionalVersionField(
-                        default=0, help_text="record revision number"
-                    ),
+                    concurrency.fields.ConditionalVersionField(default=0, help_text="record revision number"),
                 ),
                 (
                     "field1",
@@ -474,9 +466,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "version",
-                    concurrency.fields.ConditionalVersionField(
-                        default=0, help_text="record revision number"
-                    ),
+                    concurrency.fields.ConditionalVersionField(default=0, help_text="record revision number"),
                 ),
                 (
                     "left",

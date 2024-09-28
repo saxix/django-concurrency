@@ -6,7 +6,7 @@ from concurrency.exceptions import RecordModifiedError
 
 
 class ConcurrencyMiddleware:
-    """ Intercept :ref:`RecordModifiedError` and invoke a callable defined in
+    """Intercept :ref:`RecordModifiedError` and invoke a callable defined in
     :setting:`CONCURRECY_HANDLER409` passing the request and the object.
 
     """

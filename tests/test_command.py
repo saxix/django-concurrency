@@ -1,11 +1,9 @@
 import io
 import logging
 
-from django.core.management import call_command
-
-from mock import Mock
-
 import pytest
+from django.core.management import call_command
+from mock import Mock
 
 import concurrency.management.commands.triggers as command
 
@@ -16,14 +14,14 @@ logger = logging.getLogger(__name__)
 def test_command_create(monkeypatch):
     out = io.StringIO()
     mock_create = Mock()
-    mock_create.return_value = {'default': [['model', 'field', 'trigger']]}
+    mock_create.return_value = {"default": [["model", "field", "trigger"]]}
 
-    monkeypatch.setattr(command, 'create_triggers', mock_create)
-    call_command('triggers', 'create', stdout=out)
+    monkeypatch.setattr(command, "create_triggers", mock_create)
+    call_command("triggers", "create", stdout=out)
 
     out.seek(0)
     output = out.read()
-    assert output.find('Created trigger  for field') > 0
+    assert output.find("Created trigger  for field") > 0
     assert mock_create.call_count == 1
 
 
@@ -31,37 +29,37 @@ def test_command_create(monkeypatch):
 def test_command_create_db(monkeypatch):
     out = io.StringIO()
     mock_create = Mock()
-    mock_create.return_value = {'default': [['model', 'field', 'trigger']]}
+    mock_create.return_value = {"default": [["model", "field", "trigger"]]}
 
-    monkeypatch.setattr(command, 'create_triggers', mock_create)
-    call_command('triggers', 'create', database='default', stdout=out)
+    monkeypatch.setattr(command, "create_triggers", mock_create)
+    call_command("triggers", "create", database="default", stdout=out)
 
     out.seek(0)
     output = out.read()
-    assert output.find('Created trigger  for field') > 0
+    assert output.find("Created trigger  for field") > 0
     assert mock_create.call_count == 1
 
 
 @pytest.mark.django_db
 def test_command_list():
     out = io.StringIO()
-    call_command('triggers', 'list', stdout=out)
+    call_command("triggers", "list", stdout=out)
     out.seek(0)
     output = out.read()
-    assert output.find('concurrency_demo_triggerconcurrentmodel_i')
-    assert output.find('concurrency_demo_triggerconcurrentmodel_u')
+    assert output.find("concurrency_demo_triggerconcurrentmodel_i")
+    assert output.find("concurrency_demo_triggerconcurrentmodel_u")
 
 
 @pytest.mark.django_db
 def test_command_drop(monkeypatch):
     out = io.StringIO()
     mock_drop = Mock()
-    mock_drop.return_value = {'default': [['model', 'field', 'trigger']]}
+    mock_drop.return_value = {"default": [["model", "field", "trigger"]]}
 
-    monkeypatch.setattr(command, 'drop_triggers', mock_drop)
-    call_command('triggers', 'drop', stdout=out)
+    monkeypatch.setattr(command, "drop_triggers", mock_drop)
+    call_command("triggers", "drop", stdout=out)
 
     out.seek(0)
     output = out.read()
-    assert output.find('Dropped   trigger') > 0
+    assert output.find("Dropped   trigger") > 0
     assert mock_drop.call_count == 1

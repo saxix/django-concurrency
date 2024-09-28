@@ -1,6 +1,6 @@
 [project]
 name = "django-concurrency"
-version = "2.5"
+version = "2.6.0"
 description = "Optimistic lock implementation for Django. Prevents users from doing concurrent editing"
 authors = [
     {name = "sax", email = "s.apostolico@gmail.com"},
@@ -10,6 +10,14 @@ requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "MIT"}
 
+[project.optional-dependencies]
+dj4 = [
+    "django>=4.2,<5",
+]
+dj5 = [
+    "django>=5.1",
+]
+
 [tool.pdm]
 [[tool.pdm.source]]
 url = "https://pypi.org/simple"
@@ -18,10 +26,9 @@ name = "pypi"
 
 [tool.pdm.dev-dependencies]
 dev = [
-    "black",
+    "black>=24.8.0",
     "bump2version>=1.0.1",
     "check-manifest",
-    "django",
     "django-reversion",
     "django-webtest",
     "flake8",
@@ -29,7 +36,7 @@ dev = [
     "mock",
     "pre-commit",
     "psycopg2-binary",
-    "pytest",
+    "pytest>=8.3.3",
     "pytest-cov",
     "pytest-django",
     "pytest-echo",
@@ -40,15 +47,24 @@ dev = [
 ]
 
 [tool.isort]
-combine_as_imports = true
-default_section = "THIRDPARTY"
-include_trailing_comma = true
-known_tests = "pytest,unittest,factory"
-known_demo = "demo"
-known_django = "django"
-sections = "FUTURE,STDLIB,DJANGO,THIRDPARTY,TESTS,FIRSTPARTY,DEMO,LOCALFOLDER"
-known_first_party = "etools_validator"
-multi_line_output = 3
-line_length = 120
-balanced_wrapping = true
-order_by_type = false
+profile = "black"
+
+[tool.black]
+line-length = 120
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | migrations
+  | snapshots
+)/
+'''

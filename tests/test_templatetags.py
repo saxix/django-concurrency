@@ -1,10 +1,9 @@
 import logging
 
 import pytest
+from demo.models import SimpleConcurrentModel
 
 from concurrency.templatetags.concurrency import identity, is_version, version
-
-from demo.models import SimpleConcurrentModel
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +15,7 @@ def obj():
 
 @pytest.mark.django_db
 def test_identity(obj):
-    assert identity(obj).split(',') == [str(obj.pk), str(obj.version)]
+    assert identity(obj).split(",") == [str(obj.pk), str(obj.version)]
 
 
 @pytest.mark.django_db

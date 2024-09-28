@@ -5,6 +5,7 @@
 !.editorconfig
 !.pre-commit-config.yaml
 !.readthedocs.yaml
+!.flake8
 coverage.xml
 notes.txt
 build/

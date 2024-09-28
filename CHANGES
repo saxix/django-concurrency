@@ -1,7 +1,8 @@
-(Dev)
+Release 2.6
 -----------
 * add support do Django 5.x
 * drop support python 3.9
+* drop support django 3.x
 * move to .pyproject.toml
 
 
