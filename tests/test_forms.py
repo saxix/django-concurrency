@@ -88,15 +88,15 @@ class ConcurrentFormTest(TestCase):
     def test_initial_value(self):
         Form = modelform_factory(SimpleConcurrentModel, type("xxx", (ConcurrentForm,), {}), exclude=("char_field",))
         form = Form({"username": "aaa"})
-        if settings.IS_DJANGO_5:
-            self.assertHTMLEqual(
-                str(form["version"]),
-                '<input id="id_version" name="version" type="hidden" value="">',
-            )
-        else:
-            self.assertHTMLEqual(
-                str(form["version"]), '<input type="hidden" value="" name="version" id="id_version" />'
-            )
+        # if settings.IS_DJANGO_5:
+        self.assertHTMLEqual(
+            str(form["version"]),
+            '<input id="id_version" name="version" type="hidden" value="">',
+        )
+        # else:
+        #     self.assertHTMLEqual(
+        #         str(form["version"]), '<input type="hidden" value="" name="version" id="id_version" />'
+        #     )
         self.assertTrue(form.is_valid(), form.non_field_errors())
 
     def test_initial_value_with_custom_signer(self):
