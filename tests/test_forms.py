@@ -91,7 +91,7 @@ class ConcurrentFormTest(TestCase):
         if settings.IS_DJANGO_5:
             self.assertHTMLEqual(
                 str(form["version"]),
-                '<input aria-describedby="id_version_helptext" id="id_version" name="version" type="hidden" value="">',
+                '<input id="id_version" name="version" type="hidden" value="">',
             )
         else:
             self.assertHTMLEqual(

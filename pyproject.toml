@@ -10,6 +10,14 @@ requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "MIT"}
 
+[project.optional-dependencies]
+dj4 = [
+    "django>=4.2,<5",
+]
+dj5 = [
+    "django>=5.1",
+]
+
 [tool.pdm]
 [[tool.pdm.source]]
 url = "https://pypi.org/simple"
@@ -21,7 +29,6 @@ dev = [
     "black>=24.8.0",
     "bump2version>=1.0.1",
     "check-manifest",
-    "django",
     "django-reversion",
     "django-webtest",
     "flake8",
