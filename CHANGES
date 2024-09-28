@@ -1,4 +1,4 @@
-2.6
+Release 2.6
 -----------
 * add support do Django 5.x
 * drop support python 3.9
