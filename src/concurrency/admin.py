@@ -10,7 +10,12 @@ from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db import transaction
 from django.db.models import Q
 from django.forms import CheckboxInput
-from django.forms.formsets import INITIAL_FORM_COUNT, ManagementForm, MAX_NUM_FORM_COUNT, TOTAL_FORM_COUNT
+from django.forms.formsets import (
+    INITIAL_FORM_COUNT,
+    ManagementForm,
+    MAX_NUM_FORM_COUNT,
+    TOTAL_FORM_COUNT,
+)
 from django.forms.models import BaseModelFormSet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_str
@@ -39,7 +44,9 @@ class ConcurrencyActionMixin:
         if self.check_concurrent_action:
             attrs = {
                 "class": "action-select",
-                "aria-label": format_html(_("Select this object for an action - {}"), obj),
+                "aria-label": format_html(
+                    _("Select this object for an action - {}"), obj
+                ),
             }
             checkbox = CheckboxInput(attrs, lambda value: False)
             pk = force_str("%s,%s" % (obj.pk, get_revision_of_object(obj)))
@@ -50,7 +57,9 @@ class ConcurrencyActionMixin:
         else:  # pragma: no cover
             return super().action_checkbox(obj)
 
-    action_checkbox.short_description = mark_safe('<input type="checkbox" id="action-toggle" />')
+    action_checkbox.short_description = mark_safe(
+        '<input type="checkbox" id="action-toggle" />'
+    )
     action_checkbox.allow_tags = True
 
     def get_confirmation_template(self):
@@ -66,7 +75,7 @@ class ConcurrencyActionMixin:
         # and bottom of the change list, for example). Get the action
         # whose button was pushed.
         try:
-            action_index = int(request.POST.get('index', 0))
+            action_index = int(request.POST.get("index", 0))
         except ValueError:  # pragma: no cover
             action_index = 0
 
@@ -77,7 +86,7 @@ class ConcurrencyActionMixin:
 
         # Use the action whose button was pushed
         try:
-            data.update({'action': data.getlist('action')[action_index]})
+            data.update({"action": data.getlist("action")[action_index]})
         except IndexError:  # pragma: no cover
             # If we didn't get an action from the chosen form that's invalid
             # POST data, so by deleting action it'll fail the validation check
@@ -85,16 +94,16 @@ class ConcurrencyActionMixin:
             pass
 
         action_form = self.action_form(data, auto_id=None)
-        action_form.fields['action'].choices = self.get_action_choices(request)
+        action_form.fields["action"].choices = self.get_action_choices(request)
 
         # If the form's valid we can handle the action.
         if action_form.is_valid():
-            action = action_form.cleaned_data['action']
+            action = action_form.cleaned_data["action"]
             func, name, description = self.get_actions(request)[action]
 
             # Get the list of selected PKs. If nothing's selected, we can't
             # perform an action on it, so bail.
-            if action_form.cleaned_data['select_across']:
+            if action_form.cleaned_data["select_across"]:
                 selected = ALL
             else:
                 selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
@@ -105,7 +114,9 @@ class ConcurrencyActionMixin:
             revision_field = self.model._concurrencymeta.field
 
             if self.check_concurrent_action:
-                self.delete_selected_confirmation_template = self.get_confirmation_template()
+                self.delete_selected_confirmation_template = (
+                    self.get_confirmation_template()
+                )
 
                 # If select_across we have to avoid the use of concurrency
                 if selected is not ALL:
@@ -114,20 +125,27 @@ class ConcurrencyActionMixin:
                         try:
                             pk, version = x.split(",")
                         except ValueError:  # pragma: no cover
-                            raise ImproperlyConfigured('`ConcurrencyActionMixin` error.'
-                                                       'A tuple with `primary_key, version_number` '
-                                                       'expected:  `%s` found' % x)
-                        filters.append(Q(**{'pk': pk,
-                                            revision_field.attname: version}))
+                            raise ImproperlyConfigured(
+                                "`ConcurrencyActionMixin` error."
+                                "A tuple with `primary_key, version_number` "
+                                "expected:  `%s` found" % x
+                            )
+                        filters.append(Q(**{"pk": pk, revision_field.attname: version}))
 
                     queryset = queryset.filter(reduce(operator.or_, filters))
                     if len(selected) != queryset.count():
-                        messages.error(request, 'One or more record were updated. '
-                                                '(Probably by other user) '
-                                                'The execution was aborted.')
+                        messages.error(
+                            request,
+                            "One or more record were updated. "
+                            "(Probably by other user) "
+                            "The execution was aborted.",
+                        )
                         return HttpResponseRedirect(".")
                 else:
-                    messages.warning(request, 'Selecting all records, you will avoid the concurrency check')
+                    messages.warning(
+                        request,
+                        "Selecting all records, you will avoid the concurrency check",
+                    )
 
             response = func(self, request, queryset)
 
@@ -142,13 +160,15 @@ class ConcurrencyActionMixin:
 
 class ConcurrentManagementForm(ManagementForm):
     def __init__(self, *args, **kwargs):
-        self._versions = kwargs.pop('versions', [])
+        self._versions = kwargs.pop("versions", [])
         super().__init__(*args, **kwargs)
 
     def _get_concurrency_fields(self):
         v = []
         for pk, version in self._versions:
-            v.append(f'<input type="hidden" name="{concurrency_param_name}_{pk}" value="{version}">')
+            v.append(
+                f'<input type="hidden" name="{concurrency_param_name}_{pk}" value="{version}">'
+            )
         return mark_safe("".join(v))
 
     def render(self, template_name=None, context=None, renderer=None):
@@ -163,8 +183,12 @@ class ConcurrentManagementForm(ManagementForm):
 
     __html__ = __str__
 
-    def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
-        ret = super()._html_output(normal_row, error_row, row_ender, help_text_html, errors_on_separate_row)
+    def _html_output(
+        self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row
+    ):
+        ret = super()._html_output(
+            normal_row, error_row, row_ender, help_text_html, errors_on_separate_row
+        )
         return mark_safe("{0}{1}".format(ret, self._get_concurrency_fields()))
 
 
@@ -172,18 +196,27 @@ class ConcurrentBaseModelFormSet(BaseModelFormSet):
     def _management_form(self):
         """Returns the ManagementForm instance for this FormSet."""
         if self.is_bound:
-            form = ConcurrentManagementForm(self.data, auto_id=self.auto_id,
-                                            prefix=self.prefix)
+            form = ConcurrentManagementForm(
+                self.data, auto_id=self.auto_id, prefix=self.prefix
+            )
             if not form.is_valid():
-                raise ValidationError('ManagementForm data is missing or has been tampered with')
+                raise ValidationError(
+                    "ManagementForm data is missing or has been tampered with"
+                )
         else:
-            form = ConcurrentManagementForm(auto_id=self.auto_id,
-                                            prefix=self.prefix,
-                                            initial={TOTAL_FORM_COUNT: self.total_form_count(),
-                                                     INITIAL_FORM_COUNT: self.initial_form_count(),
-                                                     MAX_NUM_FORM_COUNT: self.max_num},
-                                            versions=[(form.instance.pk, get_revision_of_object(form.instance)) for form
-                                                      in self.initial_forms])
+            form = ConcurrentManagementForm(
+                auto_id=self.auto_id,
+                prefix=self.prefix,
+                initial={
+                    TOTAL_FORM_COUNT: self.total_form_count(),
+                    INITIAL_FORM_COUNT: self.initial_form_count(),
+                    MAX_NUM_FORM_COUNT: self.max_num,
+                },
+                versions=[
+                    (form.instance.pk, get_revision_of_object(form.instance))
+                    for form in self.initial_forms
+                ],
+            )
         return form
 
     management_form = property(_management_form)
@@ -193,17 +226,17 @@ class ConcurrencyListEditableMixin:
     list_editable_policy = conf.POLICY
 
     def get_changelist_formset(self, request, **kwargs):
-        kwargs['formset'] = ConcurrentBaseModelFormSet
+        kwargs["formset"] = ConcurrentBaseModelFormSet
         return super().get_changelist_formset(request, **kwargs)
 
     def _add_conflict(self, request, obj):
-        if hasattr(request, '_concurrency_list_editable_errors'):
+        if hasattr(request, "_concurrency_list_editable_errors"):
             request._concurrency_list_editable_errors.append(obj.pk)
         else:
             request._concurrency_list_editable_errors = [obj.pk]
 
     def _get_conflicts(self, request):
-        if hasattr(request, '_concurrency_list_editable_errors'):
+        if hasattr(request, "_concurrency_list_editable_errors"):
             return request._concurrency_list_editable_errors
         else:
             return []
@@ -212,7 +245,7 @@ class ConcurrencyListEditableMixin:
     def save_model(self, request, obj, form, change):
         try:
             if change:
-                version = request.POST.get(f'{concurrency_param_name}_{obj.pk}', None)
+                version = request.POST.get(f"{concurrency_param_name}_{obj.pk}", None)
                 if version:
                     core._set_version(obj, version)
             super().save_model(request, obj, form, change)
@@ -248,13 +281,17 @@ class ConcurrencyListEditableMixin:
             m = rex.match(message)
             concurrency_errros = len(conflicts)
             if m:
-                updated_record = int(m.group('num')) - concurrency_errros
+                updated_record = int(m.group("num")) - concurrency_errros
 
                 ids = ",".join(map(str, conflicts))
-                messages.error(request,
-                               ngettext("Record with pk `{0}` has been modified and was not updated",
-                                        "Records `{0}` have been modified and were not updated",
-                                        concurrency_errros).format(ids))
+                messages.error(
+                    request,
+                    ngettext(
+                        "Record with pk `{0}` has been modified and was not updated",
+                        "Records `{0}` have been modified and were not updated",
+                        concurrency_errros,
+                    ).format(ids),
+                )
                 if updated_record == 1:
                     name = force_str(opts.verbose_name)
                 else:
@@ -262,19 +299,20 @@ class ConcurrencyListEditableMixin:
 
                 message = None
                 if updated_record > 0:
-                    message = ngettext("%(count)s %(name)s was changed successfully.",
-                                       "%(count)s %(name)s were changed successfully.",
-                                       updated_record) % {'count': updated_record,
-                                                          'name': name}
+                    message = ngettext(
+                        "%(count)s %(name)s was changed successfully.",
+                        "%(count)s %(name)s were changed successfully.",
+                        updated_record,
+                    ) % {"count": updated_record, "name": name}
 
         return super().message_user(request, message, *args, **kwargs)
 
 
-class ConcurrentModelAdmin(ConcurrencyActionMixin,
-                           ConcurrencyListEditableMixin,
-                           admin.ModelAdmin):
+class ConcurrentModelAdmin(
+    ConcurrencyActionMixin, ConcurrencyListEditableMixin, admin.ModelAdmin
+):
     form = ConcurrentForm
-    formfield_overrides = {forms.VersionField: {'widget': VersionWidget}}
+    formfield_overrides = {forms.VersionField: {"widget": VersionWidget}}
 
     def check(self, **kwargs):
         errors = super().check(**kwargs)
@@ -283,23 +321,27 @@ class ConcurrentModelAdmin(ConcurrencyActionMixin,
             if version_field.name not in self.fields:
                 errors.append(
                     Error(
-                        'Missed version field in {} fields definition'.format(self),
-                        hint="Please add '{}' to the 'fields' attribute".format(version_field.name),
+                        "Missed version field in {} fields definition".format(self),
+                        hint="Please add '{}' to the 'fields' attribute".format(
+                            version_field.name
+                        ),
                         obj=None,
-                        id='concurrency.A001',
+                        id="concurrency.A001",
                     )
                 )
         if self.fieldsets:
             version_field = self.model._concurrencymeta.field
-            fields = flatten([v['fields'] for k, v in self.fieldsets])
+            fields = flatten([v["fields"] for k, v in self.fieldsets])
 
             if version_field.name not in fields:
                 errors.append(
                     Error(
-                        'Missed version field in {} fieldsets definition'.format(self),
-                        hint="Please add '{}' to the 'fieldsets' attribute".format(version_field.name),
+                        "Missed version field in {} fieldsets definition".format(self),
+                        hint="Please add '{}' to the 'fieldsets' attribute".format(
+                            version_field.name
+                        ),
                         obj=None,
-                        id='concurrency.A002',
+                        id="concurrency.A002",
                     )
                 )
         return errors

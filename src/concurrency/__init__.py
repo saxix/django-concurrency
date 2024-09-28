@@ -1,4 +1,4 @@
-__author__ = 'sax'
+__author__ = "sax"
 
 VERSION = __version__ = "2.5.0"
-NAME = 'django-concurrency'
+NAME = "django-concurrency"

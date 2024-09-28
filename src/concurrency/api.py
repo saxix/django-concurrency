@@ -6,9 +6,17 @@ from concurrency.config import conf
 from concurrency.core import get_version_fieldname  # _wrap_model_save
 from concurrency.exceptions import RecordModifiedError
 
-__all__ = ['apply_concurrency_check', 'get_revision_of_object',
-           'RecordModifiedError', 'disable_concurrency',
-           'get_version', 'is_changed', 'get_version_fieldname']
+__all__ = [
+    "apply_concurrency_check",
+    "get_revision_of_object",
+    "get_version_fieldname",
+    "RecordModifiedError",
+    "disable_concurrency",
+    "concurrency_disable_increment",
+    "get_version",
+    "is_changed",
+    "get_version_fieldname",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -31,8 +39,9 @@ def is_changed(obj):
     """
     revision_field = get_version_fieldname(obj)
     version = get_revision_of_object(obj)
-    return not obj.__class__.objects.filter(**{obj._meta.pk.name: obj.pk,
-                                               revision_field: version}).exists()
+    return not obj.__class__.objects.filter(
+        **{obj._meta.pk.name: obj.pk, revision_field: version}
+    ).exists()
 
 
 def get_version(model_instance, version):
@@ -44,15 +53,15 @@ def get_version(model_instance, version):
     :return:
     """
     version_field = get_version_fieldname(model_instance)
-    kwargs = {'pk': model_instance.pk, version_field: version}
+    kwargs = {"pk": model_instance.pk, version_field: version}
     return model_instance.__class__.objects.get(**kwargs)
 
 
 def apply_concurrency_check(model, fieldname, versionclass):
-    if hasattr(model, '_concurrencymeta'):
+    if hasattr(model, "_concurrencymeta"):
         return
 
-    logger.debug('Applying concurrency check to %s' % model)
+    logger.debug("Applying concurrency check to %s" % model)
 
     ver = versionclass()
 
@@ -74,10 +83,16 @@ class concurrency_disable_increment:
 
     def __enter__(self):
         if isinstance(self.model, Model):
-            self.old_value, self.model._concurrency_disable_increment = getattr(self.model, '_concurrency_disable_increment', False), True
+            self.old_value, self.model._concurrency_disable_increment = (
+                getattr(self.model, "_concurrency_disable_increment", False),
+                True,
+            )
             self.model._concurrency_disabled = True
         else:
-            self.old_value, self.model._concurrencymeta.increment = self.model._concurrencymeta.increment, False
+            self.old_value, self.model._concurrencymeta.increment = (
+                self.model._concurrencymeta.increment,
+                False,
+            )
 
     def __exit__(self, *args, **kwds):
         if isinstance(self.model, Model):
@@ -106,7 +121,7 @@ class disable_concurrency:
     def __init__(self, model=None):
         self.model = model
         self.old_value = conf.ENABLED
-        self.concurrency_managed = (model is None) or hasattr(model, '_concurrencymeta')
+        self.concurrency_managed = (model is None) or hasattr(model, "_concurrencymeta")
 
     def start(self):
         if not self.concurrency_managed:
@@ -114,10 +129,16 @@ class disable_concurrency:
         if self.model is None:
             self.old_value, conf.ENABLED = conf.ENABLED, False
         elif isinstance(self.model, Model):
-            self.old_value, self.model._concurrency_disabled = getattr(self.model, '_concurrency_disabled', False), True
+            self.old_value, self.model._concurrency_disabled = (
+                getattr(self.model, "_concurrency_disabled", False),
+                True,
+            )
             self.model._concurrency_disabled = True
         else:
-            self.old_value, self.model._concurrencymeta.enabled = self.model._concurrencymeta.enabled, False
+            self.old_value, self.model._concurrencymeta.enabled = (
+                self.model._concurrencymeta.enabled,
+                False,
+            )
 
     def finish(self):
         if not self.concurrency_managed:

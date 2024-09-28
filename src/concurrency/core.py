@@ -3,7 +3,7 @@ from logging import NullHandler
 
 from concurrency.config import conf
 
-logging.getLogger('concurrency').addHandler(NullHandler())
+logging.getLogger("concurrency").addHandler(NullHandler())
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ def _set_version(obj, version):
 
 
 def _select_lock(model_instance, version_value=None):
-    if (not conf.ENABLED):
+    if not conf.ENABLED:
         return
 
     version_field = model_instance._concurrencymeta.field
@@ -33,12 +33,14 @@ def _select_lock(model_instance, version_value=None):
     is_versioned = value != version_field.get_default()
 
     if model_instance.pk is not None and is_versioned:
-        kwargs = {'pk': model_instance.pk, version_field.name: value}
+        kwargs = {"pk": model_instance.pk, version_field.name: value}
         entry = model_instance.__class__._base_manager.filter(**kwargs)
 
         if not entry:
-            logger.debug("Conflict detected on `{0}` pk:`{0.pk}`, "
-                         "version `{1}` not found".format(model_instance, value))
+            logger.debug(
+                "Conflict detected on `{0}` pk:`{0.pk}`, "
+                "version `{1}` not found".format(model_instance, value)
+            )
             conf._callback(model_instance)
         else:  # pragma: no cover
             pass
