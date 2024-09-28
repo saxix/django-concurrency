@@ -1,6 +1,6 @@
 [project]
 name = "django-concurrency"
-version = "2.5"
+version = "2.6.0"
 description = "Optimistic lock implementation for Django. Prevents users from doing concurrent editing"
 authors = [
     {name = "sax", email = "s.apostolico@gmail.com"},

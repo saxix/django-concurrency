@@ -90,10 +90,12 @@ def test_concurrency_disable_increment():
     instance1 = AutoIncConcurrentModel(username=next(nextname))
     assert instance1.version == 0
     instance1.save()
+    instance1.refresh_from_db()
     assert instance1.version == 1
     with concurrency_disable_increment(instance1):
         instance1.save()
-        instance1.save()
+        instance1.save(update_fields=('username',))
+        instance1.refresh_from_db()
         assert instance1.version == 1
     instance1.save()
     assert instance1.version == 2
