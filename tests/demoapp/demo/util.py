@@ -3,12 +3,7 @@ from contextlib import contextmanager
 from functools import partial, update_wrapper
 from itertools import count
 
-from django import db
-
 import pytest
-
-from concurrency.config import conf
-
 from demo.models import (
     AutoIncConcurrentModel,
     ConcreteModel,
@@ -18,6 +13,9 @@ from demo.models import (
     SimpleConcurrentModel,
     TriggerConcurrentModel,
 )
+from django import db
+
+from concurrency.config import conf
 
 
 def sequence(prefix):
@@ -26,8 +24,8 @@ def sequence(prefix):
         yield "{0}-{1}".format(prefix, next(infinite))
 
 
-nextname = sequence('username')
-nextgroup = sequence('group')
+nextname = sequence("username")
+nextgroup = sequence("group")
 unique_id = count(1)
 
 
@@ -53,26 +51,34 @@ def clone_instance(model_instance):
 
 
 def with_models(*models, **kwargs):
-    ignore = kwargs.pop('ignore', [])
+    ignore = kwargs.pop("ignore", [])
     if ignore:
         models = filter(models, lambda x: x not in ignore)
 
     ids = [m.__name__ for m in models]
 
-    return pytest.mark.parametrize(('model_class,'),
-                                   models,
-                                   False,
-                                   ids,
-                                   None)
+    return pytest.mark.parametrize(("model_class,"), models, False, ids, None)
 
 
-MODEL_CLASSES = [SimpleConcurrentModel, AutoIncConcurrentModel,
-                 InheritedModel, CustomSaveModel,
-                 ConcreteModel, ProxyModel, TriggerConcurrentModel]
+MODEL_CLASSES = [
+    SimpleConcurrentModel,
+    AutoIncConcurrentModel,
+    InheritedModel,
+    CustomSaveModel,
+    ConcreteModel,
+    ProxyModel,
+    TriggerConcurrentModel,
+]
 
-with_std_models = partial(with_models, SimpleConcurrentModel, AutoIncConcurrentModel,
-                          InheritedModel, CustomSaveModel,
-                          ConcreteModel, ProxyModel)()
+with_std_models = partial(
+    with_models,
+    SimpleConcurrentModel,
+    AutoIncConcurrentModel,
+    InheritedModel,
+    CustomSaveModel,
+    ConcreteModel,
+    ProxyModel,
+)()
 with_all_models = partial(with_models, *MODEL_CLASSES)()
 
 # with_all_models = partial(models_parametrize, ConcreteModel)()
@@ -124,12 +130,12 @@ def attributes(*values):
 def concurrently(times=1):
     # from: http://www.caktusgroup.com/blog/2009/05/26/testing-django-views-for-concurrency-issues/
     """
-Add this decorator to small pieces of code that you want to test
-concurrently to make sure they don't raise exceptions when run at the
-same time. E.g., some Django views that do a SELECT and then a subsequent
-INSERT might fail when the INSERT assumes that the data has not changed
-since the SELECT.
-"""
+    Add this decorator to small pieces of code that you want to test
+    concurrently to make sure they don't raise exceptions when run at the
+    same time. E.g., some Django views that do a SELECT and then a subsequent
+    INSERT might fail when the INSERT assumes that the data has not changed
+    since the SELECT.
+    """
 
     def concurrently_decorator(test_func):
         def wrapper(*args, **kwargs):
@@ -153,9 +159,7 @@ since the SELECT.
             for t in threads:
                 t.join()
             if exceptions:
-                raise Exception(
-                    'test_concurrently intercepted %s exceptions: %s' %
-                    (len(exceptions), exceptions))
+                raise Exception("test_concurrently intercepted %s exceptions: %s" % (len(exceptions), exceptions))
 
         return update_wrapper(wrapper, test_func)
 

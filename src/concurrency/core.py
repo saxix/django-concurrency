@@ -38,8 +38,7 @@ def _select_lock(model_instance, version_value=None):
 
         if not entry:
             logger.debug(
-                "Conflict detected on `{0}` pk:`{0.pk}`, "
-                "version `{1}` not found".format(model_instance, value)
+                "Conflict detected on `{0}` pk:`{0.pk}`, " "version `{1}` not found".format(model_instance, value)
             )
             conf._callback(model_instance)
         else:  # pragma: no cover

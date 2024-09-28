@@ -14,15 +14,15 @@ class Migration(migrations.Migration):
         }
 
     """
+
     dependencies = [
-        ('auth', '0001_initial'),
+        ("auth", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='Group',
-            name='version',
-            field=IntegerVersionField(help_text=b'Version', default=1),
-
+            model_name="Group",
+            name="version",
+            field=IntegerVersionField(help_text=b"Version", default=1),
         ),
     ]

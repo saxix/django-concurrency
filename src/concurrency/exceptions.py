@@ -16,6 +16,4 @@ class RecordModifiedError(DatabaseError):
 class VersionError(SuspiciousOperation):
 
     def __init__(self, message=None, code=None, params=None, *args, **kwargs):
-        self.message = message or _(
-            "Version number is missing or has been tampered with"
-        )
+        self.message = message or _("Version number is missing or has been tampered with")

@@ -39,9 +39,7 @@ def is_changed(obj):
     """
     revision_field = get_version_fieldname(obj)
     version = get_revision_of_object(obj)
-    return not obj.__class__.objects.filter(
-        **{obj._meta.pk.name: obj.pk, revision_field: version}
-    ).exists()
+    return not obj.__class__.objects.filter(**{obj._meta.pk.name: obj.pk, revision_field: version}).exists()
 
 
 def get_version(model_instance, version):

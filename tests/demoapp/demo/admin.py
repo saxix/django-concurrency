@@ -1,9 +1,3 @@
-from django.contrib import admin
-from django.contrib.admin.sites import NotRegistered
-
-from concurrency.admin import ConcurrentModelAdmin
-from concurrency.api import disable_concurrency
-
 from demo.models import (
     InheritedModel,
     ListEditableConcurrentModel,
@@ -12,31 +6,37 @@ from demo.models import (
     ReversionConcurrentModel,
     SimpleConcurrentModel,
 )
+from django.contrib import admin
+from django.contrib.admin.sites import NotRegistered
+
+from concurrency.admin import ConcurrentModelAdmin
+from concurrency.api import disable_concurrency
 
 try:
     from reversion.admin import VersionAdmin
 except ImportError:
+
     class VersionAdmin:
         pass
 
 
 class ListEditableModelAdmin(ConcurrentModelAdmin):
-    list_display = ('__unicode__', 'version', 'username')
-    list_editable = ('username',)
-    ordering = ('id',)
+    list_display = ("__unicode__", "version", "username")
+    list_editable = ("username",)
+    ordering = ("id",)
 
 
 class NoActionsModelAdmin(ConcurrentModelAdmin):
-    list_display = ('__unicode__', 'version', 'username')
-    list_editable = ('username',)
-    ordering = ('id',)
+    list_display = ("__unicode__", "version", "username")
+    list_editable = ("username",)
+    ordering = ("id",)
     actions = None
 
 
 class ReversionConcurrentModelAdmin(VersionAdmin, ConcurrentModelAdmin):
-    list_display = ('__unicode__', 'version', 'username')
-    list_editable = ('username',)
-    ordering = ('id',)
+    list_display = ("__unicode__", "version", "username")
+    list_editable = ("username",)
+    ordering = ("id",)
     actions = None
 
     @disable_concurrency()
@@ -45,13 +45,13 @@ class ReversionConcurrentModelAdmin(VersionAdmin, ConcurrentModelAdmin):
 
 
 class ActionsModelAdmin(ConcurrentModelAdmin):
-    list_display = ('__unicode__', 'version', 'username')
-    actions = ['dummy_action']
-    ordering = ('id',)
+    list_display = ("__unicode__", "version", "username")
+    actions = ["dummy_action"]
+    ordering = ("id",)
 
     def dummy_action(self, request, queryset):
         for el in queryset:
-            el.username = '**action_update**'
+            el.username = "**action_update**"
             el.save()
 
 

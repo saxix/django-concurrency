@@ -12,16 +12,17 @@ from django.db.models import Q
 from django.forms import CheckboxInput
 from django.forms.formsets import (
     INITIAL_FORM_COUNT,
-    ManagementForm,
     MAX_NUM_FORM_COUNT,
     TOTAL_FORM_COUNT,
+    ManagementForm,
 )
 from django.forms.models import BaseModelFormSet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_str
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext_lazy as _, ngettext
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext
 
 from concurrency import core, forms
 from concurrency.api import get_revision_of_object
@@ -44,9 +45,7 @@ class ConcurrencyActionMixin:
         if self.check_concurrent_action:
             attrs = {
                 "class": "action-select",
-                "aria-label": format_html(
-                    _("Select this object for an action - {}"), obj
-                ),
+                "aria-label": format_html(_("Select this object for an action - {}"), obj),
             }
             checkbox = CheckboxInput(attrs, lambda value: False)
             pk = force_str("%s,%s" % (obj.pk, get_revision_of_object(obj)))
@@ -57,9 +56,7 @@ class ConcurrencyActionMixin:
         else:  # pragma: no cover
             return super().action_checkbox(obj)
 
-    action_checkbox.short_description = mark_safe(
-        '<input type="checkbox" id="action-toggle" />'
-    )
+    action_checkbox.short_description = mark_safe('<input type="checkbox" id="action-toggle" />')
     action_checkbox.allow_tags = True
 
     def get_confirmation_template(self):
@@ -114,9 +111,7 @@ class ConcurrencyActionMixin:
             revision_field = self.model._concurrencymeta.field
 
             if self.check_concurrent_action:
-                self.delete_selected_confirmation_template = (
-                    self.get_confirmation_template()
-                )
+                self.delete_selected_confirmation_template = self.get_confirmation_template()
 
                 # If select_across we have to avoid the use of concurrency
                 if selected is not ALL:
@@ -166,9 +161,7 @@ class ConcurrentManagementForm(ManagementForm):
     def _get_concurrency_fields(self):
         v = []
         for pk, version in self._versions:
-            v.append(
-                f'<input type="hidden" name="{concurrency_param_name}_{pk}" value="{version}">'
-            )
+            v.append(f'<input type="hidden" name="{concurrency_param_name}_{pk}" value="{version}">')
         return mark_safe("".join(v))
 
     def render(self, template_name=None, context=None, renderer=None):
@@ -183,12 +176,8 @@ class ConcurrentManagementForm(ManagementForm):
 
     __html__ = __str__
 
-    def _html_output(
-        self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row
-    ):
-        ret = super()._html_output(
-            normal_row, error_row, row_ender, help_text_html, errors_on_separate_row
-        )
+    def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
+        ret = super()._html_output(normal_row, error_row, row_ender, help_text_html, errors_on_separate_row)
         return mark_safe("{0}{1}".format(ret, self._get_concurrency_fields()))
 
 
@@ -196,13 +185,9 @@ class ConcurrentBaseModelFormSet(BaseModelFormSet):
     def _management_form(self):
         """Returns the ManagementForm instance for this FormSet."""
         if self.is_bound:
-            form = ConcurrentManagementForm(
-                self.data, auto_id=self.auto_id, prefix=self.prefix
-            )
+            form = ConcurrentManagementForm(self.data, auto_id=self.auto_id, prefix=self.prefix)
             if not form.is_valid():
-                raise ValidationError(
-                    "ManagementForm data is missing or has been tampered with"
-                )
+                raise ValidationError("ManagementForm data is missing or has been tampered with")
         else:
             form = ConcurrentManagementForm(
                 auto_id=self.auto_id,
@@ -212,10 +197,7 @@ class ConcurrentBaseModelFormSet(BaseModelFormSet):
                     INITIAL_FORM_COUNT: self.initial_form_count(),
                     MAX_NUM_FORM_COUNT: self.max_num,
                 },
-                versions=[
-                    (form.instance.pk, get_revision_of_object(form.instance))
-                    for form in self.initial_forms
-                ],
+                versions=[(form.instance.pk, get_revision_of_object(form.instance)) for form in self.initial_forms],
             )
         return form
 
@@ -308,9 +290,7 @@ class ConcurrencyListEditableMixin:
         return super().message_user(request, message, *args, **kwargs)
 
 
-class ConcurrentModelAdmin(
-    ConcurrencyActionMixin, ConcurrencyListEditableMixin, admin.ModelAdmin
-):
+class ConcurrentModelAdmin(ConcurrencyActionMixin, ConcurrencyListEditableMixin, admin.ModelAdmin):
     form = ConcurrentForm
     formfield_overrides = {forms.VersionField: {"widget": VersionWidget}}
 
@@ -322,9 +302,7 @@ class ConcurrentModelAdmin(
                 errors.append(
                     Error(
                         "Missed version field in {} fields definition".format(self),
-                        hint="Please add '{}' to the 'fields' attribute".format(
-                            version_field.name
-                        ),
+                        hint="Please add '{}' to the 'fields' attribute".format(version_field.name),
                         obj=None,
                         id="concurrency.A001",
                     )
@@ -337,9 +315,7 @@ class ConcurrentModelAdmin(
                 errors.append(
                     Error(
                         "Missed version field in {} fieldsets definition".format(self),
-                        hint="Please add '{}' to the 'fieldsets' attribute".format(
-                            version_field.name
-                        ),
+                        hint="Please add '{}' to the 'fieldsets' attribute".format(version_field.name),
                         obj=None,
                         id="concurrency.A002",
                     )

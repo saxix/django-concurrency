@@ -34,9 +34,7 @@ def class_prepared_concurrency_handler(sender, **kwargs):
             setattr(sender, "_concurrencymeta", local)
 
         if hasattr(sender, "ConcurrencyMeta"):
-            sender._concurrencymeta.enabled = getattr(
-                sender.ConcurrencyMeta, "enabled", True
-            )
+            sender._concurrencymeta.enabled = getattr(sender.ConcurrencyMeta, "enabled", True)
             check_fields = getattr(sender.ConcurrencyMeta, "check_fields", None)
             ignore_fields = getattr(sender.ConcurrencyMeta, "ignore_fields", None)
             if check_fields and ignore_fields:
@@ -44,9 +42,7 @@ def class_prepared_concurrency_handler(sender, **kwargs):
 
             sender._concurrencymeta.check_fields = check_fields
             sender._concurrencymeta.ignore_fields = ignore_fields
-            sender._concurrencymeta.increment = getattr(
-                sender.ConcurrencyMeta, "increment", True
-            )
+            sender._concurrencymeta.increment = getattr(sender.ConcurrencyMeta, "increment", True)
             sender._concurrencymeta.skip = False
 
         if not (sender._concurrencymeta.manually):
@@ -71,9 +67,7 @@ class_prepared.connect(
 
 
 if conf.AUTO_CREATE_TRIGGERS:
-    post_migrate.connect(
-        post_syncdb_concurrency_handler, dispatch_uid="post_syncdb_concurrency_handler"
-    )
+    post_migrate.connect(post_syncdb_concurrency_handler, dispatch_uid="post_syncdb_concurrency_handler")
 
 
 class VersionField(Field):
@@ -145,9 +139,7 @@ class VersionField(Field):
 
     def _wrap_do_update(self, func):
 
-        def _do_update(
-            model_instance, base_qs, using, pk_val, values, update_fields, forced_update
-        ):
+        def _do_update(model_instance, base_qs, using, pk_val, values, update_fields, forced_update):
             version_field = model_instance._concurrencymeta.field
             old_version = get_revision_of_object(model_instance)
             if not version_field.model._meta.abstract:
@@ -354,16 +346,10 @@ class ConditionalVersionField(AutoIncVersionField):
 
         filter_ = functools.partial(filter_fields, instance)
         if check_fields is None and ignore_fields is None:
-            fields = sorted(
-                [f.name for f in filter(filter_, instance._meta.get_fields())]
-            )
+            fields = sorted([f.name for f in filter(filter_, instance._meta.get_fields())])
         elif check_fields is None:
             fields = sorted(
-                [
-                    f.name
-                    for f in filter(filter_, instance._meta.get_fields())
-                    if f.name not in ignore_fields
-                ]
+                [f.name for f in filter(filter_, instance._meta.get_fields()) if f.name not in ignore_fields]
             )
         else:
             fields = instance._concurrencymeta.check_fields
@@ -372,9 +358,7 @@ class ConditionalVersionField(AutoIncVersionField):
             # FK. the raw value of the FK is enough
             field = opts.get_field(field_name)
             if isinstance(field, models.ManyToManyField):
-                values[field_name] = getattr(instance, field_name).values_list(
-                    "pk", flat=True
-                )
+                values[field_name] = getattr(instance, field_name).values_list("pk", flat=True)
             else:
                 values[field_name] = field.value_from_object(instance)
         return hashlib.sha1(force_str(values).encode("utf-8")).hexdigest()
