@@ -33,8 +33,8 @@ def get_trigger_name(field):
     if field._trigger_name:
         name = field._trigger_name
     else:
-        name = '{1.db_table}_{0.name}'.format(field, field.model._meta)
-    return 'concurrency_{}'.format(name)
+        name = "{1.db_table}_{0.name}".format(field, field.model._meta)
+    return "concurrency_{}".format(name)
 
 
 def get_triggers(databases=None):
@@ -112,6 +112,7 @@ class TriggerFactory:
                     \"\"\"
 
     """
+
     update_clause = ""
     drop_clause = ""
     list_clause = ""
@@ -126,15 +127,17 @@ class TriggerFactory:
 
     def create(self, field):
         if field.trigger_name not in self.get_list():
-            stm = self.update_clause.format(trigger_name=field.trigger_name,
-                                            opts=field.model._meta,
-                                            field=field)
+            stm = self.update_clause.format(trigger_name=field.trigger_name, opts=field.model._meta, field=field)
             try:
                 self.connection.cursor().execute(stm)
             except BaseException as exc:  # pragma: no cover
-                raise DatabaseError("""Error executing:
+                raise DatabaseError(
+                    """Error executing:
 {1}
-{0}""".format(exc, stm))
+{0}""".format(
+                        exc, stm
+                    )
+                )
         else:  # pragma: no cover
             pass
         field._trigger_exists = True
@@ -142,9 +145,7 @@ class TriggerFactory:
     def drop(self, field):
         opts = field.model._meta
         ret = []
-        stm = self.drop_clause.format(trigger_name=field.trigger_name,
-                                      opts=opts,
-                                      field=field)
+        stm = self.drop_clause.format(trigger_name=field.trigger_name, opts=opts, field=field)
         self.connection.cursor().execute(stm)
         ret.append(field.trigger_name)
         return ret
@@ -202,8 +203,9 @@ FOR EACH ROW SET NEW.{field.column} = OLD.{field.column}+1;
 
 def factory(conn):
     from concurrency.config import conf
+
     mapping = conf.TRIGGERS_FACTORY
     try:
         return mapping[conn.vendor](conn)
     except KeyError:  # pragma: no cover
-        raise ValueError('{} is not supported by TriggerVersionField'.format(conn))
+        raise ValueError("{} is not supported by TriggerVersionField".format(conn))

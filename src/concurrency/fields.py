@@ -27,28 +27,28 @@ OFFSET = int(time.mktime((2000, 1, 1, 0, 0, 0, 0, 0, 0)))
 
 
 def class_prepared_concurrency_handler(sender, **kwargs):
-    if hasattr(sender, '_concurrencymeta'):
+    if hasattr(sender, "_concurrencymeta"):
         if sender != sender._concurrencymeta.base:
-            origin = getattr(sender._concurrencymeta.base, '_concurrencymeta')
+            origin = getattr(sender._concurrencymeta.base, "_concurrencymeta")
             local = copy.deepcopy(origin)
-            setattr(sender, '_concurrencymeta', local)
+            setattr(sender, "_concurrencymeta", local)
 
-        if hasattr(sender, 'ConcurrencyMeta'):
-            sender._concurrencymeta.enabled = getattr(sender.ConcurrencyMeta, 'enabled', True)
-            check_fields = getattr(sender.ConcurrencyMeta, 'check_fields', None)
-            ignore_fields = getattr(sender.ConcurrencyMeta, 'ignore_fields', None)
+        if hasattr(sender, "ConcurrencyMeta"):
+            sender._concurrencymeta.enabled = getattr(sender.ConcurrencyMeta, "enabled", True)
+            check_fields = getattr(sender.ConcurrencyMeta, "check_fields", None)
+            ignore_fields = getattr(sender.ConcurrencyMeta, "ignore_fields", None)
             if check_fields and ignore_fields:
                 raise ValueError("Cannot set both 'check_fields' and 'ignore_fields'")
 
             sender._concurrencymeta.check_fields = check_fields
             sender._concurrencymeta.ignore_fields = ignore_fields
-            sender._concurrencymeta.increment = getattr(sender.ConcurrencyMeta, 'increment', True)
+            sender._concurrencymeta.increment = getattr(sender.ConcurrencyMeta, "increment", True)
             sender._concurrencymeta.skip = False
 
         if not (sender._concurrencymeta.manually):
             sender._concurrencymeta.field.wrap_model(sender)
 
-        setattr(sender, 'get_concurrency_version', get_revision_of_object)
+        setattr(sender, "get_concurrency_version", get_revision_of_object)
 
 
 def post_syncdb_concurrency_handler(sender, **kwargs):
@@ -60,30 +60,34 @@ def post_syncdb_concurrency_handler(sender, **kwargs):
     create_triggers(databases)
 
 
-class_prepared.connect(class_prepared_concurrency_handler,
-                       dispatch_uid='class_prepared_concurrency_handler')
+class_prepared.connect(
+    class_prepared_concurrency_handler,
+    dispatch_uid="class_prepared_concurrency_handler",
+)
 
 
 if conf.AUTO_CREATE_TRIGGERS:
-    post_migrate.connect(post_syncdb_concurrency_handler,
-                         dispatch_uid='post_syncdb_concurrency_handler')
+    post_migrate.connect(post_syncdb_concurrency_handler, dispatch_uid="post_syncdb_concurrency_handler")
 
 
 class VersionField(Field):
-    """ Base class """
+    """Base class"""
 
     def __init__(self, *args, **kwargs):
-        verbose_name = kwargs.get('verbose_name', None)
-        name = kwargs.get('name', None)
-        db_tablespace = kwargs.get('db_tablespace', None)
-        db_column = kwargs.get('db_column', None)
-        help_text = kwargs.get('help_text', _('record revision number'))
+        verbose_name = kwargs.get("verbose_name", None)
+        name = kwargs.get("name", None)
+        db_tablespace = kwargs.get("db_tablespace", None)
+        db_column = kwargs.get("db_column", None)
+        help_text = kwargs.get("help_text", _("record revision number"))
 
-        super().__init__(verbose_name, name,
-                         help_text=help_text,
-                         default=0,
-                         db_tablespace=db_tablespace,
-                         db_column=db_column)
+        super().__init__(
+            verbose_name,
+            name,
+            help_text=help_text,
+            default=0,
+            db_tablespace=db_tablespace,
+            db_column=db_column,
+        )
 
     def get_internal_type(self):
         return "BigIntegerField"
@@ -95,15 +99,15 @@ class VersionField(Field):
         pass
 
     def formfield(self, **kwargs):
-        kwargs['form_class'] = self.form_class
-        kwargs['widget'] = forms.VersionField.widget
+        kwargs["form_class"] = self.form_class
+        kwargs["widget"] = forms.VersionField.widget
         return super().formfield(**kwargs)
 
     def contribute_to_class(self, cls, *args, **kwargs):
         super().contribute_to_class(cls, *args, **kwargs)
-        if hasattr(cls, '_concurrencymeta') or cls._meta.abstract:
+        if hasattr(cls, "_concurrencymeta") or cls._meta.abstract:
             return
-        setattr(cls, '_concurrencymeta', ConcurrencyOptions())
+        setattr(cls, "_concurrencymeta", ConcurrencyOptions())
         cls._concurrencymeta.field = self
         cls._concurrencymeta.base = cls
         cls._concurrencymeta.triggers = []
@@ -126,8 +130,12 @@ class VersionField(Field):
 
     @staticmethod
     def _wrap_model_methods(model):
-        old_do_update = getattr(model, '_do_update')
-        setattr(model, '_do_update', model._concurrencymeta.field._wrap_do_update(old_do_update))
+        old_do_update = getattr(model, "_do_update")
+        setattr(
+            model,
+            "_do_update",
+            model._concurrencymeta.field._wrap_do_update(old_do_update),
+        )
 
     def _wrap_do_update(self, func):
 
@@ -136,12 +144,21 @@ class VersionField(Field):
             old_version = get_revision_of_object(model_instance)
             if not version_field.model._meta.abstract:
                 if version_field.model is not base_qs.model:
-                    return func(model_instance, base_qs, using, pk_val, values, update_fields, forced_update)
+                    return func(
+                        model_instance,
+                        base_qs,
+                        using,
+                        pk_val,
+                        values,
+                        update_fields,
+                        forced_update,
+                    )
 
             for i, (field, _1, value) in enumerate(values):
                 if field == version_field:
-                    if (model_instance._concurrencymeta.increment and not
-                    getattr(model_instance, '_concurrency_disable_increment', False)):
+                    if model_instance._concurrencymeta.increment and not getattr(
+                        model_instance, "_concurrency_disable_increment", False
+                    ):
                         new_version = field._get_next_version(model_instance)
                         values[i] = (field, _1, new_version)
                         field._set_version_value(model_instance, new_version)
@@ -161,17 +178,19 @@ class VersionField(Field):
             # the update fails (but does not raise an exception) under this circumstance by skipping the concurrency
             # logic.
             if values and updated:
-                if (model_instance._concurrencymeta.enabled and
-                        conf.ENABLED and
-                        not getattr(model_instance, '_concurrency_disabled', False) and
-                        (old_version or conf.VERSION_FIELD_REQUIRED)):
-                    filter_kwargs = {'pk': pk_val, version_field.attname: old_version}
+                if (
+                    model_instance._concurrencymeta.enabled
+                    and conf.ENABLED
+                    and not getattr(model_instance, "_concurrency_disabled", False)
+                    and (old_version or conf.VERSION_FIELD_REQUIRED)
+                ):
+                    filter_kwargs = {"pk": pk_val, version_field.attname: old_version}
                     updated = base_qs.filter(**filter_kwargs)._update(values) >= 1
                     if not updated:
                         version_field._set_version_value(model_instance, old_version)
                         updated = conf._callback(model_instance)
                 else:
-                    filter_kwargs = {'pk': pk_val}
+                    filter_kwargs = {"pk": pk_val}
                     updated = base_qs.filter(**filter_kwargs)._update(values) >= 1
 
             return updated
@@ -181,12 +200,13 @@ class VersionField(Field):
 
 class IntegerVersionField(VersionField):
     """
-        Version Field that returns a "unique" version number for the record.
+    Version Field that returns a "unique" version number for the record.
 
-        The version number is produced using time.time() * 1000000, to get the benefits
-        of microsecond if the system clock provides them.
+    The version number is produced using time.time() * 1000000, to get the benefits
+    of microsecond if the system clock provides them.
 
     """
+
     form_class = forms.VersionField
 
     def _get_next_version(self, model_instance):
@@ -196,9 +216,10 @@ class IntegerVersionField(VersionField):
 
 class AutoIncVersionField(VersionField):
     """
-        Version Field increment the revision number each commit
+    Version Field increment the revision number each commit
 
     """
+
     form_class = forms.VersionField
 
     def _get_next_version(self, model_instance):
@@ -207,13 +228,14 @@ class AutoIncVersionField(VersionField):
 
 class TriggerVersionField(VersionField):
     """
-        Version Field increment the revision number each commit
+    Version Field increment the revision number each commit
 
     """
+
     form_class = forms.VersionField
 
     def __init__(self, *args, **kwargs):
-        self._trigger_name = kwargs.pop('trigger_name', None)
+        self._trigger_name = kwargs.pop("trigger_name", None)
         self._trigger_exists = False
         super().__init__(*args, **kwargs)
 
@@ -237,10 +259,10 @@ class TriggerVersionField(VersionField):
         if not f.get_trigger(self):
             errors.append(
                 Warning(
-                    'Missed trigger for field {}'.format(self),
+                    "Missed trigger for field {}".format(self),
                     hint=None,
                     obj=None,
-                    id='concurrency.W001',
+                    id="concurrency.W001",
                 )
             )
         return errors
@@ -267,20 +289,22 @@ class TriggerVersionField(VersionField):
     @staticmethod
     def _wrap_model_methods(model):
         super(TriggerVersionField, TriggerVersionField)._wrap_model_methods(model)
-        old_save = getattr(model, 'save')
-        setattr(model, 'save', model._concurrencymeta.field._wrap_save(old_save))
+        old_save = getattr(model, "save")
+        setattr(model, "save", model._concurrencymeta.field._wrap_save(old_save))
 
     @staticmethod
     def _wrap_save(func):
         def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
-            reload = kwargs.pop('refetch', False)
+            reload = kwargs.pop("refetch", False)
             ret = func(self, force_insert, force_update, using, **kwargs)
             TriggerVersionField._increment_version_number(self)
             if reload:
                 ret = refetch(self)
-                setattr(self,
-                        self._concurrencymeta.field.attname,
-                        get_revision_of_object(ret))
+                setattr(
+                    self,
+                    self._concurrencymeta.field.attname,
+                    get_revision_of_object(ret),
+                )
             return ret
 
         return update_wrapper(inner, func)
@@ -302,20 +326,16 @@ def filter_fields(instance, field):
 class ConditionalVersionField(AutoIncVersionField):
     def contribute_to_class(self, cls, *args, **kwargs):
         super().contribute_to_class(cls, *args, **kwargs)
-        signals.post_init.connect(self._load_model,
-                                  sender=cls,
-                                  dispatch_uid=fqn(cls))
+        signals.post_init.connect(self._load_model, sender=cls, dispatch_uid=fqn(cls))
 
-        signals.post_save.connect(self._save_model,
-                                  sender=cls,
-                                  dispatch_uid=fqn(cls))
+        signals.post_save.connect(self._save_model, sender=cls, dispatch_uid=fqn(cls))
 
     def _load_model(self, *args, **kwargs):
-        instance = kwargs['instance']
+        instance = kwargs["instance"]
         instance._concurrencymeta.initial = self._get_hash(instance)
 
     def _save_model(self, *args, **kwargs):
-        instance = kwargs['instance']
+        instance = kwargs["instance"]
         instance._concurrencymeta.initial = self._get_hash(instance)
 
     def _get_hash(self, instance):
@@ -328,8 +348,9 @@ class ConditionalVersionField(AutoIncVersionField):
         if check_fields is None and ignore_fields is None:
             fields = sorted([f.name for f in filter(filter_, instance._meta.get_fields())])
         elif check_fields is None:
-            fields = sorted([f.name for f in filter(filter_, instance._meta.get_fields())
-                             if f.name not in ignore_fields])
+            fields = sorted(
+                [f.name for f in filter(filter_, instance._meta.get_fields()) if f.name not in ignore_fields]
+            )
         else:
             fields = instance._concurrencymeta.check_fields
         for field_name in fields:
@@ -337,10 +358,10 @@ class ConditionalVersionField(AutoIncVersionField):
             # FK. the raw value of the FK is enough
             field = opts.get_field(field_name)
             if isinstance(field, models.ManyToManyField):
-                values[field_name] = getattr(instance, field_name).values_list('pk', flat=True)
+                values[field_name] = getattr(instance, field_name).values_list("pk", flat=True)
             else:
                 values[field_name] = field.value_from_object(instance)
-        return hashlib.sha1(force_str(values).encode('utf-8')).hexdigest()
+        return hashlib.sha1(force_str(values).encode("utf-8")).hexdigest()
 
     def _get_next_version(self, model_instance):
         if not model_instance.pk:

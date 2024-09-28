@@ -95,13 +95,17 @@ class ConcurrencyTestMixin:
 
     def test_concurrency_management(self):
         target = self.concurrency_model
-        self.assertTrue(hasattr(target, '_concurrencymeta'),
-                        "%s is not under concurrency management" % self.concurrency_model)
+        self.assertTrue(
+            hasattr(target, "_concurrencymeta"),
+            "%s is not under concurrency management" % self.concurrency_model,
+        )
 
         revision_field = target._concurrencymeta.field
 
-        self.assertTrue(revision_field in target._meta.fields,
-                        "%s: version field not in meta.fields" % self.concurrency_model)
+        self.assertTrue(
+            revision_field in target._meta.fields,
+            "%s: version field not in meta.fields" % self.concurrency_model,
+        )
 
 
 class ConcurrencyAdminTestMixin:
@@ -111,12 +115,12 @@ class ConcurrencyAdminTestMixin:
 def refetch(model_instance):
     """
     Reload model instance from the database
-    # """
+    #"""
     return model_instance.__class__.objects.get(pk=model_instance.pk)
 
 
 def get_classname(o):
-    """ Returns the classname of an object r a class
+    """Returns the classname of an object r a class
 
     :param o:
     :return:
@@ -172,7 +176,7 @@ def fqn(o):
     #         parts = (o.__module__, o.__qualname__)
     #     else:
     #         parts = (fqn(cls), get_classname(o))
-    if hasattr(o, '__module__'):
+    if hasattr(o, "__module__"):
         parts.append(o.__module__)
         parts.append(get_classname(o))
     elif inspect.ismodule(o):

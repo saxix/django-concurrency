@@ -1,40 +1,37 @@
+import pytest
+from demo.base import SENTINEL, AdminTestCase
+from demo.models import SimpleConcurrentModel
+from demo.util import nextname
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-import pytest
-
 from concurrency.forms import VersionFieldSigner
-
-from demo.base import AdminTestCase, SENTINEL
-from demo.models import SimpleConcurrentModel
-from demo.util import nextname
 
 
 @pytest.mark.django_db
 @pytest.mark.admin
 def test_creation(admin_user, client):
-    url = reverse('admin:demo_simpleconcurrentmodel_add')
+    url = reverse("admin:demo_simpleconcurrentmodel_add")
     res = client.get(url, user=admin_user.username)
-    form = res.forms['simpleconcurrentmodel_form']
-    form['username'] = 'CHAR'
+    form = res.forms["simpleconcurrentmodel_form"]
+    form["username"] = "CHAR"
     res = form.submit().follow()
-    assert SimpleConcurrentModel.objects.filter(username='CHAR').exists()
-    assert SimpleConcurrentModel.objects.get(username='CHAR').version > 0
+    assert SimpleConcurrentModel.objects.filter(username="CHAR").exists()
+    assert SimpleConcurrentModel.objects.get(username="CHAR").version > 0
 
 
 @pytest.mark.django_db
 @pytest.mark.functional
 def test_standard_update(admin_user, client):
     concurrentmodel = SimpleConcurrentModel.objects.create()
-    url = reverse('admin:demo_simpleconcurrentmodel_change',
-                  args=[concurrentmodel.pk])
+    url = reverse("admin:demo_simpleconcurrentmodel_change", args=[concurrentmodel.pk])
     res = client.get(url, user=admin_user.username)
 
-    target = res.context['original']
+    target = res.context["original"]
 
     old_version = target.version
-    form = res.forms['simpleconcurrentmodel_form']
-    form['username'] = 'UPDATED'
+    form = res.forms["simpleconcurrentmodel_form"]
+    form["username"] = "UPDATED"
     res = form.submit().follow()
     target = SimpleConcurrentModel.objects.get(pk=target.pk)
     new_version = target.version
@@ -46,58 +43,56 @@ def test_standard_update(admin_user, client):
 @pytest.mark.functional
 def test_conflict(admin_user, client):
     concurrentmodel = SimpleConcurrentModel.objects.create()
-    url = reverse('admin:demo_simpleconcurrentmodel_change',
-                  args=[concurrentmodel.pk])
+    url = reverse("admin:demo_simpleconcurrentmodel_change", args=[concurrentmodel.pk])
     res = client.get(url, user=admin_user.username)
-    form = res.forms['simpleconcurrentmodel_form']
+    form = res.forms["simpleconcurrentmodel_form"]
     concurrentmodel.save()  # create conflict here
 
     res = form.submit()
 
-    assert 'original' in res.context
-    assert res.context['adminform'].form.errors
-    assert _('Record Modified') in str(res.context['adminform'].form.errors)
+    assert "original" in res.context
+    assert res.context["adminform"].form.errors
+    assert _("Record Modified") in str(res.context["adminform"].form.errors)
 
 
 class TestConcurrentModelAdmin(AdminTestCase):
     def test_standard_update(self):
-        target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
-        url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
-        res = self.app.get(url, user='sax')
-        target = res.context['original']
+        target, __ = SimpleConcurrentModel.objects.get_or_create(username="aaa")
+        url = reverse("admin:demo_simpleconcurrentmodel_change", args=[target.pk])
+        res = self.app.get(url, user="sax")
+        target = res.context["original"]
         old_version = target.version
-        form = res.forms['simpleconcurrentmodel_form']
-        form['username'] = 'UPDATED'
+        form = res.forms["simpleconcurrentmodel_form"]
+        form["username"] = "UPDATED"
         res = form.submit().follow()
         target = SimpleConcurrentModel.objects.get(pk=target.pk)
         new_version = target.version
         self.assertGreater(new_version, old_version)
 
     def test_creation(self):
-        url = reverse('admin:demo_simpleconcurrentmodel_add')
-        res = self.app.get(url, user='sax')
-        form = res.forms['simpleconcurrentmodel_form']
-        form['username'] = 'CHAR'
+        url = reverse("admin:demo_simpleconcurrentmodel_add")
+        res = self.app.get(url, user="sax")
+        form = res.forms["simpleconcurrentmodel_form"]
+        form["username"] = "CHAR"
         res = form.submit().follow()
-        self.assertTrue(SimpleConcurrentModel.objects.filter(username='CHAR').exists())
-        self.assertGreater(SimpleConcurrentModel.objects.get(username='CHAR').version, 0)
+        self.assertTrue(SimpleConcurrentModel.objects.filter(username="CHAR").exists())
+        self.assertGreater(SimpleConcurrentModel.objects.get(username="CHAR").version, 0)
 
     def test_conflict(self):
-        target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
-        url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
-        res = self.app.get(url, user='sax')
+        target, __ = SimpleConcurrentModel.objects.get_or_create(username="aaa")
+        url = reverse("admin:demo_simpleconcurrentmodel_change", args=[target.pk])
+        res = self.app.get(url, user="sax")
 
-        form = res.forms['simpleconcurrentmodel_form']
+        form = res.forms["simpleconcurrentmodel_form"]
         target.save()  # create conflict here
 
         res = form.submit()
 
-        self.assertIn('original', res.context)
-        self.assertTrue(res.context['adminform'].form.errors,
-                        res.context['adminform'].form.errors)
-        self.assertIn(_('Record Modified'),
-                      str(res.context['adminform'].form.errors),
-                      res.context['adminform'].form.errors)
+        self.assertIn("original", res.context)
+        self.assertTrue(res.context["adminform"].form.errors, res.context["adminform"].form.errors)
+        self.assertIn(
+            _("Record Modified"), str(res.context["adminform"].form.errors), res.context["adminform"].form.errors
+        )
 
 
 class TestAdminEdit(AdminTestCase):
@@ -107,20 +102,20 @@ class TestAdminEdit(AdminTestCase):
         u.save()
 
     def test_creation(self):
-        url = reverse('admin:demo_simpleconcurrentmodel_add')
-        res = self.app.get(url, user='sax')
-        form = res.forms['simpleconcurrentmodel_form']
-        form['username'] = 'CHAR'
+        url = reverse("admin:demo_simpleconcurrentmodel_add")
+        res = self.app.get(url, user="sax")
+        form = res.forms["simpleconcurrentmodel_form"]
+        form["username"] = "CHAR"
         res = form.submit().follow()
-        self.assertTrue(SimpleConcurrentModel.objects.filter(username='CHAR').exists())
-        self.assertGreater(SimpleConcurrentModel.objects.get(username='CHAR').version, 0)
+        self.assertTrue(SimpleConcurrentModel.objects.filter(username="CHAR").exists())
+        self.assertGreater(SimpleConcurrentModel.objects.get(username="CHAR").version, 0)
 
     def test_creation_with_customform(self):
-        url = reverse('admin:demo_simpleconcurrentmodel_add')
-        res = self.app.get(url, user='sax')
-        form = res.forms['simpleconcurrentmodel_form']
+        url = reverse("admin:demo_simpleconcurrentmodel_add")
+        res = self.app.get(url, user="sax")
+        form = res.forms["simpleconcurrentmodel_form"]
         username = next(nextname)
-        form['username'] = username
+        form["username"] = username
         res = form.submit().follow()
         self.assertTrue(SimpleConcurrentModel.objects.filter(username=username).exists())
         self.assertGreater(SimpleConcurrentModel.objects.get(username=username).version, 0)
@@ -131,46 +126,44 @@ class TestAdminEdit(AdminTestCase):
         self.assertContains(res, "SimpleConcurrentModel with this Username already exists.")
 
     def test_standard_update(self):
-        target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
-        url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
-        res = self.app.get(url, user='sax')
-        target = res.context['original']
+        target, __ = SimpleConcurrentModel.objects.get_or_create(username="aaa")
+        url = reverse("admin:demo_simpleconcurrentmodel_change", args=[target.pk])
+        res = self.app.get(url, user="sax")
+        target = res.context["original"]
         old_version = target.version
-        form = res.forms['simpleconcurrentmodel_form']
-        form['username'] = 'UPDATED'
+        form = res.forms["simpleconcurrentmodel_form"]
+        form["username"] = "UPDATED"
         res = form.submit().follow()
         target = SimpleConcurrentModel.objects.get(pk=target.pk)
         new_version = target.version
         self.assertGreater(new_version, old_version)
 
     def test_conflict(self):
-        target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
+        target, __ = SimpleConcurrentModel.objects.get_or_create(username="aaa")
         assert target.version
-        url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
-        res = self.app.get(url, user='sax')
-        form = res.forms['simpleconcurrentmodel_form']
+        url = reverse("admin:demo_simpleconcurrentmodel_change", args=[target.pk])
+        res = self.app.get(url, user="sax")
+        form = res.forms["simpleconcurrentmodel_form"]
 
         target.save()  # create conflict here
         res = form.submit()
-        self.assertIn('original', res.context)
-        self.assertTrue(res.context['adminform'].form.errors,
-                        res.context['adminform'].form.errors)
-        self.assertIn(_('Record Modified'),
-                      str(res.context['adminform'].form.errors),
-                      res.context['adminform'].form.errors)
+        self.assertIn("original", res.context)
+        self.assertTrue(res.context["adminform"].form.errors, res.context["adminform"].form.errors)
+        self.assertIn(
+            _("Record Modified"), str(res.context["adminform"].form.errors), res.context["adminform"].form.errors
+        )
 
     def test_sanity_signer(self):
-        target, __ = SimpleConcurrentModel.objects.get_or_create(username='aaa')
-        url = reverse('admin:demo_simpleconcurrentmodel_change', args=[target.pk])
-        res = self.app.get(url, user='sax')
-        form = res.forms['simpleconcurrentmodel_form']
-        version1 = int(str(form['version'].value).split(":")[0])
-        form['version'] = VersionFieldSigner().sign(version1)
-        form['date_field'] = 'esss2010-09-01'
+        target, __ = SimpleConcurrentModel.objects.get_or_create(username="aaa")
+        url = reverse("admin:demo_simpleconcurrentmodel_change", args=[target.pk])
+        res = self.app.get(url, user="sax")
+        form = res.forms["simpleconcurrentmodel_form"]
+        version1 = int(str(form["version"].value).split(":")[0])
+        form["version"] = VersionFieldSigner().sign(version1)
+        form["date_field"] = "esss2010-09-01"
         response = form.submit()
-        self.assertIn('original', response.context)
-        self.assertTrue(response.context['adminform'].form.errors,
-                        response.context['adminform'].form.errors)
-        form = response.context['adminform'].form
-        version2 = int(str(form['version'].value()).split(":")[0])
+        self.assertIn("original", response.context)
+        self.assertTrue(response.context["adminform"].form.errors, response.context["adminform"].form.errors)
+        form = response.context["adminform"].form
+        version2 = int(str(form["version"].value()).split(":")[0])
         self.assertEqual(version1, version2)

@@ -1,7 +1,11 @@
 from importlib import import_module
 
 from django import forms
-from django.core.exceptions import ImproperlyConfigured, NON_FIELD_ERRORS, ValidationError
+from django.core.exceptions import (
+    NON_FIELD_ERRORS,
+    ImproperlyConfigured,
+    ValidationError,
+)
 from django.core.signing import BadSignature, Signer
 from django.forms import HiddenInput, ModelForm
 from django.utils.safestring import mark_safe
@@ -13,19 +17,22 @@ from concurrency.exceptions import RecordModifiedError, VersionError
 
 
 class ConcurrentForm(ModelForm):
-    """ Simple wrapper to ModelForm that try to mitigate some concurrency error.
-        Note that is always possible have a RecordModifiedError in model.save().
-        Statistically form.clean() should catch most of the concurrent editing, but
-        is good to catch RecordModifiedError in the view too.
+    """Simple wrapper to ModelForm that try to mitigate some concurrency error.
+    Note that is always possible have a RecordModifiedError in model.save().
+    Statistically form.clean() should catch most of the concurrent editing, but
+    is good to catch RecordModifiedError in the view too.
     """
 
     def clean(self):
         try:
             if self.instance.pk:
-                _select_lock(self.instance, self.cleaned_data[self.instance._concurrencymeta.field.name])
+                _select_lock(
+                    self.instance,
+                    self.cleaned_data[self.instance._concurrencymeta.field.name],
+                )
 
         except RecordModifiedError:
-            self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_('Record Modified')])}))
+            self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_("Record Modified")])}))
 
         return super().clean()
 
@@ -48,9 +55,9 @@ class VersionWidget(HiddenInput):
 
     def render(self, name, value, attrs=None):
         ret = super().render(name, value, attrs)
-        label = ''
+        label = ""
         if isinstance(value, SignedValue):
-            label = str(value).split(':')[0]
+            label = str(value).split(":")[0]
         elif value is not None:
             label = str(value)
 
@@ -66,7 +73,7 @@ class VersionFieldSigner(Signer):
 
 def get_signer():
     path = conf.FIELD_SIGNER
-    i = path.rfind('.')
+    i = path.rfind(".")
     module, attr = path[:i], path[i + 1:]
     try:
         mod = import_module(module)
@@ -87,7 +94,7 @@ class SignedValue:
         if self.value:
             return str(self.value)
         else:
-            return ''
+            return ""
 
 
 class VersionField(forms.IntegerField):
@@ -95,12 +102,12 @@ class VersionField(forms.IntegerField):
     hidden_widget = HiddenInput  # Default widget to use when rendering this as "hidden".
 
     def __init__(self, *args, **kwargs):
-        self._signer = kwargs.pop('signer', get_signer())
-        kwargs.pop('min_value', None)
-        kwargs.pop('max_value', None)
-        kwargs['required'] = True
-        kwargs['initial'] = None
-        kwargs.setdefault('widget', HiddenInput)
+        self._signer = kwargs.pop("signer", get_signer())
+        kwargs.pop("min_value", None)
+        kwargs.pop("max_value", None)
+        kwargs["required"] = True
+        kwargs["initial"] = None
+        kwargs.setdefault("widget", HiddenInput)
         super().__init__(*args, **kwargs)
 
     def bound_data(self, data, initial):
@@ -110,12 +117,12 @@ class VersionField(forms.IntegerField):
         if isinstance(value, SignedValue):
             return value
         elif value is None:
-            return ''
+            return ""
         return SignedValue(self._signer.sign(value))
 
     def to_python(self, value):
         try:
-            if value not in (None, '', 'None'):
+            if value not in (None, "", "None"):
                 return int(self._signer.unsign(str(value)))
             return 0
         except (BadSignature, ValueError):

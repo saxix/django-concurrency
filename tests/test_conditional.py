@@ -1,41 +1,33 @@
 import logging
 
-from django.contrib.auth.models import User
-
 import pytest
-
-from concurrency.exceptions import RecordModifiedError
-from concurrency.utils import refetch
-
 from demo.models import (
     ConditionalVersionModel,
     ConditionalVersionModelSelfRelation,
     ConditionalVersionModelWithoutMeta,
     ThroughRelation,
 )
+from django.contrib.auth.models import User
+
+from concurrency.exceptions import RecordModifiedError
+from concurrency.utils import refetch
 
 logger = logging.getLogger(__name__)
 
 
 @pytest.fixture
 def user():
-    return User.objects.get_or_create(username='username')[0]
+    return User.objects.get_or_create(username="username")[0]
 
 
 @pytest.fixture
 def instance(user):
-    return ConditionalVersionModel.objects.get_or_create(field1='1',
-                                                         user=user,
-                                                         field2='1', field3='1')[0]
+    return ConditionalVersionModel.objects.get_or_create(field1="1", user=user, field2="1", field3="1")[0]
 
 
 @pytest.fixture
 def instance_no_meta(user):
-    return ConditionalVersionModelWithoutMeta.objects.create(
-        field1='1',
-        user=user,
-        field2='1', field3='1'
-    )
+    return ConditionalVersionModelWithoutMeta.objects.create(field1="1", user=user, field2="1", field3="1")
 
 
 @pytest.fixture
@@ -53,12 +45,12 @@ def test_standard_save(instance):
     version1 = instance.get_concurrency_version()
     assert version1 == 1  # version2 > version1
 
-    instance.field1 = '2'
+    instance.field1 = "2"
     instance.save()
     version2 = instance.get_concurrency_version()
     assert version2 == 2  # version2 > version1
 
-    instance.field3 = '3'
+    instance.field3 = "3"
     instance.save()
     version3 = instance.get_concurrency_version()
     assert version3 == 2  # version3 == version2
@@ -76,7 +68,7 @@ def test_conflict(instance):
     batch_instance = instance.__class__.objects.get(pk=instance.pk)
     assert batch_instance.version == instance.version
 
-    batch_instance.field1 = 'aaaa'
+    batch_instance.field1 = "aaaa"
     batch_instance.save()
 
     with pytest.raises(RecordModifiedError):
@@ -92,7 +84,7 @@ def test_save_allowed(instance):
     instance = refetch(instance)
     batch_instance = refetch(instance)
 
-    batch_instance.field3 = 'aaaa'
+    batch_instance.field3 = "aaaa"
     batch_instance.save()
     instance.save()
 
@@ -104,7 +96,7 @@ def test_conflict_no_meta(instance_no_meta):
     batch_instance = instance_no_meta.__class__.objects.get(pk=instance_no_meta.pk)
     assert batch_instance.version == instance_no_meta.version
 
-    batch_instance.field1 = 'aaaa'
+    batch_instance.field1 = "aaaa"
     batch_instance.save()
 
     with pytest.raises(RecordModifiedError):
@@ -113,13 +105,12 @@ def test_conflict_no_meta(instance_no_meta):
 
 @pytest.mark.django_db()
 def test_self_relations():
-    a = ConditionalVersionModelSelfRelation.objects.create(name='a')
-    ConditionalVersionModelSelfRelation.objects.create(name='b')
+    a = ConditionalVersionModelSelfRelation.objects.create(name="a")
+    ConditionalVersionModelSelfRelation.objects.create(name="b")
 
-    r = ThroughRelation.objects.create(left=a,
-                                       right=a)
+    r = ThroughRelation.objects.create(left=a, right=a)
     r.save()
 
     a1 = ConditionalVersionModelSelfRelation.objects.get(pk=a.pk)
-    a1.name = 'a'
+    a1.name = "a"
     a1.save()

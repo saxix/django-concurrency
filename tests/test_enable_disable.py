@@ -1,14 +1,12 @@
+import pytest
+from demo.models import AutoIncConcurrentModel, SimpleConcurrentModel
+from demo.util import nextname
 from django.contrib.auth.models import User
 from django.test.utils import override_settings
-
-import pytest
 
 from concurrency.api import concurrency_disable_increment, disable_concurrency
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
-
-from demo.models import AutoIncConcurrentModel, SimpleConcurrentModel
-from demo.util import nextname
 
 
 @pytest.mark.django_db(transaction=False)
@@ -39,7 +37,7 @@ def test_disable_concurrency_global():
 
 @pytest.mark.django_db(transaction=False)
 def test_disable_concurrency_not_managed():
-    u = User(username='u1')
+    u = User(username="u1")
     with disable_concurrency(u):
         u.save()
 
@@ -54,6 +52,7 @@ def test_disable_concurrency_decorator():
         copy = refetch(instance)
         copy.save()
         instance.save()
+
     test1()
 
 
@@ -90,10 +89,12 @@ def test_concurrency_disable_increment():
     instance1 = AutoIncConcurrentModel(username=next(nextname))
     assert instance1.version == 0
     instance1.save()
+    instance1.refresh_from_db()
     assert instance1.version == 1
     with concurrency_disable_increment(instance1):
         instance1.save()
-        instance1.save()
+        instance1.save(update_fields=("username",))
+        instance1.refresh_from_db()
         assert instance1.version == 1
     instance1.save()
     assert instance1.version == 2

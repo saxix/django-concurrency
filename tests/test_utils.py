@@ -1,13 +1,11 @@
 import logging
 
-from django.test import TestCase
-
 import pytest
+from demo.models import SimpleConcurrentModel
+from django.test import TestCase
 
 import concurrency.fields
 from concurrency.utils import ConcurrencyTestMixin, deprecated, fqn
-
-from demo.models import SimpleConcurrentModel
 
 logger = logging.getLogger(__name__)
 
@@ -20,11 +18,11 @@ class TestConcurrencyTestMixin(ConcurrencyTestMixin, TestCase):
 def test_fqn():
 
     with pytest.raises(ValueError):
-        fqn('str')
+        fqn("str")
 
-    assert fqn(SimpleConcurrentModel) == 'demo.models.SimpleConcurrentModel'
-    assert fqn(SimpleConcurrentModel()) == 'demo.models.SimpleConcurrentModel'
-    assert fqn(concurrency.fields) == 'concurrency.fields'
+    assert fqn(SimpleConcurrentModel) == "demo.models.SimpleConcurrentModel"
+    assert fqn(SimpleConcurrentModel()) == "demo.models.SimpleConcurrentModel"
+    assert fqn(concurrency.fields) == "concurrency.fields"
 
 
 def test_deprecated():
@@ -39,7 +37,7 @@ def test_deprecated():
     def newfun(x):
         return 0
 
-    @deprecated(newfun, '1.1')
+    @deprecated(newfun, "1.1")
     def foo2(x):
         return x
 

@@ -1,21 +1,18 @@
+import pytest
+from conftest import skippypy
+from demo.models import TriggerConcurrentModel
+from demo.util import concurrently
 from django import db
 from django.db import transaction
 
-from conftest import skippypy
-
-import pytest
-
 from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
-
-from demo.models import TriggerConcurrentModel
-from demo.util import concurrently
 
 
 @skippypy
 @pytest.mark.django_db(transaction=True)
 def test_threads():
-    if db.connection.vendor == 'sqlite':
+    if db.connection.vendor == "sqlite":
         pytest.skip("in-memory sqlite db can't be used between threads")
 
     obj = TriggerConcurrentModel.objects.create()

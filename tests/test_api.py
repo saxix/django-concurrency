@@ -1,14 +1,17 @@
+import pytest
+from demo.models import SimpleConcurrentModel
+from demo.util import nextgroup, nextname
 from django.contrib.auth.models import Group
 
-import pytest
-
-from concurrency.api import apply_concurrency_check, get_revision_of_object, get_version, is_changed
+from concurrency.api import (
+    apply_concurrency_check,
+    get_revision_of_object,
+    get_version,
+    is_changed,
+)
 from concurrency.exceptions import RecordModifiedError
 from concurrency.fields import IntegerVersionField
 from concurrency.utils import refetch
-
-from demo.models import SimpleConcurrentModel
-from demo.util import nextgroup, nextname
 
 
 @pytest.mark.django_db(transaction=False)
@@ -40,7 +43,7 @@ def test_get_version(model_class=SimpleConcurrentModel):
 
 @pytest.mark.django_db(transaction=False)
 def test_apply_concurrency_check():
-    apply_concurrency_check(Group, 'version', IntegerVersionField)
+    apply_concurrency_check(Group, "version", IntegerVersionField)
 
     instance, __ = Group.objects.get_or_create(name=next(nextgroup))
     instance.save()
@@ -54,5 +57,5 @@ def test_apply_concurrency_check():
 
 @pytest.mark.django_db(transaction=False)
 def test_apply_concurrency_check_ignore_multiple_call():
-    apply_concurrency_check(Group, 'version', IntegerVersionField)
-    apply_concurrency_check(Group, 'version', IntegerVersionField)
+    apply_concurrency_check(Group, "version", IntegerVersionField)
+    apply_concurrency_check(Group, "version", IntegerVersionField)

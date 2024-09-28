@@ -1,0 +1,70 @@
+[project]
+name = "django-concurrency"
+version = "2.6.0"
+description = "Optimistic lock implementation for Django. Prevents users from doing concurrent editing"
+authors = [
+    {name = "sax", email = "s.apostolico@gmail.com"},
+]
+dependencies = []
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.optional-dependencies]
+dj4 = [
+    "django>=4.2,<5",
+]
+dj5 = [
+    "django>=5.1",
+]
+
+[tool.pdm]
+[[tool.pdm.source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "black>=24.8.0",
+    "bump2version>=1.0.1",
+    "check-manifest",
+    "django-reversion",
+    "django-webtest",
+    "flake8",
+    "isort",
+    "mock",
+    "pre-commit",
+    "psycopg2-binary",
+    "pytest>=8.3.3",
+    "pytest-cov",
+    "pytest-django",
+    "pytest-echo",
+    "sphinx",
+    "sphinx-issues",
+    "tox",
+    "twine",
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 120
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | migrations
+  | snapshots
+)/
+'''

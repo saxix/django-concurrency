@@ -1,8 +1,4 @@
 import pytest
-
-from concurrency.exceptions import RecordModifiedError
-from concurrency.utils import refetch
-
 from demo.models import (
     AutoIncConcurrentModel,
     ConcreteModel,
@@ -12,6 +8,9 @@ from demo.models import (
     SimpleConcurrentModel,
 )
 from demo.util import nextname, unique_id, with_models, with_std_models
+
+from concurrency.exceptions import RecordModifiedError
+from concurrency.utils import refetch
 
 
 @pytest.mark.django_db
@@ -42,9 +41,7 @@ def test_create(model_class=SimpleConcurrentModel):
 
 
 @pytest.mark.django_db
-@with_models(SimpleConcurrentModel, AutoIncConcurrentModel,
-             InheritedModel, CustomSaveModel,
-             ConcreteModel, ProxyModel)
+@with_models(SimpleConcurrentModel, AutoIncConcurrentModel, InheritedModel, CustomSaveModel, ConcreteModel, ProxyModel)
 def test_update(model_class):
     # Manager.update() does not change version number
     instance = model_class.objects.create(pk=next(unique_id), username=next(nextname).lower())

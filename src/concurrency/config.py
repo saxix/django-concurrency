@@ -12,24 +12,27 @@ CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL = 2
 CONCURRENCY_POLICY_RAISE = 4
 CONCURRENCY_POLICY_CALLBACK = 8
 
-LIST_EDITABLE_POLICIES = [CONCURRENCY_LIST_EDITABLE_POLICY_SILENT, CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL]
+LIST_EDITABLE_POLICIES = [
+    CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
+    CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL,
+]
 
 
 class AppSettings:
     defaults = {
-        'ENABLED': True,
-        'AUTO_CREATE_TRIGGERS': True,
-        'FIELD_SIGNER': 'concurrency.forms.VersionFieldSigner',
-        'POLICY': CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
-        'CALLBACK': 'concurrency.views.callback',
-        'HANDLER409': 'concurrency.views.conflict',
-        'VERSION_FIELD_REQUIRED': True,
-        'TRIGGERS_FACTORY': {
-            'postgresql': "concurrency.triggers.PostgreSQL",
-            'mysql': "concurrency.triggers.MySQL",
-            'sqlite3': "concurrency.triggers.Sqlite3",
-            'sqlite': "concurrency.triggers.Sqlite3",
-        }
+        "ENABLED": True,
+        "AUTO_CREATE_TRIGGERS": True,
+        "FIELD_SIGNER": "concurrency.forms.VersionFieldSigner",
+        "POLICY": CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
+        "CALLBACK": "concurrency.views.callback",
+        "HANDLER409": "concurrency.views.conflict",
+        "VERSION_FIELD_REQUIRED": True,
+        "TRIGGERS_FACTORY": {
+            "postgresql": "concurrency.triggers.PostgreSQL",
+            "mysql": "concurrency.triggers.MySQL",
+            "sqlite3": "concurrency.triggers.Sqlite3",
+            "sqlite": "concurrency.triggers.Sqlite3",
+        },
     }
 
     def __init__(self, prefix):
@@ -41,7 +44,7 @@ class AppSettings:
         from django.conf import settings
 
         for name, default in self.defaults.items():
-            prefix_name = (self.prefix + '_' + name).upper()
+            prefix_name = (self.prefix + "_" + name).upper()
             value = getattr(settings, prefix_name, default)
             self._set_attr(prefix_name, value)
             setattr(settings, prefix_name, value)
@@ -50,11 +53,12 @@ class AppSettings:
         setting_changed.connect(self._handler)
 
     def _set_attr(self, prefix_name, value):
-        name = prefix_name[len(self.prefix) + 1:]
-        if name == 'IGNORE_DEFAULT':
-            raise ImproperlyConfigured('IGNORE_DEFAULT has been removed in django-concurrency 1.5. '
-                                       'Use VERSION_FIELD_REQUIRED instead')
-        elif name == 'CALLBACK':
+        name = prefix_name[1 + len(self.prefix):]
+        if name == "IGNORE_DEFAULT":
+            raise ImproperlyConfigured(
+                "IGNORE_DEFAULT has been removed in django-concurrency 1.5. " "Use VERSION_FIELD_REQUIRED instead"
+            )
+        elif name == "CALLBACK":
             if isinstance(value, str):
                 func = get_callable(value)
             elif callable(value):
@@ -62,7 +66,9 @@ class AppSettings:
             else:
                 raise ImproperlyConfigured(
                     "{} is not a valid value for `CALLBACK`. It must be a callable or a fullpath to callable. ".format(
-                        value))
+                        value
+                    )
+                )
             self._callback = func
         elif name == "TRIGGERS_FACTORY":
             original = dict(value)
@@ -84,4 +90,4 @@ class AppSettings:
             self._set_attr(setting, value)
 
 
-conf = AppSettings('CONCURRENCY')
+conf = AppSettings("CONCURRENCY")

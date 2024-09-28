@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class ConcurrencyConfig(AppConfig):
-    name = 'concurrency'
-    verbose = 'Django Concurrency'
+    name = "concurrency"
+    verbose = "Django Concurrency"
