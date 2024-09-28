@@ -29,7 +29,7 @@ dev = [
     "mock",
     "pre-commit",
     "psycopg2-binary",
-    "pytest",
+    "pytest>=8.3.3",
     "pytest-cov",
     "pytest-django",
     "pytest-echo",
