@@ -34,7 +34,7 @@ travis:
 
 
 clean:
-	rm -fr ${BUILDDIR} dist *.egg-info .coverage coverage.xml .eggs
+	rm -fr ${BUILDDIR} dist *.egg-info .coverage coverage.xml .eggs build
 	find src -name __pycache__ -o -name "*.py?" -o -name "*.orig" -prune | xargs rm -rf
 	find tests -name __pycache__ -o -name "*.py?" -o -name "*.orig" -prune | xargs rm -rf
 	find src/concurrency/locale -name django.mo | xargs rm -f

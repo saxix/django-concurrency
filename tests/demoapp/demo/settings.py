@@ -79,17 +79,29 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "full": {"format": "%(levelname)-8s: %(asctime)s %(module)s %(process)d %(thread)d %(message)s"},
+        "full": {
+            "format": "%(levelname)-8s: %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
+        },
         "verbose": {"format": "%(levelname)-8s: %(asctime)s %(name)-25s %(message)s"},
-        "simple": {"format": "%(levelname)-8s %(asctime)s %(name)-25s %(funcName)s %(message)s"},
-        "debug": {"format": "%(levelno)s:%(levelname)-8s %(name)s %(funcName)s:%(lineno)s:: %(message)s"},
+        "simple": {
+            "format": "%(levelname)-8s %(asctime)s %(name)-25s %(funcName)s %(message)s"
+        },
+        "debug": {
+            "format": "%(levelno)s:%(levelname)-8s %(name)s %(funcName)s:%(lineno)s:: %(message)s"
+        },
     },
     "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
     "handlers": {
         "null": {"level": "DEBUG", "class": "logging.NullHandler"},
-        "console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "debug"},
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "debug",
+        },
     },
-    "loggers": {"concurrency": {"handlers": ["null"], "propagate": False, "level": "DEBUG"}},
+    "loggers": {
+        "concurrency": {"handlers": ["null"], "propagate": False, "level": "DEBUG"}
+    },
 }
 
 db = os.environ.get("DBENGINE", "pg")
@@ -111,7 +123,7 @@ elif db == "mysql":
             "ENGINE": "django.db.backends.mysql",
             "NAME": dbname,
             "HOST": "127.0.0.1",
-            "PORT": "",
+            "PORT": "3306",
             "USER": "root",
             "PASSWORD": "root",
             "CHARSET": "utf8",

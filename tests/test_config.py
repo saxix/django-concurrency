@@ -9,7 +9,12 @@ def test_config(settings):
     settings.APP_OVERRIDE = "overridden"
 
     class MySettings(AppSettings):
-        defaults = {"ENTRY1": "abc", "ENTRY2": 123, "OVERRIDE": None, "CALLBACK": fqn(fqn)}
+        defaults = {
+            "ENTRY1": "abc",
+            "ENTRY2": 123,
+            "OVERRIDE": None,
+            "CALLBACK": fqn(fqn),
+        }
 
     conf = MySettings("APP")
     assert str(conf.ENTRY1) == str(settings.APP_ENTRY1)

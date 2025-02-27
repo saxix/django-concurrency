@@ -44,7 +44,6 @@ def test_disable_concurrency_not_managed():
 
 @pytest.mark.django_db(transaction=False)
 def test_disable_concurrency_decorator():
-
     @disable_concurrency(SimpleConcurrentModel)
     def test1():
         instance = SimpleConcurrentModel(username=next(nextname))

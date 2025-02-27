@@ -44,7 +44,11 @@ class TestIssue16(AdminTestCase):
         admin_register(ListEditableConcurrentModel, ActionsModelAdmin)
         model_admin = site._registry[ListEditableConcurrentModel]
         with attributes(
-            (ConcurrentModelAdmin, "list_editable_policy", CONCURRENCY_LIST_EDITABLE_POLICY_SILENT),
+            (
+                ConcurrentModelAdmin,
+                "list_editable_policy",
+                CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
+            ),
             (ConcurrentModelAdmin, "form", ConcurrentForm),
         ):
             obj, __ = ListEditableConcurrentModel.objects.get_or_create(pk=id)
@@ -59,7 +63,9 @@ class TestIssue16(AdminTestCase):
             self.assertIn(obj.pk, model_admin._get_conflicts(request1))
 
             obj = refetch(obj)
-            request2 = get_fake_request(f"pk={id}&{concurrency_param_name}_1={obj.version}")
+            request2 = get_fake_request(
+                f"pk={id}&{concurrency_param_name}_1={obj.version}"
+            )
             model_admin.save_model(request2, obj, None, True)
             self.assertNotIn(obj.pk, model_admin._get_conflicts(request2))
 

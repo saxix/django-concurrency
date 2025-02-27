@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("demo", "0002_auto_20160909_1544"),
     ]
@@ -16,7 +15,10 @@ class Migration(migrations.Migration):
             model_name="conditionalversionmodelselfrelation",
             name="relations",
             field=models.ManyToManyField(
-                to="demo.ConditionalVersionModelSelfRelation", null=True, through="demo.ThroughRelation", blank=True
+                to="demo.ConditionalVersionModelSelfRelation",
+                null=True,
+                through="demo.ThroughRelation",
+                blank=True,
             ),
         ),
     ]

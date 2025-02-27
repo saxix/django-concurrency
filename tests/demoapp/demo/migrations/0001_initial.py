@@ -7,7 +7,6 @@ import concurrency.fields
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -19,18 +18,36 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Anything",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("name", models.CharField(max_length=10)),
             ],
         ),
         migrations.CreateModel(
             name="AutoIncConcurrentModel",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 (
                     "version",
                     concurrency.fields.AutoIncVersionField(
-                        db_column="cm_version_id", default=1, help_text="record revision number"
+                        db_column="cm_version_id",
+                        default=1,
+                        help_text="record revision number",
                     ),
                 ),
                 ("username", models.CharField(blank=True, max_length=30, null=True)),
@@ -44,28 +61,65 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="ConcreteModel",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 (
                     "version",
                     concurrency.fields.IntegerVersionField(
-                        db_column="cm_version_id", default=1, help_text="record revision number"
+                        db_column="cm_version_id",
+                        default=1,
+                        help_text="record revision number",
                     ),
                 ),
-                ("username", models.CharField(blank=True, max_length=30, null=True, unique=True)),
+                (
+                    "username",
+                    models.CharField(blank=True, max_length=30, null=True, unique=True),
+                ),
             ],
         ),
         migrations.CreateModel(
             name="ConditionalVersionModel",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("version", concurrency.fields.ConditionalVersionField(default=1, help_text="record revision number")),
-                ("field1", models.CharField(blank=True, max_length=30, null=True, unique=True)),
-                ("field2", models.CharField(blank=True, max_length=30, null=True, unique=True)),
-                ("field3", models.CharField(blank=True, max_length=30, null=True, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "version",
+                    concurrency.fields.ConditionalVersionField(
+                        default=1, help_text="record revision number"
+                    ),
+                ),
+                (
+                    "field1",
+                    models.CharField(blank=True, max_length=30, null=True, unique=True),
+                ),
+                (
+                    "field2",
+                    models.CharField(blank=True, max_length=30, null=True, unique=True),
+                ),
+                (
+                    "field3",
+                    models.CharField(blank=True, max_length=30, null=True, unique=True),
+                ),
                 (
                     "user",
                     models.ForeignKey(
-                        null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
                     ),
                 ),
             ],
@@ -73,24 +127,61 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="ConditionalVersionModelSelfRelation",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("version", concurrency.fields.ConditionalVersionField(default=1, help_text="record revision number")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "version",
+                    concurrency.fields.ConditionalVersionField(
+                        default=1, help_text="record revision number"
+                    ),
+                ),
                 ("name", models.CharField(max_length=10)),
             ],
         ),
         migrations.CreateModel(
             name="ConditionalVersionModelWithoutMeta",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("version", concurrency.fields.ConditionalVersionField(default=1, help_text="record revision number")),
-                ("field1", models.CharField(blank=True, max_length=30, null=True, unique=True)),
-                ("field2", models.CharField(blank=True, max_length=30, null=True, unique=True)),
-                ("field3", models.CharField(blank=True, max_length=30, null=True, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "version",
+                    concurrency.fields.ConditionalVersionField(
+                        default=1, help_text="record revision number"
+                    ),
+                ),
+                (
+                    "field1",
+                    models.CharField(blank=True, max_length=30, null=True, unique=True),
+                ),
+                (
+                    "field2",
+                    models.CharField(blank=True, max_length=30, null=True, unique=True),
+                ),
+                (
+                    "field3",
+                    models.CharField(blank=True, max_length=30, null=True, unique=True),
+                ),
                 ("anythings", models.ManyToManyField(to="demo.Anything")),
                 (
                     "user",
                     models.ForeignKey(
-                        null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
                     ),
                 ),
             ],
@@ -98,11 +189,21 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="DropTriggerConcurrentModel",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 (
                     "version",
                     concurrency.fields.TriggerVersionField(
-                        db_column="cm_version_id", default=1, help_text="record revision number"
+                        db_column="cm_version_id",
+                        default=1,
+                        help_text="record revision number",
                     ),
                 ),
                 ("username", models.CharField(blank=True, max_length=30, null=True)),
@@ -130,16 +231,31 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Issue3TestModel",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("username", models.CharField(blank=True, max_length=30, null=True)),
                 ("last_name", models.CharField(blank=True, max_length=30, null=True)),
                 ("char_field", models.CharField(blank=True, max_length=30, null=True)),
                 ("date_field", models.DateField(blank=True, null=True)),
-                ("version", models.CharField(blank=True, default="abc", max_length=10, null=True)),
+                (
+                    "version",
+                    models.CharField(
+                        blank=True, default="abc", max_length=10, null=True
+                    ),
+                ),
                 (
                     "revision",
                     concurrency.fields.IntegerVersionField(
-                        db_column="cm_version_id", default=1, help_text="record revision number"
+                        db_column="cm_version_id",
+                        default=1,
+                        help_text="record revision number",
                     ),
                 ),
             ],
@@ -147,14 +263,27 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="ReversionConcurrentModel",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 (
                     "version",
                     concurrency.fields.IntegerVersionField(
-                        db_column="cm_version_id", default=1, help_text="record revision number"
+                        db_column="cm_version_id",
+                        default=1,
+                        help_text="record revision number",
                     ),
                 ),
-                ("username", models.CharField(blank=True, max_length=30, null=True, unique=True)),
+                (
+                    "username",
+                    models.CharField(blank=True, max_length=30, null=True, unique=True),
+                ),
                 ("date_field", models.DateField(blank=True, null=True)),
             ],
             options={
@@ -165,14 +294,27 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="SimpleConcurrentModel",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 (
                     "version",
                     concurrency.fields.IntegerVersionField(
-                        db_column="cm_version_id", default=1, help_text="record revision number"
+                        db_column="cm_version_id",
+                        default=1,
+                        help_text="record revision number",
                     ),
                 ),
-                ("username", models.CharField(blank=True, max_length=30, null=True, unique=True)),
+                (
+                    "username",
+                    models.CharField(blank=True, max_length=30, null=True, unique=True),
+                ),
                 ("date_field", models.DateField(blank=True, null=True)),
             ],
             options={
@@ -183,8 +325,21 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="ThroughRelation",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("version", concurrency.fields.ConditionalVersionField(default=1, help_text="record revision number")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "version",
+                    concurrency.fields.ConditionalVersionField(
+                        default=1, help_text="record revision number"
+                    ),
+                ),
                 (
                     "left",
                     models.ForeignKey(
@@ -206,11 +361,21 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="TriggerConcurrentModel",
             fields=[
-                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 (
                     "version",
                     concurrency.fields.TriggerVersionField(
-                        db_column="cm_version_id", default=1, help_text="record revision number"
+                        db_column="cm_version_id",
+                        default=1,
+                        help_text="record revision number",
                     ),
                 ),
                 ("username", models.CharField(blank=True, max_length=30, null=True)),
@@ -253,7 +418,10 @@ class Migration(migrations.Migration):
                         to="demo.SimpleConcurrentModel",
                     ),
                 ),
-                ("extra_field", models.CharField(blank=True, max_length=30, null=True, unique=True)),
+                (
+                    "extra_field",
+                    models.CharField(blank=True, max_length=30, null=True, unique=True),
+                ),
             ],
             bases=("demo.simpleconcurrentmodel",),
         ),
@@ -271,7 +439,10 @@ class Migration(migrations.Migration):
                         to="demo.SimpleConcurrentModel",
                     ),
                 ),
-                ("extra_field", models.CharField(blank=True, max_length=30, null=True, unique=True)),
+                (
+                    "extra_field",
+                    models.CharField(blank=True, max_length=30, null=True, unique=True),
+                ),
             ],
             bases=("demo.simpleconcurrentmodel",),
         ),
@@ -279,14 +450,17 @@ class Migration(migrations.Migration):
             model_name="conditionalversionmodelselfrelation",
             name="relations",
             field=models.ManyToManyField(
-                blank=True, through="demo.ThroughRelation", to="demo.ConditionalVersionModelSelfRelation"
+                blank=True,
+                through="demo.ThroughRelation",
+                to="demo.ConditionalVersionModelSelfRelation",
             ),
         ),
         migrations.AddField(
             model_name="anything",
             name="a_relation",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="demo.ConditionalVersionModelWithoutMeta"
+                on_delete=django.db.models.deletion.CASCADE,
+                to="demo.ConditionalVersionModelWithoutMeta",
             ),
         ),
         migrations.CreateModel(

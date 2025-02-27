@@ -27,8 +27,12 @@ class TestCustomConcurrencyMeta(TransactionTestCase):
         # but we disabled concurrency only in TestModelWithCustomOptions
         import concurrency.api as api
 
-        concurrency_enabled1 = SimpleConcurrentModel.objects.get_or_create(**{"username": "test"})[0]
-        concurrency_enabled2 = SimpleConcurrentModel.objects.get_or_create(**{"username": "test"})[0]
+        concurrency_enabled1 = SimpleConcurrentModel.objects.get_or_create(
+            **{"username": "test"}
+        )[0]
+        concurrency_enabled2 = SimpleConcurrentModel.objects.get_or_create(
+            **{"username": "test"}
+        )[0]
         v1 = api.get_revision_of_object(concurrency_enabled1)
         v2 = api.get_revision_of_object(concurrency_enabled2)
         assert v1 == v2, "got same row with different version (%s/%s)" % (v1, v2)
@@ -36,8 +40,12 @@ class TestCustomConcurrencyMeta(TransactionTestCase):
         assert concurrency_enabled1.pk is not None  # sanity check
         self.assertRaises(RecordModifiedError, concurrency_enabled2.save)
 
-        concurrency_disabled1 = ConcurrencyDisabledModel.objects.get_or_create(**{"username": "test"})[0]
-        concurrency_disabled2 = ConcurrencyDisabledModel.objects.get_or_create(**{"username": "test"})[0]
+        concurrency_disabled1 = ConcurrencyDisabledModel.objects.get_or_create(
+            **{"username": "test"}
+        )[0]
+        concurrency_disabled2 = ConcurrencyDisabledModel.objects.get_or_create(
+            **{"username": "test"}
+        )[0]
         v1 = api.get_revision_of_object(concurrency_disabled1)
         v2 = api.get_revision_of_object(concurrency_disabled2)
         assert v1 == v2, "got same row with different version (%s/%s)" % (v1, v2)

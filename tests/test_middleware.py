@@ -30,7 +30,9 @@ def test_middleware():
 
     with override_settings(CONCURRENCY_HANDLER409=handler):
         request = _get_request("needsquoting#")
-        r = ConcurrencyMiddleware().process_exception(request, RecordModifiedError(target=SimpleConcurrentModel()))
+        r = ConcurrencyMiddleware().process_exception(
+            request, RecordModifiedError(target=SimpleConcurrentModel())
+        )
     assert r.status_code == 409
 
 
@@ -54,14 +56,18 @@ class ConcurrencyMiddlewareTest1(AdminTestCase):
         copy = SimpleConcurrentModel.objects.get(pk=m.pk)
         copy.save()
         request = self._get_request("/")
-        r = ConcurrencyMiddleware().process_exception(request, RecordModifiedError(target=m))
+        r = ConcurrencyMiddleware().process_exception(
+            request, RecordModifiedError(target=m)
+        )
         self.assertEqual(r.status_code, 409)
 
 
 class ConcurrencyMiddlewareTest2(AdminTestCase):
     @property
     def settings_middleware(self):
-        return getattr(settings, self.middleware_setting_name) + ["concurrency.middleware.ConcurrencyMiddleware"]
+        return getattr(settings, self.middleware_setting_name) + [
+            "concurrency.middleware.ConcurrencyMiddleware"
+        ]
 
     @settings_middleware.setter
     def settings_middleware(self, value):
@@ -72,7 +78,11 @@ class ConcurrencyMiddlewareTest2(AdminTestCase):
         model_admin = site._registry[SimpleConcurrentModel]
 
         with attributes(
-            (model_admin.__class__, "list_editable_policy", CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL),
+            (
+                model_admin.__class__,
+                "list_editable_policy",
+                CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL,
+            ),
             (ConcurrentModelAdmin, "form", DELETE_ATTRIBUTE),
         ):
             saved, __ = SimpleConcurrentModel.objects.get_or_create(pk=id)

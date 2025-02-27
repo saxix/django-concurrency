@@ -4,6 +4,9 @@ from functools import partial, update_wrapper
 from itertools import count
 
 import pytest
+from django import db
+
+from concurrency.config import conf
 from demo.models import (
     AutoIncConcurrentModel,
     ConcreteModel,
@@ -13,9 +16,6 @@ from demo.models import (
     SimpleConcurrentModel,
     TriggerConcurrentModel,
 )
-from django import db
-
-from concurrency.config import conf
 
 
 def sequence(prefix):
@@ -159,7 +159,10 @@ def concurrently(times=1):
             for t in threads:
                 t.join()
             if exceptions:
-                raise Exception("test_concurrently intercepted %s exceptions: %s" % (len(exceptions), exceptions))
+                raise Exception(
+                    "test_concurrently intercepted %s exceptions: %s"
+                    % (len(exceptions), exceptions)
+                )
 
         return update_wrapper(wrapper, test_func)
 
