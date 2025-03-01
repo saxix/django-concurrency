@@ -127,16 +127,16 @@ class TriggerFactory:
 
     def create(self, field):
         if field.trigger_name not in self.get_list():
-            stm = self.update_clause.format(trigger_name=field.trigger_name, opts=field.model._meta, field=field)
+            stm = self.update_clause.format(
+                trigger_name=field.trigger_name, opts=field.model._meta, field=field
+            )
             try:
                 self.connection.cursor().execute(stm)
             except BaseException as exc:  # pragma: no cover
                 raise DatabaseError(
                     """Error executing:
 {1}
-{0}""".format(
-                        exc, stm
-                    )
+{0}""".format(exc, stm)
                 )
         else:  # pragma: no cover
             pass
@@ -145,7 +145,9 @@ class TriggerFactory:
     def drop(self, field):
         opts = field.model._meta
         ret = []
-        stm = self.drop_clause.format(trigger_name=field.trigger_name, opts=opts, field=field)
+        stm = self.drop_clause.format(
+            trigger_name=field.trigger_name, opts=opts, field=field
+        )
         self.connection.cursor().execute(stm)
         ret.append(field.trigger_name)
         return ret

@@ -14,7 +14,9 @@ def test_recover(admin_user, client):
         add_to_revision(concurrentmodel)
 
     ver = Version.objects.get_for_model(concurrentmodel).first()
-    url = reverse("admin:demo_reversionconcurrentmodel_recover", args=[concurrentmodel.pk])
+    url = reverse(
+        "admin:demo_reversionconcurrentmodel_recover", args=[concurrentmodel.pk]
+    )
     res = client.get(url, user=admin_user.username)
     res.forms["reversionconcurrentmodel_form"].submit().follow()
 

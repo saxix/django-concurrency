@@ -1,3 +1,8 @@
+from django.contrib import admin
+from django.contrib.admin.sites import NotRegistered
+
+from concurrency.admin import ConcurrentModelAdmin
+from concurrency.api import disable_concurrency
 from demo.models import (
     InheritedModel,
     ListEditableConcurrentModel,
@@ -6,11 +11,6 @@ from demo.models import (
     ReversionConcurrentModel,
     SimpleConcurrentModel,
 )
-from django.contrib import admin
-from django.contrib.admin.sites import NotRegistered
-
-from concurrency.admin import ConcurrentModelAdmin
-from concurrency.api import disable_concurrency
 
 try:
     from reversion.admin import VersionAdmin

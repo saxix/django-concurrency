@@ -1,70 +1,77 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = [
+  "hatch-vcs>=0.4",
+  "hatchling>=1.25",
+]
+
 [project]
 name = "django-concurrency"
 version = "2.6.0"
 description = "Optimistic lock implementation for Django. Prevents users from doing concurrent editing"
-authors = [
-    {name = "sax", email = "s.apostolico@gmail.com"},
-]
-dependencies = []
-requires-python = ">=3.10"
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
 
-[project.optional-dependencies]
-dj4 = [
-    "django>=4.2,<5",
+authors = [
+  { name = "sax", email = "s.apostolico@gmail.com" },
 ]
-dj5 = [
-    "django>=5.1",
+requires-python = ">=3.10"
+classifiers = [
+  "Environment :: Web Environment",
+  "Framework :: Django",
+  "Framework :: Django :: 3.2",
+  "Framework :: Django :: 4.2",
+  "Framework :: Django :: 5.1",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
+dependencies = [  ]
 
-[tool.pdm]
-[[tool.pdm.source]]
-url = "https://pypi.org/simple"
-verify_ssl = true
-name = "pypi"
-
-[tool.pdm.dev-dependencies]
+[dependency-groups]
 dev = [
-    "black>=24.8.0",
-    "bump2version>=1.0.1",
-    "check-manifest",
-    "django-reversion",
-    "django-webtest",
-    "flake8",
-    "isort",
-    "mock",
-    "pre-commit",
-    "psycopg2-binary",
-    "pytest>=8.3.3",
-    "pytest-cov",
-    "pytest-django",
-    "pytest-echo",
-    "sphinx",
-    "sphinx-issues",
-    "tox",
-    "twine",
+  "check-manifest",
+  "django-reversion",
+  "django-webtest",
+  "mock",
+  "pre-commit",
+  "psycopg2-binary",
+  "pytest",
+  "pytest-cov",
+  "pytest-django",
+  "pytest-echo",
+  "pytest-pythonpath",
+  "tox",
 ]
 
-[tool.isort]
-profile = "black"
+[tool.hatch.build.targets.wheel]
+packages = [ "src/concurrency" ]
 
-[tool.black]
-line-length = 120
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | venv
-  | _build
-  | buck-out
-  | build
-  | dist
-  | migrations
-  | snapshots
-)/
-'''
+[tool.pytest.ini_options]
+django_find_project = false
+pythonpath = [ "./tests/demoapp/", "./src" ]
+DJANGO_SETTINGS_MODULE = "demo.settings"
+norecursedirs = [ "demo", ".tox" ]
+addopts = [
+  "--tb=short",
+  "--capture=no",
+  "--echo-version=django",
+  "--echo-attr=django.conf.settings.DATABASES.default.ENGINE",
+  "--cov=concurrency",
+  "--cov-report=html",
+  "--cov-report=xml",
+  "--cov-config=tests/.coveragerc",
+]
+python_files = "tests/test_*.py tests/**/test_*.py src/*.py"
+markers = [
+  "functional: mark a test as functional",
+  "selenium: selenium test",
+  "skip: skip test",
+]
+
+[tool.uv]
+package = true

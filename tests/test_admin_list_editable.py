@@ -28,7 +28,9 @@ class TestListEditable(AdminTestCase):
         res = self.app.get("/admin/", user="sax")
         # file:///admin/demo/listeditableconcurrentmodel/add/
         res = res.click(self.TARGET._meta.verbose_name_plural)
-        res = res.click("Add", href=f"/admin/demo/{self.TARGET._meta.model_name}/add/", index=0)
+        res = res.click(
+            "Add", href=f"/admin/demo/{self.TARGET._meta.model_name}/add/", index=0
+        )
         form = res.forms["listeditableconcurrentmodel_form"]
         form["username"] = "CHAR"
         form.submit().follow()
@@ -46,7 +48,13 @@ class TestListEditable(AdminTestCase):
         id = next(unique_id)
         self.TARGET.objects.get_or_create(pk=id)
         model_admin = site._registry[self.TARGET]
-        with attributes((model_admin.__class__, "list_editable_policy", CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL)):
+        with attributes(
+            (
+                model_admin.__class__,
+                "list_editable_policy",
+                CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL,
+            )
+        ):
             res = self.app.get("/admin/", user="sax")
             res = res.click(self.TARGET._meta.verbose_name_plural)
             self._create_conflict(id)
@@ -63,7 +71,13 @@ class TestListEditable(AdminTestCase):
         id = next(unique_id)
         self.TARGET.objects.get_or_create(pk=id)
         model_admin = site._registry[self.TARGET]
-        with attributes((model_admin.__class__, "list_editable_policy", CONCURRENCY_LIST_EDITABLE_POLICY_SILENT)):
+        with attributes(
+            (
+                model_admin.__class__,
+                "list_editable_policy",
+                CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
+            )
+        ):
             res = self.app.get("/admin/", user="sax")
             res = res.click(self.TARGET._meta.verbose_name_plural)
             self._create_conflict(id)
@@ -92,8 +106,14 @@ class TestListEditable(AdminTestCase):
 
         messages = map(str, list(res.context["messages"]))
 
-        self.assertIn("Record with pk `%s` has been modified and was not updated" % id1, messages)
-        self.assertIn("1 %s was changed successfully." % force_str(self.TARGET._meta.verbose_name), messages)
+        self.assertIn(
+            "Record with pk `%s` has been modified and was not updated" % id1, messages
+        )
+        self.assertIn(
+            "1 %s was changed successfully."
+            % force_str(self.TARGET._meta.verbose_name),
+            messages,
+        )
 
     def test_message_user_no_changes(self):
         id = next(unique_id)
@@ -110,7 +130,10 @@ class TestListEditable(AdminTestCase):
 
         messages = list(map(str, list(res.context["messages"])))
 
-        self.assertIn("Record with pk `%s` has been modified and was not updated" % id, set(messages))
+        self.assertIn(
+            "Record with pk `%s` has been modified and was not updated" % id,
+            set(messages),
+        )
         self.assertEqual(len(set(messages)), 1)
 
     def test_log_change(self):
@@ -119,7 +142,10 @@ class TestListEditable(AdminTestCase):
 
         res = self.app.get("/admin/", user="sax")
         res = res.click(self.TARGET._meta.verbose_name_plural)
-        log_filter = dict(user__username="sax", content_type=ContentType.objects.get_for_model(self.TARGET))
+        log_filter = dict(
+            user__username="sax",
+            content_type=ContentType.objects.get_for_model(self.TARGET),
+        )
 
         logs = list(LogEntry.objects.filter(**log_filter).values_list("pk", flat=True))
 

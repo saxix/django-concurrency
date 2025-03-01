@@ -1,0 +1,23 @@
+services:
+
+  postgres:
+    image: postgis/postgis:14-3.4-alpine
+    platform: linux/amd64
+    ports:
+      - "5432:5432"
+    shm_size: '1gb'
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+
+  mysql:
+    image: mysql
+    stdin_open: true
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: concurrency
+      MYSQL_ALLOW_EMPTY_PASSWORD: true

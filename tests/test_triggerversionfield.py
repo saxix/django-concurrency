@@ -35,7 +35,7 @@ class CaptureQueriesContext:
 
     @property
     def captured_queries(self):
-        return self.connection.queries[self.initial_queries:self.final_queries]
+        return self.connection.queries[self.initial_queries : self.final_queries]
 
     def __enter__(self):
         self.use_debug_cursor = self.connection.use_debug_cursor
@@ -62,7 +62,11 @@ def test_trigger_external_update():
     instance.save()
     assert instance.version == 1
     with connection.cursor() as c:
-        c.execute("UPDATE {} SET username='aaa' WHERE id='{}'".format(instance._meta.db_table, instance.pk))
+        c.execute(
+            "UPDATE {} SET username='aaa' WHERE id='{}'".format(
+                instance._meta.db_table, instance.pk
+            )
+        )
     obj = refetch(instance)
     assert obj.version == 2
 
@@ -115,7 +119,9 @@ def test_trigger_do_not_increase_version_if_error():
     instance = TriggerConcurrentModel()
     assert instance.pk is None
     assert instance.version == 0
-    with mock.patch("demo.models.TriggerConcurrentModel.save", side_effect=IntegrityError):
+    with mock.patch(
+        "demo.models.TriggerConcurrentModel.save", side_effect=IntegrityError
+    ):
         with pytest.raises(IntegrityError):
             instance.save()
 

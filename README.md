@@ -6,6 +6,8 @@ Django Concurrency
 [![coverage](https://codecov.io/github/saxix/django-concurrency/coverage.svg?branch=develop)](https://codecov.io/github/saxix/django-concurrency?branch=develop)
 [![Test](https://github.com/saxix/django-concurrency/actions/workflows/tests.yaml/badge.svg)](https://github.com/saxix/django-concurrency/actions/workflows/tests.yaml)
 [![Docs](https://readthedocs.org/projects/django-concurrency/badge/?version=stable)](http://django-concurrency.readthedocs.io/en/stable/)
+[![Django](https://img.shields.io/pypi/frameworkversions/django/django-concurrency)](https://pypi.org/project/django-concurrency/)
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/django-concurrency.svg)](https://pypi.org/project/django-concurrency/)
 
 
 django-concurrency is an [optimistic lock][1] implementation for Django.
@@ -48,8 +50,8 @@ you will get a ``RecordModifiedError`` on ``b.save()``
 Similar projects
 ----------------
 
-Other projects that handle concurrent editing are [django-optimistic-lock][10] 
-and [django-locking][11] anyway concurrency is "a batteries included" optimistic 
+Other projects that handle concurrent editing are [django-optimistic-lock][10]
+and [django-locking][11] anyway concurrency is "a batteries included" optimistic
 lock management system, here some features not available elsewhere:
 
  * can be applied to any model; not only your code (ie. django.contrib.auth.Group)

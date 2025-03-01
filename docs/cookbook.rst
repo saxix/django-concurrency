@@ -101,7 +101,7 @@ To avoid this simply disable concurrency, by using a mixin:
 .. code-block:: python
 
     class ConcurrencyVersionAdmin(reversion.admin.VersionAdmin):
-    
+
         @disable_concurrency()
         def revision_view(self, request, object_id, version_id, extra_context=None):
             return super().revision_view(request, object_id, version_id, extra_context=None)

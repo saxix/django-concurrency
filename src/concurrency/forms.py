@@ -32,7 +32,11 @@ class ConcurrentForm(ModelForm):
                 )
 
         except RecordModifiedError:
-            self._update_errors(ValidationError({NON_FIELD_ERRORS: self.error_class([_("Record Modified")])}))
+            self._update_errors(
+                ValidationError(
+                    {NON_FIELD_ERRORS: self.error_class([_("Record Modified")])}
+                )
+            )
 
         return super().clean()
 
@@ -74,15 +78,19 @@ class VersionFieldSigner(Signer):
 def get_signer():
     path = conf.FIELD_SIGNER
     i = path.rfind(".")
-    module, attr = path[:i], path[i + 1:]
+    module, attr = path[:i], path[i + 1 :]
     try:
         mod = import_module(module)
     except ImportError as e:
-        raise ImproperlyConfigured('Error loading concurrency signer %s: "%s"' % (module, e))
+        raise ImproperlyConfigured(
+            'Error loading concurrency signer %s: "%s"' % (module, e)
+        )
     try:
         signer_class = getattr(mod, attr)
     except AttributeError:  # pragma: no cover
-        raise ImproperlyConfigured('Module "%s" does not define a valid signer named "%s"' % (module, attr))
+        raise ImproperlyConfigured(
+            'Module "%s" does not define a valid signer named "%s"' % (module, attr)
+        )
     return signer_class()
 
 
@@ -99,7 +107,9 @@ class SignedValue:
 
 class VersionField(forms.IntegerField):
     widget = HiddenInput  # Default widget to use when rendering this type of Field.
-    hidden_widget = HiddenInput  # Default widget to use when rendering this as "hidden".
+    hidden_widget = (
+        HiddenInput  # Default widget to use when rendering this as "hidden".
+    )
 
     def __init__(self, *args, **kwargs):
         self._signer = kwargs.pop("signer", get_signer())

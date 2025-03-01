@@ -49,7 +49,9 @@ class TestAdminActions(AdminTestCase):
         res = form.submit()
         res = res.follow()
 
-        self.assertIn("Selecting all records, you will avoid the concurrency check", res)
+        self.assertIn(
+            "Selecting all records, you will avoid the concurrency check", res
+        )
 
     def test_delete_allowed_if_no_updates(self):
         id = next(unique_id)
@@ -93,12 +95,16 @@ class TestAdminActions(AdminTestCase):
         id = next(unique_id)
 
         SimpleConcurrentModel.objects.get_or_create(pk=id)
-        response = self.app.get(reverse("admin:demo_simpleconcurrentmodel_changelist"), user="sax")
+        response = self.app.get(
+            reverse("admin:demo_simpleconcurrentmodel_changelist"), user="sax"
+        )
         form = response.forms["changelist-form"]
         form.get("_selected_action", index=0).checked = True
         form["action"] = "delete_selected"
         response = form.submit()
-        expected = "All of the following objects and their related items will be deleted"
+        expected = (
+            "All of the following objects and their related items will be deleted"
+        )
         assert expected in response
         form = response.forms[1] if len(response.forms) > 1 else response.form  # dj41
         response = form.submit().follow()

@@ -19,8 +19,5 @@ __pycache__
 *.mo
 *.sqlite
 .testmondata
-Pipfile.lock
-poetry.lock
-!pyproject.toml
 .venv/
-pdm.lock
+src/concurrency/version.py

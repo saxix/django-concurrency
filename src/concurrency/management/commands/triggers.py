@@ -60,7 +60,6 @@ class Command(BaseCommand):
         self.stdout.write("")
 
     def handle(self, *args, **options):
-
         cmd = options["command"]
         database = options["database"]
         if database is None:
@@ -76,7 +75,9 @@ class Command(BaseCommand):
                     for alias, triggers in create_triggers(databases).items():
                         self.stdout.write("Database: {}".format(alias))
                         for trigger in triggers:
-                            self.stdout.write("    Created {0[2]}  for {0[1]}".format(trigger))
+                            self.stdout.write(
+                                "    Created {0[2]}  for {0[1]}".format(trigger)
+                            )
                     self.stdout.write("")
                 elif cmd == "drop":
                     for alias, triggers in drop_triggers(*databases).items():

@@ -41,12 +41,23 @@ def test_create(model_class=SimpleConcurrentModel):
 
 
 @pytest.mark.django_db
-@with_models(SimpleConcurrentModel, AutoIncConcurrentModel, InheritedModel, CustomSaveModel, ConcreteModel, ProxyModel)
+@with_models(
+    SimpleConcurrentModel,
+    AutoIncConcurrentModel,
+    InheritedModel,
+    CustomSaveModel,
+    ConcreteModel,
+    ProxyModel,
+)
 def test_update(model_class):
     # Manager.update() does not change version number
-    instance = model_class.objects.create(pk=next(unique_id), username=next(nextname).lower())
+    instance = model_class.objects.create(
+        pk=next(unique_id), username=next(nextname).lower()
+    )
     field_value = instance.username
-    model_class.objects.filter(pk=instance.pk).update(username=instance.username.upper())
+    model_class.objects.filter(pk=instance.pk).update(
+        username=instance.username.upper()
+    )
 
     instance2 = refetch(instance)
     assert instance2.username == field_value.upper()

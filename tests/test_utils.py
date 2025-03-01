@@ -16,7 +16,6 @@ class TestConcurrencyTestMixin(ConcurrencyTestMixin, TestCase):
 
 
 def test_fqn():
-
     with pytest.raises(ValueError):
         fqn("str")
 
@@ -26,7 +25,6 @@ def test_fqn():
 
 
 def test_deprecated():
-
     @deprecated()
     def foo1(x):
         return x

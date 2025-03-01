@@ -1,7 +1,6 @@
 import os
 import platform
 import sys
-from pathlib import Path
 
 import pytest
 
@@ -15,16 +14,21 @@ win32only = pytest.mark.skipif("sys.platform != 'win32'")
 
 skippypy = pytest.mark.skipif(PYPY, reason="skip on pypy")
 
-here = Path(__file__).parent
-sys.path.insert(0, str(here / "tests" / "demoapp"))
+# here = Path(__file__).parent.parent
+# sys.path.insert(0, str(here / "src"))
+# sys.path.insert(0, str(here / "tests" / "demoapp"))
 
 
 def pytest_configure():
+    # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "demo.settings")
     from django.conf import settings
 
     settings.SILENCED_SYSTEM_CHECKS = ["concurrency.W001"]
     settings.CONCURRENCY_VERSION_FIELD_REQUIRED = False
     settings.CONCURRENCY_AUTO_CREATE_TRIGGERS = True
+
+
+#
 
 
 @pytest.fixture(scope="session")
