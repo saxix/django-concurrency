@@ -8,6 +8,18 @@ on:
     pull_request:
 
 jobs:
+    pkg_meta:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v2
+            -   uses: actions/setup-python@v2
+
+            -   name: Install dependencies
+                run: |
+                    python -m pip install --upgrade pip tox
+            -   name: Lint with flake8
+                run: |
+                    tox -e pkg_meta
     lint:
         runs-on: ubuntu-latest
         steps:

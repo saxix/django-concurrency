@@ -1,0 +1,45 @@
+# This is used by the action https://github.com/dorny/paths-filter
+docker: &docker
+  - added|modified: './docker/**/*'
+  - added|modified: './docker/*'
+
+dependencies: &dependencies
+  - 'pdm.lock'
+  - 'pyproject.toml'
+
+actions: &actions
+  - added|modified: './.github/**/*'
+
+python: &python
+  - added|modified: 'src/**'
+  - added|modified: 'tests/**'
+  - 'manage.py'
+
+changelog:
+  - added|modified: 'changes/**'
+  - 'CHANGELOG.md'
+
+mypy:
+  - *python
+  - 'mypy.ini'
+
+run_tests:
+  - *actions
+  - *python
+  - *docker
+  - *dependencies
+  - 'pytest.ini'
+
+migrations:
+  - added|modified: 'src/**/migrations/*'
+
+lint:
+  - *python
+  - '.flake8'
+  - 'pyproject.toml'
+
+docs:
+  - added|modified: './docs/**/*'
+  - modified: './src/birder/config/__init__.py'
+  - modified: './github/workflows/docs.yml'
+  - modified: './github/file-filters.yml'
