@@ -7,10 +7,9 @@ requires = [
 
 [project]
 name = "django-concurrency"
-version = "2.6.0"
 description = "Optimistic lock implementation for Django. Prevents users from doing concurrent editing"
 readme = "README.md"
-license = { text = "MIT" }
+license.file = "LICENSE"
 
 authors = [
   { name = "sax", email = "s.apostolico@gmail.com" },
@@ -30,7 +29,12 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
 ]
+dynamic = [
+  "version",
+]
 dependencies = [  ]
+urls.downloads = "https://github.com/saxix/django-concurrency"
+urls.homepage = "https://github.com/saxix/django-concurrency"
 
 [dependency-groups]
 dev = [
@@ -50,6 +54,17 @@ dev = [
 
 dj = [
   "django",
+]
+
+[tool.hatch]
+build.hooks.vcs.version-file = "src/concurrency/version.py"
+version.source = "vcs"
+raw-options = { root = "../.." }
+
+[tool.hatch.build.targets.sdist]
+ignore-vcs = true
+include = [
+  "src/concurrency/**/*.*",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -122,7 +137,7 @@ lint.per-file-ignores."tests/**/*.py" = [
   "TC",
   "UP",
 ]
-lint.isort = { known-first-party = [ "admin_extra_buttons" ] }
+lint.isort = { known-first-party = [ "concurrency" ] }
 lint.pylint.max-args = 7
 lint.pylint.max-branches = 14
 lint.pylint.max-nested-blocks = 8
