@@ -1,3 +1,8 @@
+Release 2.7
+-----------
+* fixes #256
+
+
 Release 2.6
 -----------
 * add support do Django 5.x

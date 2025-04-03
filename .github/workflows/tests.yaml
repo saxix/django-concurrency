@@ -76,10 +76,17 @@ jobs:
           mysql -e 'CREATE DATABASE concurrency;' -uroot -proot
           mysql -e 'SHOW DATABASES;' -uroot -proot
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
+      -   name: Install the latest version of uv
+          uses: astral-sh/setup-uv@v5
+          with:
+              version: "latest"
+              enable-cache: true
+              cache-dependency-glob: |
+                  pyproject.toml
+                  uv.lock
+              cache-suffix: ${{ matrix.python }}-${{ matrix.django }}
+              github-token: ${{ secrets.GITHUB_TOKEN }}
+              python-version: ${{ matrix.python }}
 
       -   name: Install Python
           if: matrix.python != '3.13'
