@@ -87,7 +87,7 @@ lint.select = [
 lint.ignore = [
   "A",
   "ANN",
-  "ARG", # Unused function argument:
+  "ARG",    # Unused function argument:
   "B",
   "BLE",
   "COM812",
@@ -95,16 +95,16 @@ lint.ignore = [
   "D",      # docstring
   "DOC",    # docstring
   "EM",
-  "EXE",
   "ERA",
+  "EXE",
   "FBT",
   "G",
   "N",
   "PERF",
+  "PGH",
   "PLC",
   "PLR",
   "PLW",
-  "PGH",
   "PT",
   "RUF",
   "S",
