@@ -187,13 +187,12 @@ wheels = [
 
 [[package]]
 name = "django-concurrency"
-version = "2.6.0"
+version = "2.7.dev13+g7cdccd7.d20250403"
 source = { editable = "." }
 
 [package.dev-dependencies]
 dev = [
     { name = "check-manifest" },
-    { name = "django-reversion" },
     { name = "django-webtest" },
     { name = "mock" },
     { name = "pre-commit" },
@@ -204,6 +203,9 @@ dev = [
     { name = "pytest-echo" },
     { name = "pytest-pythonpath" },
     { name = "tox" },
+]
+dj = [
+    { name = "django" },
 ]
 
 [package.metadata]
@@ -211,7 +213,6 @@ dev = [
 [package.metadata.requires-dev]
 dev = [
     { name = "check-manifest" },
-    { name = "django-reversion" },
     { name = "django-webtest" },
     { name = "mock" },
     { name = "pre-commit" },
@@ -223,18 +224,7 @@ dev = [
     { name = "pytest-pythonpath" },
     { name = "tox" },
 ]
-
-[[package]]
-name = "django-reversion"
-version = "5.1.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/d8/aa/d7e9d98b23041b24d2b35cefcbbfa51e6e557e8e58c1c1bddabdb0baf13f/django_reversion-5.1.0.tar.gz", hash = "sha256:3309821e5b6fceedcce6b6975f1a9c7fab6ae7c7d0e1276a90e345946fa0dcb8", size = 73178 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/5a/84/898fec51294e6764ab5fdde5db079ca89d528cef039c05447ca41d6f4c74/django_reversion-5.1.0-py3-none-any.whl", hash = "sha256:084d4f117d9e2b4e8dfdfaad83ebb34410a03eed6071c96089e6811fdea82ad3", size = 84857 },
-]
+dj = [{ name = "django" }]
 
 [[package]]
 name = "django-webtest"

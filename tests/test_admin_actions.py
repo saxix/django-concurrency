@@ -67,7 +67,7 @@ class TestAdminActions(AdminTestCase):
 
         res = form.submit()
 
-        assert "Are you sure?" in res
+        assert "Are you sure" in res
         assert "SimpleConcurrentModel #%s" % id in res
         res = res.forms[0].submit()
         assert "SimpleConcurrentModel #%s" % id not in res

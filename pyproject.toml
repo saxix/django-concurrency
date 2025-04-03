@@ -39,7 +39,6 @@ urls.homepage = "https://github.com/saxix/django-concurrency"
 [dependency-groups]
 dev = [
   "check-manifest",
-  "django-reversion",
   "django-webtest",
   "mock",
   "pre-commit",
