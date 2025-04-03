@@ -287,9 +287,9 @@ class TriggerVersionField(VersionField):
 
     @staticmethod
     def _wrap_save(func):
-        def inner(self, force_insert=False, force_update=False, using=None, **kwargs):
+        def inner(self, **kwargs):
             reload = kwargs.pop("refetch", False)
-            ret = func(self, force_insert, force_update, using, **kwargs)
+            ret = func(self, **kwargs)
             TriggerVersionField._increment_version_number(self)
             if reload:
                 ret = refetch(self)
