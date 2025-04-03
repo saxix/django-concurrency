@@ -85,23 +85,34 @@ lint.select = [
   "ALL",
 ]
 lint.ignore = [
-  "ANN401", #  Dynamically typed expressions
+  "A",
+  "ANN",
+  "ARG", # Unused function argument:
+  "B",
+  "BLE",
   "COM812",
   "CPY",    # Missing copyright notice
   "D",      # docstring
   "DOC",    # docstring
-  "E731",   #  Do not assign a `lambda` expression,
-  "EM101",  #  Exception must not use a string literal, assign to variable first
-  "EM102",  #  Exception must not use a f-string literal, assign to variable first
-  "FBT001", #  Boolean-typed positional argument in function definition
-  "FBT002", #  Boolean default positional argument in function definition
-  "N806",   # Variable `...` in function should be lowercase
-  "S308",   # Use of `mark_safe` may expose cross-site scripting vulnerabilities
-  "SLF001", #  Private member accessed: `...`
-  "TRY003", # Avoid specifying long messages outside the exception class
-  "TRY301", # Abstract `raise` to an inner function
-  "TRY401", #  Redundant exception object included in `logging.exception` call
-  "UP037",  #
+  "EM",
+  "EXE",
+  "ERA",
+  "FBT",
+  "G",
+  "N",
+  "PERF",
+  "PLC",
+  "PLR",
+  "PLW",
+  "PGH",
+  "PT",
+  "RUF",
+  "S",
+  "SIM",
+  "SLF",
+  "TRY",
+  "UP",
+
 ]
 lint.per-file-ignores."docs/conf.py" = [
   "A001",   #

@@ -64,12 +64,8 @@ class AppSettings:
             elif callable(value):
                 func = value
             else:
-                msg = (
-                    f"{value} is not a valid value for `CALLBACK`. It must be a callable or a fullpath to callable. "
-                )
-                raise ImproperlyConfigured(
-                    msg
-                )
+                msg = f"{value} is not a valid value for `CALLBACK`. It must be a callable or a fullpath to callable. "
+                raise ImproperlyConfigured(msg)
             self._callback = func
         elif name == "TRIGGERS_FACTORY":
             original = dict(value)

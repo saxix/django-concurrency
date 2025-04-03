@@ -128,14 +128,10 @@ class TriggerFactory:
             try:
                 self.connection.cursor().execute(stm)
             except BaseException as exc:  # pragma: no cover
-                msg = (
-                    f"""Error executing:
+                msg = f"""Error executing:
 {stm}
 {exc}"""
-                )
-                raise DatabaseError(
-                    msg
-                )
+                raise DatabaseError(msg)
         else:  # pragma: no cover
             pass
         field._trigger_exists = True

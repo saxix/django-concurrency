@@ -78,7 +78,7 @@ class ConcurrencyTestMixin:
         target_copy = self._get_concurrency_target()
         v1 = api.get_revision_of_object(target)
         v2 = api.get_revision_of_object(target_copy)
-        assert v1 == v2, f"got same row with different version ({v1}/{v2})"
+        assert v1 == v2, f"got same row with different version ({v1}/{v2})"  # noqa: S101
         target.save()
         assert target.pk is not None  # sanity check
         self.assertRaises(RecordModifiedError, target_copy.save)
@@ -88,15 +88,15 @@ class ConcurrencyTestMixin:
 
         target = self.concurrency_model()
         version = api.get_revision_of_object(target)
-        assert not bool(version), f"version is not null {version}"
+        assert not bool(version), f"version is not null {version}"  # noqa: S101
 
     def test_concurrency_management(self) -> None:
         target = self.concurrency_model
-        assert hasattr(target, "_concurrencymeta"), f"{self.concurrency_model} is not under concurrency management"
+        assert hasattr(target, "_concurrencymeta"), f"{self.concurrency_model} is not under concurrency management"  # noqa: S101
 
         revision_field = target._concurrencymeta.field
 
-        assert revision_field in target._meta.fields, f"{self.concurrency_model}: version field not in meta.fields"
+        assert revision_field in target._meta.fields, f"{self.concurrency_model}: version field not in meta.fields"  # noqa: S101
 
 
 class ConcurrencyAdminTestMixin:
@@ -153,15 +153,6 @@ def fqn(o):
     """
     parts = []
 
-    # if inspect.ismethod(o):
-    #     try:
-    #         cls = o.im_class
-    #     except AttributeError:
-    #         # Python 3 eliminates im_class, substitutes __module__ and
-    #         # __qualname__ to provide similar information.
-    #         parts = (o.__module__, o.__qualname__)
-    #     else:
-    #         parts = (fqn(cls), get_classname(o))
     if hasattr(o, "__module__"):
         parts.extend((o.__module__, get_classname(o)))
     elif inspect.ismodule(o):

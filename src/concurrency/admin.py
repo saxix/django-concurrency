@@ -125,9 +125,7 @@ class ConcurrencyActionMixin:
                                 "A tuple with `primary_key, version_number` "
                                 f"expected:  `{x}` found"
                             )
-                            raise ImproperlyConfigured(
-                                msg
-                            )
+                            raise ImproperlyConfigured(msg)
                         filters.append(Q(**{"pk": pk, revision_field.attname: version}))
 
                     queryset = queryset.filter(reduce(operator.or_, filters))
