@@ -11,17 +11,16 @@ class ConcurrencyMiddleware:
 
     """
 
-    def __init__(self, get_response=None):
+    def __init__(self, get_response=None) -> None:
         self.get_response = get_response
 
     def __call__(self, request):
-        response = self.get_response(request)
-        return response
+        return self.get_response(request)
 
     def process_exception(self, request, exception):
         if isinstance(exception, RecordModifiedError):
             got_request_exception.send(sender=self, request=request)
             callback = get_callable(conf.HANDLER409)
             return callback(request, target=exception.target)
-        else:  # pragma: no cover
-            pass
+        return None
+        # pragma: no cover

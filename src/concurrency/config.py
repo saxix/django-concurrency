@@ -35,7 +35,7 @@ class AppSettings:
         },
     }
 
-    def __init__(self, prefix):
+    def __init__(self, prefix) -> None:
         """
         Loads our settings from django.conf.settings, applying defaults for any
         that are omitted.
@@ -48,29 +48,27 @@ class AppSettings:
             value = getattr(settings, prefix_name, default)
             self._set_attr(prefix_name, value)
             setattr(settings, prefix_name, value)
-            setting_changed.send(
-                self.__class__, setting=prefix_name, value=value, enter=True
-            )
+            setting_changed.send(self.__class__, setting=prefix_name, value=value, enter=True)
 
         setting_changed.connect(self._handler)
 
-    def _set_attr(self, prefix_name, value):
+    def _set_attr(self, prefix_name, value) -> None:
         name = prefix_name[1 + len(self.prefix) :]
         if name == "IGNORE_DEFAULT":
             raise ImproperlyConfigured(
-                "IGNORE_DEFAULT has been removed in django-concurrency 1.5. "
-                "Use VERSION_FIELD_REQUIRED instead"
+                "IGNORE_DEFAULT has been removed in django-concurrency 1.5. Use VERSION_FIELD_REQUIRED instead"
             )
-        elif name == "CALLBACK":
+        if name == "CALLBACK":
             if isinstance(value, str):
                 func = get_callable(value)
             elif callable(value):
                 func = value
             else:
+                msg = (
+                    f"{value} is not a valid value for `CALLBACK`. It must be a callable or a fullpath to callable. "
+                )
                 raise ImproperlyConfigured(
-                    "{} is not a valid value for `CALLBACK`. It must be a callable or a fullpath to callable. ".format(
-                        value
-                    )
+                    msg
                 )
             self._callback = func
         elif name == "TRIGGERS_FACTORY":
@@ -79,13 +77,11 @@ class AppSettings:
                 try:
                     value[k] = import_string(v)
                 except ImportError as e:
-                    raise ImproperlyConfigured(
-                        f"Unable to load {k} TriggerFactory. Invalid fqn '{v}': {e}"
-                    )
+                    raise ImproperlyConfigured(f"Unable to load {k} TriggerFactory. Invalid fqn '{v}': {e}")
 
         setattr(self, name, value)
 
-    def _handler(self, sender, setting, value, **kwargs):
+    def _handler(self, sender, setting, value, **kwargs) -> None:
         """
             handler for ``setting_changed`` signal.
 

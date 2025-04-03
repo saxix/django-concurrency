@@ -9,7 +9,7 @@ from django.db.transaction import atomic
 from concurrency.triggers import create_triggers, drop_triggers, get_triggers
 
 
-def _add_subparser(subparsers, parser, name, help):
+def _add_subparser(subparsers, parser, name, help) -> None:
     if django.VERSION >= (2, 1):
         subparsers.add_parser(name, help=help)
     else:
@@ -22,7 +22,7 @@ class Command(BaseCommand):
 
     requires_system_checks = []
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser) -> None:
         """
         Entry point for subclassed commands to add custom arguments.
         """
@@ -52,20 +52,17 @@ class Command(BaseCommand):
             help="limit to this trigger name",
         )
 
-    def _list(self, databases):
+    def _list(self, databases) -> None:
         for alias, triggers in get_triggers(databases).items():
-            self.stdout.write("Database: {}".format(alias))
+            self.stdout.write(f"Database: {alias}")
             for trigger in triggers:
-                self.stdout.write("       {}".format(trigger))
+                self.stdout.write(f"       {trigger}")
         self.stdout.write("")
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options) -> None:
         cmd = options["command"]
         database = options["database"]
-        if database is None:
-            databases = [alias for alias in connections]
-        else:
-            databases = [database]
+        databases = list(connections) if database is None else [database]
 
         with atomic():
             try:
@@ -73,19 +70,17 @@ class Command(BaseCommand):
                     self._list(databases)
                 elif cmd == "create":
                     for alias, triggers in create_triggers(databases).items():
-                        self.stdout.write("Database: {}".format(alias))
+                        self.stdout.write(f"Database: {alias}")
                         for trigger in triggers:
-                            self.stdout.write(
-                                "    Created {0[2]}  for {0[1]}".format(trigger)
-                            )
+                            self.stdout.write(f"    Created {trigger[2]}  for {trigger[1]}")
                     self.stdout.write("")
                 elif cmd == "drop":
                     for alias, triggers in drop_triggers(*databases).items():
-                        self.stdout.write("Database: {}".format(alias))
+                        self.stdout.write(f"Database: {alias}")
                         for trigger in triggers:
-                            self.stdout.write("    Dropped   {0[2]}".format(trigger))
+                            self.stdout.write(f"    Dropped   {trigger[2]}")
                     self.stdout.write("")
                 else:  # pragma: no cover
-                    raise Exception()
+                    raise Exception
             except ImproperlyConfigured as e:  # pragma: no cover
                 self.stdout.write(self.style.ERROR(e))

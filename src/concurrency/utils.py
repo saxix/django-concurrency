@@ -15,16 +15,13 @@ def deprecated(replacement=None, version=None):
     >>> @deprecated()
     ... def foo1(x):
     ...     return x
-    ...
     >>> pytest.warns(DeprecationWarning, foo1, 1)
     1
     >>> def newfun(x):
     ...     return 0
-    ...
-    >>> @deprecated(newfun, '1.1')
+    >>> @deprecated(newfun, "1.1")
     ... def foo2(x):
     ...     return x
-    ...
     >>> pytest.warns(DeprecationWarning, foo2, 1)
     0
     >>>
@@ -32,16 +29,15 @@ def deprecated(replacement=None, version=None):
 
     def outer(oldfun):
         def inner(*args, **kwargs):
-            msg = "%s is deprecated" % oldfun.__name__
+            msg = f"{oldfun.__name__} is deprecated"
             if version is not None:
-                msg += "will be removed in version %s;" % version
+                msg += f"will be removed in version {version};"
             if replacement is not None:
-                msg += "; use %s instead" % (replacement)
+                msg += f"; use {replacement} instead"
             warnings.warn(msg, DeprecationWarning, stacklevel=2)
             if callable(replacement):
                 return replacement(*args, **kwargs)
-            else:
-                return oldfun(*args, **kwargs)
+            return oldfun(*args, **kwargs)
 
         return inner
 
@@ -58,9 +54,10 @@ class ConcurrencyTestMixin:
         from concurrency.utils import ConcurrencyTestMixin
         from myproject.models import MyModel
 
+
         class MyModelTest(ConcurrencyTestMixin, TestCase):
             concurrency_model = TestModel0
-            concurrency_kwargs = {'username': 'test'}
+            concurrency_kwargs = {"username": "test"}
 
     """
 
@@ -74,38 +71,32 @@ class ConcurrencyTestMixin:
         args.update(kwargs)
         return self.concurrency_model.objects.get_or_create(**args)[0]
 
-    def test_concurrency_conflict(self):
-        import concurrency.api as api
+    def test_concurrency_conflict(self) -> None:
+        from concurrency import api
 
         target = self._get_concurrency_target()
         target_copy = self._get_concurrency_target()
         v1 = api.get_revision_of_object(target)
         v2 = api.get_revision_of_object(target_copy)
-        assert v1 == v2, "got same row with different version (%s/%s)" % (v1, v2)
+        assert v1 == v2, f"got same row with different version ({v1}/{v2})"
         target.save()
         assert target.pk is not None  # sanity check
         self.assertRaises(RecordModifiedError, target_copy.save)
 
-    def test_concurrency_safety(self):
-        import concurrency.api as api
+    def test_concurrency_safety(self) -> None:
+        from concurrency import api
 
         target = self.concurrency_model()
         version = api.get_revision_of_object(target)
-        self.assertFalse(bool(version), "version is not null %s" % version)
+        assert not bool(version), f"version is not null {version}"
 
-    def test_concurrency_management(self):
+    def test_concurrency_management(self) -> None:
         target = self.concurrency_model
-        self.assertTrue(
-            hasattr(target, "_concurrencymeta"),
-            "%s is not under concurrency management" % self.concurrency_model,
-        )
+        assert hasattr(target, "_concurrencymeta"), f"{self.concurrency_model} is not under concurrency management"
 
         revision_field = target._concurrencymeta.field
 
-        self.assertTrue(
-            revision_field in target._meta.fields,
-            "%s: version field not in meta.fields" % self.concurrency_model,
-        )
+        assert revision_field in target._meta.fields, f"{self.concurrency_model}: version field not in meta.fields"
 
 
 class ConcurrencyAdminTestMixin:
@@ -125,12 +116,7 @@ def get_classname(o):
     :param o:
     :return:
     """
-    if inspect.isclass(o):
-        target = o
-    elif callable(o):
-        target = o
-    else:
-        target = o.__class__
+    target = o if inspect.isclass(o) or callable(o) else o.__class__
     try:
         return target.__qualname__
     except AttributeError:  # pragma: no cover
@@ -144,7 +130,7 @@ def fqn(o):
     :return: class name
 
     >>> import concurrency.fields
-    >>> fqn('str')
+    >>> fqn("str")
     Traceback (most recent call last):
     ...
     ValueError: Invalid argument `str`
@@ -177,12 +163,12 @@ def fqn(o):
     #     else:
     #         parts = (fqn(cls), get_classname(o))
     if hasattr(o, "__module__"):
-        parts.append(o.__module__)
-        parts.append(get_classname(o))
+        parts.extend((o.__module__, get_classname(o)))
     elif inspect.ismodule(o):
         return o.__name__
     if not parts:
-        raise ValueError("Invalid argument `%s`" % o)
+        msg = f"Invalid argument `{o}`"
+        raise ValueError(msg)
     return ".".join(parts)
 
 
@@ -200,13 +186,13 @@ def flatten(iterable):
     Examples:
 
     >>> from adminactions.utils import flatten
-    >>> [1, 2, [3,4], (5,6)]
+    >>> [1, 2, [3, 4], (5, 6)]
     [1, 2, [3, 4], (5, 6)]
 
-    >>> flatten([[[1,2,3], (42,None)], [4,5], [6], 7, (8,9,10)])
+    >>> flatten([[[1, 2, 3], (42, None)], [4, 5], [6], 7, (8, 9, 10)])
     [1, 2, 3, 42, None, 4, 5, 6, 7, 8, 9, 10]"""
 
-    result = list()
+    result = []
     for el in iterable:
         if hasattr(el, "__iter__") and not isinstance(el, str):
             result.extend(flatten(el))

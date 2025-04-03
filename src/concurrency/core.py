@@ -14,7 +14,7 @@ def get_version_fieldname(obj):
     return obj._concurrencymeta.field.attname
 
 
-def _set_version(obj, version):
+def _set_version(obj, version) -> None:
     """
     Set the given version on the passed object
 
@@ -24,7 +24,7 @@ def _set_version(obj, version):
     obj._concurrencymeta.field._set_version_value(obj, version)
 
 
-def _select_lock(model_instance, version_value=None):
+def _select_lock(model_instance, version_value=None) -> None:
     if not conf.ENABLED:
         return
 
@@ -38,8 +38,7 @@ def _select_lock(model_instance, version_value=None):
 
         if not entry:
             logger.debug(
-                "Conflict detected on `{0}` pk:`{0.pk}`, "
-                "version `{1}` not found".format(model_instance, value)
+                f"Conflict detected on `{model_instance}` pk:`{model_instance.pk}`, version `{value}` not found"
             )
             conf._callback(model_instance)
         else:  # pragma: no cover

@@ -10,13 +10,13 @@ from django.db.utils import DatabaseError
 class TriggerRegistry:
     _fields = []
 
-    def append(self, field):
+    def append(self, field) -> None:
         self._fields.append([field.model._meta.app_label, field.model.__name__])
 
     def __iter__(self):
         return iter(self._fields)
 
-    def __contains__(self, field):
+    def __contains__(self, field) -> bool:
         target = [field.model._meta.app_label, field.model.__name__]
         return target in self._fields
 
@@ -24,22 +24,19 @@ class TriggerRegistry:
 _TRIGGERS = TriggerRegistry()
 
 
-def get_trigger_name(field):
+def get_trigger_name(field) -> str:
     """
 
     :param field: Field instance
     :return: unicode
     """
-    if field._trigger_name:
-        name = field._trigger_name
-    else:
-        name = "{1.db_table}_{0.name}".format(field, field.model._meta)
-    return "concurrency_{}".format(name)
+    name = field._trigger_name or f"{field.model._meta.db_table}_{field.name}"
+    return f"concurrency_{name}"
 
 
 def get_triggers(databases=None):
     if databases is None:
-        databases = [alias for alias in connections]
+        databases = list(connections)
 
     ret = {}
     for alias in databases:
@@ -52,7 +49,7 @@ def get_triggers(databases=None):
 
 def drop_triggers(*databases):
     global _TRIGGERS
-    ret = defaultdict(lambda: [])
+    ret = defaultdict(list)
     for app_label, model_name in _TRIGGERS:
         model = apps.get_model(app_label, model_name)
         field = model._concurrencymeta.field
@@ -70,7 +67,7 @@ def drop_triggers(*databases):
 
 def create_triggers(databases):
     global _TRIGGERS
-    ret = defaultdict(lambda: [])
+    ret = defaultdict(list)
 
     for app_label, model_name in _TRIGGERS:
         model = apps.get_model(app_label, model_name)
@@ -117,7 +114,7 @@ class TriggerFactory:
     drop_clause = ""
     list_clause = ""
 
-    def __init__(self, connection):
+    def __init__(self, connection) -> None:
         self.connection = connection
 
     def get_trigger(self, field):
@@ -125,18 +122,19 @@ class TriggerFactory:
             return field.trigger_name
         return None
 
-    def create(self, field):
+    def create(self, field) -> None:
         if field.trigger_name not in self.get_list():
-            stm = self.update_clause.format(
-                trigger_name=field.trigger_name, opts=field.model._meta, field=field
-            )
+            stm = self.update_clause.format(trigger_name=field.trigger_name, opts=field.model._meta, field=field)
             try:
                 self.connection.cursor().execute(stm)
             except BaseException as exc:  # pragma: no cover
+                msg = (
+                    f"""Error executing:
+{stm}
+{exc}"""
+                )
                 raise DatabaseError(
-                    """Error executing:
-{1}
-{0}""".format(exc, stm)
+                    msg
                 )
         else:  # pragma: no cover
             pass
@@ -145,9 +143,7 @@ class TriggerFactory:
     def drop(self, field):
         opts = field.model._meta
         ret = []
-        stm = self.drop_clause.format(
-            trigger_name=field.trigger_name, opts=opts, field=field
-        )
+        stm = self.drop_clause.format(trigger_name=field.trigger_name, opts=opts, field=field)
         self.connection.cursor().execute(stm)
         ret.append(field.trigger_name)
         return ret
@@ -210,4 +206,5 @@ def factory(conn):
     try:
         return mapping[conn.vendor](conn)
     except KeyError:  # pragma: no cover
-        raise ValueError("{} is not supported by TriggerVersionField".format(conn))
+        msg = f"{conn} is not supported by TriggerVersionField"
+        raise ValueError(msg)

@@ -1,3 +1,5 @@
+from typing import NoReturn
+
 from django.http import HttpResponse
 from django.template import loader
 from django.template.base import Template
@@ -11,7 +13,7 @@ class ConflictResponse(HttpResponse):
     status_code = 409
 
 
-def callback(target, *args, **kwargs):
+def callback(target, *args, **kwargs) -> NoReturn:
     raise RecordModifiedError(_("Record has been modified"), target=target)
 
 

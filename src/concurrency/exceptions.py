@@ -8,13 +8,11 @@ class VersionChangedError(ValidationError):
 
 
 class RecordModifiedError(DatabaseError):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.target = kwargs.pop("target")
         super().__init__(*args, **kwargs)
 
 
 class VersionError(SuspiciousOperation):
-    def __init__(self, message=None, code=None, params=None, *args, **kwargs):
-        self.message = message or _(
-            "Version number is missing or has been tampered with"
-        )
+    def __init__(self, message=None, code=None, params=None, *args, **kwargs) -> None:
+        self.message = message or _("Version number is missing or has been tampered with")

@@ -48,8 +48,88 @@ dev = [
   "tox",
 ]
 
+dj = [
+  "django",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = [ "src/concurrency" ]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+exclude = [
+  "docs",
+  "manage.py",
+  "tests",
+]
+format.preview = true
+format.docstring-code-line-length = 120
+format.docstring-code-format = true
+lint.select = [
+  "ALL",
+]
+lint.ignore = [
+  "ANN401", #  Dynamically typed expressions
+  "COM812",
+  "CPY",    # Missing copyright notice
+  "D",      # docstring
+  "DOC",    # docstring
+  "E731",   #  Do not assign a `lambda` expression,
+  "EM101",  #  Exception must not use a string literal, assign to variable first
+  "EM102",  #  Exception must not use a f-string literal, assign to variable first
+  "FBT001", #  Boolean-typed positional argument in function definition
+  "FBT002", #  Boolean default positional argument in function definition
+  "N806",   # Variable `...` in function should be lowercase
+  "S308",   # Use of `mark_safe` may expose cross-site scripting vulnerabilities
+  "SLF001", #  Private member accessed: `...`
+  "TRY003", # Avoid specifying long messages outside the exception class
+  "TRY301", # Abstract `raise` to an inner function
+  "TRY401", #  Redundant exception object included in `logging.exception` call
+  "UP037",  #
+]
+lint.per-file-ignores."docs/conf.py" = [
+  "A001",   #
+  "D100",   #
+  "ERA001", #
+  "INP001", #
+]
+lint.per-file-ignores."tests/**/*.py" = [
+  "A",
+  "ANN",
+  "ARG",
+  "B",
+  "BLE",
+  "D",
+  "DJ",
+  "DTZ",
+  "ERA",
+  "F",
+  "FBT",
+  "FURB",
+  "INP",
+  "N",
+  "PGH",
+  "PLC",
+  "PLR",
+  "PLW",
+  "PT",
+  "PTH",
+  "PYI",
+  "RUF",
+  "S",
+  "SIM",
+  "TC",
+  "UP",
+]
+lint.isort = { known-first-party = [ "admin_extra_buttons" ] }
+lint.pylint.max-args = 7
+lint.pylint.max-branches = 14
+lint.pylint.max-nested-blocks = 8
+lint.preview = true
+
+[tool.pyproject-fmt]
+max_supported_python = "3.13"
 
 [tool.pytest.ini_options]
 django_find_project = false
@@ -71,6 +151,35 @@ markers = [
   "functional: mark a test as functional",
   "selenium: selenium test",
   "skip: skip test",
+]
+
+[tool.coverage]
+run.source = [
+  "adminactions",
+]
+run.dynamic_context = "test_function"
+run.branch = true
+run.parallel = true
+run.omit = [
+  "**/create_extra_permissions.py",
+]
+run.plugins = [
+  "covdefaults",
+]
+report.fail_under = 80
+report.show_missing = true
+report.exclude_lines = [
+  "pragma: no cover",
+]
+html.show_contexts = true
+html.skip_covered = false
+paths.source = [
+  "src",
+  ".tox*/*/lib/python*/site-packages",
+  ".tox*/pypy*/site-packages",
+  ".tox*\\*\\Lib\\site-packages",
+  "*/src",
+  "*\\src",
 ]
 
 [tool.uv]

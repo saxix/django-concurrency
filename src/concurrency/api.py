@@ -7,15 +7,15 @@ from concurrency.core import get_version_fieldname  # _wrap_model_save
 from concurrency.exceptions import RecordModifiedError
 
 __all__ = [
-    "apply_concurrency_check",
-    "get_revision_of_object",
-    "get_version_fieldname",
     "RecordModifiedError",
-    "disable_concurrency",
+    "apply_concurrency_check",
     "concurrency_disable_increment",
+    "disable_concurrency",
+    "get_revision_of_object",
     "get_version",
-    "is_changed",
     "get_version_fieldname",
+    "get_version_fieldname",
+    "is_changed",
 ]
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def get_revision_of_object(obj):
     return getattr(obj, get_version_fieldname(obj))
 
 
-def is_changed(obj):
+def is_changed(obj) -> bool:
     """
         returns True if `obj` is changed or deleted on the database
     :param obj:
@@ -39,9 +39,7 @@ def is_changed(obj):
     """
     revision_field = get_version_fieldname(obj)
     version = get_revision_of_object(obj)
-    return not obj.__class__.objects.filter(
-        **{obj._meta.pk.name: obj.pk, revision_field: version}
-    ).exists()
+    return not obj.__class__.objects.filter(**{obj._meta.pk.name: obj.pk, revision_field: version}).exists()
 
 
 def get_version(model_instance, version):
@@ -57,11 +55,11 @@ def get_version(model_instance, version):
     return model_instance.__class__.objects.get(**kwargs)
 
 
-def apply_concurrency_check(model, fieldname, versionclass):
+def apply_concurrency_check(model, fieldname, versionclass) -> None:
     if hasattr(model, "_concurrencymeta"):
         return
 
-    logger.debug("Applying concurrency check to %s" % model)
+    logger.debug(f"Applying concurrency check to {model}")
 
     ver = versionclass()
 
@@ -77,7 +75,7 @@ def apply_concurrency_check(model, fieldname, versionclass):
 
 
 class concurrency_disable_increment:
-    def __init__(self, model):
+    def __init__(self, model) -> None:
         self.model = model
         self.old_value = model._concurrencymeta.increment
 
@@ -118,12 +116,12 @@ class disable_concurrency:
     :param model: model instance, model class or None
     """
 
-    def __init__(self, model=None):
+    def __init__(self, model=None) -> None:
         self.model = model
         self.old_value = conf.ENABLED
         self.concurrency_managed = (model is None) or hasattr(model, "_concurrencymeta")
 
-    def start(self):
+    def start(self) -> None:
         if not self.concurrency_managed:
             return
         if self.model is None:
@@ -140,7 +138,7 @@ class disable_concurrency:
                 False,
             )
 
-    def finish(self):
+    def finish(self) -> None:
         if not self.concurrency_managed:
             return
         if self.model is None:
