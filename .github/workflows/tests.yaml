@@ -88,6 +88,9 @@ jobs:
               github-token: ${{ secrets.GITHUB_TOKEN }}
               python-version: ${{ matrix.python }}
 
+      -   name: Install tox
+          run: uv tool install --python-preference only-managed --python 3.13 tox --with tox-uv --with tox-gh-actions
+
       -   name: Install Python
           if: matrix.python != '3.13'
           run: uv python install --python-preference only-managed ${{ matrix.python }}
