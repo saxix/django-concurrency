@@ -9,7 +9,10 @@ requires = [
 name = "django-concurrency"
 description = "Optimistic lock implementation for Django. Prevents users from doing concurrent editing"
 readme = "README.md"
-license.file = "LICENSE"
+license = "MIT"
+license-files = [
+  "LICENSE",
+]
 
 authors = [
   { name = "sax", email = "s.apostolico@gmail.com" },
