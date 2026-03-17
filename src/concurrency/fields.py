@@ -1,6 +1,7 @@
 import copy
 import functools
 import hashlib
+import inspect
 import logging
 import time
 from collections import OrderedDict
@@ -24,6 +25,18 @@ from .triggers import _TRIGGERS
 logger = logging.getLogger(__name__)
 
 OFFSET = int(time.mktime((2000, 1, 1, 0, 0, 0, 0, 0, 0)))
+
+
+def _accepts_argument(func, argument_name: str) -> bool:
+    """Return whether ``func`` accepts ``argument_name`` (or generic ``**kwargs``)."""
+    try:
+        parameters = inspect.signature(func).parameters.values()
+    except (TypeError, ValueError):
+        return False
+
+    return any(
+        parameter.name == argument_name or parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in parameters
+    )
 
 
 def class_prepared_concurrency_handler(sender, **kwargs) -> None:
@@ -116,7 +129,9 @@ class VersionField(Field):
         setattr(model_instance, self.attname, int(value))
 
     def pre_save(self, model_instance, add):
-        if add:
+        # Django 6 can evaluate insert values twice during a single save() call.
+        # Version assignment must be idempotent for new objects to avoid 0 -> 1 -> 2 on first insert.
+        if add and not getattr(model_instance, self.attname):
             value = self._get_next_version(model_instance)
             self._set_version_value(model_instance, value)
         return getattr(model_instance, self.attname)
@@ -133,11 +148,54 @@ class VersionField(Field):
         old_do_update = model._do_update
         model._do_update = model._concurrencymeta.field._wrap_do_update(old_do_update)
 
-    def _wrap_do_update(self, func):
-        def _do_update(model_instance, base_qs, using, pk_val, values, update_fields, forced_update):
+    def _wrap_do_update(self, func):  # noqa: C901
+        supports_returning_fields = _accepts_argument(func, "returning_fields")
+
+        def _updated_with_no_values():
+            return [()] if supports_returning_fields else True
+
+        def _not_updated():
+            return [] if supports_returning_fields else False
+
+        def _update_with_filtered_queryset(filtered_queryset, values, returning_fields):
+            if supports_returning_fields:
+                return filtered_queryset._update(values, returning_fields=returning_fields)
+            return filtered_queryset._update(values) >= 1
+
+        def _perform_update(model_instance, filtered_queryset, values, forced_update, returning_fields):
+            if model_instance._meta.select_on_save and not forced_update:
+                if not filtered_queryset.exists():
+                    return _not_updated()
+                updated = _update_with_filtered_queryset(filtered_queryset, values, returning_fields)
+                if updated:
+                    return updated
+                return _updated_with_no_values() if filtered_queryset.exists() else _not_updated()
+            return _update_with_filtered_queryset(filtered_queryset, values, returning_fields)
+
+        def _do_update(  # noqa: C901
+            model_instance,
+            base_qs,
+            using,
+            pk_val,
+            values,
+            update_fields,
+            forced_update,
+            returning_fields=None,
+        ):
             version_field = model_instance._concurrencymeta.field
             old_version = get_revision_of_object(model_instance)
             if not version_field.model._meta.abstract and version_field.model is not base_qs.model:
+                if supports_returning_fields:
+                    return func(
+                        model_instance,
+                        base_qs,
+                        using,
+                        pk_val,
+                        values,
+                        update_fields,
+                        forced_update,
+                        returning_fields=returning_fields,
+                    )
                 return func(
                     model_instance,
                     base_qs,
@@ -148,22 +206,14 @@ class VersionField(Field):
                     forced_update,
                 )
 
-            for i, (field, _1, _value) in enumerate(values):
-                if field == version_field:
-                    if model_instance._concurrencymeta.increment and not getattr(
-                        model_instance, "_concurrency_disable_increment", False
-                    ):
-                        new_version = field._get_next_version(model_instance)
-                        values[i] = (field, _1, new_version)
-                        field._set_version_value(model_instance, new_version)
-                    # else:
-                    #     new_version = old_version
-                    break
-
+            filtered = base_qs.filter(pk=pk_val)
             # This provides a default if either (1) no values were provided or (2) we reached this code as part of a
             # create.  We don't need to worry about a race condition because a competing create should produce an
             # error anyway.
-            updated = base_qs.filter(pk=pk_val).exists()
+            if not values:
+                if update_fields is not None or filtered.exists():
+                    return _updated_with_no_values()
+                return _not_updated()
 
             # This second situation can occur because `Model.save_base` calls `Model._save_parent` without relaying
             # the `force_insert` flag that marks the process as a create.  Eventually, `Model._save_table` will call
@@ -171,7 +221,21 @@ class VersionField(Field):
             # is no object to update and the caller will fall back on the create logic instead.  We need to ensure
             # the update fails (but does not raise an exception) under this circumstance by skipping the concurrency
             # logic.
-            if values and updated:
+            if filtered.exists():
+                for i, (field, _1, _value) in enumerate(values):
+                    if field == version_field:
+                        if model_instance._concurrencymeta.increment and not getattr(
+                            model_instance,
+                            "_concurrency_disable_increment",
+                            False,
+                        ):
+                            new_version = field._get_next_version(model_instance)
+                            values[i] = (field, _1, new_version)
+                            field._set_version_value(model_instance, new_version)
+                        # else:
+                        #     new_version = old_version
+                        break
+
                 if (
                     model_instance._concurrencymeta.enabled
                     and conf.ENABLED
@@ -179,15 +243,30 @@ class VersionField(Field):
                     and (old_version or conf.VERSION_FIELD_REQUIRED)
                 ):
                     filter_kwargs = {"pk": pk_val, version_field.attname: old_version}
-                    updated = base_qs.filter(**filter_kwargs)._update(values) >= 1
+                    updated = _perform_update(
+                        model_instance,
+                        base_qs.filter(**filter_kwargs),
+                        values,
+                        forced_update,
+                        returning_fields,
+                    )
                     if not updated:
                         version_field._set_version_value(model_instance, old_version)
-                        updated = conf._callback(model_instance)
-                else:
-                    filter_kwargs = {"pk": pk_val}
-                    updated = base_qs.filter(**filter_kwargs)._update(values) >= 1
+                        callback_result = conf._callback(model_instance)
+                        if supports_returning_fields:
+                            return _updated_with_no_values() if callback_result else _not_updated()
+                        return callback_result
+                    return updated
 
-            return updated
+                return _perform_update(
+                    model_instance,
+                    base_qs.filter(pk=pk_val),
+                    values,
+                    forced_update,
+                    returning_fields,
+                )
+
+            return _not_updated()
 
         return update_wrapper(_do_update, func)
 
