@@ -1,3 +1,9 @@
+Release 2.8
+-----------
+* add support for Django 6.0
+* fixes #261
+
+
 Release 2.7
 -----------
 * fixes #256

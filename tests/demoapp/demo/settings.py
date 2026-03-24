@@ -31,8 +31,8 @@ INSTALLED_APPS = [
     "reversion",
     "demo",
 ]
-IS_DJANGO_5 = django.VERSION[0] == 5
-if IS_DJANGO_5:
+IS_DJANGO_5_OR_NEWER = django.VERSION[0] >= 5
+if IS_DJANGO_5_OR_NEWER:
     MIGRATION_MODULES = {
         "demo": "demo.migrations5",
         "auth": "demo.auth_migrations5",

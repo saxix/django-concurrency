@@ -36,7 +36,7 @@ jobs:
       fail-fast: false
       matrix:
         python: [ "3.13" ]
-        django: [ "52", "42", "32" ]
+        django: [ "60", "52", "42", "32" ]
         db-engine: [ "pg", "mysql" ]
     env:
       PY_VER: ${{ matrix.python}}
