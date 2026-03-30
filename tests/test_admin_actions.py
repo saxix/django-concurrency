@@ -103,3 +103,34 @@ class TestAdminActions(AdminTestCase):
         form = response.forms[1] if len(response.forms) > 1 else response.form  # dj41
         response = form.submit().follow()
         assert response.status_code == 200
+
+    @pytest.mark.django_db
+    def test_action_select_nothing(self):
+        pk = next(unique_id)
+        SimpleConcurrentModel.objects.get_or_create(pk=pk)
+        response = self.app.get(reverse("admin:demo_simpleconcurrentmodel_changelist"), user="sax")
+        form = response.forms["changelist-form"]
+        # Do not select anything
+        form["action"] = "delete_selected"
+        response = form.submit()
+        # Should redirect back or do nothing (standard Django behavior if nothing selected)
+        # Actually, response_action returns None, which causes changelist_view to redirect back.
+        assert response.status_code == 200
+
+    @pytest.mark.django_db
+    def test_action_checkbox_no_concurrent(self):
+        from demo.models import SimpleConcurrentModel  # noqa: PLC0415
+        from concurrency.admin import ConcurrencyActionMixin  # noqa: PLC0415
+        from django.contrib import admin  # noqa: PLC0415
+
+        class MockAdmin(ConcurrencyActionMixin, admin.ModelAdmin):
+            check_concurrent_action = False
+
+        ma = MockAdmin(SimpleConcurrentModel, admin.site)
+        obj = SimpleConcurrentModel.objects.create(username="test_checkbox_2")
+        res = ma.action_checkbox(obj)
+        # Should contain the standard checkbox value (pk)
+        assert str(obj.pk) in res
+        from concurrency.compat import concurrency_param_name  # noqa: PLC0415
+
+        assert concurrency_param_name not in res

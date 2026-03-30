@@ -31,3 +31,19 @@ def test_config(settings):
     settings.OTHER_CALLBACK = 222
     with pytest.raises(ImproperlyConfigured):
         MySettings("OTHER")
+
+    class TriggerSettings(AppSettings):
+        defaults = {
+            "TRIGGERS_FACTORY": {"my": "invalid.path.to.class"},
+        }
+
+    with pytest.raises(ImproperlyConfigured):
+        TriggerSettings("TRIGGER")
+
+    class IgnoreSettings(AppSettings):
+        defaults = {
+            "IGNORE_DEFAULT": True,
+        }
+
+    with pytest.raises(ImproperlyConfigured, match="IGNORE_DEFAULT has been removed"):
+        IgnoreSettings("IGNORE")

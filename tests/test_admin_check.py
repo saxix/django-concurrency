@@ -34,11 +34,10 @@ def test_admin_check_fieldsets():
 def test_admin_check_valid_fieldsets():
     class ValidAdmin(ConcurrentModelAdmin):
         fieldsets = [
-            (None, {'fields': ['username', 'version']}),
+            (None, {"fields": ["username", "version"]}),
         ]
 
     ma = ValidAdmin(SimpleConcurrentModel, AdminSite())
     errors = ma.check()
-    assert not any(e.id == 'concurrency.A001' for e in errors)
-    assert not any(e.id == 'concurrency.A002' for e in errors)
-
+    assert not any(e.id == "concurrency.A001" for e in errors)
+    assert not any(e.id == "concurrency.A002" for e in errors)

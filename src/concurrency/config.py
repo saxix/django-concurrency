@@ -1,8 +1,8 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.test.signals import setting_changed
+from django.urls import get_callable
 from django.utils.module_loading import import_string
 
-from .compat import get_callable
 
 # List Editable Policy
 # 1 do not save updated records, save others, show message to the user
@@ -38,7 +38,7 @@ class AppSettings:
     def __init__(self, prefix) -> None:
         """Load our settings from django.conf.settings, applying defaults for any that are omitted."""
         self.prefix = prefix
-        from django.conf import settings  # noqa
+        from django.conf import settings  # noqa: PLC0415
 
         for name, default in self.defaults.items():
             prefix_name = (self.prefix + "_" + name).upper()

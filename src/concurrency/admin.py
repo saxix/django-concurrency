@@ -169,10 +169,6 @@ class ConcurrentManagementForm(ManagementForm):
 
     __html__ = __str__
 
-    def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
-        ret = super()._html_output(normal_row, error_row, row_ender, help_text_html, errors_on_separate_row)
-        return format_html("{}{}", ret, self._get_concurrency_fields())
-
 
 class ConcurrentBaseModelFormSet(BaseModelFormSet):
     @property

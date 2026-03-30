@@ -65,9 +65,9 @@ def class_prepared_concurrency_handler(sender, **kwargs) -> None:
 
 
 def post_syncdb_concurrency_handler(sender, **kwargs) -> None:
-    from django.db import connections  # noqa
+    from django.db import connections  # noqa: PLC0415
 
-    from concurrency.triggers import create_triggers  # noqa
+    from concurrency.triggers import create_triggers  # noqa: PLC0415
 
     databases = list(connections)
     create_triggers(databases)
@@ -312,10 +312,10 @@ class TriggerVersionField(VersionField):
     def check(self, **kwargs):
         errors = []
         model = self.model
-        from django.core.checks import Warning  # noqa
-        from django.db import connections, router  # noqa
+        from django.core.checks import Warning  # noqa: PLC0415 A004
+        from django.db import connections, router  # noqa: PLC0415
 
-        from concurrency.triggers import factory  # noqa
+        from concurrency.triggers import factory  # noqa: PLC0415
 
         alias = router.db_for_write(model)
         connection = connections[alias]
@@ -333,7 +333,7 @@ class TriggerVersionField(VersionField):
 
     @property
     def trigger_name(self):
-        from concurrency.triggers import get_trigger_name  # noqa
+        from concurrency.triggers import get_trigger_name  # noqa: PLC0415
 
         return get_trigger_name(self)
 
@@ -396,11 +396,11 @@ class ConditionalVersionField(AutoIncVersionField):
 
     def _load_model(self, *args, **kwargs) -> None:
         instance = kwargs["instance"]
-        instance._concurrencymeta.initial = self._get_hash(instance)
+        instance._concurrency_initial = self._get_hash(instance)
 
     def _save_model(self, *args, **kwargs) -> None:
         instance = kwargs["instance"]
-        instance._concurrencymeta.initial = self._get_hash(instance)
+        instance._concurrency_initial = self._get_hash(instance)
 
     def _get_hash(self, instance):
         values = OrderedDict()
@@ -431,7 +431,7 @@ class ConditionalVersionField(AutoIncVersionField):
         if not model_instance.pk:
             return int(getattr(model_instance, self.attname) + 1)
 
-        old = model_instance._concurrencymeta.initial
+        old = getattr(model_instance, "_concurrency_initial", None)
         new = self._get_hash(model_instance)
         if old != new:
             return int(getattr(model_instance, self.attname, 0) + 1)

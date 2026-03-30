@@ -170,7 +170,7 @@ ini_options.addopts = [
   "--cov-report=xml",
   "--cov-config=tests/.coveragerc",
 ]
-ini_options.python_files = "tests/test_*.py tests/**/test_*.py src/*.py"
+ini_options.python_files = "test_*.py"
 ini_options.markers = [
   "functional: mark a test as functional",
   "selenium: selenium test",

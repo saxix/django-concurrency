@@ -25,7 +25,7 @@ class TestCustomConcurrencyMeta(TransactionTestCase):
     def test_meta_inheritance(self):
         # TestModelWithCustomOptions extends ConcurrentModel
         # but we disabled concurrency only in TestModelWithCustomOptions
-        from concurrency import api  # noqa
+        from concurrency import api  # noqa: PLC0415
 
         concurrency_enabled1 = SimpleConcurrentModel.objects.get_or_create(username="test")[0]
         concurrency_enabled2 = SimpleConcurrentModel.objects.get_or_create(username="test")[0]

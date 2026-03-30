@@ -48,9 +48,9 @@ def test_do_update_accepts_returning_fields(model_class):
 
 @pytest.mark.django_db(transaction=False)
 def test_wrap_do_update_forwards_returning_fields_in_passthrough_path():
-    from django.contrib.auth.models import Group  # noqa
+    from django.contrib.auth.models import Group  # noqa: PLC0415
 
-    from demo.models import SimpleConcurrentModel  # noqa
+    from demo.models import SimpleConcurrentModel  # noqa: PLC0415
 
     instance = SimpleConcurrentModel.objects.create(username="abc")
     captured = {}
@@ -86,7 +86,7 @@ def test_wrap_do_update_forwards_returning_fields_in_passthrough_path():
 
 @pytest.mark.django_db(transaction=False)
 def test_wrap_do_update_returns_django6_shapes_for_no_values():
-    from demo.models import SimpleConcurrentModel  # noqa
+    from demo.models import SimpleConcurrentModel  # noqa: PLC0415
 
     instance = SimpleConcurrentModel.objects.create(username="abc")
 
@@ -160,9 +160,9 @@ def test_accepts_argument_handles_explicit_kwargs_missing_and_signature_errors(m
 
 @pytest.mark.django_db(transaction=False)
 def test_wrap_do_update_legacy_signature_passthrough_ignores_returning_fields():
-    from django.contrib.auth.models import Group  # noqa
+    from django.contrib.auth.models import Group  # noqa: PLC0415
 
-    from demo.models import SimpleConcurrentModel  # noqa
+    from demo.models import SimpleConcurrentModel  # noqa: PLC0415
 
     instance = SimpleConcurrentModel.objects.create(username="abc")
     captured = {"called": False}
@@ -192,7 +192,7 @@ def test_wrap_do_update_legacy_signature_passthrough_ignores_returning_fields():
 
 @pytest.mark.django_db(transaction=False)
 def test_wrap_do_update_legacy_signature_returns_bool_shapes_for_no_values():
-    from demo.models import SimpleConcurrentModel  # noqa
+    from demo.models import SimpleConcurrentModel  # noqa: PLC0415
 
     instance = SimpleConcurrentModel.objects.create(username="abc")
     base_qs = SimpleConcurrentModel._base_manager.using(instance._state.db)
@@ -230,7 +230,7 @@ def test_wrap_do_update_legacy_signature_returns_bool_shapes_for_no_values():
 
 
 def test_pre_save_is_idempotent_for_double_add_on_new_instance():
-    from demo.models import AutoIncConcurrentModel  # noqa
+    from demo.models import AutoIncConcurrentModel  # noqa: PLC0415
 
     # New instances start from the default version=0.
     instance = AutoIncConcurrentModel(username="abc")
@@ -248,8 +248,8 @@ def test_pre_save_is_idempotent_for_double_add_on_new_instance():
 
 @pytest.mark.django_db(transaction=False)
 def test_do_update_returns_expected_shape_when_callback_returns_false(monkeypatch):
-    from demo.models import SimpleConcurrentModel  # noqa
-    from demo.util import attributes  # noqa
+    from demo.models import SimpleConcurrentModel  # noqa: PLC0415
+    from demo.util import attributes  # noqa: PLC0415
 
     instance = SimpleConcurrentModel.objects.create(username="abc")
 
@@ -278,7 +278,7 @@ def test_do_update_returns_expected_shape_when_callback_returns_false(monkeypatc
 
 @pytest.mark.django_db(transaction=False)
 def test_do_update_returns_expected_shape_when_callback_returns_true(monkeypatch):
-    from demo.models import SimpleConcurrentModel  # noqa
+    from demo.models import SimpleConcurrentModel  # noqa: PLC0415
 
     instance = SimpleConcurrentModel.objects.create(username="abc")
 
@@ -303,8 +303,8 @@ def test_do_update_returns_expected_shape_when_callback_returns_true(monkeypatch
 
 @pytest.mark.django_db(transaction=False)
 def test_do_update_select_on_save_returns_expected_shape_when_update_reports_empty(monkeypatch):
-    from demo.models import SimpleConcurrentModel  # noqa
-    from demo.util import attributes  # noqa
+    from demo.models import SimpleConcurrentModel  # noqa: PLC0415
+    from demo.util import attributes  # noqa: PLC0415
 
     instance = SimpleConcurrentModel.objects.create(username="abc")
 

@@ -56,5 +56,4 @@ class ConcurrencyOptions:
     ignore_fields = None
     skip = False
     increment = True
-    initial = None
     triggers = []

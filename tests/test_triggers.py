@@ -32,7 +32,7 @@ def test_trigger_registry():
     registry = TriggerRegistry()
 
     class MockModel:
-        class _meta:
+        class _meta:  # noqa
             app_label = "test_app"
 
     class MockField:

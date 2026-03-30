@@ -13,6 +13,7 @@ from concurrency.config import (
     CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL,
     CONCURRENCY_LIST_EDITABLE_POLICY_SILENT,
 )
+from django.core.exceptions import ValidationError
 from concurrency.exceptions import RecordModifiedError
 
 
@@ -145,3 +146,13 @@ class TestListEditable(AdminTestCase):
         form.submit("_save").follow()
         assert not LogEntry.objects.filter(**log_filter).exclude(id__in=logs).exists()
         transaction.rollback()
+
+    def test_management_form_tampering(self):
+        self.TARGET.objects.get_or_create(pk=next(unique_id))
+        res = self.app.get("/admin/", user="sax")
+        res = res.click(self.TARGET._meta.verbose_name_plural)
+        form = res.forms["changelist-form"]
+        # Tamper with management form
+        form["form-TOTAL_FORMS"] = "invalid"
+        with pytest.raises(ValidationError, match="ManagementForm data is missing or has been tampered with"):
+            form.submit("_save")

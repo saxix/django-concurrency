@@ -16,7 +16,7 @@ skippypy = pytest.mark.skipif(PYPY, reason="skip on pypy")
 
 
 def pytest_configure():
-    from django.conf import settings  # noqa
+    from django.conf import settings  # noqa: PLC0415
 
     settings.SILENCED_SYSTEM_CHECKS = ["concurrency.W001"]
     settings.CONCURRENCY_VERSION_FIELD_REQUIRED = False
@@ -25,7 +25,7 @@ def pytest_configure():
 
 @pytest.fixture(scope="session")
 def client(request):
-    import django_webtest  # noqa
+    import django_webtest  # noqa: PLC0415
 
     wtm = django_webtest.WebTestMixin()
     wtm.csrf_checks = False

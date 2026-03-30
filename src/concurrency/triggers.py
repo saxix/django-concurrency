@@ -197,7 +197,7 @@ FOR EACH ROW SET NEW.{field.column} = OLD.{field.column}+1;
 
 
 def factory(conn):
-    from concurrency.config import conf  # noqa
+    from concurrency.config import conf  # noqa: PLC0415
 
     mapping = conf.TRIGGERS_FACTORY
     try:

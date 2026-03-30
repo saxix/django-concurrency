@@ -64,12 +64,12 @@ def apply_concurrency_check(model, fieldname, versionclass) -> None:
     ver.contribute_to_class(model, fieldname)
     model._concurrencymeta.field = ver
 
-    from concurrency.fields import class_prepared_concurrency_handler  # noqa
+    from concurrency.fields import class_prepared_concurrency_handler  # noqa: PLC0415
 
     class_prepared_concurrency_handler(model)
 
 
-class concurrency_disable_increment:  # noqa
+class concurrency_disable_increment:  # noqa: PLC0415 N801
     def __init__(self, model) -> None:
         self.model = model
         self.old_value = model._concurrencymeta.increment
