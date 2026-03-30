@@ -13,7 +13,7 @@ def obj():
 
 @pytest.mark.django_db
 def test_check(obj, monkeypatch):
-    from django.core.checks import Warning
+    from django.core.checks import Warning  # noqa
 
     monkeypatch.setattr(obj._concurrencymeta.field, "_trigger_name", "test")
 

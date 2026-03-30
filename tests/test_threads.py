@@ -20,7 +20,7 @@ def test_threads():
 
     @concurrently(25)
     def run():
-        for i in range(5):
+        for _ in range(5):
             while True:
                 x = refetch(obj)
                 transaction.commit()

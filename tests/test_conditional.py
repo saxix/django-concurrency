@@ -22,16 +22,12 @@ def user():
 
 @pytest.fixture
 def instance(user):
-    return ConditionalVersionModel.objects.get_or_create(
-        field1="1", user=user, field2="1", field3="1"
-    )[0]
+    return ConditionalVersionModel.objects.get_or_create(field1="1", user=user, field2="1", field3="1")[0]
 
 
 @pytest.fixture
 def instance_no_meta(user):
-    return ConditionalVersionModelWithoutMeta.objects.create(
-        field1="1", user=user, field2="1", field3="1"
-    )
+    return ConditionalVersionModelWithoutMeta.objects.create(field1="1", user=user, field2="1", field3="1")
 
 
 @pytest.fixture
@@ -107,7 +103,7 @@ def test_conflict_no_meta(instance_no_meta):
         instance_no_meta.save()
 
 
-@pytest.mark.django_db()
+@pytest.mark.django_db
 def test_self_relations():
     a = ConditionalVersionModelSelfRelation.objects.create(name="a")
     ConditionalVersionModelSelfRelation.objects.create(name="b")

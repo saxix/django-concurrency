@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4
       - id: changes
         name: Check for file changes
-        uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd # v3.0.0
+        uses: dorny/paths-filter@v4
         with:
           base: ${{ github.ref }}
           token: ${{ github.token }}
@@ -35,9 +35,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [ "3.13" ]
-        django: [ "60", "52", "42", "32" ]
+        python: [ "3.13", "3.14" ]
+        django: [ "60", "52", "42" ]
         db-engine: [ "pg", "mysql" ]
+        exclude:
+          - python: "3.14"
+            django: "42"
+            db-engine: "pg"
+          - python: "3.14"
+            django: "42"
+            db-engine: "mysql"
     env:
       PY_VER: ${{ matrix.python}}
       DJ_VER: ${{ matrix.django}}
@@ -110,7 +117,7 @@ jobs:
               verbose: true
 
       -   name: Upload coverage to Codecov
-          uses: codecov/codecov-action@v5
+          uses: codecov/codecov-action@v6
           with:
               env_vars: OS,PYTHON
               fail_ci_if_error: true

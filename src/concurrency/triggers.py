@@ -25,7 +25,7 @@ _TRIGGERS = TriggerRegistry()
 
 
 def get_trigger_name(field) -> str:
-    """
+    """Retrieve the name of the trigger.
 
     :param field: Field instance
     :return: unicode
@@ -48,7 +48,7 @@ def get_triggers(databases=None):
 
 
 def drop_triggers(*databases):
-    global _TRIGGERS
+    global _TRIGGERS  # noqa
     ret = defaultdict(list)
     for app_label, model_name in _TRIGGERS:
         model = apps.get_model(app_label, model_name)
@@ -66,7 +66,7 @@ def drop_triggers(*databases):
 
 
 def create_triggers(databases):
-    global _TRIGGERS
+    global _TRIGGERS  # noqa
     ret = defaultdict(list)
 
     for app_label, model_name in _TRIGGERS:
@@ -87,8 +87,8 @@ def create_triggers(databases):
 
 
 class TriggerFactory:
-    """
-    Abstract Factory class to create triggers.
+    """Abstract Factory class to create triggers.
+
     Implemementations need to set the following attributes
 
     `update_clause`, `drop_clause` and `list_clause`
@@ -127,7 +127,7 @@ class TriggerFactory:
             stm = self.update_clause.format(trigger_name=field.trigger_name, opts=field.model._meta, field=field)
             try:
                 self.connection.cursor().execute(stm)
-            except BaseException as exc:  # pragma: no cover
+            except Exception as exc:  # noqa pragma: no cover
                 msg = f"""Error executing:
 {stm}
 {exc}"""
@@ -196,7 +196,7 @@ FOR EACH ROW SET NEW.{field.column} = OLD.{field.column}+1;
 
 
 def factory(conn):
-    from concurrency.config import conf
+    from concurrency.config import conf  # noqa
 
     mapping = conf.TRIGGERS_FACTORY
     try:

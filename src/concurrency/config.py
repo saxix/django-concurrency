@@ -36,12 +36,9 @@ class AppSettings:
     }
 
     def __init__(self, prefix) -> None:
-        """
-        Loads our settings from django.conf.settings, applying defaults for any
-        that are omitted.
-        """
+        """Load our settings from django.conf.settings, applying defaults for any that are omitted."""
         self.prefix = prefix
-        from django.conf import settings
+        from django.conf import settings  # noqa
 
         for name, default in self.defaults.items():
             prefix_name = (self.prefix + "_" + name).upper()
@@ -78,8 +75,7 @@ class AppSettings:
         setattr(self, name, value)
 
     def _handler(self, sender, setting, value, **kwargs) -> None:
-        """
-            handler for ``setting_changed`` signal.
+        """Retrieve handler for ``setting_changed`` signal.
 
         @see :ref:`django:setting-changed`_
         """

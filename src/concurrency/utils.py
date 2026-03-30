@@ -1,6 +1,7 @@
 import inspect
 import logging
 import warnings
+import pytest
 
 from concurrency.exceptions import RecordModifiedError
 
@@ -8,7 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 def deprecated(replacement=None, version=None):
-    """A decorator which can be used to mark functions as deprecated.
+    """Mark function as deprecated.
+
     replacement is a callable that will be called with the same args
     as the decorated function.
     >>> import pytest
@@ -45,8 +47,7 @@ def deprecated(replacement=None, version=None):
 
 
 class ConcurrencyTestMixin:
-    """
-    Mixin class to test Models that use `VersionField`
+    """Mixin class to test Models that use `VersionField`.
 
     this class offer a simple test scenario. Its purpose is to discover
     some conflict in the `save()` inheritance::
@@ -72,19 +73,23 @@ class ConcurrencyTestMixin:
         return self.concurrency_model.objects.get_or_create(**args)[0]
 
     def test_concurrency_conflict(self) -> None:
-        from concurrency import api
+        from concurrency import api  # noqa
 
         target = self._get_concurrency_target()
         target_copy = self._get_concurrency_target()
         v1 = api.get_revision_of_object(target)
         v2 = api.get_revision_of_object(target_copy)
-        assert v1 == v2, f"got same row with different version ({v1}/{v2})"  # noqa: S101
+        if v1 != v2:
+            raise ValueError(f"Got same row with different version ({v1}/{v2})")
         target.save()
-        assert target.pk is not None  # sanity check
-        self.assertRaises(RecordModifiedError, target_copy.save)
+        if target.pk is None:
+            raise ValueError("target must be saved (pk is None)")
+
+        with pytest.raises(RecordModifiedError):
+            target_copy.save()
 
     def test_concurrency_safety(self) -> None:
-        from concurrency import api
+        from concurrency import api  # noqa
 
         target = self.concurrency_model()
         version = api.get_revision_of_object(target)
@@ -104,14 +109,12 @@ class ConcurrencyAdminTestMixin:
 
 
 def refetch(model_instance):
-    """
-    Reload model instance from the database
-    #"""
+    """Reload model instance from the database."""
     return model_instance.__class__.objects.get(pk=model_instance.pk)
 
 
 def get_classname(o):
-    """Returns the classname of an object r a class
+    """Return the classname of an object r a class.
 
     :param o:
     :return:
@@ -124,7 +127,7 @@ def get_classname(o):
 
 
 def fqn(o):
-    """Returns the fully qualified class name of an object or a class
+    """Return the fully qualified class name of an object or a class.
 
     :param o: object or class
     :return: class name
@@ -164,7 +167,8 @@ def fqn(o):
 
 
 def flatten(iterable):
-    """
+    """Flat sequence into list.
+
     flatten(sequence) -> list
 
     Returns a single, flat list which contains all elements retrieved
@@ -175,14 +179,14 @@ def flatten(iterable):
     :return: list
 
     Examples:
-
     >>> from adminactions.utils import flatten
     >>> [1, 2, [3, 4], (5, 6)]
     [1, 2, [3, 4], (5, 6)]
 
     >>> flatten([[[1, 2, 3], (42, None)], [4, 5], [6], 7, (8, 9, 10)])
-    [1, 2, 3, 42, None, 4, 5, 6, 7, 8, 9, 10]"""
+    [1, 2, 3, 42, None, 4, 5, 6, 7, 8, 9, 10]
 
+    """
     result = []
     for el in iterable:
         if hasattr(el, "__iter__") and not isinstance(el, str):

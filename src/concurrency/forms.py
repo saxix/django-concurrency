@@ -8,7 +8,7 @@ from django.core.exceptions import (
 )
 from django.core.signing import BadSignature, Signer
 from django.forms import HiddenInput, ModelForm
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 from concurrency.config import conf
@@ -18,6 +18,7 @@ from concurrency.exceptions import RecordModifiedError, VersionError
 
 class ConcurrentForm(ModelForm):
     """Simple wrapper to ModelForm that try to mitigate some concurrency error.
+
     Note that is always possible have a RecordModifiedError in model.save().
     Statistically form.clean() should catch most of the concurrent editing, but
     is good to catch RecordModifiedError in the view too.
@@ -38,8 +39,7 @@ class ConcurrentForm(ModelForm):
 
 
 class VersionWidget(HiddenInput):
-    """
-    Widget that show the revision number using <div>
+    """Widget that show the revision number using <div>.
 
     Usually VersionField use `HiddenInput` as Widget to minimize the impact on the
     forms, in the Admin this produce a side effect to have the label *Version* without
@@ -61,7 +61,7 @@ class VersionWidget(HiddenInput):
         elif value is not None:
             label = str(value)
 
-        return mark_safe(f"{ret}<div>{label}</div>")
+        return format_html("{}<div>{}</div>", ret, label)
 
 
 class VersionFieldSigner(Signer):

@@ -30,9 +30,7 @@ def test_middleware():
 
     with override_settings(CONCURRENCY_HANDLER409=handler):
         request = _get_request("needsquoting#")
-        r = ConcurrencyMiddleware().process_exception(
-            request, RecordModifiedError(target=SimpleConcurrentModel())
-        )
+        r = ConcurrencyMiddleware().process_exception(request, RecordModifiedError(target=SimpleConcurrentModel()))
     assert r.status_code == 409
 
 
@@ -51,30 +49,26 @@ class ConcurrencyMiddlewareTest1(AdminTestCase):
         """
         Tests that RecordModifiedError is handled correctly.
         """
-        id = next(unique_id)
-        m, __ = SimpleConcurrentModel.objects.get_or_create(pk=id)
+        pk = next(unique_id)
+        m, __ = SimpleConcurrentModel.objects.get_or_create(pk=pk)
         copy = SimpleConcurrentModel.objects.get(pk=m.pk)
         copy.save()
         request = self._get_request("/")
-        r = ConcurrencyMiddleware().process_exception(
-            request, RecordModifiedError(target=m)
-        )
-        self.assertEqual(r.status_code, 409)
+        r = ConcurrencyMiddleware().process_exception(request, RecordModifiedError(target=m))
+        assert r.status_code == 409
 
 
 class ConcurrencyMiddlewareTest2(AdminTestCase):
     @property
     def settings_middleware(self):
-        return getattr(settings, self.middleware_setting_name) + [
-            "concurrency.middleware.ConcurrencyMiddleware"
-        ]
+        return getattr(settings, self.middleware_setting_name) + ["concurrency.middleware.ConcurrencyMiddleware"]
 
     @settings_middleware.setter
     def settings_middleware(self, value):
         setattr(settings, self.middleware_setting_name, value)
 
     def test_in_admin(self):
-        id = next(unique_id)
+        pk = next(unique_id)
         model_admin = site._registry[SimpleConcurrentModel]
 
         with attributes(
@@ -85,7 +79,7 @@ class ConcurrencyMiddlewareTest2(AdminTestCase):
             ),
             (ConcurrentModelAdmin, "form", DELETE_ATTRIBUTE),
         ):
-            saved, __ = SimpleConcurrentModel.objects.get_or_create(pk=id)
+            saved, __ = SimpleConcurrentModel.objects.get_or_create(pk=pk)
 
             url = reverse("admin:demo_simpleconcurrentmodel_change", args=[saved.pk])
             res = self.app.get(url, user=self.user.username)
@@ -95,12 +89,12 @@ class ConcurrencyMiddlewareTest2(AdminTestCase):
 
             res = form.submit(expect_errors=True)
 
-            self.assertEqual(res.status_code, 409)
+            assert res.status_code == 409
 
             target = res.context["target"]
-            self.assertIn("target", res.context)
-            self.assertIn("saved", res.context)
+            assert "target" in res.context
+            assert "saved" in res.context
 
-            self.assertEqual(res.context["target"].version, target.version)
-            self.assertEqual(res.context["saved"].version, saved.version)
-            self.assertEqual(res.context["request_path"], url)
+            assert res.context["target"].version == target.version
+            assert res.context["saved"].version == saved.version
+            assert res.context["request_path"] == url

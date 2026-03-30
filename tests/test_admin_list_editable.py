@@ -28,9 +28,7 @@ class TestListEditable(AdminTestCase):
         res = self.app.get("/admin/", user="sax")
         # file:///admin/demo/listeditableconcurrentmodel/add/
         res = res.click(self.TARGET._meta.verbose_name_plural)
-        res = res.click(
-            "Add", href=f"/admin/demo/{self.TARGET._meta.model_name}/add/", index=0
-        )
+        res = res.click("Add", href=f"/admin/demo/{self.TARGET._meta.model_name}/add/", index=0)
         form = res.forms["listeditableconcurrentmodel_form"]
         form["username"] = "CHAR"
         form.submit().follow()
@@ -42,11 +40,11 @@ class TestListEditable(AdminTestCase):
         form = res.forms["changelist-form"]
         form["form-0-username"] = "CHAR"
         form.submit("_save").follow()
-        self.assertTrue(self.TARGET.objects.filter(username="CHAR").exists())
+        assert self.TARGET.objects.filter(username="CHAR").exists()
 
     def test_concurrency_policy_abort(self):
-        id = next(unique_id)
-        self.TARGET.objects.get_or_create(pk=id)
+        pk = next(unique_id)
+        self.TARGET.objects.get_or_create(pk=pk)
         model_admin = site._registry[self.TARGET]
         with attributes(
             (
@@ -57,19 +55,19 @@ class TestListEditable(AdminTestCase):
         ):
             res = self.app.get("/admin/", user="sax")
             res = res.click(self.TARGET._meta.verbose_name_plural)
-            self._create_conflict(id)
+            self._create_conflict(pk)
             form = res.forms["changelist-form"]
             form["form-0-username"] = "CHAR"
 
             with pytest.raises(RecordModifiedError):
-                res = form.submit("_save")
+                form.submit("_save")
 
-            self.assertTrue(self.TARGET.objects.filter(username=SENTINEL).exists())
-            self.assertFalse(self.TARGET.objects.filter(username="CHAR").exists())
+            assert self.TARGET.objects.filter(username=SENTINEL).exists()
+            assert not self.TARGET.objects.filter(username="CHAR").exists()
 
     def test_concurrency_policy_silent(self):
-        id = next(unique_id)
-        self.TARGET.objects.get_or_create(pk=id)
+        pk = next(unique_id)
+        self.TARGET.objects.get_or_create(pk=pk)
         model_admin = site._registry[self.TARGET]
         with attributes(
             (
@@ -80,14 +78,14 @@ class TestListEditable(AdminTestCase):
         ):
             res = self.app.get("/admin/", user="sax")
             res = res.click(self.TARGET._meta.verbose_name_plural)
-            self._create_conflict(id)
+            self._create_conflict(pk)
             form = res.forms["changelist-form"]
             form["form-0-username"] = "CHAR"
-            version = int(form[f"{concurrency_param_name}_{id}"].value)
-            res = form.submit("_save").follow()
+            version = int(form[f"{concurrency_param_name}_{pk}"].value)
+            form.submit("_save").follow()
             changed = self.TARGET.objects.filter(username=SENTINEL).first()
-            self.assertTrue(changed)
-            self.assertGreater(changed.version, version)
+            assert changed
+            assert changed.version > version
 
     def test_message_user(self):
         id1 = next(unique_id)
@@ -104,56 +102,46 @@ class TestListEditable(AdminTestCase):
         form["form-1-username"] = "CHAR2"
         res = form.submit("_save").follow()
 
-        messages = map(str, list(res.context["messages"]))
+        messages = [str(m) for m in res.context["messages"]]
 
-        self.assertIn(
-            "Record with pk `%s` has been modified and was not updated" % id1, messages
-        )
-        self.assertIn(
-            "1 %s was changed successfully."
-            % force_str(self.TARGET._meta.verbose_name),
-            messages,
-        )
+        assert "Record with pk `%s` has been modified and was not updated" % id1 in messages
+        assert "1 %s was changed successfully." % force_str(self.TARGET._meta.verbose_name) in messages
 
     def test_message_user_no_changes(self):
-        id = next(unique_id)
-        self.TARGET.objects.get_or_create(pk=id)
+        pk = next(unique_id)
+        self.TARGET.objects.get_or_create(pk=pk)
 
         res = self.app.get("/admin/", user="sax")
         res = res.click(self.TARGET._meta.verbose_name_plural)
 
-        self._create_conflict(id)
+        self._create_conflict(pk)
 
         form = res.forms["changelist-form"]
         form["form-0-username"] = "CHAR1"
         res = form.submit("_save").follow()
 
-        messages = list(map(str, list(res.context["messages"])))
+        messages = [str(m) for m in res.context["messages"]]
+        assert "Record with pk `%s` has been modified and was not updated" % pk in set(messages)
 
-        self.assertIn(
-            "Record with pk `%s` has been modified and was not updated" % id,
-            set(messages),
-        )
-        self.assertEqual(len(set(messages)), 1)
+        assert len(set(messages)) == 1
 
     def test_log_change(self):
-        id = next(unique_id)
-        self.TARGET.objects.get_or_create(pk=id)
+        pk = next(unique_id)
+        self.TARGET.objects.get_or_create(pk=pk)
 
         res = self.app.get("/admin/", user="sax")
         res = res.click(self.TARGET._meta.verbose_name_plural)
-        log_filter = dict(
-            user__username="sax",
-            content_type=ContentType.objects.get_for_model(self.TARGET),
-        )
+        log_filter = {
+            "user__username": "sax",
+            "content_type": ContentType.objects.get_for_model(self.TARGET),
+        }
 
         logs = list(LogEntry.objects.filter(**log_filter).values_list("pk", flat=True))
 
-        self._create_conflict(id)
+        self._create_conflict(pk)
 
         form = res.forms["changelist-form"]
         form["form-0-username"] = "CHAR1"
-        res = form.submit("_save").follow()
-        new_logs = LogEntry.objects.filter(**log_filter).exclude(id__in=logs).exists()
-        self.assertFalse(new_logs, "LogEntry created even if conflict error")
+        form.submit("_save").follow()
+        assert not LogEntry.objects.filter(**log_filter).exclude(id__in=logs).exists()
         transaction.rollback()

@@ -16,7 +16,7 @@ class TestConcurrencyTestMixin(ConcurrencyTestMixin, TestCase):
 
 
 def test_fqn():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Invalid"):
         fqn("str")
 
     assert fqn(SimpleConcurrentModel) == "demo.models.SimpleConcurrentModel"
@@ -29,7 +29,7 @@ def test_deprecated():
     def foo1(x):
         return x
 
-    with pytest.warns(DeprecationWarning):
+    with pytest.warns(DeprecationWarning, match=r"deprecated"):
         assert foo1(12) == 12
 
     def newfun(x):
@@ -39,5 +39,5 @@ def test_deprecated():
     def foo2(x):
         return x
 
-    with pytest.warns(DeprecationWarning):
+    with pytest.warns(DeprecationWarning, match=r"deprecated"):
         assert foo2(10) == 0

@@ -65,9 +65,9 @@ def class_prepared_concurrency_handler(sender, **kwargs) -> None:
 
 
 def post_syncdb_concurrency_handler(sender, **kwargs) -> None:
-    from django.db import connections
+    from django.db import connections  # noqa
 
-    from concurrency.triggers import create_triggers
+    from concurrency.triggers import create_triggers  # noqa
 
     databases = list(connections)
     create_triggers(databases)
@@ -84,7 +84,7 @@ if conf.AUTO_CREATE_TRIGGERS:
 
 
 class VersionField(Field):
-    """Base class"""
+    """Base class."""
 
     def __init__(self, *args, **kwargs) -> None:
         verbose_name = kwargs.get("verbose_name")
@@ -172,7 +172,7 @@ class VersionField(Field):
                 return _updated_with_no_values() if filtered_queryset.exists() else _not_updated()
             return _update_with_filtered_queryset(filtered_queryset, values, returning_fields)
 
-        def _do_update(  # noqa: C901
+        def _do_update(  # noqa
             model_instance,
             base_qs,
             using,
@@ -232,8 +232,6 @@ class VersionField(Field):
                             new_version = field._get_next_version(model_instance)
                             values[i] = (field, _1, new_version)
                             field._set_version_value(model_instance, new_version)
-                        # else:
-                        #     new_version = old_version
                         break
 
                 if (
@@ -288,10 +286,7 @@ class IntegerVersionField(VersionField):
 
 
 class AutoIncVersionField(VersionField):
-    """
-    Version Field increment the revision number each commit
-
-    """
+    """Version Field increment the revision number each commit."""
 
     form_class = forms.VersionField
 
@@ -300,10 +295,7 @@ class AutoIncVersionField(VersionField):
 
 
 class TriggerVersionField(VersionField):
-    """
-    Version Field increment the revision number each commit
-
-    """
+    """Version Field increment the revision number each commit."""
 
     form_class = forms.VersionField
 
@@ -320,10 +312,10 @@ class TriggerVersionField(VersionField):
     def check(self, **kwargs):
         errors = []
         model = self.model
-        from django.core.checks import Warning
-        from django.db import connections, router
+        from django.core.checks import Warning  # noqa
+        from django.db import connections, router  # noqa
 
-        from concurrency.triggers import factory
+        from concurrency.triggers import factory  # noqa
 
         alias = router.db_for_write(model)
         connection = connections[alias]
@@ -341,7 +333,7 @@ class TriggerVersionField(VersionField):
 
     @property
     def trigger_name(self):
-        from concurrency.triggers import get_trigger_name
+        from concurrency.triggers import get_trigger_name  # noqa
 
         return get_trigger_name(self)
 
@@ -389,7 +381,7 @@ def filter_fields(instance, field) -> bool:
     if field.is_relation and field.related_model is None:
         # generic foreignkeys
         return False
-    if field.many_to_many and instance.pk is None:
+    if field.many_to_many and instance.pk is None:  # noqa
         # can't load remote object yet
         return False
     return True
@@ -420,9 +412,9 @@ class ConditionalVersionField(AutoIncVersionField):
         if check_fields is None and ignore_fields is None:
             fields = sorted([f.name for f in filter(filter_, instance._meta.get_fields())])
         elif check_fields is None:
-            fields = sorted([
-                f.name for f in filter(filter_, instance._meta.get_fields()) if f.name not in ignore_fields
-            ])
+            fields = sorted(
+                [f.name for f in filter(filter_, instance._meta.get_fields()) if f.name not in ignore_fields]
+            )
         else:
             fields = instance._concurrencymeta.check_fields
         for field_name in fields:
@@ -433,7 +425,7 @@ class ConditionalVersionField(AutoIncVersionField):
                 values[field_name] = getattr(instance, field_name).values_list("pk", flat=True)
             else:
                 values[field_name] = field.value_from_object(instance)
-        return hashlib.sha1(force_str(values).encode("utf-8")).hexdigest()
+        return hashlib.sha1(force_str(values).encode("utf-8")).hexdigest()  # noqa
 
     def _get_next_version(self, model_instance):
         if not model_instance.pk:

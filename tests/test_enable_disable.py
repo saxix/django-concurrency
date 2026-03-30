@@ -9,6 +9,11 @@ from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
 
 
+@pytest.fixture
+def model_class():
+    return SimpleConcurrentModel
+
+
 @pytest.mark.django_db(transaction=False)
 def test_disable_concurrency_settings(settings):
     with override_settings(CONCURRENCY_ENABLED=False):
@@ -56,7 +61,7 @@ def test_disable_concurrency_decorator():
 
 
 @pytest.mark.django_db(transaction=False)
-def test_disable_concurrency_class(model_class=SimpleConcurrentModel):
+def test_disable_concurrency_class(model_class):
     instance = model_class(username=next(nextname))
     instance.save()
     copy = refetch(instance)
@@ -66,7 +71,7 @@ def test_disable_concurrency_class(model_class=SimpleConcurrentModel):
 
 
 @pytest.mark.django_db(transaction=False)
-def test_disable_concurrency_instance(model_class=SimpleConcurrentModel):
+def test_disable_concurrency_instance(model_class):
     instance1 = model_class(username=next(nextname))
     instance1.save()
     copy1 = refetch(instance1)

@@ -34,9 +34,6 @@ class SimpleConcurrentModel(models.Model):
     def __str__(self):
         return "{0} #{1}".format(self.__class__.__name__, self.pk)
 
-    def __unicode__(self):
-        return "{0} #{1}".format(self.__class__.__name__, self.pk)
-
 
 class AutoIncConcurrentModel(models.Model):
     version = AutoIncVersionField(db_column="cm_version_id")
@@ -48,7 +45,7 @@ class AutoIncConcurrentModel(models.Model):
         verbose_name = "AutoIncConcurrentModel"
         verbose_name_plural = "AutoIncConcurrentModel"
 
-    def __unicode__(self):
+    def __str__(self):
         return "{0.__class__.__name__} #{0.pk}".format(self)
 
 
@@ -62,7 +59,7 @@ class TriggerConcurrentModel(models.Model):
         verbose_name = "TriggerConcurrentModel"
         verbose_name_plural = "TriggerConcurrentModels"
 
-    def __unicode__(self):
+    def __str__(self):
         return "{0.__class__.__name__} #{0.pk}".format(self)
 
 
@@ -74,6 +71,9 @@ class DropTriggerConcurrentModel(models.Model):
 
     class Meta:
         app_label = "demo"
+
+    def __str__(self):
+        return f"{self.version} {self.username}"
 
 
 class ProxyModel(SimpleConcurrentModel):
@@ -94,11 +94,11 @@ class InheritedModel(SimpleConcurrentModel):
 class CustomSaveModel(SimpleConcurrentModel):
     extra_field = models.CharField(max_length=30, blank=True, null=True, unique=True)
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
     class Meta:
         app_label = "demo"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
 
 class AbstractModel(models.Model):
@@ -109,42 +109,25 @@ class AbstractModel(models.Model):
         app_label = "demo"
         abstract = True
 
+    def __str__(self):
+        return f"{self.username} {self.version}"
+
 
 class ConcreteModel(AbstractModel):
-    pass
-
     class Meta:
         app_label = "demo"
 
 
-# class TestCustomUser(User):
-# version = IntegerVersionField(db_column='cm_version_id')
-#
-#     class Meta:
-#         app_label = 'demo'
-#
-#     def __unicode__(self):
-#         return "{0.__class__.__name__} #{0.pk}".format(self)
-
-
 class GroupTestModel(Group):
-    # HACK: this field is here because all tests relies on that
+    """HACK: this field is here because all tests relies on that
     # and we need a 'fresh' model to check for on-the-fly addition
     # of version field.  (added in tests 0.3.0)
+    """
 
     username = models.CharField("username", max_length=50)
 
     class Meta:
         app_label = "demo"
-
-
-# class TestModelGroupWithCustomSave(TestModelGroup):
-#     class Meta:
-#         app_label = 'demo'
-#
-#     def save(self, *args, **kwargs):
-#         super().save(*args, **kwargs)
-#         return 222
 
 
 class Issue3TestModel(models.Model):
@@ -158,6 +141,9 @@ class Issue3TestModel(models.Model):
 
     class Meta:
         app_label = "demo"
+
+    def __str__(self):
+        return f"{self.username} {self.last_name}"
 
 
 class ListEditableConcurrentModel(SimpleConcurrentModel):
@@ -194,7 +180,7 @@ class ReversionConcurrentModel(models.Model):
         verbose_name = "Reversion-ConcurrentModel"
         verbose_name_plural = "Reversion-ConcurrentModels"
 
-    def __unicode__(self):
+    def __str__(self):
         return "{0.__class__.__name__} #{0.pk}".format(self)
 
 
@@ -221,6 +207,9 @@ class ConditionalVersionModel(models.Model):
     class ConcurrencyMeta:
         check_fields = ["field1", "field2", "user"]
 
+    def __str__(self):
+        return f"{self.field1} {self.field2}"
+
 
 class Anything(models.Model):
     """
@@ -229,12 +218,13 @@ class Anything(models.Model):
     """
 
     name = models.CharField(max_length=10)
-    a_relation = models.ForeignKey(
-        "demo.ConditionalVersionModelWithoutMeta", on_delete=models.CASCADE
-    )
+    a_relation = models.ForeignKey("demo.ConditionalVersionModelWithoutMeta", on_delete=models.CASCADE)
 
     class Meta:
         app_label = "demo"
+
+    def __str__(self):
+        return f"{self.name}"
 
 
 class ConditionalVersionModelWithoutMeta(models.Model):
@@ -251,6 +241,9 @@ class ConditionalVersionModelWithoutMeta(models.Model):
 
     class Meta:
         app_label = "demo"
+
+    def __str__(self):
+        return f"{self.field1} {self.field2}"
 
 
 class ThroughRelation(models.Model):
@@ -269,6 +262,9 @@ class ThroughRelation(models.Model):
     class Meta:
         app_label = "demo"
 
+    def __str__(self):
+        return f"{self.version}"
+
 
 class ConditionalVersionModelSelfRelation(models.Model):
     """
@@ -277,9 +273,10 @@ class ConditionalVersionModelSelfRelation(models.Model):
 
     version = ConditionalVersionField()
     name = models.CharField(max_length=10)
-    relations = models.ManyToManyField(
-        "self", through="demo.ThroughRelation", symmetrical=False, blank=True
-    )
+    relations = models.ManyToManyField("self", through="demo.ThroughRelation", symmetrical=False, blank=True)
 
     class Meta:
         app_label = "demo"
+
+    def __str__(self):
+        return f"{self.name}"

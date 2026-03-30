@@ -13,7 +13,6 @@ license = "MIT"
 license-files = [
   "LICENSE",
 ]
-
 authors = [
   { name = "sax", email = "s.apostolico@gmail.com" },
 ]
@@ -21,7 +20,6 @@ requires-python = ">=3.10"
 classifiers = [
   "Environment :: Web Environment",
   "Framework :: Django",
-  "Framework :: Django :: 3.2",
   "Framework :: Django :: 4.2",
   "Framework :: Django :: 5.2",
   "Framework :: Django :: 6.0",
@@ -36,7 +34,7 @@ classifiers = [
 dynamic = [
   "version",
 ]
-dependencies = [  ]
+dependencies = []
 urls.downloads = "https://github.com/saxix/django-concurrency"
 urls.homepage = "https://github.com/saxix/django-concurrency"
 
@@ -54,24 +52,22 @@ dev = [
   "pytest-pythonpath",
   "tox",
 ]
-
 dj = [
   "django",
 ]
 
 [tool.hatch]
 build.hooks.vcs.version-file = "src/concurrency/version.py"
+build.targets.sdist.ignore-vcs = true
+build.targets.sdist.include = [
+  "src/concurrency/**/*.*",
+]
+build.targets.wheel.packages = [ "src/concurrency" ]
 version.source = "vcs"
 raw-options = { root = "../.." }
 
-[tool.hatch.build.targets.sdist]
-ignore-vcs = true
-include = [
-  "src/concurrency/**/*.*",
-]
-
-[tool.hatch.build.targets.wheel]
-packages = [ "src/concurrency" ]
+[tool.uv]
+package = true
 
 [tool.ruff]
 target-version = "py39"
@@ -115,7 +111,6 @@ lint.ignore = [
   "SLF",
   "TRY",
   "UP",
-
 ]
 lint.per-file-ignores."docs/conf.py" = [
   "A001",   #
@@ -160,12 +155,12 @@ lint.preview = true
 [tool.pyproject-fmt]
 max_supported_python = "3.13"
 
-[tool.pytest.ini_options]
-django_find_project = false
-pythonpath = [ "./tests/demoapp/", "./src" ]
-DJANGO_SETTINGS_MODULE = "demo.settings"
-norecursedirs = [ "demo", ".tox" ]
-addopts = [
+[tool.pytest]
+ini_options.django_find_project = false
+ini_options.pythonpath = [ "./tests/demoapp/", "./src" ]
+ini_options.DJANGO_SETTINGS_MODULE = "demo.settings"
+ini_options.norecursedirs = [ "demo", ".tox" ]
+ini_options.addopts = [
   "--tb=short",
   "--capture=no",
   "--echo-version=django",
@@ -175,33 +170,26 @@ addopts = [
   "--cov-report=xml",
   "--cov-config=tests/.coveragerc",
 ]
-python_files = "tests/test_*.py tests/**/test_*.py src/*.py"
-markers = [
+ini_options.python_files = "tests/test_*.py tests/**/test_*.py src/*.py"
+ini_options.markers = [
   "functional: mark a test as functional",
   "selenium: selenium test",
   "skip: skip test",
 ]
 
 [tool.coverage]
-run.source = [
-  "adminactions",
-]
-run.dynamic_context = "test_function"
 run.branch = true
-run.parallel = true
+run.dynamic_context = "test_function"
 run.omit = [
   "**/create_extra_permissions.py",
 ]
+run.parallel = true
 run.plugins = [
   "covdefaults",
 ]
-report.fail_under = 80
-report.show_missing = true
-report.exclude_lines = [
-  "pragma: no cover",
+run.source = [
+  "adminactions",
 ]
-html.show_contexts = true
-html.skip_covered = false
 paths.source = [
   "src",
   ".tox*/*/lib/python*/site-packages",
@@ -210,6 +198,10 @@ paths.source = [
   "*/src",
   "*\\src",
 ]
-
-[tool.uv]
-package = true
+report.exclude_lines = [
+  "pragma: no cover",
+]
+report.fail_under = 80
+report.show_missing = true
+html.show_contexts = true
+html.skip_covered = false

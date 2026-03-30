@@ -6,7 +6,7 @@ import pytest
 
 py_impl = getattr(platform, "python_implementation", lambda: None)
 PYPY = py_impl() == "PyPy"
-PURE_PYTHON = os.environ.get("PURE_PYTHON", False)
+PURE_PYTHON = os.environ.get("PURE_PYTHON", "false")
 
 windows = pytest.mark.skipif(sys.platform != "win32", reason="requires windows")
 
@@ -14,30 +14,21 @@ win32only = pytest.mark.skipif("sys.platform != 'win32'")
 
 skippypy = pytest.mark.skipif(PYPY, reason="skip on pypy")
 
-# here = Path(__file__).parent.parent
-# sys.path.insert(0, str(here / "src"))
-# sys.path.insert(0, str(here / "tests" / "demoapp"))
-
 
 def pytest_configure():
-    # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "demo.settings")
-    from django.conf import settings
+    from django.conf import settings  # noqa
 
     settings.SILENCED_SYSTEM_CHECKS = ["concurrency.W001"]
     settings.CONCURRENCY_VERSION_FIELD_REQUIRED = False
     settings.CONCURRENCY_AUTO_CREATE_TRIGGERS = True
 
 
-#
-
-
 @pytest.fixture(scope="session")
 def client(request):
-    import django_webtest
+    import django_webtest  # noqa
 
     wtm = django_webtest.WebTestMixin()
     wtm.csrf_checks = False
     wtm._patch_settings()
-    request.addfinalizer(wtm._unpatch_settings)
-    app = django_webtest.DjangoTestApp()
-    return app
+    request.addfinalizer(wtm._unpatch_settings)  # noqa
+    return django_webtest.DjangoTestApp()

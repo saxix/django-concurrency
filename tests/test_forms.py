@@ -30,9 +30,7 @@ class DummySigner:
 class WidgetTest(TestCase):
     def test(self):
         w = VersionWidget()
-        self.assertHTMLEqual(
-            w.render("ver", None), '<input name="ver" type="hidden"/><div></div>'
-        )
+        self.assertHTMLEqual(w.render("ver", None), '<input name="ver" type="hidden"/><div></div>')
         self.assertHTMLEqual(
             w.render("ver", 100),
             '<input name="ver" type="hidden" value="100"/><div>100</div>',
@@ -47,37 +45,39 @@ class FormFieldTest(SimpleTestCase):
 
     def test_with_dummy_signer(self):
         f = VersionField(signer=DummySigner())
-        self.assertEqual(1, f.clean(1))
-        self.assertEqual(1, f.clean("1"))
-        self.assertEqual(0, f.clean(None))
-        self.assertEqual(0, f.clean(""))
-        self.assertRaises(VersionError, f.clean, "aa:bb")
-        self.assertRaises(VersionError, f.clean, 1.5)
+        assert f.clean(1) == 1
+        assert f.clean("1") == 1
+        assert f.clean(None) == 0
+        assert f.clean("") == 0
+        with pytest.raises(VersionError):
+            f.clean("aa:bb")
+        with pytest.raises(VersionError):
+            f.clean(1.5)
 
     def test(self):
         f = VersionField()
-        self.assertEqual(1, f.clean(VersionFieldSigner().sign(1)))
-        self.assertEqual(1, f.clean(VersionFieldSigner().sign("1")))
-        self.assertEqual(0, f.clean(None))
-        self.assertEqual(0, f.clean(""))
-        self.assertRaises(VersionError, f.clean, "100")
-        self.assertRaises(VersionError, f.clean, VersionFieldSigner().sign(1.5))
+        assert f.clean(VersionFieldSigner().sign(1)) == 1
+        assert f.clean(VersionFieldSigner().sign("1")) == 1
+        assert f.clean(None) == 0
+        assert f.clean("") == 0
+        with pytest.raises(VersionError):
+            f.clean("100")
+        with pytest.raises(VersionError):
+            f.clean(VersionFieldSigner().sign(1.5))
 
 
 class ConcurrentFormTest(TestCase):
     def test_version(self):
-        Form = modelform_factory(
-            SimpleConcurrentModel, ConcurrentForm, exclude=("char_field",)
-        )
+        Form = modelform_factory(SimpleConcurrentModel, ConcurrentForm, exclude=("char_field",))  # noqa
         form = Form()
-        self.assertIsInstance(form.fields["version"].widget, HiddenInput)
+        assert isinstance(form.fields["version"].widget, HiddenInput)
 
     def test_clean(self):
         pass
 
     def test_dummy_signer(self):
         obj, __ = Issue3TestModel.objects.get_or_create(username="aaa")
-        Form = modelform_factory(
+        Form = modelform_factory(  # noqa
             Issue3TestModel,
             fields=("id", "revision"),
             form=type(
@@ -88,17 +88,15 @@ class ConcurrentFormTest(TestCase):
         )
         data = {"id": 1, "revision": obj.revision}
         form = Form(data, instance=obj)
-        self.assertTrue(form.is_valid(), form.non_field_errors())
+        assert form.is_valid(), form.non_field_errors()
 
     def test_signer(self):
-        Form = modelform_factory(
-            Issue3TestModel, form=ConcurrentForm, exclude=("char_field",)
-        )
+        Form = modelform_factory(Issue3TestModel, form=ConcurrentForm, exclude=("char_field",))  # noqa
         form = Form({"username": "aaa"})
-        self.assertTrue(form.is_valid(), form.non_field_errors())
+        assert form.is_valid(), form.non_field_errors()
 
     def test_initial_value(self):
-        Form = modelform_factory(
+        Form = modelform_factory(  # noqa
             SimpleConcurrentModel,
             type("xxx", (ConcurrentForm,), {}),
             exclude=("char_field",),
@@ -108,10 +106,10 @@ class ConcurrentFormTest(TestCase):
             str(form["version"]),
             '<input id="id_version" name="version" type="hidden" value="">',
         )
-        self.assertTrue(form.is_valid(), form.non_field_errors())
+        assert form.is_valid(), form.non_field_errors()
 
     def test_initial_value_with_custom_signer(self):
-        Form = modelform_factory(
+        Form = modelform_factory(  # noqa
             Issue3TestModel,
             exclude=("char_field",),
             form=type(
@@ -125,13 +123,11 @@ class ConcurrentFormTest(TestCase):
             str(form["version"]),
             '<input type="hidden" value="" name="version" id="id_version" />',
         )
-        self.assertTrue(form.is_valid(), form.non_field_errors())
+        assert form.is_valid(), form.non_field_errors()
 
     def test_tamperig(self):
         obj, __ = Issue3TestModel.objects.get_or_create(username="aaa")
-        Form = modelform_factory(
-            Issue3TestModel, ConcurrentForm, exclude=("char_field",)
-        )
+        Form = modelform_factory(Issue3TestModel, ConcurrentForm, exclude=("char_field",))  # noqa
         data = {
             "username": "aaa",
             "last_name": None,
@@ -142,21 +138,20 @@ class ConcurrentFormTest(TestCase):
             "revision": obj.revision,
         }
         form = Form(data, instance=obj)
-        self.assertRaises(SuspiciousOperation, form.is_valid)
+        with pytest.raises(SuspiciousOperation):
+            form.is_valid()
 
     def test_custom_name(self):
-        Form = modelform_factory(
-            Issue3TestModel, ConcurrentForm, exclude=("char_field",)
-        )
+        Form = modelform_factory(Issue3TestModel, ConcurrentForm, exclude=("char_field",))  # noqa
         form = Form()
-        self.assertIsInstance(form.fields["version"].widget, TextInput)
-        self.assertIsInstance(form.fields["revision"].widget, HiddenInput)
+        assert isinstance(form.fields["version"].widget, TextInput)
+        assert isinstance(form.fields["revision"].widget, HiddenInput)
 
     def test_save(self):
         obj, __ = Issue3TestModel.objects.get_or_create(username="aaa")
 
         obj_copy = Issue3TestModel.objects.get(pk=obj.pk)
-        Form = modelform_factory(
+        Form = modelform_factory(  # noqa
             Issue3TestModel,
             ConcurrentForm,
             fields=(
@@ -181,12 +176,12 @@ class ConcurrentFormTest(TestCase):
         form = Form(data, instance=obj)
         obj_copy.save()  # save
 
-        self.assertFalse(form.is_valid())
-        self.assertIn(_("Record Modified"), form.non_field_errors())
+        assert not form.is_valid()
+        assert _("Record Modified") in form.non_field_errors()
 
     def test_is_valid(self):
         obj, __ = Issue3TestModel.objects.get_or_create(username="aaa")
-        Form = modelform_factory(
+        Form = modelform_factory(  # noqa
             Issue3TestModel,
             ConcurrentForm,
             fields=(
@@ -210,14 +205,13 @@ class ConcurrentFormTest(TestCase):
         }
         form = Form(data, instance=obj)
         obj.save()  # save again simulate concurrent editing
-        self.assertRaises(ValueError, form.save)
+        with pytest.raises(ValueError, match="could not be changed because the data didn't validate."):
+            form.save()
 
 
 def test_disabled(db, settings):
     obj, __ = SimpleConcurrentModel.objects.get_or_create(username="aaa")
-    Form = modelform_factory(
-        SimpleConcurrentModel, ConcurrentForm, fields=("username", "id", "version")
-    )
+    Form = modelform_factory(SimpleConcurrentModel, ConcurrentForm, fields=("username", "id", "version"))  # noqa
     data = {
         "username": "aaa",
         "id": 1,
