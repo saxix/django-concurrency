@@ -8,7 +8,8 @@ from django.db.utils import DatabaseError
 
 
 class TriggerRegistry:
-    _fields = []
+    def __init__(self) -> None:
+        self._fields = []
 
     def append(self, field) -> None:
         self._fields.append([field.model._meta.app_label, field.model.__name__])

@@ -34,6 +34,12 @@ def test_middleware():
     assert r.status_code == 409
 
 
+def test_middleware_other_exception():
+    request = _get_request("test")
+    r = ConcurrencyMiddleware().process_exception(request, ValueError())
+    assert r is None
+
+
 class ConcurrencyMiddlewareTest1(AdminTestCase):
     def _get_request(self, path):
         request = HttpRequest()
