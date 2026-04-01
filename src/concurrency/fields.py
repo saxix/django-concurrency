@@ -181,6 +181,8 @@ class VersionField(Field):
             update_fields,
             forced_update,
             returning_fields=None,
+            *args,
+            **kwargs,
         ):
             version_field = model_instance._concurrencymeta.field
             old_version = get_revision_of_object(model_instance)
@@ -195,6 +197,8 @@ class VersionField(Field):
                         update_fields,
                         forced_update,
                         returning_fields=returning_fields,
+                        *args,
+                        **kwargs,
                     )
                 return func(
                     model_instance,
@@ -204,6 +208,8 @@ class VersionField(Field):
                     values,
                     update_fields,
                     forced_update,
+                    *args,
+                    **kwargs,
                 )
 
             filtered = base_qs.filter(pk=pk_val)
