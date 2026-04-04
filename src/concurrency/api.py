@@ -22,8 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_revision_of_object(obj):
-    """
-        returns teh version of the passed object
+    """Return teh version of the passed object.
 
     @param obj:
     @return:
@@ -32,8 +31,8 @@ def get_revision_of_object(obj):
 
 
 def is_changed(obj) -> bool:
-    """
-        returns True if `obj` is changed or deleted on the database
+    """Return True if `obj` is changed or deleted on the database.
+
     :param obj:
     :return:
     """
@@ -43,8 +42,7 @@ def is_changed(obj) -> bool:
 
 
 def get_version(model_instance, version):
-    """
-        try go load from the database one object with specific version
+    """Try go load from the database one object with specific version.
 
     :param model_instance: instance in memory
     :param version: version number
@@ -66,15 +64,12 @@ def apply_concurrency_check(model, fieldname, versionclass) -> None:
     ver.contribute_to_class(model, fieldname)
     model._concurrencymeta.field = ver
 
-    from concurrency.fields import class_prepared_concurrency_handler
+    from concurrency.fields import class_prepared_concurrency_handler  # noqa: PLC0415
 
     class_prepared_concurrency_handler(model)
 
-    # if not model._concurrencymeta.versioned_save:
-    #     versionclass._wrap_model_save(model)
 
-
-class concurrency_disable_increment:
+class concurrency_disable_increment:  # noqa: PLC0415 N801
     def __init__(self, model) -> None:
         self.model = model
         self.old_value = model._concurrencymeta.increment
@@ -106,9 +101,8 @@ class concurrency_disable_increment:
         return wrapper
 
 
-class disable_concurrency:
-    """
-        temporary disable concurrency
+class disable_concurrency:  # noqa
+    """temporary disable concurrency.
 
     can be used either as contextmanager or decorator.
     It can applied to model instances, model class of globally.

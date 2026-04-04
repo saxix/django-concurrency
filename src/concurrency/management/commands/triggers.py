@@ -1,19 +1,9 @@
-from functools import partial
-
-import django
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management.base import BaseCommand
 from django.db import connections
 from django.db.transaction import atomic
 
 from concurrency.triggers import create_triggers, drop_triggers, get_triggers
-
-
-def _add_subparser(subparsers, parser, name, help) -> None:
-    if django.VERSION >= (2, 1):
-        subparsers.add_parser(name, help=help)
-    else:
-        subparsers.add_parser(name, cmd=parser, help=help)
 
 
 class Command(BaseCommand):
@@ -23,16 +13,12 @@ class Command(BaseCommand):
     requires_system_checks = []
 
     def add_arguments(self, parser) -> None:
-        """
-        Entry point for subclassed commands to add custom arguments.
-        """
+        """Entry point for subclassed commands to add custom arguments."""
         subparsers = parser.add_subparsers(help="sub-command help", dest="command")
 
-        add_parser = partial(_add_subparser, subparsers, parser)
-
-        add_parser("list", help="list concurrency triggers")
-        add_parser("drop", help="drop  concurrency triggers")
-        add_parser("create", help="create concurrency triggers")
+        subparsers.add_parser("list", help="list concurrency triggers")
+        subparsers.add_parser("drop", help="drop  concurrency triggers")
+        subparsers.add_parser("create", help="create concurrency triggers")
 
         parser.add_argument(
             "-d",

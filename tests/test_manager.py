@@ -13,6 +13,11 @@ from concurrency.exceptions import RecordModifiedError
 from concurrency.utils import refetch
 
 
+@pytest.fixture
+def model_class():
+    return SimpleConcurrentModel
+
+
 @pytest.mark.django_db
 @with_std_models
 def test_get_or_create(model_class):
@@ -35,7 +40,7 @@ def test_get_or_create_with_pk(model_class):
 
 
 @pytest.mark.django_db(transaction=False)
-def test_create(model_class=SimpleConcurrentModel):
+def test_create(model_class):
     instance = model_class.objects.create(pk=next(unique_id))
     assert instance.get_concurrency_version()
 
@@ -51,13 +56,9 @@ def test_create(model_class=SimpleConcurrentModel):
 )
 def test_update(model_class):
     # Manager.update() does not change version number
-    instance = model_class.objects.create(
-        pk=next(unique_id), username=next(nextname).lower()
-    )
+    instance = model_class.objects.create(pk=next(unique_id), username=next(nextname).lower())
     field_value = instance.username
-    model_class.objects.filter(pk=instance.pk).update(
-        username=instance.username.upper()
-    )
+    model_class.objects.filter(pk=instance.pk).update(username=instance.username.upper())
 
     instance2 = refetch(instance)
     assert instance2.username == field_value.upper()

@@ -10,7 +10,7 @@ from django.core.management import call_command
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.django_db()
+@pytest.mark.django_db
 def test_dumpdata():
     SimpleConcurrentModel.objects.create()
     out = StringIO()

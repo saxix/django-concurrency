@@ -1,8 +1,8 @@
 import operator
 import re
+from contextlib import suppress
 from functools import reduce
 
-import django
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
 from django.core.checks import Error
@@ -19,8 +19,7 @@ from django.forms.formsets import (
 from django.forms.models import BaseModelFormSet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_str
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext
 
@@ -39,9 +38,7 @@ class ConcurrencyActionMixin:
     check_concurrent_action = True
 
     def action_checkbox(self, obj):
-        """
-        A list_display column containing a checkbox widget.
-        """
+        """Display a list_display column containing a checkbox widget."""
         if self.check_concurrent_action:
             attrs = {
                 "class": "action-select",
@@ -56,7 +53,7 @@ class ConcurrencyActionMixin:
         # pragma: no cover
         return super().action_checkbox(obj)
 
-    action_checkbox.short_description = mark_safe('<input type="checkbox" id="action-toggle" />')
+    action_checkbox.short_description = format_html('<input type="checkbox" id="{}" />', "action-toggle")
     action_checkbox.allow_tags = True
 
     def get_confirmation_template(self) -> str:
@@ -64,7 +61,9 @@ class ConcurrencyActionMixin:
 
     def response_action(self, request, queryset):  # noqa
         """
-        Handle an admin action. This is called if a request is POSTed to the
+        Handle an admin action.
+
+        This is called if a request is POSTed to the
         changelist; it returns an HttpResponse if the action was handled, and
         None otherwise.
         """
@@ -82,13 +81,11 @@ class ConcurrencyActionMixin:
         data.pop("index", None)
 
         # Use the action whose button was pushed
-        try:
-            data.update({"action": data.getlist("action")[action_index]})
-        except IndexError:  # pragma: no cover
+        with suppress(IndexError):
             # If we didn't get an action from the chosen form that's invalid
             # POST data, so by deleting action it'll fail the validation check
             # below. So no need to do anything here
-            pass
+            data.update({"action": data.getlist("action")[action_index]})
 
         action_form = self.action_form(data, auto_id=None)
         action_form.fields["action"].choices = self.get_action_choices(request)
@@ -157,30 +154,26 @@ class ConcurrentManagementForm(ManagementForm):
         super().__init__(*args, **kwargs)
 
     def _get_concurrency_fields(self):
-        v = []
-        for pk, version in self._versions:
-            v.append(f'<input type="hidden" name="{concurrency_param_name}_{pk}" value="{version}">')
-        return mark_safe("".join(v))
+        return format_html_join(
+            "",
+            '<input type="hidden" name="{}_{}" value="{}">',
+            ((concurrency_param_name, pk, version) for pk, version in self._versions),
+        )
 
     def render(self, template_name=None, context=None, renderer=None):
         out = super().render(template_name, context, renderer)
         return out + self._get_concurrency_fields()
 
     def __str__(self) -> str:
-        if django.VERSION[:2] >= (4, 0):
-            return self.render()
-        return super().__str__()
+        return self.render()
 
     __html__ = __str__
 
-    def _html_output(self, normal_row, error_row, row_ender, help_text_html, errors_on_separate_row):
-        ret = super()._html_output(normal_row, error_row, row_ender, help_text_html, errors_on_separate_row)
-        return mark_safe(f"{ret}{self._get_concurrency_fields()}")
-
 
 class ConcurrentBaseModelFormSet(BaseModelFormSet):
-    def _management_form(self):
-        """Returns the ManagementForm instance for this FormSet."""
+    @property
+    def management_form(self):
+        """Return the ManagementForm instance for this FormSet."""
         if self.is_bound:
             form = ConcurrentManagementForm(self.data, auto_id=self.auto_id, prefix=self.prefix)
             if not form.is_valid():
@@ -197,8 +190,6 @@ class ConcurrentBaseModelFormSet(BaseModelFormSet):
                 versions=[(form.instance.pk, get_revision_of_object(form.instance)) for form in self.initial_forms],
             )
         return form
-
-    management_form = property(_management_form)
 
 
 class ConcurrencyListEditableMixin:
@@ -237,15 +228,15 @@ class ConcurrencyListEditableMixin:
             if self.list_editable_policy == CONCURRENCY_LIST_EDITABLE_POLICY_ABORT_ALL:
                 raise
 
-    def log_change(self, request, object, message):
-        if object.pk in self._get_conflicts(request):
+    def log_change(self, request, obj, message):
+        if obj.pk in self._get_conflicts(request):
             return None
-        return super().log_change(request, object, message)
+        return super().log_change(request, obj, message)
 
-    def log_deletion(self, request, object, object_repr):
-        if object.pk in self._get_conflicts(request):
+    def log_deletion(self, request, obj, object_repr):
+        if obj.pk in self._get_conflicts(request):
             return None
-        return super().log_deletion(request, object, object_repr)
+        return super().log_deletion(request, obj, object_repr)
 
     def message_user(self, request, message, *args, **kwargs):
         # This is ugly but we do not want to touch the changelist_view() code.

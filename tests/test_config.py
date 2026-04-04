@@ -26,18 +26,24 @@ def test_config(settings):
 
     settings.MYAPP_CALLBACK = fqn
     conf = MySettings("MYAPP")
-    assert conf.CALLBACK == fqn
+    assert fqn == conf.CALLBACK
+
+    settings.OTHER_CALLBACK = 222
+    with pytest.raises(ImproperlyConfigured):
+        MySettings("OTHER")
+
+    class TriggerSettings(AppSettings):
+        defaults = {
+            "TRIGGERS_FACTORY": {"my": "invalid.path.to.class"},
+        }
 
     with pytest.raises(ImproperlyConfigured):
-        settings.OTHER_CALLBACK = 222
-        conf = MySettings("OTHER")
+        TriggerSettings("TRIGGER")
 
+    class IgnoreSettings(AppSettings):
+        defaults = {
+            "IGNORE_DEFAULT": True,
+        }
 
-def test_IGNORE_DEFAULT(settings):
-    with pytest.raises(ImproperlyConfigured) as excinfo:
-        settings.CONCURRENCY_IGNORE_DEFAULT = False
-        AppSettings("")
-    assert (
-        str(excinfo.value)
-        == "IGNORE_DEFAULT has been removed in django-concurrency 1.5. Use VERSION_FIELD_REQUIRED instead"
-    )
+    with pytest.raises(ImproperlyConfigured, match="IGNORE_DEFAULT has been removed"):
+        IgnoreSettings("IGNORE")

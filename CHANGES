@@ -1,6 +1,7 @@
 Release 2.8
 -----------
 * add support for Django 6.0
+* add support for python 3.14
 * fixes #261
 
 

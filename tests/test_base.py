@@ -22,8 +22,8 @@ def test_standard_save(model_class):
 @pytest.mark.django_db(transaction=False)
 @with_std_models
 def test_conflict(model_class):
-    id = next(unique_id)
-    instance = model_class.objects.get_or_create(pk=id)[0]
+    pk = next(unique_id)
+    instance = model_class.objects.get_or_create(pk=pk)[0]
     instance.save()
 
     copy = refetch(instance)
@@ -38,16 +38,16 @@ def test_conflict(model_class):
 @with_std_models
 def test_do_not_check_if_no_version(model_class):
     with override_settings(CONCURRENCY_VERSION_FIELD_REQUIRED=False):
-        id = next(unique_id)
-        instance, __ = model_class.objects.get_or_create(pk=id)
+        pk = next(unique_id)
+        instance, __ = model_class.objects.get_or_create(pk=pk)
         instance.save()
 
         copy = refetch(instance)
         copy.save()
 
+        _set_version(instance, 1)
+        instance.version = 1
         with pytest.raises(RecordModifiedError):
-            _set_version(instance, 1)
-            instance.version = 1
             instance.save()
 
         _set_version(instance, 0)
@@ -62,8 +62,8 @@ def test_conflict_no_version_and_no_skip_flag(model_class):
     """When VERSION_FIELD_REQUIRED is enabled,
     attempting to update a record with a default version number should fail."""
     with override_settings(CONCURRENCY_VERSION_FIELD_REQUIRED=True):
-        id = next(unique_id)
-        instance, __ = model_class.objects.get_or_create(pk=id)
+        pk = next(unique_id)
+        instance, __ = model_class.objects.get_or_create(pk=pk)
         instance.save()
 
         copy = refetch(instance)

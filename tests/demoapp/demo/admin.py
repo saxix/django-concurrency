@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
 
@@ -21,20 +23,20 @@ except ImportError:
 
 
 class ListEditableModelAdmin(ConcurrentModelAdmin):
-    list_display = ("__unicode__", "version", "username")
+    list_display = ("__str__", "version", "username")
     list_editable = ("username",)
     ordering = ("id",)
 
 
 class NoActionsModelAdmin(ConcurrentModelAdmin):
-    list_display = ("__unicode__", "version", "username")
+    list_display = ("__str__", "version", "username")
     list_editable = ("username",)
     ordering = ("id",)
     actions = None
 
 
 class ReversionConcurrentModelAdmin(VersionAdmin, ConcurrentModelAdmin):
-    list_display = ("__unicode__", "version", "username")
+    list_display = ("__str__", "version", "username")
     list_editable = ("username",)
     ordering = ("id",)
     actions = None
@@ -45,7 +47,7 @@ class ReversionConcurrentModelAdmin(VersionAdmin, ConcurrentModelAdmin):
 
 
 class ActionsModelAdmin(ConcurrentModelAdmin):
-    list_display = ("__unicode__", "version", "username")
+    list_display = ("__str__", "version", "username")
     actions = ["dummy_action"]
     ordering = ("id",)
 
@@ -56,10 +58,8 @@ class ActionsModelAdmin(ConcurrentModelAdmin):
 
 
 def admin_register(model, modeladmin=ConcurrentModelAdmin):
-    try:
+    with suppress(NotRegistered):
         admin.site.unregister(model)
-    except NotRegistered:  # pragma: no cover
-        pass
     admin.site.register(model, modeladmin)
 
 

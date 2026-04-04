@@ -27,7 +27,7 @@ from concurrency.utils import refetch
 def get_fake_request(params):
     u, __ = User.objects.get_or_create(username="sax")
     setattr(u, "is_authenticated()", True)
-    setattr(u, "selected_office", False)
+    u.selected_office = False
 
     request = RequestFactory().request()
     request.user = u
@@ -40,7 +40,7 @@ def get_fake_request(params):
 
 class TestIssue16(AdminTestCase):
     def test_concurrency(self):
-        id = 1
+        pk = 1
         admin_register(ListEditableConcurrentModel, ActionsModelAdmin)
         model_admin = site._registry[ListEditableConcurrentModel]
         with attributes(
@@ -51,37 +51,32 @@ class TestIssue16(AdminTestCase):
             ),
             (ConcurrentModelAdmin, "form", ConcurrentForm),
         ):
-            obj, __ = ListEditableConcurrentModel.objects.get_or_create(pk=id)
+            obj, __ = ListEditableConcurrentModel.objects.get_or_create(pk=pk)
 
-            # post_param = 'form-_concurrency_version' if django.VERSION[:2] >= (4, 0) else '_concurrency_version'
-
-            # request1 = get_fake_request('pk={}&{}_1=2'.format(id, post_param))
-            request1 = get_fake_request(f"pk={id}&{concurrency_param_name}_1=2")
+            request1 = get_fake_request(f"pk={pk}&{concurrency_param_name}_1=2")
 
             model_admin.save_model(request1, obj, None, True)
 
-            self.assertIn(obj.pk, model_admin._get_conflicts(request1))
+            assert obj.pk in model_admin._get_conflicts(request1)
 
             obj = refetch(obj)
-            request2 = get_fake_request(
-                f"pk={id}&{concurrency_param_name}_1={obj.version}"
-            )
+            request2 = get_fake_request(f"pk={pk}&{concurrency_param_name}_1={obj.version}")
             model_admin.save_model(request2, obj, None, True)
-            self.assertNotIn(obj.pk, model_admin._get_conflicts(request2))
+            assert obj.pk not in model_admin._get_conflicts(request2)
 
 
 class TestIssue18(SimpleTestCase):
     def test_identity_tag(self):
-        id = next(unique_id)
+        pk = next(unique_id)
 
-        obj = ListEditableConcurrentModel(pk=id)
-        self.assertTrue(re.match(r"^%s,\d+$" % id, identity(obj)))
+        obj = ListEditableConcurrentModel(pk=pk)
+        assert re.match(r"^%s,\d+$" % pk, identity(obj))
 
         g = User(username="UserTest", pk=3)
-        self.assertEqual(identity(g), force_str(g.pk))
+        assert identity(g) == force_str(g.pk)
 
 
-@pytest.mark.django_db()
+@pytest.mark.django_db
 def test_issue_54():
     with override_settings(CONCURRENCY_VERSION_FIELD_REQUIRED=False):
         m = SimpleConcurrentModel(version=0)
@@ -106,7 +101,7 @@ def test_issue_54():
             m2.save()
 
 
-@pytest.mark.django_db()
+@pytest.mark.django_db
 def test_issue_81a(monkeypatch):
     monkeypatch.setattr("demo.admin.ActionsModelAdmin.fields", ("id",))
     with pytest.raises(SystemCheckError) as e:
@@ -114,7 +109,7 @@ def test_issue_81a(monkeypatch):
     assert "concurrency.A001" in str(e.value)
 
 
-@pytest.mark.django_db()
+@pytest.mark.django_db
 def test_issue_81b(monkeypatch):
     fieldsets = (("Standard info", {"fields": ("id",)}),)
     monkeypatch.setattr("demo.admin.ActionsModelAdmin.fieldsets", fieldsets)

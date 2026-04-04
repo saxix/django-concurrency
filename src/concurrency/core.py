@@ -15,8 +15,7 @@ def get_version_fieldname(obj):
 
 
 def _set_version(obj, version) -> None:
-    """
-    Set the given version on the passed object
+    """Set the given version on the passed object.
 
     This function should be used with 'raw' values, any type conversion should be managed in
     VersionField._set_version_value(). This is needed for future enhancement of concurrency.
@@ -57,5 +56,4 @@ class ConcurrencyOptions:
     ignore_fields = None
     skip = False
     increment = True
-    initial = None
     triggers = []

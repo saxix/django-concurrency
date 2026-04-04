@@ -79,16 +79,10 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "full": {
-            "format": "%(levelname)-8s: %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
-        },
+        "full": {"format": "%(levelname)-8s: %(asctime)s %(module)s %(process)d %(thread)d %(message)s"},
         "verbose": {"format": "%(levelname)-8s: %(asctime)s %(name)-25s %(message)s"},
-        "simple": {
-            "format": "%(levelname)-8s %(asctime)s %(name)-25s %(funcName)s %(message)s"
-        },
-        "debug": {
-            "format": "%(levelno)s:%(levelname)-8s %(name)s %(funcName)s:%(lineno)s:: %(message)s"
-        },
+        "simple": {"format": "%(levelname)-8s %(asctime)s %(name)-25s %(funcName)s %(message)s"},
+        "debug": {"format": "%(levelno)s:%(levelname)-8s %(name)s %(funcName)s:%(lineno)s:: %(message)s"},
     },
     "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
     "handlers": {
@@ -99,9 +93,7 @@ LOGGING = {
             "formatter": "debug",
         },
     },
-    "loggers": {
-        "concurrency": {"handlers": ["null"], "propagate": False, "level": "DEBUG"}
-    },
+    "loggers": {"concurrency": {"handlers": ["null"], "propagate": False, "level": "DEBUG"}},
 }
 
 db = os.environ.get("DBENGINE", "pg")
@@ -140,8 +132,4 @@ else:
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTHENTICATION_BACKENDS = (
-    "demo.backends.AnyUserAuthBackend",
-    # os.environ.get("AUTHENTICATION_BACKEND", ""),
-    # "django.contrib.auth.backends.ModelBackend",
-)
+AUTHENTICATION_BACKENDS = ("demo.backends.AnyUserAuthBackend",)

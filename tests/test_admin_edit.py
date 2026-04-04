@@ -67,7 +67,7 @@ class TestConcurrentModelAdmin(AdminTestCase):
         res = form.submit().follow()
         target = SimpleConcurrentModel.objects.get(pk=target.pk)
         new_version = target.version
-        self.assertGreater(new_version, old_version)
+        assert new_version > old_version
 
     def test_creation(self):
         url = reverse("admin:demo_simpleconcurrentmodel_add")
@@ -75,10 +75,8 @@ class TestConcurrentModelAdmin(AdminTestCase):
         form = res.forms["simpleconcurrentmodel_form"]
         form["username"] = "CHAR"
         res = form.submit().follow()
-        self.assertTrue(SimpleConcurrentModel.objects.filter(username="CHAR").exists())
-        self.assertGreater(
-            SimpleConcurrentModel.objects.get(username="CHAR").version, 0
-        )
+        assert SimpleConcurrentModel.objects.filter(username="CHAR").exists()
+        assert SimpleConcurrentModel.objects.get(username="CHAR").version > 0
 
     def test_conflict(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username="aaa")
@@ -90,15 +88,9 @@ class TestConcurrentModelAdmin(AdminTestCase):
 
         res = form.submit()
 
-        self.assertIn("original", res.context)
-        self.assertTrue(
-            res.context["adminform"].form.errors, res.context["adminform"].form.errors
-        )
-        self.assertIn(
-            _("Record Modified"),
-            str(res.context["adminform"].form.errors),
-            res.context["adminform"].form.errors,
-        )
+        assert "original" in res.context
+        assert res.context["adminform"].form.errors
+        assert _("Record Modified") in str(res.context["adminform"].form.errors)
 
 
 class TestAdminEdit(AdminTestCase):
@@ -112,11 +104,9 @@ class TestAdminEdit(AdminTestCase):
         res = self.app.get(url, user="sax")
         form = res.forms["simpleconcurrentmodel_form"]
         form["username"] = "CHAR"
-        res = form.submit().follow()
-        self.assertTrue(SimpleConcurrentModel.objects.filter(username="CHAR").exists())
-        self.assertGreater(
-            SimpleConcurrentModel.objects.get(username="CHAR").version, 0
-        )
+        form.submit().follow()
+        assert SimpleConcurrentModel.objects.filter(username="CHAR").exists()
+        assert SimpleConcurrentModel.objects.get(username="CHAR").version > 0
 
     def test_creation_with_customform(self):
         url = reverse("admin:demo_simpleconcurrentmodel_add")
@@ -124,20 +114,14 @@ class TestAdminEdit(AdminTestCase):
         form = res.forms["simpleconcurrentmodel_form"]
         username = next(nextname)
         form["username"] = username
-        res = form.submit().follow()
-        self.assertTrue(
-            SimpleConcurrentModel.objects.filter(username=username).exists()
-        )
-        self.assertGreater(
-            SimpleConcurrentModel.objects.get(username=username).version, 0
-        )
+        form.submit().follow()
+        assert SimpleConcurrentModel.objects.filter(username=username).exists()
+        assert SimpleConcurrentModel.objects.get(username=username).version > 0
 
         # test no other errors are raised
         res = form.submit()
-        self.assertEqual(res.status_code, 200)
-        self.assertContains(
-            res, "SimpleConcurrentModel with this Username already exists."
-        )
+        assert res.status_code == 200
+        assert "SimpleConcurrentModel with this Username already exists." in res
 
     def test_standard_update(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username="aaa")
@@ -150,7 +134,7 @@ class TestAdminEdit(AdminTestCase):
         res = form.submit().follow()
         target = SimpleConcurrentModel.objects.get(pk=target.pk)
         new_version = target.version
-        self.assertGreater(new_version, old_version)
+        assert new_version > old_version
 
     def test_conflict(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username="aaa")
@@ -161,15 +145,9 @@ class TestAdminEdit(AdminTestCase):
 
         target.save()  # create conflict here
         res = form.submit()
-        self.assertIn("original", res.context)
-        self.assertTrue(
-            res.context["adminform"].form.errors, res.context["adminform"].form.errors
-        )
-        self.assertIn(
-            _("Record Modified"),
-            str(res.context["adminform"].form.errors),
-            res.context["adminform"].form.errors,
-        )
+        assert "original" in res.context
+        assert res.context["adminform"].form.errors, res.context["adminform"].form.errors
+        assert _("Record Modified") in str(res.context["adminform"].form.errors), res.context["adminform"].form.errors
 
     def test_sanity_signer(self):
         target, __ = SimpleConcurrentModel.objects.get_or_create(username="aaa")
@@ -180,11 +158,8 @@ class TestAdminEdit(AdminTestCase):
         form["version"] = VersionFieldSigner().sign(version1)
         form["date_field"] = "esss2010-09-01"
         response = form.submit()
-        self.assertIn("original", response.context)
-        self.assertTrue(
-            response.context["adminform"].form.errors,
-            response.context["adminform"].form.errors,
-        )
+        assert "original" in response.context
+        assert response.context["adminform"].form.errors
         form = response.context["adminform"].form
         version2 = int(str(form["version"].value()).split(":")[0])
-        self.assertEqual(version1, version2)
+        assert version1 == version2

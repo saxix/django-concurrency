@@ -81,8 +81,6 @@ with_std_models = partial(
 )()
 with_all_models = partial(with_models, *MODEL_CLASSES)()
 
-# with_all_models = partial(models_parametrize, ConcreteModel)()
-
 DELETE_ATTRIBUTE = object()
 
 
@@ -140,7 +138,7 @@ def concurrently(times=1):
     def concurrently_decorator(test_func):
         def wrapper(*args, **kwargs):
             exceptions = []
-            import threading
+            import threading  # noqa
 
             def call_test_func():
                 try:
@@ -151,18 +149,13 @@ def concurrently(times=1):
                 finally:
                     db.connection.close()
 
-            threads = []
-            for i in range(times):
-                threads.append(threading.Thread(target=call_test_func))
+            threads = [threading.Thread(target=call_test_func) for _ in range(times)]
             for t in threads:
                 t.start()
             for t in threads:
                 t.join()
             if exceptions:
-                raise Exception(
-                    "test_concurrently intercepted %s exceptions: %s"
-                    % (len(exceptions), exceptions)
-                )
+                raise Exception("test_concurrently intercepted %s exceptions: %s" % (len(exceptions), exceptions))
 
         return update_wrapper(wrapper, test_func)
 
