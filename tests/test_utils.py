@@ -5,7 +5,8 @@ from demo.models import SimpleConcurrentModel
 from django.test import TestCase
 
 import concurrency.fields
-from concurrency.utils import ConcurrencyTestMixin, deprecated, flatten, fqn, get_classname, refetch
+from concurrency.test_utils import ConcurrencyTestMixin
+from concurrency.utils import deprecated, flatten, fqn, get_classname, refetch
 
 logger = logging.getLogger(__name__)
 
